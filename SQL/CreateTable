@@ -5,6 +5,7 @@ GO
 
 CREATE TABLE Users (
     userID INT PRIMARY KEY IDENTITY(1,1),
+    username NVARCHAR(255) NOT NULL,
     password NVARCHAR(255) NOT NULL,  -- Hash of the password
     email NVARCHAR(255) NOT NULL,
     phone NVARCHAR(15),
