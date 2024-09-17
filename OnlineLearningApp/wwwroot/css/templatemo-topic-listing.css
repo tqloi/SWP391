@@ -43,11 +43,20 @@ https://templatemo.com/tm-590-topic-listing
   --font-weight-medium:           500;
   --font-weight-semibold:         600;
   --font-weight-bold:             700;
-}
 
-body {
-  background-color: var(--white-color);
-  font-family: var(--body-font-family); 
+}
+/*
+html, body {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+*/
+    body {
+    background-color: var(--white-color);
+    font-family: var(--body-font-family);
+    width: 100%;
+    overflow-x:hidden;
 }
 
 
@@ -290,7 +299,7 @@ strong {
 .navbar {
     background: transparent;
     border-bottom: 1px solid rgba(128, 208, 199, 0.35);
-    z-index: 10;
+    z-index: 1000;
 }
 
 .navbar-brand,
@@ -1070,10 +1079,11 @@ blockquote {
     padding-top: 50px;
     padding-bottom: 50px;
   }
-  
-  .navbar {
-    background-color: var(--secondary-color);
-  }
+
+    .navbar {
+        background-image: linear-gradient(15deg, #58A3AB 0%, #7ACAC3 100%);
+        background-color: var(--secondary-color);
+    }
 
   .navbar-nav .dropdown-menu {
     position: relative;
