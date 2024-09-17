@@ -3,7 +3,6 @@ GO
 USE Online_Learning_Platform;
 GO
 
--- General Users table
 CREATE TABLE Users (
     userID INT PRIMARY KEY IDENTITY(1,1),
     password NVARCHAR(255) NOT NULL,  -- Hash of the password
@@ -19,23 +18,23 @@ CREATE TABLE Users (
 CREATE TABLE Instructor (
     userID INT PRIMARY KEY,
     bio TEXT,
-    FOREIGN KEY (userID) REFERENCES Users(userID)  -- Links to Users table
+    FOREIGN KEY (userID) REFERENCES Users(userID) 
 );
 
 -- Course table
-CREATE TABLE Courses (
+CREATE TABLE Course (
     courseID INT PRIMARY KEY IDENTITY(1,1),
     numberOfStudents INT,
-    userID INT,  -- Foreign key to Instructor (userID from Users)
+    userID INT,  -- Foreign key to Instructor (userID from User)
     material NVARCHAR(255),  -- Link to course material
-    FOREIGN KEY (userID) REFERENCES Instructor(userID)  -- Links to Instructor (but via Users)
+    FOREIGN KEY (userID) REFERENCES Instructor(userID)  
 );
 -- Student table (specific student-related fields)
 CREATE TABLE Student (
     userID INT PRIMARY KEY,
     completedCourseID INT,
     completeLectureID INT,
-    FOREIGN KEY (userID) REFERENCES Users(userID)  -- Links to Users table
+    FOREIGN KEY (userID) REFERENCES Users(userID) 
 );
 
 -- Enrollment table
@@ -44,8 +43,8 @@ CREATE TABLE Enrollment (
     courseID INT,  -- Foreign key to Courses
     studentID INT,  -- Foreign key to Student (userID from Users)
     enrollmentDate DATETIME,
-    FOREIGN KEY (courseID) REFERENCES Courses(courseID),
-    FOREIGN KEY (studentID) REFERENCES Student (userID)  -- References Users table
+    FOREIGN KEY (courseID) REFERENCES Course(courseID),
+    FOREIGN KEY (studentID) REFERENCES Student (userID)  
 );
 -- Lecture table
 CREATE TABLE Lecture (
@@ -54,7 +53,7 @@ CREATE TABLE Lecture (
     title NVARCHAR(255),
     material NVARCHAR(255),  -- Link to lecture-specific material
     date DATETIME,
-    FOREIGN KEY (courseID) REFERENCES Courses(courseID)
+    FOREIGN KEY (courseID) REFERENCES Course(courseID)
 );
 
 -- Test table
@@ -64,7 +63,7 @@ CREATE TABLE Test (
     startTime DATETIME,
     endTime DATETIME,
     status NVARCHAR(255),
-    FOREIGN KEY (courseID) REFERENCES Courses(courseID)
+    FOREIGN KEY (courseID) REFERENCES Course(courseID)
 );
 
 -- Score table
@@ -96,7 +95,7 @@ CREATE TABLE Assignment (
     title NVARCHAR(255),
     description TEXT,
     dueDate DATETIME,
-    FOREIGN KEY (courseID) REFERENCES Courses(courseID)
+    FOREIGN KEY (courseID) REFERENCES Course(courseID)
 );
 
 -- Submission table
@@ -130,7 +129,7 @@ CREATE TABLE Comment (
     content TEXT,
     timestamp DATETIME,
     parentCmtId INT NULL,  -- Foreign key to Comment (nullable for root comments)
-    FOREIGN KEY (courseID) REFERENCES Courses(courseID),
+    FOREIGN KEY (courseID) REFERENCES Course(courseID),
     FOREIGN KEY (lectureID) REFERENCES Lecture(lectureID),
     FOREIGN KEY (userID) REFERENCES Users(userID),  -- Could be Student or Instructor
     FOREIGN KEY (parentCmtId) REFERENCES Comment(commentID)
