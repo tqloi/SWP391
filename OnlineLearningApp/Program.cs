@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using OnlineLearningApp.Respositories;
+
 namespace OnlineLearningApp
 {
     public class Program
@@ -6,8 +9,14 @@ namespace OnlineLearningApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews().AddRazorOptions(options =>
+            // connect database
+
+			builder.Services.AddDbContext<DataContext>(options =>
+			{
+				options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnect"]);
+			});
+			// Add services to the container.
+			builder.Services.AddControllersWithViews().AddRazorOptions(options =>
             {
   
                 options.ViewLocationFormats.Add("/Views/User/{1}/{0}.cshtml");
