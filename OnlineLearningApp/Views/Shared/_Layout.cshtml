@@ -16,6 +16,12 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="~/css/main.css" rel="stylesheet">
+
     <link href="~/css/bootstrap.min.css" rel="stylesheet">
 
     <link href="~/css/bootstrap-icons.css" rel="stylesheet">
@@ -99,10 +105,10 @@
 
                     <div class="d-none d-lg-block">
                         <div class="dropdown">
-                            <a asp-action="Login" class="navbar-icon bi-person smoothscroll"></a>
+                            <a asp-action="Login" asp-controller="Home" class="navbar-icon bi-person smoothscroll"></a>
                             <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-                                <li><a class="dropdown-item" href="/yourprofile">Your Profile</a></li>
-                                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                                <li><a class="dropdown-item" asp-action="UserProfile" asp-controller="Home">Your Profile</a></li>
+                                <li><a class="dropdown-item" asp-action="Login" asp-controller="Home">Logout</a></li>
                             </ul>
                         </div>
                     </div>
@@ -112,6 +118,7 @@
 
         @RenderBody()
 
+    </main>
         <footer style="width: 100%;" class="site-footer section-padding">
             <div class="container">
                 <div class="row">
@@ -186,7 +193,7 @@
                 </div>
             </div>
         </footer>
-    <main/>
+
 
         <!-- JAVASCRIPT FILES -->
         <script src="~/js/jquery.min.js"></script>
@@ -194,6 +201,7 @@
         <script src="~/js/jquery.sticky.js"></script>
         <script src="~/js/click-scroll.js"></script>
         <script src="~/js/custom.js"></script>
+        <script src="~/js/main.js"></script>
 
 </body>
 </html>

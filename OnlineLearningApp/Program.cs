@@ -7,7 +7,11 @@ namespace OnlineLearningApp
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews().AddRazorOptions(options =>
+            {
+  
+                options.ViewLocationFormats.Add("/Views/User/{1}/{0}.cshtml");
+            });
 
             var app = builder.Build();
 
