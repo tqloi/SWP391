@@ -1,7 +1,12 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+@if (Context.User.Identity.IsAuthenticated)
+{
+    <h3>Welcome @User.Identity.Name</h3>
+    <br />
+    <a asp-controller="Account" asp-action="Logout">Logout</a>
+}
 <section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
             <div class="container">
                 <div class="row">
