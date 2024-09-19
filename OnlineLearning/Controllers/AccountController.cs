@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OnlineLearning.Models;
@@ -49,7 +50,7 @@ namespace OnlineLearning.Controllers
                 var user = new AppUserModel
                 {
                     UserName = model.Username,
-                    Email = model.Email, 
+                    Email = model.Email,
                     PhoneNumber = model.PhoneNumber
                 };
                 if (model.ProfileImage != null)
@@ -62,7 +63,7 @@ namespace OnlineLearning.Controllers
                     {
                         await model.ProfileImage.CopyToAsync(fs);
                     }
-                    
+
                     user.ProfileImagePath = imageName;
                 }
 
@@ -94,6 +95,7 @@ namespace OnlineLearning.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
+
     }
 }
         

@@ -12,7 +12,7 @@ using OnlineLearningApp.Respositories;
 namespace OnlineLearning.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240918084315_FirstMigration")]
+    [Migration("20240919171744_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -199,6 +199,10 @@ namespace OnlineLearning.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("ProfileImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");

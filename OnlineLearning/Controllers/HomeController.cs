@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
+using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
 
 namespace OnlineLearning.Controllers
@@ -30,21 +31,106 @@ namespace OnlineLearning.Controllers
 			return View();
 		}
 
-		public IActionResult UserProfile()
-		{
+        [HttpGet]
+        public async Task<IActionResult> UserProfile()
+        {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = datacontext.Users.FirstOrDefault(u  => u.Id == userId);
-			if (user == null)
-			{
-				return NotFound();
-			}
-			return View(user);
-		}
+            var user = await _userManager.FindByIdAsync(userId);
 
-        
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new EditUserViewModel
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                ExistingProfileImagePath = user.ProfileImagePath
+            };
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new EditUserViewModel
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                ExistingProfileImagePath = user.ProfileImagePath
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditUserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _userManager.FindByIdAsync(userId);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                user.UserName = model.UserName;
+                user.Email = model.Email;
+                user.PhoneNumber = model.PhoneNumber;
+
+                if (model.ProfileImage != null)
+                {
+                    string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
+                    string imageName = Guid.NewGuid() + "_" + model.ProfileImage.FileName;
+                    string filePath = Path.Combine(uploadPath, imageName);
+
+                    using (var fs = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.ProfileImage.CopyToAsync(fs);
+                    }
+
+                    user.ProfileImagePath = imageName;
+                }
+                else
+                {
+
+                    user.ProfileImagePath = user.ProfileImagePath;
+                }
+
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("UserProfile");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+
+            return View(model);
+        }
 
 
-        
+
+
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

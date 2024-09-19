@@ -17,7 +17,8 @@ namespace OnlineLearning.Models
         public string PhoneNumber { get; set; }
         
         [Display(Name = "Profile Image")]
-        public IFormFile ProfileImage { get; set; }
+        public IFormFile? ProfileImage { get; set; }
 
+       
     }
 }
