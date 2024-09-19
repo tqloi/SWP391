@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
@@ -9,10 +10,12 @@ namespace OnlineLearning.Controllers
     {
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
-        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _webHostEnvironment = webHostEnvironment;
         }
         [HttpGet]
 		public IActionResult Login(string returnurl)
@@ -46,8 +49,22 @@ namespace OnlineLearning.Controllers
                 var user = new AppUserModel
                 {
                     UserName = model.Username,
-                    Email = model.Email
+                    Email = model.Email, 
+                    PhoneNumber = model.PhoneNumber
                 };
+                if (model.ProfileImage != null)
+                {
+                    string uploadimg = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
+                    string imageName = Guid.NewGuid().ToString() + "_" + model.ProfileImage.FileName;
+                    string filePath = Path.Combine(uploadimg, imageName);
+
+                    using (var fs = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.ProfileImage.CopyToAsync(fs);
+                    }
+                    
+                    user.ProfileImagePath = imageName;
+                }
 
                 // Store user data in AspNetUsers database table
                 var result = await _userManager.CreateAsync(user, model.Password);
