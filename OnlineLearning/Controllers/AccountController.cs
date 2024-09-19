@@ -45,7 +45,7 @@ namespace OnlineLearning.Controllers
                 // Copy data from RegisterViewModel to IdentityUser
                 var user = new AppUserModel
                 {
-                    UserName = model.Email,
+                    UserName = model.Username,
                     Email = model.Email
                 };
 
