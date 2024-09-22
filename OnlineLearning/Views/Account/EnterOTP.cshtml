@@ -1,0 +1,15 @@
+﻿@model OTPViewModel
+@{
+    ViewData["Title"] = "OTP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Enter OTP</h2>
+<form asp-action="EnterOTP" asp-controller="Account" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div>
+        <label>OTP Code:</label>
+        <input asp-for="Otp" type="text" />
+        <span asp-validation-for="Otp"></span>
+    </div>
+    <button type="submit">Verify OTP</button>
+</form>

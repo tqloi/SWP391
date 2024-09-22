@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
@@ -42,12 +44,15 @@ namespace OnlineLearning.Controllers
                 return NotFound();
             }
 
+            
+
             var model = new EditUserViewModel
             {
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                ExistingProfileImagePath = user.ProfileImagePath
+                ExistingProfileImagePath = user.ProfileImagePath,
+                
             };
 
             return View(model);
@@ -63,13 +68,14 @@ namespace OnlineLearning.Controllers
             {
                 return NotFound();
             }
-
+           
             var model = new EditUserViewModel
             {
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                ExistingProfileImagePath = user.ProfileImagePath
+                ExistingProfileImagePath = user.ProfileImagePath,
+               
             };
 
             return View(model);
@@ -126,14 +132,10 @@ namespace OnlineLearning.Controllers
 
             return View(model);
         }
+        
 
 
-
-
-
-
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
 		{
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

@@ -20,5 +20,7 @@ namespace OnlineLearning.Models
         public IFormFile? ProfileImage { get; set; }
 
         public string? ExistingProfileImagePath { get; set; }
+       
+        
     }
 }

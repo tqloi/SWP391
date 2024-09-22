@@ -1,4 +1,8 @@
 ﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 <form asp-action="Login" asp-controller="Account" method="post">
     <h1>Sign In</h1>
     <div class="social-container">
@@ -6,15 +10,31 @@
         <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
         <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
     </div>
-
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <span>or use your account</span>
-    <input asp-for="Username" class="form-control" placeholder="Username" />
-    <span asp-validation-for="Username" class="text-danger" />
+   <div class="mb-3">
+        <input asp-for="Username" class="form-control" placeholder="Username" />
+        <span asp-validation-for="Username" class="text-danger" />
+   </div>
     
-    <!-- Password -->
-    <input asp-for="Password" type="password" class="form-control" placeholder="Password" />
-    <span asp-validation-for="Password" class="text-danger" />
-
-    <a asp-action="Create" asp-asp-controller="Account" >Create new account</a>
-    <button type="submit">Sign In</button>
+    <div class="mb-3">
+        <input asp-for="Password" class="form-control" placeholder="Password" />
+        <span asp-validation-for="Password" class="text-danger" />
+    </div>
+    <div class="form-check mb-3">
+        <label class="form-check-lable">
+            <input asp-for="RememberMe" class="form-check-input" />
+            @Html.DisplayNameFor(a => a.RememberMe)
+        </label>
+    </div>
+    <div class="text-center"> 
+        <a asp-action="Create" asp-asp-controller="Account">Create new account</a>
+    </div>
+    <div class="text-center">
+        <a asp-action="VerifyEmail" asp-asp-controller="Account">Forgot Password</a>
+    </div>
+    <div class="mb-5">
+        <button type="submit">Sign In</button>
+    </div>
+    
 </form>

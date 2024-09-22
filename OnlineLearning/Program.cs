@@ -1,13 +1,21 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearning.Email;
 using OnlineLearning.Models;
 using OnlineLearningApp.Respositories;
 //connect database
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddTransient<EmailSender>();
+
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration["ConnectionStrings:ConnectedDb"]);
+});
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(5); // Thời gian sống của session
+    options.Cookie.HttpOnly = true;
 });
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -36,6 +44,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     //options.User.AllowedUserNameCharacters =
     //"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
     options.User.RequireUniqueEmail = true;
+   
 });
 
 var app = builder.Build();
@@ -46,7 +55,7 @@ if (!app.Environment.IsDevelopment())
 	app.UseExceptionHandler("/Home/Error");
 }
 app.UseStaticFiles();
-
+app.UseSession();
 app.UseRouting();
 
 app.UseAuthentication();

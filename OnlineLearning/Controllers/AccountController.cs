@@ -1,9 +1,14 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using OnlineLearning.Email;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OnlineLearning.Controllers
 {
@@ -11,83 +16,143 @@ namespace OnlineLearning.Controllers
     {
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
+        private IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment)
+        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _webHostEnvironment = webHostEnvironment;
+            _configuration = configuration;
         }
         [HttpGet]
-		public IActionResult Login(string returnurl)
-		{
-			return View(new LoginViewModel { ReturnUrl = returnurl});
-		}
-		[HttpPost]
-		public async Task<IActionResult> Login(LoginViewModel loginVM)
-		{
-			Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(loginVM.Username, loginVM.Password, false, false);
-				if (result.Succeeded)
-				{
-					return Redirect(loginVM.ReturnUrl ?? "/");
-				}
-				ModelState.AddModelError("", "Invalid username or password");
-			
-            TempData["erorr"] = "Failed!";
-			return View(loginVM);
-		}
-		[HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel loginVM)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByNameAsync(loginVM.Username);
+                bool checkVerify = await _userManager.IsEmailConfirmedAsync(user);
+                if (checkVerify)
+                {
+                    var result = await _signInManager.PasswordSignInAsync(loginVM.Username, loginVM.Password, loginVM.RememberMe, false);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Email or Password are incorrect!");
+                        return View(loginVM);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Your need verify your email before login!");
+                    return RedirectToAction("EnterOTP", "Account");
+                }
+                
+            }
+            return View(loginVM);
+
+        }
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create(UserModel model)
+        public async Task<IActionResult> Create(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                // Copy data from RegisterViewModel to IdentityUser
                 var user = new AppUserModel
                 {
                     UserName = model.Username,
                     Email = model.Email,
-                    PhoneNumber = model.PhoneNumber
+                    PhoneNumber = model.PhoneNumber,
+                    ProfileImagePath = "piccl.jpg"
                 };
-                if (model.ProfileImage != null)
-                {
-                    string uploadimg = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
-                    string imageName = Guid.NewGuid().ToString() + "_" + model.ProfileImage.FileName;
-                    string filePath = Path.Combine(uploadimg, imageName);
 
-                    using (var fs = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.ProfileImage.CopyToAsync(fs);
-                    }
-
-                    user.ProfileImagePath = imageName;
-                }
-
-                // Store user data in AspNetUsers database table
                 var result = await _userManager.CreateAsync(user, model.Password);
 
-                // If user is successfully created, sign-in the user using
-                // SignInManager and redirect to index action of HomeController
                 if (result.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    TempData["success"] = "Create success";
-                    return RedirectToAction("Login", "Account");
+                    //// Tạo token xác nhận email
+                    //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    //// Tạo đường dẫn xác nhận email
+                    //var confirmationLink = Url.Action("ConfirmEmail", "Account",
+                    //    new { userId = user.Id, token = token }, Request.Scheme);
+
+                    //var message = $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.";
+
+                    //// Gửi email xác nhận
+                    //var emailSender = new EmailSender(_configuration);
+                    //await emailSender.SendEmailAsync(user.Email, "Confirm your email", message);
+
+                    //TempData["success"] = "Registration successful! Please check your email to confirm your account.";
+                    //return RedirectToAction("Login", "Account");
+                    Random random = new Random();
+                    int otp = random.Next(100000, 999999);
+
+                    var emailSender = new EmailSender(_configuration);
+                    await emailSender.SendEmailAsync(user.Email, "Your OTP Code", $"Your OTP code is {otp}.");
+
+                    HttpContext.Session.SetInt32("otp", otp);
+                    HttpContext.Session.SetString("userId", user.Id);
+                    
+                    return RedirectToAction("EnterOtp");
                 }
 
-                // If there are any errors, add them to the ModelState object
-                // which will be displayed by the validation summary tag helper
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError("", error.Description);
                 }
             }
 
             return View(model);
+        }
+        [HttpGet]
+        public IActionResult EnterOTP()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> EnterOTP(OTPViewModel model)
+        {
+            var storedOtp = HttpContext.Session.GetInt32("otp");
+            var userId = HttpContext.Session.GetString("userId");
+            if (storedOtp != null)
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (model.Otp == storedOtp)
+                {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var result = await _userManager.ConfirmEmailAsync(user, token);
+                    if (result.Succeeded)
+                    {
+                        HttpContext.Session.Remove("userId");
+                        HttpContext.Session.Remove("otp");
+                        TempData["success"] = "OTP verified successfully!";
+                        
+                        return RedirectToAction("Login", "Account");
+                    }
+
+                }
+
+                else
+                {
+                    ModelState.AddModelError("", "Invalid OTP.");
+                    return View();
+                }
+            }
+            ModelState.AddModelError("", "Invalid OTP.");
+            return View("EnterOtp");
         }
         [HttpPost]
         public async Task<IActionResult> Logout()
@@ -95,8 +160,100 @@ namespace OnlineLearning.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
+        public IActionResult VerifyEmail()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> VerifyEmail(VerifyEmailViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    ModelState.AddModelError("", "Something is wrong!");
+                    return View(model);
+                }
+                else
+                {
+                    return RedirectToAction("ChangePassword", new { username = user.UserName });
+                }
+
+            }
+
+            return View(model);
+        }
+        public IActionResult ChangePassword(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("VerifyEmail", "Account");
+            }
+            return View(new ResetPasswordViewModel { Username = username });
+        }
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user != null)
+                {
+                    var result = await _userManager.RemovePasswordAsync(user);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                        return RedirectToAction("Login", "Account");
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError("", error.Description);
+                        }
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Email is not valid!");
+                    return View(model);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Something is wrong!");
+                return View(model);
+            }
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (userId == null || token == null)
+            {
+                TempData["error"] = "Invalid email confirmation request.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                TempData["error"] = "User not found.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                TempData["success"] = "Email confirmed successfully!";
+                return View("ConfirmEmail");
+            }
+
+            TempData["error"] = "Error confirming your email.";
+            return View("Error");
+        }
 
     }
 }
-        
- 

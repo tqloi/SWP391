@@ -10,7 +10,9 @@
                         <div class="file btn btn-lg btn-primary">
                             Change Photo
                             <input type="file" asp-for="ProfileImage" />
+                           
                         </div>
+                        <img id="imgpreview" class="pt-2" />
                     </div>
                 </div>
                 <div class="col-md-8">
@@ -35,3 +37,11 @@
         </form>
     </div>
 </section>
+
+
+    <script>
+        $("#ProfileImage").change(function () {
+            readURL(this);
+        });
+    </script>
+
