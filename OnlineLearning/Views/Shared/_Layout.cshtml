@@ -184,5 +184,9 @@
     <script src="~/js/custom.js"></script>
     <script src="~/js/main.js"></script>
     @await RenderSectionAsync("Scripts", false)
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await Component.InvokeAsync("Notyf")
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

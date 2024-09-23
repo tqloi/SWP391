@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AspNetCoreHero.ToastNotification;
+using AspNetCoreHero.ToastNotification.Extensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Email;
 using OnlineLearning.Models;
 using OnlineLearningApp.Respositories;
-//connect database
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<EmailSender>();
-
+//connect database
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration["ConnectionStrings:ConnectedDb"]);
@@ -17,6 +19,16 @@ builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(5); // Thời gian sống của session
     options.Cookie.HttpOnly = true;
 });
+
+//notifycation
+builder.Services.AddNotyf(config =>
+{
+    config.DurationInSeconds = 10;
+    config.IsDismissable = true;
+    config.Position = NotyfPosition.BottomCenter;
+}
+);
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -60,6 +72,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseNotyf();
 
 app.MapControllerRoute(
 	name: "default",

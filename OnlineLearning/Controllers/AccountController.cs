@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -18,12 +19,14 @@ namespace OnlineLearning.Controllers
         private SignInManager<AppUserModel> _signInManager;
         private IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
+        private readonly INotyfService _notyf;
+        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, INotyfService notyf)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
+            _notyf = notyf;
         }
         [HttpGet]
         public IActionResult Login()
@@ -42,11 +45,13 @@ namespace OnlineLearning.Controllers
                     var result = await _signInManager.PasswordSignInAsync(loginVM.Username, loginVM.Password, loginVM.RememberMe, false);
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("Index", "Home");
+                       
+                        _notyf.Success("Success Notification that closes in 10 Seconds.", 3);
+                         return RedirectToAction("Index", "Home");
                     }
                     else
                     {
-                        ModelState.AddModelError("", "Email or Password are incorrect!");
+                        ModelState.AddModelError("", "Username or Password are incorrect!");
                         return View(loginVM);
                     }
                 }
@@ -70,48 +75,56 @@ namespace OnlineLearning.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new AppUserModel
+                var emailexist = await _userManager.FindByEmailAsync(model.Email);
+                if (emailexist == null)
                 {
-                    UserName = model.Username,
-                    Email = model.Email,
-                    PhoneNumber = model.PhoneNumber,
-                    ProfileImagePath = "piccl.jpg"
-                };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
 
-                if (result.Succeeded)
-                {
-                    //// Tạo token xác nhận email
-                    //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var user = new AppUserModel
+                    {
+                        UserName = model.Username,
+                        Email = model.Email,
+                        PhoneNumber = model.PhoneNumber,
+                        ProfileImagePath = "piccl.jpg"
+                    };
 
-                    //// Tạo đường dẫn xác nhận email
-                    //var confirmationLink = Url.Action("ConfirmEmail", "Account",
-                    //    new { userId = user.Id, token = token }, Request.Scheme);
+                    var result = await _userManager.CreateAsync(user, model.Password);
 
-                    //var message = $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.";
 
-                    //// Gửi email xác nhận
-                    //var emailSender = new EmailSender(_configuration);
-                    //await emailSender.SendEmailAsync(user.Email, "Confirm your email", message);
 
-                    //TempData["success"] = "Registration successful! Please check your email to confirm your account.";
-                    //return RedirectToAction("Login", "Account");
-                    Random random = new Random();
-                    int otp = random.Next(100000, 999999);
+                    if (result.Succeeded)
+                    {
+                        //// Tạo token xác nhận email
+                        //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                    var emailSender = new EmailSender(_configuration);
-                    await emailSender.SendEmailAsync(user.Email, "Your OTP Code", $"Your OTP code is {otp}.");
+                        //// Tạo đường dẫn xác nhận email
+                        //var confirmationLink = Url.Action("ConfirmEmail", "Account",
+                        //    new { userId = user.Id, token = token }, Request.Scheme);
 
-                    HttpContext.Session.SetInt32("otp", otp);
-                    HttpContext.Session.SetString("userId", user.Id);
-                    
-                    return RedirectToAction("EnterOtp");
-                }
+                        //var message = $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.";
 
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
+                        //// Gửi email xác nhận
+                        //var emailSender = new EmailSender(_configuration);
+                        //await emailSender.SendEmailAsync(user.Email, "Confirm your email", message);
+
+                        //TempData["success"] = "Registration successful! Please check your email to confirm your account.";
+                        //return RedirectToAction("Login", "Account");
+                        Random random = new Random();
+                        int otp = random.Next(100000, 999999);
+
+                        var emailSender = new EmailSender(_configuration);
+                        await emailSender.SendEmailAsync(user.Email, "Your OTP Code", $"Your OTP code is {otp}.");
+
+                        HttpContext.Session.SetInt32("otp", otp);
+                        HttpContext.Session.SetString("userId", user.Id);
+
+                        return RedirectToAction("EnterOtp");
+                    }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
                 }
             }
 
@@ -127,8 +140,13 @@ namespace OnlineLearning.Controllers
         {
             var storedOtp = HttpContext.Session.GetInt32("otp");
             var userId = HttpContext.Session.GetString("userId");
+            var usernamess = HttpContext.Session.GetString("username");
             if (storedOtp != null)
             {
+                if (usernamess != null)
+                {
+                    return RedirectToAction("ChangePassword", new { username = usernamess });
+                }
                 var user = await _userManager.FindByIdAsync(userId);
                 if (model.Otp == storedOtp)
                 {
@@ -138,8 +156,8 @@ namespace OnlineLearning.Controllers
                     {
                         HttpContext.Session.Remove("userId");
                         HttpContext.Session.Remove("otp");
-                        TempData["success"] = "OTP verified successfully!";
-                        
+                        _notyf.Success("Create user success", 3);
+
                         return RedirectToAction("Login", "Account");
                     }
 
@@ -177,7 +195,17 @@ namespace OnlineLearning.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("ChangePassword", new { username = user.UserName });
+                    Random random = new Random();
+                    int otp = random.Next(100000, 999999);
+
+                    var emailSender = new EmailSender(_configuration);
+                    await emailSender.SendEmailAsync(user.Email, "Your OTP Code", $"Your OTP code is {otp}.");
+
+                    HttpContext.Session.SetInt32("otp", otp);
+                    HttpContext.Session.SetString("username", user.UserName);
+
+                    return RedirectToAction("EnterOtp");
+                   // return RedirectToAction("ChangePassword", new { username = user.UserName });
                 }
 
             }
@@ -190,14 +218,16 @@ namespace OnlineLearning.Controllers
             {
                 return RedirectToAction("VerifyEmail", "Account");
             }
+            
             return View(new ResetPasswordViewModel { Username = username });
         }
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ResetPasswordViewModel model)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 var user = await _userManager.FindByNameAsync(model.Username);
+                HttpContext.Session.Remove("username");
                 if (user != null)
                 {
                     var result = await _userManager.RemovePasswordAsync(user);
@@ -221,13 +251,13 @@ namespace OnlineLearning.Controllers
                     return View(model);
                 }
             }
-            else
-            {
-                ModelState.AddModelError("", "Something is wrong!");
-                return View(model);
-            }
+        //    else
+        //    {
+        //        ModelState.AddModelError("", "Something is wrong!");
+        //        return View(model);
+        //    }
 
-        }
+        //}
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
