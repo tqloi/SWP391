@@ -24,6 +24,9 @@
     <link href="~/css/templatemo-topic-listing.css" rel="stylesheet">
     <link href="~/css/main.css" rel="stylesheet">
 
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+
 </head>
 
 <body id="top">
@@ -110,7 +113,7 @@
         </nav>
 
         <!-- Notification Partial -->
-        @Html.Partial("_NoficationPartial")
+        
 
         <!-- Main Body -->
         @RenderBody()
@@ -183,9 +186,8 @@
     <script src="~/js/click-scroll.js"></script>
     <script src="~/js/custom.js"></script>
     <script src="~/js/main.js"></script>
-    @await RenderSectionAsync("Scripts", false)
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await Component.InvokeAsync("Notyf")
+    @await RenderSectionAsync("Scripts", required: false)
 
     @RenderSection("Scripts", required: false)
 </body>

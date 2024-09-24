@@ -19,14 +19,14 @@ namespace OnlineLearning.Controllers
         private SignInManager<AppUserModel> _signInManager;
         private IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly INotyfService _notyf;
-        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, INotyfService notyf)
+       
+        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
-            _notyf = notyf;
+           
         }
         [HttpGet]
         public IActionResult Login()
@@ -45,12 +45,12 @@ namespace OnlineLearning.Controllers
                     var result = await _signInManager.PasswordSignInAsync(loginVM.Username, loginVM.Password, loginVM.RememberMe, false);
                     if (result.Succeeded)
                     {
-                       
-                        _notyf.Success("Success Notification that closes in 10 Seconds.", 3);
+                        TempData["success"] = "Login successful!";
                          return RedirectToAction("Index", "Home");
                     }
                     else
                     {
+                        TempData["error"] = "Login failed!";
                         ModelState.AddModelError("", "Username or Password are incorrect!");
                         return View(loginVM);
                     }
@@ -127,8 +127,8 @@ namespace OnlineLearning.Controllers
                     }
                 }
             }
-
-            return View(model);
+			TempData["error"] = "Failed!";
+			return View(model);
         }
         [HttpGet]
         public IActionResult EnterOTP()
@@ -156,7 +156,7 @@ namespace OnlineLearning.Controllers
                     {
                         HttpContext.Session.Remove("userId");
                         HttpContext.Session.Remove("otp");
-                        _notyf.Success("Create user success", 3);
+                        TempData["success"] = "Sign in successful!";
 
                         return RedirectToAction("Login", "Account");
                     }
@@ -165,6 +165,7 @@ namespace OnlineLearning.Controllers
 
                 else
                 {
+                    TempData["error"] = "Sign in failed!";
                     ModelState.AddModelError("", "Invalid OTP.");
                     return View();
                 }
@@ -176,6 +177,7 @@ namespace OnlineLearning.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            TempData["success"] = "Logout successful!";
             return RedirectToAction("Login", "Account");
         }
         public IActionResult VerifyEmail()
@@ -258,32 +260,7 @@ namespace OnlineLearning.Controllers
         //    }
 
         //}
-        [HttpGet]
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
-        {
-            if (userId == null || token == null)
-            {
-                TempData["error"] = "Invalid email confirmation request.";
-                return RedirectToAction("Index", "Home");
-            }
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                TempData["error"] = "User not found.";
-                return RedirectToAction("Index", "Home");
-            }
-
-            var result = await _userManager.ConfirmEmailAsync(user, token);
-            if (result.Succeeded)
-            {
-                TempData["success"] = "Email confirmed successfully!";
-                return View("ConfirmEmail");
-            }
-
-            TempData["error"] = "Error confirming your email.";
-            return View("Error");
-        }
+       
 
     }
 }

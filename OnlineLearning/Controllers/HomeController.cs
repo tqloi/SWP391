@@ -121,6 +121,7 @@ namespace OnlineLearning.Controllers
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
                 {
+                    TempData["success"] = "Edit successful!";
                     return RedirectToAction("UserProfile");
                 }
 

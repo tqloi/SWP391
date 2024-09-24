@@ -67,13 +67,14 @@ if (!app.Environment.IsDevelopment())
 	app.UseExceptionHandler("/Home/Error");
 }
 app.UseStaticFiles();
+app.UseNotyf();
 app.UseSession();
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseNotyf();
+
 
 app.MapControllerRoute(
 	name: "default",

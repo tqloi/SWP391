@@ -2,7 +2,15 @@
 * {
     box-sizing: border-box;
 }
+.toastr-success {
+    background-color: green !important;
+    color: white !important;
+}
 
+.toastr-error {
+    background-color: red !important;
+    color: white !important;
+}
 
 .login-container h1 {
     font-weight: bold;
