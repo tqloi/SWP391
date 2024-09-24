@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Topic Listing Bootstrap 5 Template</title>
+    <title>Online Learning Platform</title>
 
     <!-- CSS FILES -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,10 +50,10 @@
                             <a class="nav-link" asp-action="Index" asp-controller="Home">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#section_2">Browse Topics</a>
+                            <a class="nav-link" asp-action="CourseList" asp-controller="Course">Courses</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#section_3">How it works</a>
+                            <a class="nav-link" asp-action="CourseList" asp-controller="Course">My Learning</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#section_4">FAQs</a>
@@ -94,7 +94,7 @@
                                     <li><a class="dropdown-item" asp-action="UserProfile" asp-controller="Home">Hi, @User.Identity.Name, Your Profile</a></li>
                                     <li>
                                         <form asp-action="Logout" asp-controller="Account" method="post">
-                                            <button type="submit" class="btn btn-primary">Logout</button>
+                                            <button type="submit" class="btn btn-light">Logout</button>
                                         </form>
                                     </li>
                                 </ul>

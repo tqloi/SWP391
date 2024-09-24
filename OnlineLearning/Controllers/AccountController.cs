@@ -1,5 +1,8 @@
 ﻿using System.Security.Claims;
 using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -33,7 +36,43 @@ namespace OnlineLearning.Controllers
         {
             return View();
         }
+        //this method will be called first, redirect user to the google login page 
+        public async Task LoginGoogle()
+        {
+            await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("GoogleResponse")
+            });
+
+        }
+        //selection and proper authentication from google and token exchange is return
+        //all claim value and print on the page
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var claim = result.Principal.Identities.FirstOrDefault().Claims.Select(claim => new
+            {
+                claim.Issuer,
+                claim.OriginalIssuer,
+                claim.Type,
+                claim.Value
+            });
+            //return Json(claim);
+            return RedirectToAction("Index", "Home", new { area = "" });
+        }
+
         [HttpPost]
+		public async Task<IActionResult> Logout()
+		{
+			await _signInManager.SignOutAsync();
+			return RedirectToAction("Login", "Account");
+		}
+		public IActionResult VerifyEmail()
+		{
+			return View();
+		}
+
+		[HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginVM)
         {
             if (ModelState.IsValid)
@@ -45,18 +84,19 @@ namespace OnlineLearning.Controllers
                     var result = await _signInManager.PasswordSignInAsync(loginVM.Username, loginVM.Password, loginVM.RememberMe, false);
                     if (result.Succeeded)
                     {
-                       
-                        _notyf.Success("Success Notification that closes in 10 Seconds.", 3);
+                        _notyf.Success("Login success");
                          return RedirectToAction("Index", "Home");
                     }
                     else
                     {
+                        _notyf.Warning("Login failed");
                         ModelState.AddModelError("", "Username or Password are incorrect!");
                         return View(loginVM);
                     }
                 }
                 else
                 {
+
                     ModelState.AddModelError("", "Your need verify your email before login!");
                     return RedirectToAction("EnterOTP", "Account");
                 }
@@ -172,16 +212,7 @@ namespace OnlineLearning.Controllers
             ModelState.AddModelError("", "Invalid OTP.");
             return View("EnterOtp");
         }
-        [HttpPost]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Account");
-        }
-        public IActionResult VerifyEmail()
-        {
-            return View();
-        }
+     
         [HttpPost]
         public async Task<IActionResult> VerifyEmail(VerifyEmailViewModel model)
         {
