@@ -20,13 +20,15 @@ namespace OnlineLearning.Controllers
     {
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
+        private RoleManager<IdentityRole> _roleManager;
         private IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
        
-        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
+        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, RoleManager<IdentityRole> roleManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
            
@@ -132,25 +134,36 @@ namespace OnlineLearning.Controllers
                         Gender = true
                     };
 
-                    var result = await _userManager.CreateAsync(user, model.Password);
+                var result = await _userManager.CreateAsync(user, model.Password);
                     if (result.Succeeded)
                     {
-                        //// Tạo token xác nhận email
-                        //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    //set role
+                    var roleResult = await _userManager.AddToRoleAsync(user, "Student");
+                    if (!roleResult.Succeeded)
+                    {
+                        foreach (var error in roleResult.Errors)
+                        {
+                            ModelState.AddModelError("", error.Description);
+                        }
+                        return View(model); // Trả về form với các lỗi
+                    }
 
-                        //// Tạo đường dẫn xác nhận email
-                        //var confirmationLink = Url.Action("ConfirmEmail", "Account",
-                        //    new { userId = user.Id, token = token }, Request.Scheme);
+                    //// Tạo token xác nhận email
+                    //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                        //var message = $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.";
+                    //// Tạo đường dẫn xác nhận email
+                    //var confirmationLink = Url.Action("ConfirmEmail", "Account",
+                    //    new { userId = user.Id, token = token }, Request.Scheme);
 
-                        //// Gửi email xác nhận
-                        //var emailSender = new EmailSender(_configuration);
-                        //await emailSender.SendEmailAsync(user.Email, "Confirm your email", message);
+                    //var message = $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.";
 
-                        //TempData["success"] = "Registration successful! Please check your email to confirm your account.";
-                        //return RedirectToAction("Login", "Account");
-                        Random random = new Random();
+                    //// Gửi email xác nhận
+                    //var emailSender = new EmailSender(_configuration);
+                    //await emailSender.SendEmailAsync(user.Email, "Confirm your email", message);
+
+                    //TempData["success"] = "Registration successful! Please check your email to confirm your account.";
+                    //return RedirectToAction("Login", "Account");
+                    Random random = new Random();
                         int otp = random.Next(100000, 999999);
 
                         var emailSender = new EmailSender(_configuration);
