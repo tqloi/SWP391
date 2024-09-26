@@ -1,5 +1,7 @@
 ﻿using AspNetCoreHero.ToastNotification;
 using AspNetCoreHero.ToastNotification.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -23,11 +25,24 @@ builder.Services.AddSession(options => {
 //notifycation
 builder.Services.AddNotyf(config =>
 {
-    config.DurationInSeconds = 10;
+    config.DurationInSeconds = 3;
     config.IsDismissable = true;
     config.Position = NotyfPosition.BottomCenter;
 }
 );
+///telling the application to use the specific ClientId, and the ClientSecret
+///redirect user to the google login page for authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+    .AddCookie()
+    .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+    {
+        options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
+        options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
+    });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

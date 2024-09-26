@@ -163,15 +163,25 @@ namespace OnlineLearning.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("Dob")
+                        .HasColumnType("date");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Gender")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")

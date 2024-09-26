@@ -346,3 +346,16 @@
     position: relative;
     overflow: hidden;
 }
+
+.button {
+    background-image: linear-gradient(15deg, #458D9D 0%, #5099A5 100%);
+    color: white;
+    border: 1px solid #5a8a8b;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    width: 100%;
+    margin-top: 10px;
+}

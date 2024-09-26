@@ -52,7 +52,10 @@ namespace OnlineLearning.Controllers
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 ExistingProfileImagePath = user.ProfileImagePath,
-                
+                Address = user.Address,
+                Dob = user.Dob,
+                gender = user.Gender,
+
             };
 
             return View(model);
@@ -68,15 +71,18 @@ namespace OnlineLearning.Controllers
             {
                 return NotFound();
             }
-           
+
             var model = new EditUserViewModel
             {
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 ExistingProfileImagePath = user.ProfileImagePath,
-               
+                Address = user.Address,
+                Dob = user.Dob,
+                gender = user.Gender,
             };
+
 
             return View(model);
         }
@@ -98,7 +104,10 @@ namespace OnlineLearning.Controllers
                 user.UserName = model.UserName;
                 user.Email = model.Email;
                 user.PhoneNumber = model.PhoneNumber;
-
+                user.Address    = model.Address;
+                user.Dob = model.Dob;
+               user.Gender = model.gender;
+                
                 if (model.ProfileImage != null)
                 {
                     string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
@@ -121,7 +130,9 @@ namespace OnlineLearning.Controllers
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
                 {
+
                     TempData["success"] = "Edit successful!";
+
                     return RedirectToAction("UserProfile");
                 }
 
@@ -130,7 +141,7 @@ namespace OnlineLearning.Controllers
                     ModelState.AddModelError("", error.Description);
                 }
             }
-
+            TempData["erorr"] = "Edit failed!";
             return View(model);
         }
         

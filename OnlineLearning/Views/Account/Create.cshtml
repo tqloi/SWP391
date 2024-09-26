@@ -2,46 +2,44 @@
 
 @{
     ViewBag.Title = "User Registration";
+    Layout = "~/Views/Shared/login_layout.cshtml";
 }
 
-<h1>User Registration</h1>
-
-<div class="row">
-    <div class="col-md-12">
-        <form asp-action="Create" asp-controller="Account" method="post" enctype="multipart/form-data">
+    <div class="container">
+        <form class="login-form" asp-action="Create" asp-controller="Account" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="All" class="text-danger"></div>
+            <a asp-action="Index" asp-controller="Home"><i class="fas fa-home"></i></a>
+            <h1>Sign Up</h1>
 
-            <div class="form-group">
-                <label asp-for="Username"></label>
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-danger"></span>
+            <input asp-for="Username" class="form-control" placeholder="Username" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+
+            <input asp-for="Email" class="form-control" placeholder="Email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+
+        <input asp-for="Password" type="password" class="form-control" placeholder="Password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+
+        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+
+        <input asp-for="PhoneNumber" class="form-control" placeholder="Phone number" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+
+            <button type="submit" value="Sign Up">Sign Up</button>
+            <div class="separator">
+                <span>Or</span>
             </div>
-
-            <div class="form-group">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+            <div class="social-login">
+            <a asp-action="LoginGoogle" asp-controller="Account"><i class="fab fa-google"></i> Continue with Google</a>
             </div>
-
-            <div class="form-group">
-                <label asp-for="Password"></label>
-                <input asp-for="Password" type="password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+            <div class="separator signup-section">
+                <span>
+                    Already have an account ?
+                    <a asp-action="Login" asp-controller="Account">Sign In</a>
+                </span>
             </div>
-
-            <div class="form-group">
-                <label asp-for="ConfirmPassword"></label>
-                <input asp-for="ConfirmPassword" type="password" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="PhoneNumber"></label>
-                <input asp-for="PhoneNumber" class="form-control" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Register</button>
         </form>
     </div>
-</div>
+
+
