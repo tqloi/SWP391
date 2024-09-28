@@ -30,7 +30,8 @@ namespace OnlineLearning.Controllers
 
         public IActionResult Index()
 		{
-			return View();
+            var course = datacontext.Courses.ToList();
+			return View(course);
 		}
 
         [HttpGet]

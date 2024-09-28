@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 
 namespace OnlineLearning.Models
 {
@@ -7,13 +9,15 @@ namespace OnlineLearning.Models
         [Key]
         public int CourseId { get; set; }
         public string Title { get; set; }
-        public string CourseDescription { get; set; }
+        public string description { get; set; }
+        public string coverImagePath { get; set; }
         [Display(Name ="Display Images cover Course")]
+        [NotMapped]
         public IFormFile? CourseImagePath { get; set; }
-        public decimal PriceCourse { get; set; }
+        public decimal Price { get; set; }
         public bool Status { get; set; }
-        public DateTime CreateCourse { get; set; }
-        public double NumberOfRate { get; set; }
+        public DateTime CreateDate { get; set; }
+        public int NumberOfRate { get; set; }
         public string InstructorId { get; set; }
         public InstructorModel Instructor { get; set; }
         public int CategoryId { get; set; }

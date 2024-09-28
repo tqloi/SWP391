@@ -1,12 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OnlineLearningApp.Respositories;
 
 namespace OnlineLearning.Controllers
 {
     public class CourseController : Controller
     {
-        public IActionResult CourseList()
+        private readonly DataContext _datacontext;
+        public CourseController(DataContext datacontext)
         {
-            return View();
+            _datacontext = datacontext;
+        }
+
+        public IActionResult Index()
+        {
+            var course = _datacontext.Courses.ToList();
+            return View(course);
         }
 
         public IActionResult CourseDeatail()

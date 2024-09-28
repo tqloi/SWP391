@@ -1,0 +1,15 @@
+﻿@model IEnumerable<CategoryModel>
+<div class="row">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+@foreach (var item in Model)
+{
+    
+        
+            <li class="nav-item" role="presentation">
+                <a asp-action="Index" asp-controller="Category" asp-route-Slug="@item.CategoryId" class="nav-link active" id="design-tab" data-bs-toggle="tab" data-bs-target="#design-tab-pane" type="button" role="tab" aria-controls="design-tab-pane" aria-selected="true">@item.Fullname</a>
+            </li>
+           
+	
+}
+</ul>
+</div>

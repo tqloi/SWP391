@@ -13,7 +13,9 @@ namespace OnlineLearningApp.Respositories
 
         }
 		public DbSet<AppUserModel> Users { get; set; }
+        public DbSet<InstructorModel> Instructors { get; set; }
+        public DbSet<CourseModel> Courses { get; set; }
+        public DbSet<CategoryModel> Category{ get; set; }
 
-
-	}
+    }
 }
