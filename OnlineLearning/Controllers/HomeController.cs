@@ -28,10 +28,11 @@ namespace OnlineLearning.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
 		{
-            var course = datacontext.Courses.ToList();
-			return View(course);
+            var courses = await datacontext.Courses.Include(c => c.Category).ToListAsync();
+           
+			return View(courses);
 		}
 
         [HttpGet]
@@ -50,6 +51,8 @@ namespace OnlineLearning.Controllers
             var model = new EditUserViewModel
             {
                 UserName = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 ExistingProfileImagePath = user.ProfileImagePath,
@@ -75,6 +78,8 @@ namespace OnlineLearning.Controllers
 
             var model = new EditUserViewModel
             {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
@@ -101,7 +106,8 @@ namespace OnlineLearning.Controllers
                 {
                     return NotFound();
                 }
-
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
                 user.UserName = model.UserName;
                 user.Email = model.Email;
                 user.PhoneNumber = model.PhoneNumber;
@@ -111,7 +117,17 @@ namespace OnlineLearning.Controllers
                 
                 if (model.ProfileImage != null)
                 {
+
                     string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
+                    if (!string.IsNullOrEmpty(user.ProfileImagePath) && !user.ProfileImagePath.Equals("default.jpg"))
+                    {
+                        string oldImagePath = Path.Combine(uploadPath, user.ProfileImagePath);
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
                     string imageName = Guid.NewGuid() + "_" + model.ProfileImage.FileName;
                     string filePath = Path.Combine(uploadPath, imageName);
 
@@ -119,6 +135,7 @@ namespace OnlineLearning.Controllers
                     {
                         await model.ProfileImage.CopyToAsync(fs);
                     }
+
 
                     user.ProfileImagePath = imageName;
                 }

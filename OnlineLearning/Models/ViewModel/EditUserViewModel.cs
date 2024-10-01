@@ -8,7 +8,10 @@ namespace OnlineLearning.Models
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Username cannot contain spaces or special characters")]
         public string UserName { get; set; }
-
+        [Required]
+        public string FirstName { get; set; }
+        [Required]
+        public string LastName { get; set; }
         [Required]
         [EmailAddress]
         public string Email { get; set; }

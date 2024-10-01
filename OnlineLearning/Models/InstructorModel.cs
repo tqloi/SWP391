@@ -1,15 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineLearning.Models
 {
     public class InstructorModel
     {
         [Key]
-        public string InstructorId { get; set; }
-        [Required]
-        public string Decripstion { get; set; }
-        public string Id { get; set; }
-        public AppUserModel User { get; set; }
+        public string InstructorID { get; set; }
+
+        [Column(TypeName = "text")]
+        public string Description { get; set; }
+
+        [ForeignKey("InstructorID")]
+        public AppUserModel AppUser { get; set; }
 
     }
 }
