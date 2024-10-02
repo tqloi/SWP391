@@ -50,29 +50,30 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-lg-5 me-lg-auto">
                         <li class="nav-item">
-                            <a class="nav-link" asp-action="Index" asp-controller="Home">Home</a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")"
+                               asp-action="Index" asp-controller="Home">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-action="CourseList" asp-controller="Course">Courses</a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Course" && ViewContext.RouteData.Values["action"].ToString() == "CourseList" ? "active" : "")"
+                               asp-action="CourseList" asp-controller="Course">Courses</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-action="CourseList" asp-controller="Course">My Learning</a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Course" && ViewContext.RouteData.Values["action"].ToString() == "MyCourse" ? "active" : "")"
+                               asp-action="MyCourse" asp-controller="Course">My Courses</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#section_4">FAQs</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#section_5">Contact</a>
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Contact" ? "active" : "")"
+                               asp-action="Contact" asp-controller="Home">Contact</a>
                         </li>
 
-                        <li class="nav-item dropdown">
+                  @*       <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarLightDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">Pages</a>
 
                             <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarLightDropdownMenuLink">
                                 <li><a class="dropdown-item" href="topics-listing.html">Topics Listing</a></li>
                                 <li><a class="dropdown-item" href="contact.html">Contact Form</a></li>
                             </ul>
-                        </li>
+                        </li> *@
                     </ul>
 
                     <!-- Search Form -->
@@ -183,7 +184,6 @@
     <script src="~/js/jquery.min.js"></script>
     <script src="~/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/jquery.sticky.js"></script>
-    <script src="~/js/click-scroll.js"></script>
     <script src="~/js/custom.js"></script>
     <script src="~/js/main.js"></script>
     @await Component.InvokeAsync("Notyf")

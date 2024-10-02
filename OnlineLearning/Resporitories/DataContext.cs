@@ -21,6 +21,9 @@ namespace OnlineLearningApp.Respositories
         }
 
         public DbSet<AppUserModel> Users { get; set; }
+        public DbSet<CourseModel> Courses { get; set; }
+        public DbSet<StudentCourseModel> StudentCourses { get; set; }
+        public DbSet<InstructorModel> instructors { get; set; }
 
         private void SeedRoles(ModelBuilder builder)
         {

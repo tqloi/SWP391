@@ -1,9 +1,17 @@
-﻿namespace OnlineLearning.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace OnlineLearning.Models
 {
     public class CategoryModel
     {
-        public int CategoryId { get; set; }
-        public string Fullname { get; set; }
-        public string Decripstion { get; set; }
+        [Key]
+        public int CategoryID { get; set; }
+
+        [MaxLength(50)]
+        public string FullName { get; set; }
+
+        [Column(TypeName = "nvarchar(max)")]
+        public string Description { get; set; }
     }
 }

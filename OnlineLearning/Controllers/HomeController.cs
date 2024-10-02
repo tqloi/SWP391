@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -32,6 +33,16 @@ namespace OnlineLearning.Controllers
 		{
 			return View();
 		}
+
+        [Authorize]
+        public IActionResult Contact()
+        {
+            if (User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+            return View();
+        }
 
         [HttpGet]
         public async Task<IActionResult> UserProfile()
@@ -123,7 +134,6 @@ namespace OnlineLearning.Controllers
                 }
                 else
                 {
-
                     user.ProfileImagePath = user.ProfileImagePath;
                 }
 

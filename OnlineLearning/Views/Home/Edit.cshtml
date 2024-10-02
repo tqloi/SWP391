@@ -14,6 +14,7 @@
                 <div class="col-md-4">
                     <div class="profile-img">
                         <img src="~/Images/@Model.ExistingProfileImagePath" alt="Profile Image" />
+                        <input type="hidden" name="ExistingProfileImagePath" value="@Model.ExistingProfileImagePath" />
                         <div class="file btn btn-lg btn-primary">
                             Change Photo
                             <input type="file" asp-for="ProfileImage" />
@@ -58,7 +59,7 @@
                     </div>
                     <button type="submit"
                         style="margin-top: 10px;"
-                        class="btn btn-primary">Save Changes</button>
+                        class="btn custom-btn">Save Changes</button>
                 </div>
             </div>
         </form>
