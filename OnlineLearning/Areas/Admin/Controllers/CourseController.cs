@@ -24,10 +24,35 @@ namespace OnlineLearning.Areas.Admin.Controllers
             _signInManager = signInManager;
             _webHostEnvironment = webHostEnvironment;
         }
-        //public async Task<IActionResult> Index()
-        //{
-        //    var courses = await _dataContext.Courses.Include(c => c.Instructor).Include(ca => ca.Category).ToListAsync();
-        //    return View(courses);
-        //}
+        public async Task<IActionResult> Index()
+        {
+            var courses = await _dataContext.Courses.Include(c => c.Instructor).ThenInclude(i => i.AppUser).ToListAsync();
+            return View(courses);
+        }
+
+        public async Task<IActionResult> SetStatusCourse(int Id)
+        {
+            var course = await _dataContext.Courses.FindAsync(Id);
+            if (course == null)
+            {
+                TempData["error"] = "Course Not Found";
+                return RedirectToAction("Index", "Course");
+            }
+            if (course.Status == true)
+            {
+                course.Status = false;
+                await _dataContext.SaveChangesAsync();
+            }
+            else if (course.Status == false)
+            {
+
+                course.Status = true;
+                await _dataContext.SaveChangesAsync();
+            }
+                TempData["success"] = "Set Status Successful!";
+                return RedirectToAction("Index", "Course");
+            }
+
+        }
     }
-}
+

@@ -35,12 +35,7 @@ namespace OnlineLearning.Areas.Admin.Controllers
            
             return View(users);
         }
-        public  async Task<IActionResult> UserList()
-        {
-            var users = await _dataContext.Users.ToListAsync();
-
-            return View(users);
-        }
+        
         public async Task<IActionResult> AdminProfile()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -64,29 +59,7 @@ namespace OnlineLearning.Areas.Admin.Controllers
             };
             return View(model);
         }
-        public async Task<IActionResult> UserProfile(string Id)
-        {
-           
-            var user = await _userManager.FindByIdAsync(Id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            AdminProfileViewModel model = new AdminProfileViewModel
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Dob = user.Dob,
-                Address = user.Address,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                Gender = user.Gender,
-                ExistingProfileImagePath= user.ProfileImagePath
-            };
-            return View(model);
-        }
+       
         //public async Task<IActionResult> RemoveUser(string Id)
         //{
 
