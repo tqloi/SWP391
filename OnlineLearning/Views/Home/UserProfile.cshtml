@@ -3,8 +3,9 @@
 }
 
 @model EditUserViewModel
-<partial name="_NoficationPartial" />
 
+
+<partial name="_NoficationPartial" />
 <section class="profile-section">
     <div class="container emp-profile">
         <div class="row">
@@ -17,7 +18,17 @@
                 <h5>@Model.UserName</h5>
                 <p>Email: @Model.Email</p>
                 <p>Phone: @Model.PhoneNumber</p>
-                <a asp-action="Edit" class="btn btn-primary">Edit Profile</a>
+                <p>Address: @Model.Address</p>
+                <p>Date of birth: @Model.Dob</p>
+                <p>Gender:@if( @Model.gender == true){
+                        @:Male
+                    }
+                    else
+                    {
+                        @:Female
+                    }
+                </p>
+                <a asp-action="Edit" class="btn custom-btn">Edit Profile</a>
             </div>
         </div>
     </div>

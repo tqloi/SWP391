@@ -24,7 +24,7 @@
 		toastr.success('@TempData["success"]')
 	</script>
 }
-@if (TempData["erorr"] != null)
+@if (TempData["error"] != null)
 {
 	<script src="/lib/jquery/dist/jquery.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
@@ -46,6 +46,7 @@
 			"showMethod": "fadeIn",
 			"hideMethod": "fadeOut"
 		}
-		toastr.warning('@TempData["erorr"]')
+
+		toastr.error('@TempData["error"]')
 	</script>
 }

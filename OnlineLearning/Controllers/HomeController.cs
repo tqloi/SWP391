@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -33,6 +34,16 @@ namespace OnlineLearning.Controllers
 			return View();
 		}
 
+        [Authorize]
+        public IActionResult Contact()
+        {
+            if (User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+            return View();
+        }
+
         [HttpGet]
         public async Task<IActionResult> UserProfile()
         {
@@ -52,7 +63,10 @@ namespace OnlineLearning.Controllers
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 ExistingProfileImagePath = user.ProfileImagePath,
-                
+                Address = user.Address,
+                Dob = user.Dob,
+                gender = user.Gender,
+
             };
 
             return View(model);
@@ -68,15 +82,18 @@ namespace OnlineLearning.Controllers
             {
                 return NotFound();
             }
-           
+
             var model = new EditUserViewModel
             {
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 ExistingProfileImagePath = user.ProfileImagePath,
-               
+                Address = user.Address,
+                Dob = user.Dob,
+                gender = user.Gender,
             };
+
 
             return View(model);
         }
@@ -98,7 +115,10 @@ namespace OnlineLearning.Controllers
                 user.UserName = model.UserName;
                 user.Email = model.Email;
                 user.PhoneNumber = model.PhoneNumber;
-
+                user.Address    = model.Address;
+                user.Dob = model.Dob;
+               user.Gender = model.gender;
+                
                 if (model.ProfileImage != null)
                 {
                     string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
@@ -114,14 +134,15 @@ namespace OnlineLearning.Controllers
                 }
                 else
                 {
-
                     user.ProfileImagePath = user.ProfileImagePath;
                 }
 
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
                 {
-                    TempData["success"] = "Edit successful";
+
+                    TempData["success"] = "Edit successful!";
+
                     return RedirectToAction("UserProfile");
                 }
 

@@ -6,6 +6,7 @@
 
 <partial name="_NoficationPartial" />
 
+<partial name="_NoficationPartial" />
 <section class="profile-section">
     <div class="container emp-profile">
         <form asp-action="Edit" method="post" enctype="multipart/form-data">
@@ -13,6 +14,7 @@
                 <div class="col-md-4">
                     <div class="profile-img">
                         <img src="~/Images/@Model.ExistingProfileImagePath" alt="Profile Image" />
+                        <input type="hidden" name="ExistingProfileImagePath" value="@Model.ExistingProfileImagePath" />
                         <div class="file btn btn-lg btn-primary">
                             Change Photo
                             <input type="file" asp-for="ProfileImage" />
@@ -37,9 +39,27 @@
                         <input asp-for="PhoneNumber" class="form-control" />
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </div>
+                    <div class="form-group">
+                        <label asp-for="Address">Address:</label>
+                        <input asp-for="Address" class="form-control" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Dob">Date of birth:</label>
+                        <input asp-for="Dob" class="form-control" />
+                        <span asp-validation-for="Dob" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="gender">Gender:</label>
+                        <select asp-for="gender" class="form-control">
+                        <option value="true">Male</option>
+                        <option value="false">Female</option>
+                        </select>   
+                        <span asp-validation-for="gender" class="text-danger"></span>
+                    </div>
                     <button type="submit"
                         style="margin-top: 10px;"
-                        class="btn btn-primary">Save Changes</button>
+                        class="btn custom-btn">Save Changes</button>
                 </div>
             </div>
         </form>

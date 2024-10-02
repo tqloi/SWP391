@@ -18,9 +18,6 @@ namespace OnlineLearning.Models.ViewModel
         [Required(ErrorMessage = "Confirm Password is required")]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
-        [Required(ErrorMessage = "Phone Number is required")]
-        [StringLength(10)]
-        public string PhoneNumber { get; set; }
 
     }
 }
