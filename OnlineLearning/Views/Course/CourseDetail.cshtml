@@ -1,93 +1,113 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+@model CourseModel
+<style>
+    .star {
+        color: gold; /* Màu sắc của sao */
+        font-size: 30px; /* Kích thước của sao */
+    }
+</style>
 <header class="site-header d-flex flex-column justify-content-center align-items-center">
-                <div class="container">
-                    <div class="row justify-content-center align-items-center">
+    <div class="container">
+        <div class="row justify-content-center align-items-center">
 
-                        <div class="col-lg-5 col-12 mb-5">
-                            <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="index.html">Homepage</a></li>
+            <div class="col-lg-5 col-12 mb-5">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
+                        <li class="breadcrumb-item"><a asp-action="CourseList" asp-controller="Course">Courses</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+                    </ol>
+                </nav>
 
-                                    <li class="breadcrumb-item active" aria-current="page">Web Design</li>
-                                </ol>
-                            </nav>
+                <h2 class="text-white"> @Model.Title</h2>
+                <h7 class="text-white-50">@Model.Level</h7>
+                <div class="d-flex align-items-center">
+                    <div class="stars me-2">
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                        <span class="star">&#9733;</span>
+                    </div>
+                    <a class="me-3" href="#comments"><h7 class="text-white-50">(@Model.NumberOfRate rates)</h7></a>
+                    <h7 class="text-white">@Model.NumberOfStudents students</h7>
+                </div>
+                <h4 class="text-white">$@Model.Price</h4>
+                <h7 class="text-white">Create by: <a class="text-white-50" href="#comments"> @ViewData["InstructorName"]</a></h7>
+                <h7 class="text-white d-flex mt-2">Last Update: @Model.LastUpdate</h7>
+                <div class="d-flex align-items-center mt-4">
+                    <a href="#" class="btn custom-btn smoothscroll me-4">Buy Now</a>
+                    
+                    <a href="#top" class="custom-icon bi-bookmark smoothscroll"></a>
+                    <a href="#top" class="custom-icon bi-bookmark-fill smoothscroll"></a>
+                </div>
+            </div>
 
-                            <h2 class="text-white">Introduction to <br> Web Design 101</h2>
+            <div class="col-lg-5 col-12">
+                <div class="topics-detail-block bg-white shadow-lg">
+                    <img src="~/Images/@Model.CoverImagePath" class="topics-detail-block-image img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
 
-                            <div class="d-flex align-items-center mt-5">
-                                <a href="#topics-detail" class="btn custom-btn custom-border-btn smoothscroll me-4">Read More</a>
 
-                                <a href="#top" class="custom-icon bi-bookmark smoothscroll"></a>
-                            </div>
-                        </div>
+<section class="topics-detail-section section-padding" id="topics-detail">
+    <div class="container">
+        <div class="row">
 
-                        <div class="col-lg-5 col-12">
-                            <div class="topics-detail-block bg-white shadow-lg">
-                                <img src="~/Images/" class="topics-detail-block-image img-fluid">
-                            </div>
-                        </div>
+            <div class="col-lg-8 col-12 m-auto">
+                <h3 class="mb-4">Introduction to @Model.Title</h3>
+                <p>@Model.Description</p>
+                <p>So how can you stand out, do something unique and interesting, build an online business, and get paid enough to change life. Please visit TemplateMo website to download free website templates.</p>
 
+                <p><strong>There are so many ways to make money online</strong>. Below are several platforms you can use to find success. Keep in mind that there is no one path everyone can take. If that were the case, everyone would have a million dollars.</p>
+
+                <blockquote>
+                    Freelancing your skills isn’t going to make you a millionaire overnight.
+                </blockquote>
+
+                <div class="row my-4">
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <img src="~/Images/rear-view-young-college-student.jpg" class="topics-detail-block-image img-fluid">
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-12 mt-4 mt-lg-0 mt-md-0">
+                        <img src="~/Images/colleagues-working-cozy-office-medium-shot.jpg" class="topics-detail-block-image img-fluid">
                     </div>
                 </div>
-            </header>
+
+                <p>Most people start with freelancing skills they already have as a side hustle to build up income. This extra cash can be used for a vacation, to boost up savings, investing, build business.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
 
 
-            <section class="topics-detail-section section-padding" id="topics-detail">
-                <div class="container">
-                    <div class="row">
+<section id="comments" class="section-padding section-bg">
+    <div class="container">
+        <div class="row justify-content-center">
 
-                        <div class="col-lg-8 col-12 m-auto">
-                            <h3 class="mb-4">Introduction to Web Design</h3>
+            <div class="col-lg-5 col-12">
+                <img src="~/Images/topics/undraw_Educator_re_ju47.png" class="newsletter-image img-fluid" alt="">
+            </div>
 
-                            <p>So how can you stand out, do something unique and interesting, build an online business, and get paid enough to change life. Please visit TemplateMo website to download free website templates.</p>
+            <div class="col-lg-5 col-12 subscribe-form-wrap d-flex justify-content-center align-items-center">
+                <form class="custom-form subscribe-form" action="#" method="post" role="form">
+                    <h4 class="mb-4 pb-2">Get Newsletter</h4>
 
-                            <p><strong>There are so many ways to make money online</strong>. Below are several platforms you can use to find success. Keep in mind that there is no one path everyone can take. If that were the case, everyone would have a million dollars.</p>
+                    <input type="email" name="subscribe-email" id="subscribe-email" class="form-control" placeholder="Email Address" required="">
 
-                            <blockquote>
-                                Freelancing your skills isn’t going to make you a millionaire overnight.
-                            </blockquote>
-
-                            <div class="row my-4">
-                                <div class="col-lg-6 col-md-6 col-12">
-                                    <img src="images/businesswoman-using-tablet-analysis.jpg" class="topics-detail-block-image img-fluid">
-                                </div>
-
-                                <div class="col-lg-6 col-md-6 col-12 mt-4 mt-lg-0 mt-md-0">
-                                    <img src="images/colleagues-working-cozy-office-medium-shot.jpg" class="topics-detail-block-image img-fluid">
-                                </div>
-                            </div>
-
-                            <p>Most people start with freelancing skills they already have as a side hustle to build up income. This extra cash can be used for a vacation, to boost up savings, investing, build business.</p>
-                        </div>
-
+                    <div class="col-lg-12 col-12">
+                        <button type="submit" class="form-control">Subscribe</button>
                     </div>
-                </div>
-            </section>
+                </form>
+            </div>
 
-
-            <section class="section-padding section-bg">
-                <div class="container">
-                    <div class="row justify-content-center">
-
-                        <div class="col-lg-5 col-12">
-                            <img src="images/rear-view-young-college-student.jpg" class="newsletter-image img-fluid" alt="">
-                        </div>
-
-                        <div class="col-lg-5 col-12 subscribe-form-wrap d-flex justify-content-center align-items-center">
-                            <form class="custom-form subscribe-form" action="#" method="post" role="form">
-                                <h4 class="mb-4 pb-2">Get Newsletter</h4>
-
-                                <input type="email" name="subscribe-email" id="subscribe-email"  class="form-control" placeholder="Email Address" required="">
-
-                                <div class="col-lg-12 col-12">
-                                    <button type="submit" class="form-control">Subscribe</button>
-                                </div>
-                            </form>
-                        </div>
-
-                    </div>
-                </div>
-            </section>
+        </div>
+    </div>
+</section>

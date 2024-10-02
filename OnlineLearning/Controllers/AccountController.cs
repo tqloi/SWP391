@@ -23,7 +23,7 @@ namespace OnlineLearning.Controllers
         private RoleManager<IdentityRole> _roleManager;
         private IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
-       
+
         public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, RoleManager<IdentityRole> roleManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
             _userManager = userManager;
@@ -31,7 +31,7 @@ namespace OnlineLearning.Controllers
             _roleManager = roleManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
-           
+
         }
         [HttpGet]
         public IActionResult Login()
@@ -52,30 +52,40 @@ namespace OnlineLearning.Controllers
         public async Task<IActionResult> GoogleResponse()
         {
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            var claim = result.Principal.Identities.FirstOrDefault().Claims.Select(claim => new
+            if (result.Principal != null)
             {
-                claim.Issuer,
-                claim.OriginalIssuer,
-                claim.Type,
-                claim.Value
-            });
-            //return Json(claim);
+                var claims = result.Principal.Identities.FirstOrDefault()?.Claims;
+                if (claims != null)
+                {
+                    var claimValues = claims.Select(claim => new
+                    {
+                        claim.Issuer,
+                        claim.OriginalIssuer,
+                        claim.Type,
+                        claim.Value
+                    });
+                    //return Json(claimValues);
+                    return RedirectToAction("Index", "Home", new { area = "" });
+                }
+            }
+            // Handle the case where Principal or Claims are null
             return RedirectToAction("Index", "Home", new { area = "" });
         }
 
-        [HttpPost]
-		public async Task<IActionResult> Logout()
-		{
-			await _signInManager.SignOutAsync();
-            TempData["success"] = "Logout Success!";
-			return RedirectToAction("Login", "Account");
-		}
-		public IActionResult VerifyEmail()
-		{
-			return View();
-		}
 
-		[HttpPost]
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            TempData["success"] = "Logout Success!";
+            return RedirectToAction("Login", "Account");
+        }
+        public IActionResult VerifyEmail()
+        {
+            return View();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginVM)
         {
             if (!ModelState.IsValid)
@@ -84,11 +94,11 @@ namespace OnlineLearning.Controllers
                 return View(loginVM);
             }
             var user = await _userManager.FindByNameAsync(loginVM.Username);
-            if(user == null)
+            if (user == null)
             {
-                  TempData["error"] = "Login failed!";
-                  return View(loginVM);
-             }
+                TempData["error"] = "Login failed!";
+                return View(loginVM);
+            }
             var checkVerify = await _userManager.IsEmailConfirmedAsync(user);
             if (!checkVerify)
             {
@@ -102,7 +112,7 @@ namespace OnlineLearning.Controllers
                 TempData["error"] = "Username or Password is wrong!";
                 ModelState.AddModelError("", "Username or Password are incorrect!");
                 return View(loginVM);
-               
+
             }
             HttpContext.Session.Remove("Otp");
             HttpContext.Session.Remove("Username");
@@ -133,21 +143,23 @@ namespace OnlineLearning.Controllers
                     return View(model);
                 }
                 var user = new AppUserModel
+
                  {
                         UserName = model.Username,
                         FirstName = model.FirstName,
                         LastName = model.LastName,
                         Email = model.Email,
-                        PhoneNumber = model.PhoneNumber,
+                        PhoneNumber = "123456789",
                         ProfileImagePath = "default.jpg",
                         Address = "",
                         Dob = DateOnly.FromDateTime(DateTime.Now),
                         Gender = true
                     };
 
+
                 var result = await _userManager.CreateAsync(user, model.Password);
-                    if (result.Succeeded)
-                    {
+                if (result.Succeeded)
+                {
                     //set role
                     var roleResult = await _userManager.AddToRoleAsync(user, "Student");
                     if (!roleResult.Succeeded)
@@ -175,25 +187,25 @@ namespace OnlineLearning.Controllers
                     //TempData["success"] = "Registration successful! Please check your email to confirm your account.";
                     //return RedirectToAction("Login", "Account");
                     Random random = new Random();
-                        int otp = random.Next(100000, 999999);
+                    int otp = random.Next(100000, 999999);
 
-                        var emailSender = new EmailSender(_configuration);
-                        await emailSender.SendEmailAsync(user.Email, "Your OTP Code", $"Your OTP code is {otp}.");
+                    var emailSender = new EmailSender(_configuration);
+                    await emailSender.SendEmailAsync(user.Email, "Your OTP Code", $"Your OTP code is {otp}.");
 
-                        HttpContext.Session.SetInt32("otp", otp);
-                        HttpContext.Session.SetString("userId", user.Id);
+                    HttpContext.Session.SetInt32("otp", otp);
+                    HttpContext.Session.SetString("userId", user.Id);
 
-                        return RedirectToAction("EnterOtp");
-                    }
+                    return RedirectToAction("EnterOtp");
+                }
 
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError("", error.Description);
-                    }
-                
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
             }
-			TempData["error"] = "Failed!";
-			return View(model);
+            TempData["error"] = "Failed!";
+            return View(model);
         }
         [HttpGet]
         public IActionResult EnterOTP()
@@ -235,15 +247,13 @@ namespace OnlineLearning.Controllers
                     return View();
                 }
             }
-            
-            
-                ModelState.AddModelError("", "Invalid OTP.");
-                return View("EnterOtp");
-            
+
+
+            ModelState.AddModelError("", "Invalid OTP.");
+            return View("EnterOtp");
+
         }
 
-        
-        
 
         [HttpPost]
         public async Task<IActionResult> VerifyEmail(VerifyEmailViewModel model)
@@ -268,7 +278,7 @@ namespace OnlineLearning.Controllers
                     HttpContext.Session.SetString("username", user.UserName);
 
                     return RedirectToAction("EnterOtp");
-                   // return RedirectToAction("ChangePassword", new { username = user.UserName });
+                    // return RedirectToAction("ChangePassword", new { username = user.UserName });
                 }
 
             }
@@ -282,7 +292,7 @@ namespace OnlineLearning.Controllers
             {
                 return RedirectToAction("VerifyEmail", "Account");
             }
-            
+
             return View(new ResetPasswordViewModel { Username = username });
         }
         [HttpPost]
@@ -315,15 +325,15 @@ namespace OnlineLearning.Controllers
                     ModelState.AddModelError("", "Email is not valid!");
                     return View(model);
                 }
-        }
+            }
             else
             {
                 ModelState.AddModelError("", "Something is wrong!");
                 return View(model);
-    }
+            }
 
-}
-       
+        }
+
 
     }
 }

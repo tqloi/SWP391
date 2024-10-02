@@ -1,0 +1,253 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @model ListViewModel
+    <partial name="_NoficationPartial" />
+}
+
+<header class="site-header d-flex flex-column justify-content-center align-items-center">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <div class="col-lg-5 col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">My Courses</li>
+                    </ol>
+                </nav>
+                <h2 class="text-white">Topics Listing</h2>
+            </div>
+        </div>
+    </div>
+</header>
+<style>
+    .topics-section {
+        padding: 50px 100px 50px 100px;
+        background-color: #f7f7f7;
+    }
+</style>
+<section class="topics-section">
+        <div class="button-group d-flex justify-content-between align-items-center">
+        @if (User.IsInRole("Instructor"))
+        {
+            <div>
+                <button class="btn custom-btn active" data-bs-toggle="modal" data-bs-target="#createCourseModal">
+                    <i class="fas fa-plus new-icon"></i> Create new course
+                </button>
+            </div>
+        }
+        else if (User.IsInRole("Student"))
+        {
+                <div>
+                    <button class="btn custom-btn active" onclick="toggleButton(this)">In Progress</button>
+                    <button class="btn custom-btn active" onclick="toggleButton(this)">Complete</button>
+                    <button class="btn custom-btn active" onclick="toggleButton(this)">Saved</button>
+                </div>
+        }
+            <div>
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">All Category</option>
+                    <option value="programming">Programming</option>
+                    <option value="design">Design</option>
+                    <option value="dataSience">Data Science</option>
+                    <option value="webDevelopment">Web Devleopment</option>
+                </select>
+
+                <select class="filter-select" id="difficultyFilter">
+                    <option value="">All Level</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+        </div>
+    <form>
+        @foreach (var course in Model.Courses)
+        {
+
+            <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
+                <div class="row" >
+                    <div class="col-md-2">
+                        <img src="~/Images/@course.CoverImagePath" class="custom-block-image img-fluid" alt="">
+                    </div>
+                    <div class="col-md-9 custom-block-topics-listing-info">
+                        <div class="d-flex">
+                            <div>
+                                <h4 class="mb-2">@course.Title</h4>
+                                <div class="status-icon status-open"></div>
+                            </div>                
+                            <span class="badge bg-music rounded-pill ms-auto">@course.NumberOfRate</span>
+                        </div>
+                        <h6>@course.Level</h6>
+                        <p class="mb-0">@course.Description</p>
+                        <div class="row progress-group d-flex justify-content-between">
+                            @if (Model.StudentCourses != null && User.IsInRole("Student"))
+                            {
+                             var studentCourse = Model.StudentCourses.FirstOrDefault(cs => cs.CourseID == course.CourseID);
+
+                            <div class="col-md-9 row align-items-end">
+                                <div class="col-md-8">
+                                <div>
+                                     <h8>@studentCourse.CertificateStatus: @studentCourse.Progress%</h8>
+                                </div>
+                                    <div class="progress">
+                                            <div class="progress-bar-custom" style="width:@studentCourse.Progress%;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <i class="fas fa-flag"></i>
+                                        <h8>Ends on @String.Format("{0:dd/MM/yyyy}", course.EndDate)</h8>
+                                </div>
+                            </div>
+                                <div class="col-md-3 d-flex justify-content-end ">
+                                    <a asp-action="CourseDetail" asp-controller="Course" class="btn custom-btn mt-3 mt-lg-4">Go to course</a>
+                                </div>
+                            }
+                            @if (User.IsInRole("Instructor"))
+                            {
+                                <div class="col-md-3">
+                                    <a asp-area="Instructor" asp-action="Index" asp-controller="Instructor" class="btn custom-btn mt-3 mt-lg-4">Go to course</a>
+                                </div>
+                            } 
+                        </div>
+                </div>
+            </div>
+        </div>
+        }
+    </form>
+</section>
+
+<section class="section-padding section-bg">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-12 col-12">
+                <h3 class="mb-4">Trending Topics</h3>
+            </div>
+
+            <div class="col-lg-6 col-md-6 col-12 mt-3 mb-4 mb-lg-0">
+                <div class="custom-block bg-white shadow-lg">
+                    <a asp-action="CourseDetail" asp-controller="Course">
+                        <div class="d-flex">
+                            <div>
+                                <h5 class="mb-2">Investment</h5>
+
+                                <p class="mb-0">Lorem Ipsum dolor sit amet consectetur</p>
+                            </div>
+
+                            <span class="badge bg-finance rounded-pill ms-auto">30</span>
+                        </div>
+
+                        <img src="~/Images/topics/undraw_Finance_re_gnv2.png" class="custom-block-image img-fluid" alt="">
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6 col-12 mt-lg-3">
+                <div class="custom-block custom-block-overlay">
+                    <div class="d-flex flex-column h-100">
+                        <img src="~/Images/businesswoman-using-tablet-analysis.jpg" class="custom-block-image img-fluid" alt="">
+
+                        <div class="custom-block-overlay-text d-flex">
+                            <div>
+                                <h5 class="text-white mb-2">Finance</h5>
+
+                                <p class="text-white">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint animi necessitatibus aperiam repudiandae nam omnis</p>
+
+                                <a asp-action="CourseDetail" asp-controller="Course" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
+                            </div>
+
+                            <span class="badge bg-finance rounded-pill ms-auto">25</span>
+                        </div>
+
+                        <div class="social-share d-flex">
+                            <p class="text-white me-4">Share:</p>
+
+                            <ul class="social-icon">
+                                <li class="social-icon-item">
+                                    <a href="#" class="social-icon-link bi-twitter"></a>
+                                </li>
+
+                                <li class="social-icon-item">
+                                    <a href="#" class="social-icon-link bi-facebook"></a>
+                                </li>
+
+                                <li class="social-icon-item">
+                                    <a href="#" class="social-icon-link bi-pinterest"></a>
+                                </li>
+                            </ul>
+
+                            <a href="#" class="custom-icon bi-bookmark ms-auto"></a>
+                        </div>
+
+                        <div class="section-overlay"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Modal -->
+<div class="modal fade" id="createCourseModal" tabindex="-1" aria-labelledby="createCourseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createCourseModalLabel">Create New Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newCourseForm" enctype="multipart/form-data" method="post" asp-controller="Course" asp-action="Create">
+                    <div class="mb-3">
+                        <label for="CourseCode" class="form-label">Course Code</label>
+                        <input type="text" class="form-control" name="CourseCode" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Title" class="form-label">Course Title</label>
+                        <input type="text" class="form-control" name="Title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">Description</label>
+                        <textarea class="form-control" name="Description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="coverImage" class="form-label">Upload Cover Image</label>
+                        <input type="file" class="form-control" name="CoverImage" accept="image/*" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="courseCategory" class="form-label">Category</label>
+                        <select class="form-select" name="CategoryId" required>
+                            <option value="1">Programming</option>
+                            <option value="2">Design</option>
+                            <option value="3">Data Science</option>
+                            <option value="4">Web Development</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Level" class="form-label">Level</label>
+                        <select class="form-select" name="Level" required>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" name="EndDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="coursePrice" class="form-label">Price</label>
+                        <input type="number" class="form-control" name="Price" step="0.01" min="0" required> 
+                    </div>
+                    <div class="mb-3">
+                        <label for="coursematerials" class="form-label">upload course materials</label>
+                        <input type="file" class="form-control" name="coursematerials" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple>
+                    </div>
+                    <button type="submit" class="btn custom-btn">Create Course</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

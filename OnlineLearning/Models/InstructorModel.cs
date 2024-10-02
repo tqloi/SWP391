@@ -8,6 +8,7 @@ namespace OnlineLearning.Models
         [Key]
         public string InstructorID { get; set; }
 
+
         [Column(TypeName = "text")]
         public string Description { get; set; }
 

@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+
 
 namespace OnlineLearning.Models
 {
@@ -22,8 +24,10 @@ namespace OnlineLearning.Models
         public decimal Price { get; set; }
         public int CategoryID { get; set; }
         [MaxLength(50)]
+
         public string Level { get; set; }
         public bool Status { get; set; } = true;
+
         public DateTime CreateDate { get; set; }
         public DateTime LastUpdate { get; set; }
         public DateTime? EndDate { get; set; }

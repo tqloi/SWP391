@@ -52,21 +52,27 @@ namespace OnlineLearning.Migrations
                         new
                         {
                             Id = "1",
+
                             ConcurrencyStamp = "34408e49-7dec-4695-ac1e-6e489478ff6d",
+
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
+
                             ConcurrencyStamp = "f78dc664-cbf6-406f-8853-acc33fda111e",
+
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = "3",
+
                             ConcurrencyStamp = "9d03236d-3289-4d12-826b-2205ba394cfb",
+
                             Name = "Instructor",
                             NormalizedName = "INSTRUCTOR"
                         });
@@ -284,7 +290,9 @@ namespace OnlineLearning.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Category");
+
+                    b.ToTable("CategoryModel");
+
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CourseModel", b =>
@@ -368,7 +376,47 @@ namespace OnlineLearning.Migrations
 
                     b.HasKey("InstructorID");
 
-                    b.ToTable("Instructors");
+
+                    b.ToTable("instructors");
+                });
+
+            modelBuilder.Entity("OnlineLearning.Models.StudentCourseModel", b =>
+                {
+                    b.Property<int>("StudentCourseID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentCourseID"));
+
+                    b.Property<string>("CertificateStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("CompletionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CourseID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EnrollmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Progress")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("StudentID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("StudentCourseID");
+
+                    b.HasIndex("CourseID");
+
+                    b.HasIndex("StudentID");
+
+                    b.ToTable("StudentCourses");
+
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -451,6 +499,26 @@ namespace OnlineLearning.Migrations
 
                     b.Navigation("AppUser");
                 });
+
+            modelBuilder.Entity("OnlineLearning.Models.StudentCourseModel", b =>
+                {
+                    b.HasOne("OnlineLearning.Models.CourseModel", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OnlineLearning.Models.AppUserModel", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("StudentID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Course");
+                });
+
 #pragma warning restore 612, 618
         }
     }

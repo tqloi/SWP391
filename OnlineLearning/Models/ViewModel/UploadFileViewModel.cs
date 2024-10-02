@@ -2,5 +2,6 @@
 {
     public class UploadFileViewModel
     {
+        public IFormFile? Filepdf { get; set; }
     }
 }
