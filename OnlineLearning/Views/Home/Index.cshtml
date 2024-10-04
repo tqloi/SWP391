@@ -2,7 +2,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <partial name="_NoficationPartial" />
-@model IEnumerable<CourseModel>
+@model ListViewModel
 
 <section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
     <div class="container">
@@ -13,7 +13,7 @@
 
                 <h6 class="text-center">platform for creatives around the world</h6>
 
-                <form method="get" class="custom-form mt-4 pt-2 mb-lg-0 mb-5" role="search">
+                <form asp-action="Search" asp-controller="Course" method="get" class="custom-form mt-4 pt-2 mb-lg-0 mb-5" role="search">
                     <div class="input-group input-group-lg">
                         <span class="input-group-text bi-search" id="basic-addon1">
 
@@ -37,7 +37,7 @@
 
             <div class="col-lg-4 col-12 mb-4 mb-lg-0">
                 <div class="custom-block bg-white shadow-lg">
-                    <a href="topics-detail.html">
+                    <a asp-action="CourseList" asp-controller="Course">
                         <div class="d-flex">
                             <div>
                                 <h5 class="mb-2">Web Design</h5>
@@ -64,7 +64,7 @@
 
                                 <p class="text-white">Topic Listing Template includes homepage, listing page, detail page, and contact page. You can feel free to edit and adapt for your CMS requirements.</p>
 
-                                <a href="topics-detail.html" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
+                                <a asp-action="CourseList" asp-controller="Course" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
                             </div>
 
                             <span class="badge bg-finance rounded-pill ms-auto">25</span>
@@ -80,7 +80,8 @@
 
                                 <li class="social-icon-item">
                                     <a href="#" class="social-icon-link bi-facebook"></a>
-                                </li>Designms-auto"></a>
+                                </li>
+                                </ul>
                         </div>
 
                         <div class="section-overlay"></div>
@@ -91,6 +92,20 @@
     </div>
 </section>
 
+<style>
+    .limited-text {
+        line-height: 1.5em; /* Chiều cao của một dòng */
+        height: 1.5em; /* Chiều cao cho đúng 1 dòng */
+        overflow: hidden; /* Ẩn phần văn bản vượt quá */
+        text-overflow: ellipsis; /* Thêm dấu ba chấm nếu văn bản bị cắt ngắn */
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        max-height: 4.5em;
+        white-space: normal;
+        word-break: break-word; /* Đảm bảo văn bản bị ngắt đúng chỗ */
+    }
+</style>
 
 <section class="explore-section section-padding" id="section_2">
     <div class="container">
@@ -102,265 +117,93 @@
 
     </div>
     
-        @Html.Partial("_SideCategory")
-       
+        @Html.Partial("_SideCategory")      
+
+   @*  <div class="container-fluid">
+        <div class="row">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-tab-pane" type="button" role="tab" aria-controls="all-tab-pane" aria-selected="true">All Categories</button>
+                </li>
+                @foreach(var category in Model.Categories)
+                {
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-@category.CategoryID-tab" data-bs-toggle="tab" data-bs-target="#tab-@category.CategoryID-tab-pane" type="button" role="tab" aria-controls="tab-@category.CategoryID-tab-pane" aria-selected="false">@category.FullName</button>
+                    </li>
+                }
+
+            </ul>
+        </div>
+    </div>
+ *@
     <div class="container">
         <div class="row">
-
             <div class="col-12">
                 <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active" id="design-tab-pane" role="tabpanel" aria-labelledby="design-tab" tabindex="0">
-                        <div class="row">
-                            @foreach (var item in Model)
-                            {
+                    <div class="tab-pane fade show active" id="all-tab-pane" role="tabpanel" aria-labelledby="programming-tab" tabindex="0">
+                            <div class="row">
+                            @for (int i = 0; i < Model.Courses.Count() && i < 6; i++)
+                                {
+                                var item = Model.Courses.ElementAt(i);
                                 <div class="col-lg-4 col-md-6 col-12 mb-4 mb-lg-0">
-                                    <div class="custom-block bg-white shadow-lg">
-                                        <a href="topics-detail.html">
+                                    <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
+                                        <a asp-action="CourseDetail" asp-controller="Course" asp-route-id="@item.CourseID">
                                             <div class="d-flex">
                                                 <div>
-                                                    <h5 class="mb-2">@item.Title</h5>
-
-                                                    <p class="mb-0">@item.Description</p>
+                                                    <h5 class="mb-2 limited-text">
+                                                        <span class="dot @((item.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
+                                                        @item.Title
+                                                    </h5>
+                                                    <p class="mb-0 limited-text">@item.Description</p>
                                                 </div>
-
-                                                <span class="badge bg-design rounded-pill ms-auto">@item.NumberOfRate</span>
+                                                <span class="badge bg-music rounded-pill ms-auto">@item.NumberOfStudents</span>
                                             </div>
-
-                                            <img src="images/topics/undraw_Remote_design_team_re_urdx.png" class="custom-block-image img-fluid" alt="">
+                                            <img src="~/Images/@item.CoverImagePath" class="custom-block-image img-fluid" alt="Image Description" style="width: 100%; height: 250px;">
                                         </a>
                                     </div>
                                 </div>
-                            }
-
-
-                            
-                        </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="marketing-tab-pane" role="tabpanel" aria-labelledby="marketing-tab" tabindex="0">
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-12 mb-4 mb-lg-3">
-                                <div class="custom-block bg-white shadow-lg">
-                                    <a href="topics-detail.html">
-                                        <div class="d-flex">
-                                            <div>
-                                                <h5 class="mb-2">Advertising</h5>
-
-                                                <p class="mb-0">Lorem Ipsum dolor sit amet consectetur</p>
-                                            </div>
-
-                                            <span class="badge bg-advertising rounded-pill ms-auto">30</span>
-                                        </div>
-
-                                        <img src="images/topics/undraw_online_ad_re_ol62.png" class="custom-block-image img-fluid" alt="">
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-4 col-md-6 col-12 mb-4 mb-lg-3">
-                                <div class="custom-block bg-white shadow-lg">
-                                    <a href="topics-detail.html">
-                                        <div class="d-flex">
-                                            <div>
-                                                <h5 class="mb-2">Video Content</h5>
-
-                                                <p class="mb-0">Lorem Ipsum dolor sit amet consectetur</p>
-                                            </div>
-
-                                            <span class="badge bg-advertising rounded-pill ms-auto">65</span>
-                                        </div>
-
-                                        <img src="images/topics/undraw_Group_video_re_btu7.png" class="custom-block-image img-fluid" alt="">
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-4 col-md-6 col-12">
-                                <div class="custom-block bg-white shadow-lg">
-                                    <a href="topics-detail.html">
-                                        <div class="d-flex">
-                                            <div>
-                                                <h5 class="mb-2">Viral Tweet</h5>
-
-                                                <p class="mb-0">Lorem Ipsum dolor sit amet consectetur</p>
-                                            </div>
-
-                                            <span class="badge bg-advertising rounded-pill ms-auto">50</span>
-                                        </div>
-
-                                        <img src="images/topics/undraw_viral_tweet_gndb.png" class="custom-block-image img-fluid" alt="">
-                                    </a>
-                                </div>
+                                }
                             </div>
                         </div>
-                    </div>
 
-                    <div class="tab-pane fade" id="finance-tab-pane" role="tabpanel" aria-labelledby="finance-tab" tabindex="0">
-                        <div class="row">
-                            <div class="col-lg-6 col-md-6 col-12 mb-4 mb-lg-0">
-                                <div class="custom-block bg-white shadow-lg">
-                                    <a href="topics-detail.html">
-                                        <div class="d-flex">
-                                            <div>
-                                                <h5 class="mb-2">Investment</h5>
+                    @foreach(var category in Model.Categories)
+                    {
+                        <div class="tab-pane fade" id="tab-@category.CategoryID-tab-pane" role="tabpanel" aria-labelledby="tab-@category.CategoryID-tab" tabindex="0">
+                            <div class="row">
+                                @foreach (var item in Model.Courses)
+                                {
+                                    @if (item.CategoryID == category.CategoryID)
+                                    {
+                                        <div class="col-lg-4 col-md-6 col-12 mb-4 mb-lg-0">
+                                            <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
+                                                <a asp-action="CourseDetail" asp-controller="Course" asp-route-id="@item.CourseID">
+                                                    <div class="d-flex">
+                                                        <div>
+                                                            <h5 class="mb-2 limited-text">
+                                                                <span class="dot @((item.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
+                                                                @item.Title
+                                                            </h5>
 
-                                                <p class="mb-0">Lorem Ipsum dolor sit amet consectetur</p>
+                                                            <p class="mb-0 limited-text">@item.Description</p>
+                                                        </div>
+                                                        <span class="badge bg-music rounded-pill ms-auto">@item.NumberOfStudents</span>
+                                                    </div>
+                                                    <img src="~/Images/@item.CoverImagePath" class="custom-block-image img-fluid" alt="Image Description" style="width: 100%; height: 250px;">
+                                                </a>
                                             </div>
-
-                                            <span class="badge bg-finance rounded-pill ms-auto">30</span>
                                         </div>
-
-                                        <img src="images/topics/undraw_Finance_re_gnv2.png" class="custom-block-image img-fluid" alt="">
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="custom-block custom-block-overlay">
-                                    <div class="d-flex flex-column h-100">
-                                        <img src="images/businesswoman-using-tablet-analysis-graph-company-finance-strategy-statistics-success-concept-planning-future-office-room.jpg" class="custom-block-image img-fluid" alt="">
-
-                                        <div class="custom-block-overlay-text d-flex">
-                                            <div>
-                                                <h5 class="text-white mb-2">Finance</h5>
-
-                                                <p class="text-white">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint animi necessitatibus aperiam repudiandae nam omnis</p>
-
-                                                <a href="topics-detail.html" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
-                                            </div>
-
-                                            <span class="badge bg-finance rounded-pill ms-auto">25</span>
-                                        </div>
-
-                                        <div class="social-share d-flex">
-                                            <p class="text-white me-4">Share:</p>
-
-                                            <ul class="social-icon">
-                                                <li class="social-icon-item">
-                                                    <a href="#" class="social-icon-link bi-twitter"></a>
-                                                </li>
-
-                                                <li class="social-icon-item">
-                                                    <a href="#" class="social-icon-link bi-facebook"></a>
-                                                </li>
-
-                                                <li class="social-icon-item">
-                                                    <a href="#" class="social-icon-link bi-pinterest"></a>
-                                                </li>
-                                            </ul>
-
-                                            <a href="#" class="custom-icon bi-bookmark ms-auto"></a>
-                                        </div>
-
-                                        <div class="section-overlay"></div>
-                                    </div>
-                                </div>
+                                    }
+                                }
                             </div>
                         </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="music-tab-pane" role="tabpanel" aria-labelledby="music-tab" tabindex="0">
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-12 mb-4 mb-lg-3">
-                                <div class="custom-block bg-white shadow-lg">
-                                    <a href="topics-detail.html">
-                                        <div class="d-flex">
-                                            <div>
-                                                <h5 class="mb-2">Composing Song</h5>
-
-                                                <p class="mb-0">Lorem Ipsum dolor sit amet consectetur</p>
-                                            </div>
-
-                                            <span class="badge bg-music rounded-pill ms-auto">45</span>
-                                        </div>
-
-                                        <img src="images/topics/undraw_Compose_music_re_wpiw.png" class="custom-block-image img-fluid" alt="">
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-4 col-md-6 col-12 mb-4 mb-lg-3">
-                                <div class="custom-block bg-white shadow-lg">
-                                    <a href="topics-detail.html">
-                                        <div class="d-flex">
-                                            <div>
-                                                <h5 class="mb-2">Online Music</h5>
-
-                                                <p class="mb-0">Lorem Ipsum dolor sit amet consectetur</p>
-                                            </div>
-
-                                            <span class="badge bg-music rounded-pill ms-auto">45</span>
-                                        </div>
-
-                                        <img src="images/topics/undraw_happy_music_g6wc.png" class="custom-block-image img-fluid" alt="">
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-4 col-md-6 col-12">
-                                <div class="custom-block bg-white shadow-lg">
-                                    <a href="topics-detail.html">
-                                        <div class="d-flex">
-                                            <div>
-                                                <h5 class="mb-2">Podcast</h5>
-
-                                                <p class="mb-0">Lorem Ipsum dolor sit amet consectetur</p>
-                                            </div>
-
-                                            <span class="badge bg-music rounded-pill ms-auto">20</span>
-                                        </div>
-
-                                        <img src="images/topics/undraw_Podcast_audience_re_4i5q.png" class="custom-block-image img-fluid" alt="">
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="education-tab-pane" role="tabpanel" aria-labelledby="education-tab" tabindex="0">
-                        <div class="row">
-                            <div class="col-lg-6 col-md-6 col-12 mb-4 mb-lg-3">
-                                <div class="custom-block bg-white shadow-lg">
-                                    <a href="topics-detail.html">
-                                        <div class="d-flex">
-                                            <div>
-                                                <h5 class="mb-2">Graduation</h5>
-
-                                                <p class="mb-0">Lorem Ipsum dolor sit amet consectetur</p>
-                                            </div>
-
-                                            <span class="badge bg-education rounded-pill ms-auto">80</span>
-                                        </div>
-
-                                        <img src="images/topics/undraw_Graduation_re_gthn.png" class="custom-block-image img-fluid" alt="">
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="custom-block bg-white shadow-lg">
-                                    <a href="topics-detail.html">
-                                        <div class="d-flex">
-                                            <div>
-                                                <h5 class="mb-2">Educator</h5>
-
-                                                <p class="mb-0">Lorem Ipsum dolor sit amet consectetur</p>
-                                            </div>
-
-                                            <span class="badge bg-education rounded-pill ms-auto">75</span>
-                                        </div>
-
-                                        <img src="images/topics/undraw_Educator_re_ju47.png" class="custom-block-image img-fluid" alt="">
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                    }
+                    <div class="col-md-12 d-flex justify-content-center">
+                        <a asp-action="CourseList" asp-controller="Course" class="btn custom-btn">View More</a>
                     </div>
                 </div>
-
             </div>
         </div>
-        </div>
+    </div>
 </section>
 
 
@@ -371,7 +214,7 @@
         <div class="row">
 
             <div class="col-12 text-center">
-                <h2 class="text-white mb-4">How does it work?</h1>
+                <h2 class="text-white mb-4">How does it work?</h2>
             </div>
 
             <div class="col-lg-10 col-12 mx-auto">

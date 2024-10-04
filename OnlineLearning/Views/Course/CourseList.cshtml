@@ -1,5 +1,6 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    <partial name="_NoficationPartial" />
 }
 @model List<CourseModel>
 
@@ -48,6 +49,9 @@
                         </select>
                     </div>
                 </div>
+
+             
+
                 @foreach (var course in Model)
                 {
                     <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
@@ -60,12 +64,40 @@
                                 <div>
                                     <div class="d-flex justify-content-between">
                                         <div>
-                                            <h4 class="mb-2">@course.Title</h4>
-                                            <div class="status-icon status-open"></div>
+                                            <h4 class="mb-2">
+                                                <span class="dot @((course.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
+                                                @course.Title
+                                                </h4>
+                                            <p class="mb-0"> Instructor: @course.Instructor?.AppUser?.FirstName @course.Instructor?.AppUser?.LastName</p>
+                                            <div class="stars justify-content-between align-content-center">
+                                               @if (@course.NumberOfRate == 0)
+                                                {
+                                                    <h6 class="text-muted mt-1">No reviews yet</h6>
+                                                }
+                                                else
+                                                {
+                                                    <h5>
+                                                        @course.Rating
+                                                        @*       <span class="star">&#9733;</span> *@
+                                                        @for (int i = 1; i <= 5; i++)
+                                                        {
+                                                            if (i <= @course.Rating)
+                                                            {
+                                                                <span class="star">&#9733;</span> <!-- Ngôi sao đầy -->
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="star">&#9734;</span> <!-- Ngôi sao rỗng -->
+                                                            }
+                                                        }
+                                                        (@course.NumberOfRate)
+                                                    </h5>
+                                                }           
+                                            </div>  
+                                            <h4>$@course.Price</h4>
                                         </div>
-                                        <span class="badge bg-music rounded-pill ms-auto">@course.NumberOfRate</span>
+                                        <span class="badge bg-music rounded-pill ms-auto">@course.NumberOfStudents</span>
                                     </div>
-                                    <p class="mb-0">@course.Description.</p>
                                     <a asp-action="CourseDetail" asp-controller="Course" asp-route-id="@course.CourseID"  class="btn custom-btn mt-3 mt-lg-4">Learn More</a>
                                 </div>
                             </div>                    

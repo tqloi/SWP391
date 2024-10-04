@@ -1,5 +1,6 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    <partial name="_NoficationPartial" />
 }
 @model CourseModel
 <style>
@@ -20,29 +21,64 @@
                         <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
                     </ol>
                 </nav>
-
                 <h2 class="text-white"> @Model.Title</h2>
-                <h7 class="text-white-50">@Model.Level</h7>
+                <h6>@Model.Level</h6>
                 <div class="d-flex align-items-center">
-                    <div class="stars me-2">
-                        <span class="star">&#9733;</span>
-                        <span class="star">&#9733;</span>
-                        <span class="star">&#9733;</span>
-                        <span class="star">&#9733;</span>
-                        <span class="star">&#9733;</span>
-                    </div>
-                    <a class="me-3" href="#comments"><h7 class="text-white-50">(@Model.NumberOfRate rates)</h7></a>
+                    @if (@Model.NumberOfRate == 0)
+                    {
+                        <h7 class="text-whit text-white-50 me-2">(No reviews yet)</h7>
+                    }
+                    else
+                    {
+                        <h7 class="me-1 text-white">@Model.Rating</h7>
+                        <div class="stars me-2">
+                            @*  <span class="star">&#9733;</span> *@
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= @Model.Rating)
+                                {
+                                    <span class="star">&#9733;</span> <!-- Ngôi sao đầy -->
+                                }
+                                else
+                                {
+                                    <span class="star">&#9734;</span> <!-- Ngôi sao rỗng -->
+                                }
+                            }
+                        </div>
+                        <a class="me-3" href="#comments"><h7 class="text-white-50">(@Model.NumberOfRate rates)</h7></a>
+                    }
                     <h7 class="text-white">@Model.NumberOfStudents students</h7>
                 </div>
                 <h4 class="text-white">$@Model.Price</h4>
-                <h7 class="text-white">Create by: <a class="text-white-50" href="#comments"> @ViewData["InstructorName"]</a></h7>
-                <h7 class="text-white d-flex mt-2">Last Update: @Model.LastUpdate</h7>
-                <div class="d-flex align-items-center mt-4">
-                    <a href="#" class="btn custom-btn smoothscroll me-4">Buy Now</a>
-                    
-                    <a href="#top" class="custom-icon bi-bookmark smoothscroll"></a>
-                    <a href="#top" class="custom-icon bi-bookmark-fill smoothscroll"></a>
-                </div>
+                <h7 class="text-white">Create by: <a class="text-white-50" href="#comments"> @Model.Instructor?.AppUser?.FirstName @Model.Instructor?.AppUser?.LastName</a></h7>
+                <h7 class="text-white d-flex mt-2 me-2">
+                    Last Update: @Model.LastUpdate
+                    <h7 class="dot ms-1 text-white-50" >@((Model.Status == true) ? "(Active)" : "(Inative)")</h7>
+                </h7>
+                @if (ViewBag.IsEnrolled || User.IsInRole("Instructor"))
+                    {
+                        <div class="d-flex align-items-center mt-4">
+                            <a asp-action="MyCourse" asp-controller="Course" class="btn custom-btn smoothscroll me-4">Go to course</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center mt-4">
+                            <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-id="@Model.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
+
+                            <a href="#top" class="custom-icon bi-bookmark smoothscroll"></a>
+                            @*  <a href="#top" class="custom-icon bi-bookmark-fill smoothscroll"></a> *@
+                        </div>
+                    }
+               @*  else
+                {
+                    <div class="d-flex align-items-center mt-4">
+                        <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-id="@Model.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
+
+                        <a href="#top" class="custom-icon bi-bookmark smoothscroll"></a>
+                        <a href="#top" class="custom-icon bi-bookmark-fill smoothscroll"></a>
+                    </div>
+                } *@
             </div>
 
             <div class="col-lg-5 col-12">

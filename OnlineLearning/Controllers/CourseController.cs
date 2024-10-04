@@ -1,14 +1,10 @@
-
 ﻿using Microsoft.AspNetCore.Mvc;
 using OnlineLearningApp.Respositories;
-
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
-using OnlineLearningApp.Respositories;
 using System.Security.Claims;
 
 
@@ -33,13 +29,31 @@ namespace OnlineLearning.Controllers
         }
         public async Task<IActionResult> CourseList()
         {
-            var courses = await datacontext.Courses.ToListAsync();
+            var courses = await datacontext.Courses
+                     .Include(course => course.Instructor)
+                     .ThenInclude(instructor => instructor.AppUser)
+                     .ToListAsync();
+
             return View(courses);
 
         }
 
         [HttpGet]
-        [Authorize]
+        public async Task<IActionResult> Search(string keyword)
+        {
+            var courses = await datacontext.Courses
+                .Include(course => course.Instructor) 
+                .ThenInclude(instructor => instructor.AppUser) 
+                .Where(course => course.Title.Contains(keyword) ||
+                                 course.Instructor.AppUser.FirstName.Contains(keyword) ||
+                                 course.Instructor.AppUser.LastName.Contains(keyword))
+                .ToListAsync();
+
+            return View("CourseList", courses); 
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Instructor, Student")]
         public async Task<IActionResult> MyCourse()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -53,6 +67,9 @@ namespace OnlineLearning.Controllers
             {
                 model.Courses = await datacontext.Courses
                     .Where(course => course.InstructorID == userId)
+                    .Include(course => course.Instructor)   
+                    .ThenInclude(instructor => instructor.AppUser)
+                    .OrderByDescending(sc => sc.CourseID)
                     .ToListAsync();
             }
             if (User.IsInRole("Student"))
@@ -64,37 +81,45 @@ namespace OnlineLearning.Controllers
                 model.Courses = await datacontext.StudentCourses
                     .Where(sc => sc.StudentID == userId)
                     .Include(sc => sc.Course)
+                    .ThenInclude(course => course.Instructor)      
+                    .ThenInclude(instructor => instructor.AppUser)
                     .Select(sc => sc.Course)
+                    .OrderByDescending(sc => sc.CourseID)
                     .ToListAsync();
             }
             return View(model);
         }
 
+        [HttpGet]
         public async Task<IActionResult> CourseDetail(int id)
         {
             var course = await datacontext.Courses
-                                         .FirstOrDefaultAsync(c => c.CourseID == id);
+                     .Include(course => course.Instructor)       
+                     .ThenInclude(instructor => instructor.AppUser)
+                     .FirstOrDefaultAsync(c => c.CourseID == id);
 
             if (course == null)
             {
                 return NotFound();
             }
-            var instructor = await datacontext.Users
-           .FirstOrDefaultAsync(i => i.Id == course.InstructorID);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            ViewData["InstructorName"] = instructor?.UserName;
-            ViewData["InstructorId"] = instructor?.Id;
+            var isEnrolled = await datacontext.StudentCourses
+                .AnyAsync(sc => sc.CourseID == id && sc.StudentID == userId);
+
+            ViewBag.IsEnrolled = isEnrolled;
 
             return View(course);
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create(CourseViewModel model)
         {   
             
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var course = new CourseModel
+                var course = new CourseModel
             {
                 Title = model.Title,
                 Description = model.Description,
@@ -110,7 +135,7 @@ namespace OnlineLearning.Controllers
                 InstructorID = userId,
                 //Status = true
             };
-            if (model.CoverImage != null)
+                 if (model.CoverImage != null)
             {
                 string uploadpath = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
                 string imagename = Guid.NewGuid() + "_" + model.CoverImage.FileName;
@@ -124,25 +149,34 @@ namespace OnlineLearning.Controllers
             }
             else { course.CoverImagePath = ""; }
 
+            datacontext.Courses.Add(course);
+            await datacontext.SaveChangesAsync();
+
+            int newCourseId = course.CourseID;
+
             if (model.CourseMaterials != null && model.CourseMaterials.Count > 0)
+            {
+                string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "CourseMaterials");
+                foreach (var file in model.CourseMaterials)
                 {
-                    string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "CourseMaterials");
-                    foreach (var file in model.CourseMaterials)
+                    string fileName = Guid.NewGuid() + "_" + file.FileName;
+                    string filePath = Path.Combine(uploadPath, fileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
-                        string fileName = Guid.NewGuid() + "_" + file.FileName;
-                        string filePath = Path.Combine(uploadPath, fileName);
-
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await file.CopyToAsync(fileStream);
-                        }            
+                        await file.CopyToAsync(fileStream);
                     }
+                    var material = new CourseMaterialModel
+                    {
+                        CourseID = newCourseId,
+                        MaterialsLink = fileName
+                    };
+                    datacontext.CourseMaterials.Add(material);
+                    await datacontext.SaveChangesAsync();
                 }
+            }
 
-                datacontext.Courses.Add(course);
-                await datacontext.SaveChangesAsync();
-
-                TempData["success"] = "Course created successfully!";
+            TempData["success"] = "Course created successfully!";
             //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
             return RedirectToAction("MyCourse", "Course");
         }

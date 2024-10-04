@@ -118,6 +118,15 @@ namespace OnlineLearning.Controllers
             HttpContext.Session.Remove("Username");
             var roles = await _userManager.GetRolesAsync(user);
 
+            var claims = new List<Claim>
+            {
+                new Claim("FirstName", user.FirstName),
+                new Claim("ProfileImagePath", user.ProfileImagePath)
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
             // Redirect based on role
             if (roles.Contains("Admin"))
             {

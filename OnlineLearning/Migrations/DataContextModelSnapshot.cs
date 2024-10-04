@@ -52,27 +52,21 @@ namespace OnlineLearning.Migrations
                         new
                         {
                             Id = "1",
-
-                            ConcurrencyStamp = "34408e49-7dec-4695-ac1e-6e489478ff6d",
-
+                            ConcurrencyStamp = "1fb039f0-acd4-431a-9013-c622a15b8fa2",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-
-                            ConcurrencyStamp = "f78dc664-cbf6-406f-8853-acc33fda111e",
-
+                            ConcurrencyStamp = "70c0bed7-d725-4c05-8362-4d29212b5283",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = "3",
-
-                            ConcurrencyStamp = "9d03236d-3289-4d12-826b-2205ba394cfb",
-
+                            ConcurrencyStamp = "fe42b7d6-a40f-4253-b732-002925bad73a",
                             Name = "Instructor",
                             NormalizedName = "INSTRUCTOR"
                         });
@@ -290,9 +284,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasKey("CategoryID");
 
-
-                    b.ToTable("CategoryModel");
-
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CourseModel", b =>
@@ -376,8 +368,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasKey("InstructorID");
 
-
-                    b.ToTable("instructors");
+                    b.ToTable("Instructors");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.StudentCourseModel", b =>
@@ -416,7 +407,6 @@ namespace OnlineLearning.Migrations
                     b.HasIndex("StudentID");
 
                     b.ToTable("StudentCourses");
-
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -518,7 +508,6 @@ namespace OnlineLearning.Migrations
 
                     b.Navigation("Course");
                 });
-
 #pragma warning restore 612, 618
         }
     }

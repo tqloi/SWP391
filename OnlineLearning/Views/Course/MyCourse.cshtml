@@ -73,13 +73,15 @@
                     <div class="col-md-9 custom-block-topics-listing-info">
                         <div class="d-flex">
                             <div>
-                                <h4 class="mb-2">@course.Title</h4>
+                                <h4 class="mb-2">@course.Title
+                                    <span class="dot @((course.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
+                                </h4>
                                 <div class="status-icon status-open"></div>
                             </div>                
                             <span class="badge bg-music rounded-pill ms-auto">@course.NumberOfRate</span>
                         </div>
                         <h6>@course.Level</h6>
-                        <p class="mb-0">@course.Description</p>
+                        <p>Instructor: @course.Instructor?.AppUser?.FirstName @course.Instructor?.AppUser?.LastName</p>
                         <div class="row progress-group d-flex justify-content-between">
                             @if (Model.StudentCourses != null && User.IsInRole("Student"))
                             {
@@ -88,10 +90,10 @@
                             <div class="col-md-9 row align-items-end">
                                 <div class="col-md-8">
                                 <div>
-                                     <h8>@studentCourse.CertificateStatus: @studentCourse.Progress%</h8>
+                                            <h8>@studentCourse.CertificateStatus: @(studentCourse.Progress * 100)%</h8>
                                 </div>
                                     <div class="progress">
-                                            <div class="progress-bar-custom" style="width:@studentCourse.Progress%;">
+                                            <div class="progress-bar-custom" style="width:@(studentCourse.Progress * 100)%;">
                                         </div>
                                     </div>
                                 </div>
