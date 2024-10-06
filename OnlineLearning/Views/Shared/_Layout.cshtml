@@ -65,15 +65,13 @@
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Contact" ? "active" : "")"
                                asp-action="Contact" asp-controller="Home">Contact</a>
                         </li>
-
-                  @*       <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarLightDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">Pages</a>
-
-                            <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarLightDropdownMenuLink">
-                                <li><a class="dropdown-item" href="topics-listing.html">Topics Listing</a></li>
-                                <li><a class="dropdown-item" href="contact.html">Contact Form</a></li>
-                            </ul>
-                        </li> *@
+                        @if(User.IsInRole("Student"))
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Profile" && ViewContext.RouteData.Values["action"].ToString() == "InstructorRegistration" ? "active" : "")"
+                               asp-action="InstructorRegistration" asp-controller="Profile">Teaching</a>
+                        </li>
+                        }
                     </ul>
 
                     <!-- Search Form -->
@@ -96,7 +94,7 @@
                             {
                                 <a href="#" class="me-5 navbar-icon d-flex justify-content-between align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="ms-2 bi bi-person"></i>
-                                    <span class="ms-4 text-white">@User.Identity.Name</span>
+                                    <span class="ms-4">@User.Identity.Name</span>
                                 </a>  
                                 <ul class="dropdown-menu" aria-labelledby="profileDropdown">
                                     <li><a class="dropdown-item" asp-action="UserProfile" asp-controller="Home">Your Profile</a></li>

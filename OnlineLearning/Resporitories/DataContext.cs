@@ -22,6 +22,7 @@ namespace OnlineLearningApp.Respositories
         public DbSet<ReviewMoel> Reviews { get; set; }
         public DbSet<CourseMaterialModel> CourseMaterials { get; set; }
         public DbSet<PaymentModel> Payment { get; set; }
+        public DbSet<InstructorConfirmModel> InstructorConfirmation { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
