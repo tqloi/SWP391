@@ -1,0 +1,16 @@
+﻿@model OnlineLearning.Models.InstructorConfirmationModel
+
+@{
+    ViewBag.Title = "View PDF";
+}
+
+
+
+@if (!string.IsNullOrEmpty(Model?.Certificatelink))
+{
+    <iframe src="~/ConfirmInstructor/@Model.Certificatelink" width="100%" height="100%" style="border: none;"></iframe>
+}
+else
+{
+    <p>No PDF available to display.</p>
+}

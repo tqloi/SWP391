@@ -2,9 +2,12 @@
 @{
     ViewData["Title"] = "Verify Email";
     Layout = "~/Views/Shared/login_layout.cshtml";
+
 }
     <div class="container">
         <form class="login-form" asp-action="VerifyEmail" asp-controller="Account" method="post">
+       
+        
             <a asp-action="Index" asp-controller="Home"><i class="fas fa-home"></i></a>
             <h1>Verify Email</h1>
             <input asp-for="Email" class="form-control" placeholder="Email" />

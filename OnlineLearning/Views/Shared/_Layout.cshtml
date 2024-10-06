@@ -65,7 +65,7 @@
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Contact" ? "active" : "")"
                                asp-action="Contact" asp-controller="Home">Contact</a>
                         </li>
-                        @if(User.IsInRole("Student"))
+                        @if (!User.IsInRole("Instructor"))
                         {
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Profile" && ViewContext.RouteData.Values["action"].ToString() == "InstructorRegistration" ? "active" : "")"

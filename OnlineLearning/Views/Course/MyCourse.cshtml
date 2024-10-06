@@ -31,7 +31,7 @@
         @if (User.IsInRole("Instructor"))
         {
             <div>
-                <button class="btn custom-btn active" data-bs-toggle="modal" data-bs-target="#addTestModal">
+                <button class="btn custom-btn active" data-bs-toggle="modal" data-bs-target="#createCourseModal">
                     <i class="fas fa-plus new-icon"></i> Create new course
                 </button>
             </div>
@@ -68,10 +68,10 @@
             <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
                 <div class="row" >
                     
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <img src="~/Images/@course.CoverImagePath" class="custom-block-image img-fluid ms-3" alt="">
                     </div>
-                    <div class="col-md-8 custom-block-topics-listing-info" >
+                    <div class="col-md-9 custom-block-topics-listing-info" >
                         <div class="d-flex">
                             <div>
                                 <h4 class="mb-2">@course.Title
@@ -103,25 +103,27 @@
                                 </div>
                             </div>
                                 <div class="col-md-3 d-flex justify-content-end ">
-                                    <a asp-action="CourseDetail" asp-controller="Course" class="btn custom-btn mt-3 mt-lg-4">Go to course</a>
+                                    <a asp-action="LectureList" asp-controller="Participation" asp-route-id="@course.CourseID" class="btn custom-btn mt-3 mt-lg-4">Go to course</a>
                                 </div>
                             }
                             @if (User.IsInRole("Instructor"))
                             {
                                 <div class="col-md-3">
-                                    <a asp-area="Instructor" asp-action="Index" asp-controller="Instructor" class="btn custom-btn mt-3 mt-lg-4">Go to course</a>
+                                    <a asp-action="LectureList" asp-controller="Participation" asp-route-id="@course.CourseID" class="btn custom-btn mt-3 mt-lg-4">Go to course</a>
                                 </div>
                             } 
                         </div>
                 </div>
-                    <div class="col-md-1 dropdown">
-                        <button class="btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-three-dots"></i> <!-- Icon dấu ba chấm -->
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editTestModal">Update Course</a></li>
-                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteTestModal">Delete Course</a></li>
-                        </ul>
+                    <div class="col-md-1 d-flex justify-content-end align-items-start">
+                        <div class="dropdown">
+                            <button class="btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateCourseModal">Update Course</a></li>
+                                <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteCourseModal">Delete Course</a></li>
+                            </ul>
+                        </div>
                     </div>
             </div>
         </div>

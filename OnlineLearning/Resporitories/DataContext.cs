@@ -18,18 +18,18 @@ namespace OnlineLearningApp.Respositories
         public DbSet<InstructorModel> Instructors { get; set; }
         public DbSet<CourseModel> Courses { get; set; }
         public DbSet<CategoryModel> Category{ get; set; }
+        public DbSet<InstructorConfirmationModel> InstructorConfirmation { get; set; }
         public DbSet<StudentCourseModel> StudentCourses { get; set; }
         public DbSet<ReviewMoel> Reviews { get; set; }
         public DbSet<CourseMaterialModel> CourseMaterials { get; set; }
         public DbSet<PaymentModel> Payment { get; set; }
-        public DbSet<InstructorConfirmModel> InstructorConfirmation { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             SeedRoles(builder);
         }
 
-
+       
 
         private void SeedRoles(ModelBuilder builder)
         {

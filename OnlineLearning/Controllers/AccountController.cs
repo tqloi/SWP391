@@ -34,6 +34,7 @@ namespace OnlineLearning.Controllers
 
         }
         [HttpGet]
+        [Route("Account/Login")]
         public IActionResult Login()
         {
             return View();
@@ -73,7 +74,7 @@ namespace OnlineLearning.Controllers
         }
 
 
-        [HttpPost]
+    
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -217,6 +218,26 @@ namespace OnlineLearning.Controllers
             return View(model);
         }
         [HttpGet]
+        public IActionResult OTP_ChangeEmail()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> OTP_ChangeEmail(OTPViewModel model)
+        {
+            var storedOtp = HttpContext.Session.GetInt32("otp");
+            var changeemail = HttpContext.Session.GetString("changeemail");
+             if (model.Otp == storedOtp && changeemail != null)
+                {
+                    HttpContext.Session.SetString("message", "emailsuccess");
+                    return RedirectToAction("AdminEdit", "Admin", new { Areas = "Admin" });
+                }
+                
+            ModelState.AddModelError("", "Invalid OTP.");
+            return View("OTP_ChangeEmail");
+
+        }
+        [HttpGet]
         public IActionResult EnterOTP()
         {
             return View();
@@ -227,11 +248,17 @@ namespace OnlineLearning.Controllers
             var storedOtp = HttpContext.Session.GetInt32("otp");
             var userId = HttpContext.Session.GetString("userId");
             var usernamess = HttpContext.Session.GetString("username");
+            var changeemail = HttpContext.Session.GetString("changeemail");
             if (storedOtp != null)
             {
                 if (usernamess != null && model.Otp == storedOtp)
                 {
                     return RedirectToAction("ChangePassword", new { username = usernamess, otp = model.Otp });
+                }
+                else if (model.Otp == storedOtp && changeemail != null)
+                {
+                    HttpContext.Session.SetString("message", "emailsuccess");
+                    return RedirectToAction("AdminEdit", "Admin", new { Areas = "Admin" });
                 }
                 var user = await _userManager.FindByIdAsync(userId);
                 if (model.Otp == storedOtp)

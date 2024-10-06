@@ -39,6 +39,7 @@ namespace OnlineLearning.Controllers
 			return View(model);
 		}
 
+        [Authorize]
         public IActionResult Contact()
         {
             if (User.IsInRole("Admin"))

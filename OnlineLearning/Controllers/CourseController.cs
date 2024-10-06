@@ -7,7 +7,6 @@ using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using System.Security.Claims;
 
-
 namespace OnlineLearning.Controllers
 {
     public class CourseController : Controller
