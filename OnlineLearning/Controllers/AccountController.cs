@@ -13,6 +13,7 @@ using OnlineLearning.Email;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using OnlineLearningApp.Respositories;
 
 namespace OnlineLearning.Controllers
 {
@@ -23,15 +24,15 @@ namespace OnlineLearning.Controllers
         private RoleManager<IdentityRole> _roleManager;
         private IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
-        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, RoleManager<IdentityRole> roleManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
+        private readonly DataContext _dataContext;
+        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, RoleManager<IdentityRole> roleManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, DataContext dataContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
-
+            _dataContext = dataContext;
         }
         [HttpGet]
         [Route("Account/Login")]
@@ -119,7 +120,24 @@ namespace OnlineLearning.Controllers
             HttpContext.Session.Remove("Username");
             var roles = await _userManager.GetRolesAsync(user);
 
-            // Redirect based on role
+            var claims = new List<Claim>
+            {
+                new Claim("FirstName", user.FirstName),
+                new Claim("ProfileImagePath", user.ProfileImagePath)
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+            //notification for admin
+            var notification = new NotificationModel();
+            notification.UserId = user.Id;
+            notification.Description = $"{user.UserName} has just logged in";
+            notification.CreatedAt = DateTime.Now;
+
+            _dataContext.Notification.Add(notification);
+            await _dataContext.SaveChangesAsync();
+            
             if (roles.Contains("Admin"))
             {
                 return RedirectToAction("Index", "Admin", new { area = "Admin" });

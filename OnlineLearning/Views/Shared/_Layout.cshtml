@@ -47,7 +47,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="collapse navbar-collapse d-flex justify-content-center align-items-center" id="navbarNav">
                     <ul class="navbar-nav ms-lg-5 me-lg-auto">
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")"
@@ -77,25 +77,29 @@
                     </ul>
 
                     <!-- Search Form -->
-                    <div class="d-none d-lg-block" style="position: relative; margin-right: 20px;">
-                        <form action="#top" method="GET" class="navbar-form" style="display: inline;">
-                            <input type="text" name="query" placeholder="Search"
-                                   style="padding: 10px 15px; border-radius: 25px; border: 1px solid #ccc; outline: none; width: 250px">
+                    <div class="d-none d-lg-block me-3">
+                        <form asp-action="Search" asp-controller="Course" method="GET" class="navbar-form" style="display: inline; position: relative;">
+                            <input type="text" name="keyword" placeholder="Search"
+                                   style="padding: 10px 15px; border-radius: 25px; border: 1px solid #ccc; outline: none; width: 250px;">
                             <button type="submit"
                                     style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background-color: transparent; border: none; cursor: pointer;">
-                                <i class="bi bi-search" style="font-size: 1.2em;"></i>
+                                <i class="me-2 bi bi-search" style="font-size: 1.2em;"></i>
                             </button>
                         </form>
                     </div>
+
 
                     <!-- Authentication Dropdown -->
                     <div class="d-none d-lg-block">
                         <div class="dropdown">
                             @if (User.Identity?.IsAuthenticated ?? false)
                             {
-                                <a href="#" class="navbar-icon bi-person smoothscroll" data-bs-toggle="dropdown" aria-expanded="false"></a>
+                                <a href="#" class="me-5 navbar-icon d-flex justify-content-between align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="ms-2 bi bi-person"></i>
+                                    <span class="ms-4 text-white">@User.Identity.Name</span>
+                                </a>  
                                 <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-                                    <li><a class="dropdown-item" asp-action="UserProfile" asp-controller="Home">Hi, @User.Identity.Name, Your Profile</a></li>
+                                    <li><a class="dropdown-item" asp-action="UserProfile" asp-controller="Home">Your Profile</a></li>
                                     <li>
                                         <form asp-action="Logout" asp-controller="Account" method="post">
                                             <button type="submit" class="btn btn-light">Logout</button>
@@ -126,7 +130,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-12 mb-4 pb-2">
-                    <a class="navbar-brand mb-2" href="index.html">
+                    <a class="navbar-brand mb-2" href="#">
                         <i class="bi-back"></i>
                         <span>Topic</span>
                     </a>
@@ -139,13 +143,13 @@
                             <a href="#" class="site-footer-link">Home</a>
                         </li>
                         <li class="site-footer-link-item">
-                            <a href="#" class="site-footer-link">How it works</a>
+                            <a href="#section_3" class="site-footer-link">How it works</a>
                         </li>
                         <li class="site-footer-link-item">
-                            <a href="#" class="site-footer-link">FAQs</a>
+                            <a href="#section_4" class="site-footer-link">FAQs</a>
                         </li>
                         <li class="site-footer-link-item">
-                            <a href="#" class="site-footer-link">Contact</a>
+                            <a asp-action="Contact" asp-controller="Home" class="site-footer-link">Contact</a>
                         </li>
                     </ul>
                 </div>
@@ -166,9 +170,7 @@
                             English
                         </button>
                         <ul class="dropdown-menu">
-                            <li><button class="dropdown-item" type="button">Thai</button></li>
-                            <li><button class="dropdown-item" type="button">Myanmar</button></li>
-                            <li><button class="dropdown-item" type="button">Arabic</button></li>
+                            <li><button class="dropdown-item" type="button">VietNam</button></li>
                         </ul>
                     </div>
                     <p class="copyright-text mt-lg-5 mt-4">

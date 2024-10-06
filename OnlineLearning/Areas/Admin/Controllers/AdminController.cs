@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics;
+using System.Security.Claims;
 using System.Web.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
@@ -104,17 +105,11 @@ namespace OnlineLearning.Areas.Admin.Controllers
                         return RedirectToAction("AdminProfile");
                     }
                 }
-               
-               
-                
             }
            
                 TempData["error"] = "Something is wrong!";
                 return View(model);
-            
-
         }
-
         [HttpGet]
         public async Task<IActionResult> AdminEdit()
         {
@@ -240,7 +235,11 @@ namespace OnlineLearning.Areas.Admin.Controllers
             return View(model);
         }
 
-        
+        public async Task<IActionResult> ViewNotification() 
+        {
+            var notifications = await _dataContext.Notification.Include(n => n.User).ToListAsync();
+            return View(notifications);
+        }
 
 
     }

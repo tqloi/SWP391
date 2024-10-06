@@ -14,8 +14,13 @@ CREATE TABLE InstructorConfirmation(
 	 ConfirmationID INT PRIMARY KEY,
 	 UserID nvarchar(450),
 	 Certificatelink nvarchar(400),
+	 SendDDate DATETIME DEFAULT GETDATE(),
 	 FOREIGN KEY (UserID) REFERENCES AspNetUsers(Id) 
 )
+ALTER TABLE InstructorConfirmation
+ADD SendDDate DATETIME DEFAULT GETDATE();
+GO
+
 CREATE TABLE Category(
 	CategoryID INT PRIMARY KEY IDENTITY(1,1),
 	FullName NVARCHAR(50),
@@ -54,6 +59,10 @@ CREATE TABLE Payment(
 	FOREIGN KEY (studentID) REFERENCES AspNetUsers(id),
 	FOREIGN KEY (courseID) REFERENCES Courses(courseID)
 );
+ALTER TABLE Payment
+ADD CONSTRAINT UC_Payment UNIQUE (StudentID, CourseID);
+go
+
 -- Enrollment table
 CREATE TABLE Enrollment(
     EnrollmentID INT PRIMARY KEY IDENTITY(1,1),
@@ -90,6 +99,11 @@ CREATE TABLE StudentCourses (
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id), 
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
+ALTER TABLE StudentCourses
+ADD CONSTRAINT UC_StudentCourses UNIQUE (StudentID, CourseID);
+go
+
+
 -- certificate table
 CREATE TABLE [Certificate](
 	CertificateID INT PRIMARY KEY IDENTITY(1,1),
@@ -109,6 +123,17 @@ CREATE TABLE Lecture (
     UpLoadDate DATETIME,
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
+
+CREATE TABLE LectureCompletion (
+    CompletionID INT PRIMARY KEY IDENTITY(1,1),
+    UserID NVARCHAR(450),
+    LectureID INT, 
+    IsCompleted BIT NOT NULL DEFAULT 0,
+    CompletionDate DATETIME, 
+    FOREIGN KEY (UserID) REFERENCES AspNetUsers(id),
+    FOREIGN KEY (LectureID) REFERENCES Lecture(LectureID) 
+);
+
 -- Course image and video;
 CREATE TABLE LectureFiles (
     FileID INT PRIMARY KEY IDENTITY(1,1),
@@ -124,6 +149,7 @@ CREATE TABLE Test (
     CourseID INT,  -- Foreign key to Courses
     StartTime DATETIME,
     EndTime DATETIME,
+	NumberOfQuestion INT NOT NULL,
     [Status] NVARCHAR(255),
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
@@ -225,7 +251,7 @@ CREATE TABLE Review (
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id)
 );
 GO
---
+
 CREATE TRIGGER trg_DeleteChildComments
 ON Comment
 INSTEAD OF DELETE
@@ -243,20 +269,6 @@ BEGIN
     WHERE commentID IN (SELECT commentID FROM comments_to_delete);
 END;
 
-UPDATE Courses
-SET NumberOfStudents = (
-    SELECT COUNT(*)
-    FROM StudentCourses sc
-    WHERE sc.CourseID = Courses.CourseID
-);
-
-UPDATE Courses
-SET NumberOfRate = (
-    SELECT COUNT(*)
-    FROM Review r
-    WHERE r.CourseID = Courses.CourseID
-);
-
 ALTER TABLE Courses
 ADD EndDate DATE;
 
@@ -271,18 +283,18 @@ INSERT INTO Courses
     (Title, CourseCode, [Description], CoverImagePath, InstructorID, NumberOfStudents, Price, CategoryID, [Level], [Status], CreateDate, LastUpdate, EndDate, NumberOfRate) 
 VALUES
     -- Programming Category
-    ('Python for Beginners', 'CS101', 'Learn Python programming from scratch.', 'cover/python.jpg', '9fc33dde-075d-4ede-87a7-c89e0564887a', 0, 100.00, 1, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
-    ('Java Advanced Techniques', 'CS102', 'Explore advanced Java programming concepts.', 'cover/java.jpg', '9fc33dde-075d-4ede-87a7-c89e0564887a', 0, 120.00, 1, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
-    ('C# for Beginners', 'CS103', 'Introduction to C# programming.', 'cover/csharp.jpg', '9fc33dde-075d-4ede-87a7-c89e0564887a', 0, 90.00, 1, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
-    ('Full-Stack Development with Node.js', 'CS104', 'Learn full-stack development using Node.js.', 'cover/nodejs.jpg', '9fc33dde-075d-4ede-87a7-c89e0564887a', 0, 150.00, 1, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
-    ('Introduction to Algorithms', 'CS105', 'Learn about algorithms and data structures.', 'cover/algorithms.jpg', '9fc33dde-075d-4ede-87a7-c89e0564887a', 0, 110.00, 1, 'Advanced', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
+    ('Python for Beginners', 'CS101', 'Learn Python programming from scratch.', 'cover/python.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 100.00, 1, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
+    ('Java Advanced Techniques', 'CS102', 'Explore advanced Java programming concepts.', 'cover/java.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 120.00, 1, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
+    ('C# for Beginners', 'CS103', 'Introduction to C# programming.', 'cover/csharp.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 90.00, 1, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
+    ('Full-Stack Development with Node.js', 'CS104', 'Learn full-stack development using Node.js.', 'cover/nodejs.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 150.00, 1, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
+    ('Introduction to Algorithms', 'CS105', 'Learn about algorithms and data structures.', 'cover/algorithms.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 110.00, 1, 'Advanced', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
 
     -- Data Science Category
-    ('Data Analysis with R', 'DS101', 'Learn data analysis using R programming.', 'cover/data_analysis.jpg', '9fc33dde-075d-4ede-87a7-c89e0564887a', 0, 130.00, 2, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
-    ('Machine Learning A-Z', 'DS102', 'Master machine learning algorithms and techniques.', 'cover/machine_learning.jpg', '9fc33dde-075d-4ede-87a7-c89e0564887a', 0, 200.00, 2, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
-    ('Data Science for Everyone', 'DS103', 'Introduction to data science concepts.', 'cover/data_science.jpg', '9fc33dde-075d-4ede-87a7-c89e0564887a', 0, 100.00, 2, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
-    ('Deep Learning with TensorFlow', 'DS104', 'Explore deep learning with TensorFlow.', 'cover/deep_learning.jpg', '9fc33dde-075d-4ede-87a7-c89e0564887a', 0, 150.00, 2, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
-    ('Statistics for Data Science', 'DS105', 'Learn statistics for data science applications.', 'cover/statistics.jpg', '9fc33dde-075d-4ede-87a7-c89e0564887a', 0, 120.00, 2, 'Intermediate', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
+    ('Data Analysis with R', 'DS101', 'Learn data analysis using R programming.', 'cover/data_analysis.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 130.00, 2, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
+    ('Machine Learning A-Z', 'DS102', 'Master machine learning algorithms and techniques.', 'cover/machine_learning.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 200.00, 2, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
+    ('Data Science for Everyone', 'DS103', 'Introduction to data science concepts.', 'cover/data_science.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 100.00, 2, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
+    ('Deep Learning with TensorFlow', 'DS104', 'Explore deep learning with TensorFlow.', 'cover/deep_learning.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 150.00, 2, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
+    ('Statistics for Data Science', 'DS105', 'Learn statistics for data science applications.', 'cover/statistics.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 120.00, 2, 'Intermediate', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
 
     -- Web Development Category
     ('HTML & CSS for Beginners', 'WD101', 'Learn the basics of web development with HTML & CSS.', 'cover/html_css.jpg', '9fc33dde-075d-4ede-87a7-c89e0564887a', 0, 80.00, 3, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
@@ -314,7 +326,7 @@ go
 SELECT * FROM Courses;
 Insert into Instructors(InstructorID, Description)
 values
-('9fc33dde-075d-4ede-87a7-c89e0564887a','Heloo student');
+('5c7c5bc0-06c9-4840-8dd5-7dc0860469ed','Heloo student');
 
 ALTER TABLE Courses
 ALTER COLUMN Description VARCHAR(MAX);
@@ -346,7 +358,6 @@ SET [Description] = CASE
 END;
 go
 
---not yet
 CREATE TRIGGER trg_UpdateNumberOfRates
 ON Review
 AFTER INSERT
@@ -383,41 +394,120 @@ BEGIN
 END;
 GO
 
-CREATE TRIGGER trg_UpdateNumberOfStudents
-ON StudentCourses
+INSERT INTO StudentCourses (StudentID, CourseID, Progress, CertificateStatus, EnrollmentDate)
+VALUES ('5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 2, 0, 'Not Started', GETDATE());
+
+INSERT INTO StudentCourses (StudentID, CourseID, Progress, CertificateStatus, EnrollmentDate)
+VALUES ('a3f1464d-21b0-4354-b4f9-ce357e0ae4c5', 2, 0, 'Not Started', GETDATE());
+
+INSERT INTO Review (CourseID, StudentID, Rating, Comment, ReviewDate)
+VALUES ('2', '5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 5, 'comment_value', GETDATE());
+
+INSERT INTO Review (CourseID, StudentID, Rating, Comment, ReviewDate)
+VALUES ('2', 'a3f1464d-21b0-4354-b4f9-ce357e0ae4c5', 4, 'nice', GETDATE());
+
+ALTER TABLE Courses
+ADD Rating FLOAT NULL;
+go
+
+CREATE TRIGGER UpdateCourseRating
+ON Review
 AFTER INSERT
 AS
 BEGIN
+    -- Cập nhật Rating cho từng CourseID trong bảng Review
     UPDATE Courses
-    SET NumberOfStudents = (
-        SELECT COUNT(*)
-        FROM StudentCourses
-        WHERE StudentCourses.CourseID = Courses.CourseID
+    SET Rating = (
+        SELECT AVG(Rating)
+        FROM Review
+        WHERE CourseID = Courses.CourseID
     )
-    WHERE CourseID IN (
-        SELECT DISTINCT CourseID
-        FROM inserted
-    );
+    WHERE CourseID IN (SELECT CourseID FROM inserted);
 END;
-GO
 
-CREATE TRIGGER trg_UpdateNumberOfStudents_Delete
-ON StudentCourses
-AFTER DELETE
+INSERT INTO Lecture (CourseID, Title, [Description], UpLoadDate) VALUES
+(2, 'Giới thiệu về lập trình', 'Bài giảng giới thiệu về lập trình.', GETDATE()),
+(2, 'Cấu trúc dữ liệu', 'Tìm hiểu về cấu trúc dữ liệu cơ bản.', GETDATE()),
+(2, 'Giới thiệu về thuật toán', 'Các thuật toán cơ bản trong lập trình.', GETDATE()),
+(2, 'Lập trình hướng đối tượng', 'Khái niệm lập trình hướng đối tượng.', GETDATE()),
+(2, 'Xử lý chuỗi', 'Cách xử lý chuỗi trong lập trình.', GETDATE()),
+(2, 'Giới thiệu về cơ sở dữ liệu', 'Các khái niệm cơ bản về cơ sở dữ liệu.', GETDATE()),
+(2, 'Thao tác với SQL', 'Hướng dẫn các lệnh SQL cơ bản.', GETDATE()),
+(2, 'Xây dựng ứng dụng web', 'Các bước xây dựng ứng dụng web.', GETDATE()),
+(2, 'Kiểm thử phần mềm', 'Các phương pháp kiểm thử phần mềm.', GETDATE()),
+(2, 'Triển khai ứng dụng', 'Hướng dẫn triển khai ứng dụng lên server.', GETDATE());
+
+INSERT INTO LectureCompletion (UserID, LectureID, IsCompleted, CompletionDate) VALUES
+('5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 4, 1, GETDATE()),-- Bài giảng 1 đã hoàn thành
+('5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 2, 1, GETDATE()),  -- Bài giảng 2 đã hoàn thành
+('5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 3, 1, GETDATE());  -- Bài giảng 3 đã hoàn thành
+go
+
+CREATE TRIGGER trg_UpdateStudentCourseProgress
+ON LectureCompletion
+AFTER INSERT
 AS
 BEGIN
-    UPDATE Courses
-    SET NumberOfStudents = (
-        SELECT COUNT(*)
-        FROM StudentCourses
-        WHERE StudentCourses.CourseID = Courses.CourseID
-    )
-    WHERE CourseID IN (
-        SELECT DISTINCT CourseID
-        FROM deleted
-    );
+    DECLARE @UserID NVARCHAR(450);
+    DECLARE @CourseID INT;
+
+    -- Lấy UserID và CourseID từ bản ghi vừa thêm vào
+    SELECT @UserID = UserID, @CourseID = Lecture.CourseID
+    FROM Lecture
+    INNER JOIN inserted ON Lecture.LectureID = inserted.LectureID;
+
+    -- Tính số lượng bài giảng đã hoàn thành cho User trong khóa học
+    DECLARE @CompletedCount INT;
+    SELECT @CompletedCount = COUNT(*)
+    FROM LectureCompletion
+    WHERE UserID = @UserID AND IsCompleted = 1 
+      AND LectureID IN (
+          SELECT LectureID
+          FROM Lecture
+          WHERE CourseID = @CourseID
+      );
+
+    -- Tính tổng số bài giảng trong khóa học
+    DECLARE @TotalCount INT;
+    SELECT @TotalCount = COUNT(*)
+    FROM Lecture
+    WHERE CourseID = @CourseID;
+
+    -- Tính tỷ lệ hoàn thành (progress)
+    DECLARE @Progress FLOAT;
+    IF @TotalCount > 0
+    BEGIN
+        SET @Progress = CAST(@CompletedCount AS FLOAT) / CAST(@TotalCount AS FLOAT);
+    END
+    ELSE
+    BEGIN
+        SET @Progress = NULL; -- Nếu không có bài giảng nào, progress sẽ NULL
+    END
+
+    -- Cập nhật bảng StudentCourses với tiến độ
+    UPDATE StudentCourses
+    SET Progress = @Progress
+    WHERE StudentID = @UserID AND CourseID = @CourseID;
 END;
+
+ALTER TABLE Test
+ADD NumberOfQuestion INT NOT NULL;
 GO
 
-INSERT INTO StudentCourses (StudentID, CourseID, Progress, CertificateStatus, EnrollmentDate)
-VALUES ('90f467c3-1961-44d6-afed-3f66a40626cf', 2, 0, 'Not Started', GETDATE());
+CREATE TRIGGER trg_UpdateNumberOfQuestion
+ON Question
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    UPDATE t
+    SET t.NumberOfQuestion = q.CountOfQuestions
+    FROM Test t
+    INNER JOIN (
+        SELECT testID, COUNT(*) AS CountOfQuestions
+        FROM Question
+        GROUP BY testID
+    ) q ON t.TestID = q.testID;
+END;
+
+INSERT INTO Payment (CourseID, StudentID, Amount, [Status])
+VALUES (3, '5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 150.00, 'Pending');

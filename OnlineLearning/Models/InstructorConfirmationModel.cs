@@ -12,5 +12,6 @@ namespace OnlineLearning.Models
         [ForeignKey("UserID")]
         public AppUserModel user { get; set; }
         public DateTime SendDate { get; set; }
+        public string Description { get; set; }
     }
 }

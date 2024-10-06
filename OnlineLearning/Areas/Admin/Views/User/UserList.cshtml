@@ -1,8 +1,8 @@
 ﻿@{
     Layout = "~/Areas/Admin/Views/Shared/_layout.cshtml";
 }
-@using OnlineLearning.Models
-@model IEnumerable<AppUserModel>
+@using OnlineLearning.Models.ViewModel
+@model IEnumerable<UserRolesViewModel>
 <body>
     <style>
         body {
@@ -205,8 +205,9 @@
                             <thead>
                                 <tr >
                                     <th>Candidate Name</th>
+                                    <th class="text-center">Role</th>
                                     <th class="text-center">Status</th>
-                                    
+                                  
                                 </tr>
                             </thead>
                             <tbody>
@@ -233,15 +234,19 @@
                                             </div>
                                         </div>
                                     </td>
+                                  
+                                        <td class="candidate-list-favourite-time text-center">
+                                          <span class="candidate-list-time order-1">@item.Roles</span>
+                                        </td>
                                     <td class="candidate-list-favourite-time text-center">
                                         <a class="candidate-list-favourite order-2 text-danger" href="#"><i class="fas fa-heart"></i></a>
                                         <span class="candidate-list-time order-1">Shortlisted</span>
                                     </td>
                                     <td>
                                         <ul class="list-unstyled mb-0 d-flex justify-content-end">
-                                                <li><a asp-area="Admin" asp-controller="User" asp-action="UserProfile" asp-route-Id="@item.Id" class="text-primary" data-toggle="tooltip" title=""><i class="far fa-eye"></i></a></li>
+                                                <li><a asp-area="Admin" asp-controller="User" asp-action="UserProfile" asp-route-Id="@item.UserId" class="text-primary" data-toggle="tooltip" title=""><i class="far fa-eye"></i></a></li>
                                             <li><a href="#" class="text-info" data-toggle="tooltip" title="" data-original-title="Edit"><i class="fas fa-pencil-alt"></i></a></li>
-                                                <li><a asp-area="Admin" asp-controller="User" asp-action="UserProfile" asp-route-Id="@item.Id" class="text-danger" data-toggle="tooltip" title="" data-original-title="Delete"><i class="far fa-trash-alt"></i></a></li>
+                                                <li><a asp-area="Admin" asp-controller="User" asp-action="UserProfile" asp-route-Id="@item.UserId" class="text-danger" data-toggle="tooltip" title="" data-original-title="Delete"><i class="far fa-trash-alt"></i></a></li>
                                         </ul>
                                     </td>
                                 </tr>

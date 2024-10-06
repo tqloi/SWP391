@@ -31,12 +31,14 @@ namespace OnlineLearning.Controllers
 
         public async Task<IActionResult> Index()
 		{
-            var courses = await datacontext.Courses.Include(c => c.Category).ToListAsync();
+            var model = new ListViewModel();
+            model.Courses = await datacontext.Courses.Include(c => c.Category)
+                .OrderByDescending(sc => sc.CourseID).ToListAsync();
+            model.Categories = await datacontext.Category.ToListAsync();
            
-			return View(courses);
+			return View(model);
 		}
 
-        [Authorize]
         public IActionResult Contact()
         {
             if (User.IsInRole("Admin"))

@@ -31,6 +31,7 @@ namespace OnlineLearning.Models
         public DateTime CreateDate { get; set; }
         public DateTime LastUpdate { get; set; }
         public DateTime? EndDate { get; set; }
+        public double Rating { get; set; }
         public int NumberOfRate { get; set; } = 0;
         [ForeignKey("CategoryID")]
         public CategoryModel Category { get; set; }

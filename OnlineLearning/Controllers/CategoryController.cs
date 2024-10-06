@@ -12,15 +12,19 @@ namespace OnlineLearning.Controllers
         {
             _dataContext = context;
         }
-        public async Task<IActionResult> Index(string CategoryId = "")
+        public async Task<IActionResult> Index(int CategoryId)
         {
-            CategoryModel category = _dataContext.Category.Where(c => c.CategoryID.Equals(CategoryId)).FirstOrDefault();
+            CategoryModel category = await _dataContext.Category.FirstOrDefaultAsync(c => c.CategoryID == CategoryId);
+
             if (category == null)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
-            var course = await _dataContext.Courses.Where(p => p.CategoryID == category.CategoryID).ToListAsync();
-            return View(course);
-        }
+            var courses = await _dataContext.Courses
+                .Where(p => p.CategoryID == category.CategoryID)
+                .ToListAsync();
+
+            return View(courses);
+        } 
     }
 }
