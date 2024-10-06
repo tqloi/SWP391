@@ -5,44 +5,70 @@
     Layout = "~/Views/Shared/login_layout.cshtml";
 }
 
-    <div class="container">
-        <form class="login-form" asp-action="Create" asp-controller="Account" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <a asp-action="Index" asp-controller="Home"><i class="fas fa-home"></i></a>
-            <h1>Sign Up</h1>
+<div class="container">
+    <form class="login-form" asp-action="Create" asp-controller="Account" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <a asp-action="Index" asp-controller="Home"><i class="fas fa-home"></i></a>
+        <h1>Sign Up</h1>
 
-            <input asp-for="Username" class="form-control" placeholder="Username" />
-            <span asp-validation-for="Username" class="text-danger"></span>
+        <input asp-for="Username" class="form-control" placeholder="Username" id="username" />
+        <span asp-validation-for="Username" class="text-danger" style="color: #dc3545 !important;"></span>
 
         <input asp-for="FirstName" class="form-control" placeholder="First Name" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
+        <span asp-validation-for="FirstName" class="text-danger" style="color: #dc3545 !important;"></span>
 
         <input asp-for="LastName" class="form-control" placeholder="Last Name" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
+        <span asp-validation-for="LastName" class="text-danger" style="color: #dc3545 !important;"></span>
 
-            <input asp-for="Email" class="form-control" placeholder="Email" />
-            <span asp-validation-for="Email" class="text-danger"></span>
+        <input asp-for="Email" class="form-control" placeholder="Email" />
+        <span asp-validation-for="Email" class="text-danger" style="color: #dc3545 !important;"></span>
 
-        <input asp-for="Password" type="password" class="form-control" placeholder="Password" />
-            <span asp-validation-for="Password" class="text-danger"></span>
+        <input asp-for="Password" type="password" class="form-control" placeholder="Password" id="password" oninput="validatePassword()" />
+        <span asp-validation-for="Password" id="passwordError" class="text-danger" style="color: #dc3545 !important;"></span>
 
-        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" />
-            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" id="confirmPassword" oninput="validateConfirmPassword()" />
+        <span asp-validation-for="ConfirmPassword" id="confirmPasswordError" class="text-danger" style="color: #dc3545 !important;"></span>
 
-            <button type="submit" value="Sign Up">Sign Up</button>
-            <div class="separator">
-                <span>Or</span>
-            </div>
-            <div class="social-login">
+        <button type="submit" value="Sign Up">Sign Up</button>
+        <div class="separator">
+            <span>Or</span>
+        </div>
+        <div class="social-login">
             <a asp-action="LoginGoogle" asp-controller="Account"><i class="fab fa-google"></i> Continue with Google</a>
-            </div>
-            <div class="separator signup-section">
-                <span>
-                    Already have an account ?
-                    <a asp-action="Login" asp-controller="Account">Sign In</a>
-                </span>
-            </div>
-        </form>
-    </div>
+        </div>
+        <div class="separator signup-section">
+            <span>
+                Already have an account ?
+                <a asp-action="Login" asp-controller="Account">Sign In</a>
+            </span>
+        </div>
+    </form>
+</div>
 
+<script>
+    // Kiểm tra mật khẩu khi người dùng nhập
+    function validatePassword() {
+        var password = document.getElementById('password').value;
+        var error = document.getElementById('passwordError');
+        var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 
+        if (!passwordRegex.test(password)) {
+            error.textContent = "Passwords must be at least 6 characters, including uppercase, lowercase, and numeric characters.";
+        } else {
+            error.textContent = "";
+        }
+    }
+
+    // Kiểm tra mật khẩu xác nhận khi người dùng nhập
+    function validateConfirmPassword() {
+        var password = document.getElementById('password').value;
+        var confirmPassword = document.getElementById('confirmPassword').value;
+        var error = document.getElementById('confirmPasswordError');
+
+        if (password !== confirmPassword) {
+            error.textContent = "Password and Password Confirmation do not match.";
+        } else {
+            error.textContent = "";
+        }
+    }
+</script>

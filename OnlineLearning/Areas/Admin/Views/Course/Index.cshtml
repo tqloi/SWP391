@@ -3,13 +3,14 @@
 }
   @using OnlineLearning.Models
   @model IEnumerable<CourseModel>
-
+<partial name="_NoficationPartial" />
 <body>
     <div>
         <br />
         <br />
     </div>
     <style>
+       
         body {
             margin-top: 20px;
         }
@@ -308,7 +309,7 @@
                         <div class="tab-pane fade active show" id="home" role="tabpanel">
                             <div class="table-responsive">
                                 <table class="table">
-                                    <thead>
+                                    <thead class="thanhtieude">
                                         <tr>
                                             <th class="text-center" scope="col">ID</th>
                                             <th scope="col">Name</th>
@@ -330,7 +331,7 @@
                                                 </th>
                                                 <td>
                                                     <div class="event-img">
-                                                        <img src="~/Images/talha.jpg" alt="" />
+                                                        <img src="~/Images/@item.CoverImagePath" alt="" />
                                                     </div>
                                                 </td>
                                                 <td>

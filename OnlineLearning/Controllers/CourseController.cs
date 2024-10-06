@@ -4,11 +4,10 @@ using OnlineLearningApp.Respositories;
 
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
-using OnlineLearningApp.Respositories;
+
 using System.Security.Claims;
 
 

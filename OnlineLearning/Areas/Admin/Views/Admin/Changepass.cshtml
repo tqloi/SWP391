@@ -1,0 +1,94 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_layout.cshtml";
+}
+@using OnlineLearning.Areas.Admin.Models.ViewModel
+@model ChangePasswordViewModel
+<partial name="_NoficationPartial" />
+<body>
+    <style>
+        body {
+            background: #f7f7ff;
+            margin-top: 20px;
+        }
+
+        .card {
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 6px rgba(218, 218, 253, 0.65), 0 2px 6px rgba(206, 206, 238, 0.54);
+        }
+    </style>
+
+    <div class="container">
+        <div class="main-body">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <form asp-action="Changepass" asp-controller="Admin" asp-area="Admin" method="post" enctype="multipart/form-data">
+                            <div class="card-body">
+                                <div class="mb-3 row">
+                                    <label class="col-sm-3 col-form-label">UserName</label>
+                                    <div class="col-sm-9">
+                                        <input readonly asp-for="Username" class="form-control" value="@Model.Username" />
+                                        <span asp-validation-for="Username" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label class="col-sm-3 col-form-label">Old Password</label>
+                                    <div class="col-sm-9">
+                                        <input asp-for="OldPassword" class="form-control" />
+                                        <span asp-validation-for="OldPassword" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3 row">
+                                    <label class="col-sm-3 col-form-label">New password</label>
+                                    <div class="col-sm-9">
+                                        <input asp-for="NewPassword" class="form-control" oninput="validatePassword()" />
+                                        <span asp-validation-for="NewPassword" id="passwordError" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label class="col-sm-3 col-form-label">Confirm New password</label>
+                                    <div class="col-sm-9">
+                                        <input asp-for="ConfirmNewPassword" class="form-control" oninput="validateConfirmPassword()"/>
+                                        <span asp-validation-for="ConfirmNewPassword" id="confirmPasswordError" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+    // Kiểm tra mật khẩu khi người dùng nhập
+    function validatePassword() {
+        var password = document.getElementById('password').value;
+        var error = document.getElementById('passwordError');
+        var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+
+        if (!passwordRegex.test(password)) {
+            error.textContent = "Passwords must be at least 6 characters, including uppercase, lowercase, and numeric characters.";
+        } else {
+            error.textContent = "";
+        }
+    }
+
+    // Kiểm tra mật khẩu xác nhận khi người dùng nhập
+    function validateConfirmPassword() {
+        var password = document.getElementById('password').value;
+        var confirmPassword = document.getElementById('confirmPassword').value;
+        var error = document.getElementById('confirmPasswordError');
+
+        if (password !== confirmPassword) {
+            error.textContent = "Password and Password Confirmation do not match.";
+        } else {
+            error.textContent = "";
+        }
+    }
+</script>

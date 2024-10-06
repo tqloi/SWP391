@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineLearning.Models
 {
-    public class InstructorConfirmModel
+    public class InstructorConfirmationModel
     {
         [Key]
         public int ConfirmationID { get; set; }
@@ -11,5 +11,6 @@ namespace OnlineLearning.Models
         public string Certificatelink { get; set; }
         [ForeignKey("UserID")]
         public AppUserModel user { get; set; }
+        public DateTime SendDate { get; set; }
     }
 }

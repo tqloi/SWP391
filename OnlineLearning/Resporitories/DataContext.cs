@@ -18,7 +18,7 @@ namespace OnlineLearningApp.Respositories
         public DbSet<InstructorModel> Instructors { get; set; }
         public DbSet<CourseModel> Courses { get; set; }
         public DbSet<CategoryModel> Category{ get; set; }
-
+        public DbSet<InstructorConfirmationModel> InstructorConfirmation { get; set; }
         public DbSet<StudentCourseModel> StudentCourses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -27,7 +27,7 @@ namespace OnlineLearningApp.Respositories
             SeedRoles(builder);
         }
 
-
+       
 
         private void SeedRoles(ModelBuilder builder)
         {

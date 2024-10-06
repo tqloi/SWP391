@@ -35,6 +35,7 @@
     <Folder Include="Areas\Instructor\" />
     <Folder Include="Areas\Student\" />
     <Folder Include="wwwroot\CourseMaterials\" />
+    <Folder Include="wwwroot\ConfirmInstructor\" />
 
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
   </ItemGroup>

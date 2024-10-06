@@ -3,7 +3,7 @@
 }
 @using OnlineLearning.Models
 @model IEnumerable<AppUserModel>
-
+<partial name="_NoficationPartial" />
 <div class="container">
     <div class="page-inner">
         <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
@@ -48,8 +48,8 @@
                             </div>
                             <div class="col col-stats ms-3 ms-sm-0">
                                 <div class="numbers">
-                                    <p class="card-category">Subscribers</p>
-                                    <h4 class="card-title">1303</h4>
+                                    <p class="card-category">Members</p>
+                                    <h4 class="card-title">@Model.Count()</h4>
                                 </div>
                             </div>
                         </div>
