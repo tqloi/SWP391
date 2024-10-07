@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
+using OnlineLearning.Models.OnlineLearning.Models;
 
 
 namespace OnlineLearningApp.Respositories
@@ -13,7 +14,7 @@ namespace OnlineLearningApp.Respositories
         {
 
         }
-
+        public DbSet<TestModel> Test { get; set; }
 		public DbSet<AppUserModel> Users { get; set; }
         public DbSet<InstructorModel> Instructors { get; set; }
         public DbSet<CourseModel> Courses { get; set; }
@@ -27,8 +28,6 @@ namespace OnlineLearningApp.Respositories
             base.OnModelCreating(builder);
             SeedRoles(builder);
         }
-
-
 
         private void SeedRoles(ModelBuilder builder)
         {

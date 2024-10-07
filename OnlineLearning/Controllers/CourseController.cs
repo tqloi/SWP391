@@ -34,7 +34,7 @@ namespace OnlineLearning.Controllers
                      .ThenInclude(instructor => instructor.AppUser)
                      .ToListAsync();
 
-            return View(courses);
+            return View();
 
         }
 

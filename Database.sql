@@ -146,6 +146,8 @@ CREATE TABLE LectureFiles (
 -- Test table
 CREATE TABLE Test (
     TestID INT PRIMARY KEY IDENTITY(1,1), 
+	Title NVARCHAR(255),
+	Description NVARCHAR(255),
     CourseID INT,  -- Foreign key to Courses
     StartTime DATETIME,
     EndTime DATETIME,
@@ -326,7 +328,7 @@ go
 SELECT * FROM Courses;
 Insert into Instructors(InstructorID, Description)
 values
-('5c7c5bc0-06c9-4840-8dd5-7dc0860469ed','Heloo student');
+('18e7f450-0bdc-4b5d-817e-bc97fb8ebada','Heloo student');
 
 ALTER TABLE Courses
 ALTER COLUMN Description VARCHAR(MAX);
@@ -426,7 +428,7 @@ BEGIN
 END;
 
 INSERT INTO Lecture (CourseID, Title, [Description], UpLoadDate) VALUES
-(2, 'Giới thiệu về lập trình', 'Bài giảng giới thiệu về lập trình.', GETDATE()),
+(55, 'Giới thiệu về lập trình', 'Bài giảng giới thiệu về lập trình.', GETDATE()),
 (2, 'Cấu trúc dữ liệu', 'Tìm hiểu về cấu trúc dữ liệu cơ bản.', GETDATE()),
 (2, 'Giới thiệu về thuật toán', 'Các thuật toán cơ bản trong lập trình.', GETDATE()),
 (2, 'Lập trình hướng đối tượng', 'Khái niệm lập trình hướng đối tượng.', GETDATE()),
@@ -511,3 +513,9 @@ END;
 
 INSERT INTO Payment (CourseID, StudentID, Amount, [Status])
 VALUES (3, '5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 150.00, 'Pending');
+
+ALTER TABLE Test
+ADD Title NVARCHAR(255)
+
+ALTER TABLE Test
+ADD Description NVARCHAR(255)

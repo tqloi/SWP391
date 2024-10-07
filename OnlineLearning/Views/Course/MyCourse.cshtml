@@ -90,7 +90,7 @@
                             <div class="col-md-9 row align-items-end">
                                 <div class="col-md-8">
                                 <div>
-                                            <h8>@studentCourse.CertificateStatus: @(studentCourse.Progress * 100)%</h8>
+                                           <h8>@studentCourse.CertificateStatus: @(studentCourse.Progress * 100)%</h8>
                                 </div>
                                     <div class="progress">
                                             <div class="progress-bar-custom" style="width:@(studentCourse.Progress * 100)%;">
@@ -109,7 +109,8 @@
                             @if (User.IsInRole("Instructor"))
                             {
                                 <div class="col-md-3">
-                                    <a asp-area="Instructor" asp-action="Index" asp-controller="Instructor" class="btn custom-btn mt-3 mt-lg-4">Go to course</a>
+                                    <p>Course ID: @course.CourseID</p>
+                                    <a asp-area="Instructor" asp-action="Index" asp-controller="Instructor" asp-route-CourseID="@course.CourseID" class="btn custom-btn mt-3 mt-lg-4">Go to course</a>
                                 </div>
                             } 
                         </div>

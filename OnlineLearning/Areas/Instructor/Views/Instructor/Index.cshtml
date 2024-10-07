@@ -1,5 +1,135 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Course Material";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <partial name="_NoficationPartial" />
 }
+@model OnlineLearning.Areas.Instructor.Models.ViewModel.CreateTestViewModel
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+@if (User.IsInRole("Instructor"))
+{
+    <section class="topics-detail-section section-padding" id="topics-detail">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Course's materials and lectures: </h2>
+                    <p>Material and lecture some content goes here.</p>
+                </div>
+            </div>
+
+            <div class="row align-items-end">
+                <div class="col">
+                    <div>
+                        <button class="btn custom-btn active" data-bs-toggle="modal" data-bs-target="#createTestModal">
+                            <i class="fas fa-plus new-icon"></i> Create new Test
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @*   if (Model.Tests != null)
+    {
+        foreach (var test in Model.Tests)
+        {
+            <div class="card shadow-sm" style="width: 20rem;">
+                <div class="card-body">
+                    <h5 class="card-title">@test.Title</h5>
+                    <p class="card-text">@test.Description</p>
+
+                    <div class="mb-3">
+                        <p><strong>Start time:</strong>@test.StartTime</p>
+                        <p>2024-10-03</p>
+                        <p><strong>End time:</strong>@test.EndTime</p>
+                        <p>2024-10-03</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <p><strong>Number of questions:</strong> @test.NumberOfQuestion</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <p><strong>Status:</strong> @test.Status</p>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-success">Edit Question</button>
+                        <button class="btn btn-success">Add Question</button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+ *@
+    <section>
+        <div class="col-lg-6 col-12">
+            <div class="custom-block custom-block-overlay">
+                <div class="d-flex flex-column h-100">
+                    <img src="images/businesswoman-using-tablet-analysis.jpg" class="custom-block-image img-fluid" alt="">
+                    <div class="custom-block-overlay-text d-flex">
+                        <div>
+                            <h5 class="text-white mb-2">Finance</h5>
+                            <p class="text-white">Topic Listing Template includes homepage, listing page, detail page, and contact page.</p>
+                            <a asp-action="CourseList" asp-controller="Course" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
+                        </div>
+                        <span class="badge bg-finance rounded-pill ms-auto">25</span>
+                    </div>
+                    <div class="social-share d-flex">
+                        <p class="text-white me-4">Share:</p>
+                        <ul class="social-icon">
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-twitter"></a>
+                            </li>
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-facebook"></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="section-overlay"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+}
+else
+{
+    <p>You do not have permission to access this content.</p>
+}
+
+<!-- Modal -->
+<div class="modal fade" id="createTestModal" tabindex="-1" aria-labelledby="createTestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createTestModalLabel">Create New Test</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form id="newTestForm" enctype="multipart/form-data" method="post" asp-controller="Instructor" asp-action="CreateTest">
+                    <div class="mb-3">
+                        <label for="Title" class="form-label">Test Title</label>
+                        <input type="text" class="form-control" name="Title" asp-for="Title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">Description</label>
+                        <textarea class="form-control" name="Description" rows="3" asp-for="Description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" asp-for="StartTime" name="StartTime" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" asp-for="EndTime" name="EndTime" required>
+                    </div>
+                    <input type="hidden" class="form-control" asp-for="CourseID" value="@ViewBag.CourseID" />
+                    <input type="hidden" class="form-control" asp-for="Status" value="Active" />
+                    <button type="submit" class="btn custom-btn">Create Test</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
