@@ -41,10 +41,10 @@
                 </div>
                 </div>
             <div class="col-lg-6 col-12 text-center">
-                <h3>Scan QR Code</h3>
+               @*  <h3>Scan QR Code</h3>
                 <div class="qr-code-container" style="background-color: white; padding: 20px; border-radius: 10px; display: inline-block;">
                     <img src="~/Images/QRCode.jpg" alt="QR Code" style="width: 100%; height:auto; max-width: 400px;" class="img-fluid">
-                </div>
+                </div> *@
             </div>
             </div>
         </div>
@@ -55,6 +55,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="paymentConfirmationModalLabel">Payment Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to proceed with the payment?</p>
@@ -70,6 +71,7 @@
                     <input type="hidden" name="UserID" value="@Model.UserID" />
                     <input type="hidden" name="CourseID" value="@Model.CourseID" />
                     <input type="hidden" name="Price" value="@Model.Price" />
+                    <button type="button" class="btn custom-btn active" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn custom-btn">Confirm Checkout</button>
             </div>
             </form>

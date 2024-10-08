@@ -18,9 +18,11 @@ namespace OnlineLearningApp.Respositories
         public DbSet<InstructorModel> Instructors { get; set; }
         public DbSet<CourseModel> Courses { get; set; }
         public DbSet<CategoryModel> Category{ get; set; }
-        public DbSet<NotificationModel> Notification { get; set; }
+		public DbSet<ScoreAssignmentModel> ScoreAssignment { get; set; }
+		public DbSet<NotificationModel> Notification { get; set; }
         public DbSet<InstructorConfirmationModel> InstructorConfirmation { get; set; }
-
+        public DbSet<SubmissionModel> Submission { get; set; }
+        public DbSet<AssignmentModel> Assignment { get; set; }
         public DbSet<StudentCourseModel> StudentCourses { get; set; }
         public DbSet<ReviewMoel> Reviews { get; set; }
         public DbSet<CourseMaterialModel> CourseMaterials { get; set; }

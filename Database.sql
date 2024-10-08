@@ -9,14 +9,30 @@ CREATE TABLE Instructors (
 	[Description] TEXT,
     FOREIGN KEY (instructorID) REFERENCES AspNetUsers(Id) 
 );
+CREATE TABLE Notification (
+    NotificationID INT PRIMARY KEY IDENTITY(1,1), 
+    UserID nvarchar(450) NOT NULL, 
+    [Description] NVARCHAR(255) NOT NULL, 
+    
+    CreatedAt DATETIME DEFAULT GETDATE() 
+    FOREIGN KEY (UserID) REFERENCES AspNetUsers(Id) 
+);
+
+select * from Notification
 -- InstructorConfirmation
 CREATE TABLE InstructorConfirmation(
-	 ConfirmationID INT PRIMARY KEY,
+	 ConfirmationID INT PRIMARY KEY IDENTITY(1,1),
 	 UserID nvarchar(450),
 	 Certificatelink nvarchar(400),
-	 SendDDate DATETIME DEFAULT GETDATE(),
+	 SendDate DATETIME DEFAULT GETDATE(),
+	 
 	 FOREIGN KEY (UserID) REFERENCES AspNetUsers(Id) 
 )
+drop table InstructorConfirmation
+
+ALTER TABLE InstructorConfirmation
+ADD [Description] TEXT;
+GO
 ALTER TABLE InstructorConfirmation
 ADD SendDDate DATETIME DEFAULT GETDATE();
 GO
@@ -182,6 +198,16 @@ CREATE TABLE Assignment (
     DueDate DATETIME,
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
+CREATE TABLE ScoreAssignment (
+	ScoreAssignmentID INT PRIMARY KEY IDENTITY(1,1),
+    studentID NVARCHAR(450) NOT NULL,
+    AssignmentID INT NOT NULL,
+	score FLOAT NOT NULL,
+    FOREIGN KEY (studentID) REFERENCES AspNetUsers(id),
+    FOREIGN KEY (AssignmentID) REFERENCES Assignment(AssignmentID) ON DELETE CASCADE  
+);
+insert into Assignment(CourseID, Title, Description, DueDate)
+values (9,'assignment 1','abcde',GETDATE())
 -- Submission table
 CREATE TABLE Submission (
     SubmissionID INT PRIMARY KEY IDENTITY(1,1),
@@ -278,7 +304,9 @@ VALUES
     ('Data Science', 'Courses focused on data analysis and machine learning.'),
     ('Web Development', 'Courses for building websites and web applications.'),
     ('Design', 'Courses for graphic design and multimedia.'); 
-
+INSERT INTO Instructors(InstructorID, [Description]) 
+VALUES
+    ('d4a32111-743b-4125-b949-3fe37bfb7eae', 'Courses related to programming and software development.')
 INSERT INTO Courses 
     (Title, CourseCode, [Description], CoverImagePath, InstructorID, NumberOfStudents, Price, CategoryID, [Level], [Status], CreateDate, LastUpdate, EndDate, NumberOfRate) 
 VALUES

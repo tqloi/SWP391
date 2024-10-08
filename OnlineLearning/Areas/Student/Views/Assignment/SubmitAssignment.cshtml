@@ -1,0 +1,61 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    <partial name="_NoficationPartial" />
+}
+@model SubmissionViewModel
+<header class="site-header d-flex flex-column justify-content-center align-items-center">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <div class="col-lg-5 col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">My Courses</li>
+                    </ol>
+                </nav>
+                <h2 class="text-white">Topics Listing</h2>
+            </div>
+        </div>
+    </div>
+</header>
+<style>
+    .topics-section {
+        padding: 50px 100px 50px 100px;
+        background-color: #f7f7f7;
+    }
+</style>
+
+<!-- Add Lecture Modal -->
+<div class="container">
+
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="font-monospace fs-2">Edit Assignment</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form enctype="multipart/form-data" method="post" asp-area="Student" asp-controller="Assignment" asp-action="SubmitAssignment">
+                    <!-- Assignment ID -->
+                    <div class="mb-3">
+                        <input type="hidden" asp-for="AssignmentID" />
+                    </div>
+
+                    <!-- Assignment Link -->
+                    <div class="mb-3">
+                        <label asp-for="SubmissionLink" class="form-label">Upload Assignment File</label>
+                        <input asp-for="SubmissionLink" class="form-control" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary w-100">Update Assignment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</div>

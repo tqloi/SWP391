@@ -8,7 +8,6 @@ using OnlineLearning.Models.ViewModel;
 
 using System.Security.Claims;
 
-
 namespace OnlineLearning.Controllers
 {
     public class CourseController : Controller
@@ -183,7 +182,7 @@ namespace OnlineLearning.Controllers
                 var notification = new NotificationModel
                 {
                     UserId = userId,
-                    Description = $"{user.UserName} has just logged in",
+                    Description = $"{user.UserName} has just created a courses",
                     CreatedAt = DateTime.Now
                 };
 

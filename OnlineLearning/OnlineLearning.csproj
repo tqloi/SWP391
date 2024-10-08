@@ -32,10 +32,12 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\Shared\Components\" />
-    <Folder Include="Areas\Instructor\" />
-    <Folder Include="Areas\Student\" />
+    <Folder Include="Areas\Instructor\Models\" />
+    <Folder Include="Areas\Instructor\Views\Shared\Components\" />
+    <Folder Include="Areas\Student\Models\" />
     <Folder Include="wwwroot\CourseMaterials\" />
     <Folder Include="wwwroot\ConfirmInstructor\" />
+    <Folder Include="wwwroot\Assignment\" />
 
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
 
@@ -47,6 +49,29 @@
     <Folder Include="Areas\Instructor\Models\" />
     <Folder Include="wwwroot\CourseMaterials\" />
 
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Areas\Instructor\Views\Shared\login_layout.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Areas\Instructor\Views\Shared\_Layout.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Areas\Instructor\Views\Shared\_NoficationPartial.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Areas\Instructor\Views\Shared\_SideCategory.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Areas\Instructor\Views\Shared\_ValidationScriptsPartial.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

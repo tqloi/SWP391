@@ -1,0 +1,85 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    <partial name="_NoficationPartial" />
+}
+@model AssignmentViewModel
+<header class="site-header d-flex flex-column justify-content-center align-items-center">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <div class="col-lg-5 col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">My Courses</li>
+                    </ol>
+                </nav>
+                <h2 class="text-white">Topics Listing</h2>
+            </div>
+        </div>
+    </div>
+</header>
+<style>
+    .topics-section {
+        padding: 50px 100px 50px 100px;
+        background-color: #f7f7f7;
+    }
+</style>
+
+<!-- Add Lecture Modal -->
+<div class="container">
+
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="font-monospace fs-2">Edit Assignment</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment">
+
+                    <!-- Course ID -->
+                    <div class="mb-3">
+                        <input type="hidden" asp-for="CourseID" />
+                    </div>
+
+                    <!-- Assignment ID -->
+                    <div class="mb-3">
+                        <input type="hidden" asp-for="AssignmentID" />
+                    </div>
+
+                    <!-- Title -->
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label">Title</label>
+                        <input asp-for="Title" class="form-control" placeholder="Enter assignment title">
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter description"></textarea>
+                    </div>
+
+                    <!-- Due Date -->
+                    <div class="mb-3">
+                        <label asp-for="DueDate" class="form-label">Due Date</label>
+                        <input asp-for="DueDate" class="form-control" type="datetime-local">
+                    </div>
+
+                    <!-- Assignment Link -->
+                    <div class="mb-3">
+                        <label asp-for="AssignmentLink" class="form-label">Upload Assignment File</label>
+                        <input asp-for="AssignmentLink" class="form-control" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary w-100">Update Assignment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</div>

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Email;
+using OnlineLearning.Migrations;
 using OnlineLearning.Models;
 using OnlineLearningApp.Respositories;
 
@@ -94,9 +95,16 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-app.MapControllerRoute(
+app.MapAreaControllerRoute(
     name: "Areas",
+    areaName: "Instructor",
+    pattern: "{area:exists}/{controller=Instructor}/{action=Index}/{id?}");
+app.MapAreaControllerRoute(
+    name: "Areas",
+    areaName:"Admin",
     pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
-
+app.MapAreaControllerRoute(
+    name: "Areas",
+    areaName: "Student",
+    pattern: "{area:exists}/{controller=Student}/{action=Index}/{id?}");
 app.Run();

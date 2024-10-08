@@ -52,21 +52,21 @@ namespace OnlineLearning.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "b2637952-f7c5-442f-a930-84098ccfed0d",
+                            ConcurrencyStamp = "619ec385-c9a0-436a-afb3-d54e58c203d3",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "5bcfe4c1-00f2-48b4-9aed-173a3e1bbfa7",
+                            ConcurrencyStamp = "8eb99005-976d-4fab-8813-ad79d38ad1c3",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = "3",
-                            ConcurrencyStamp = "7c1c0a6a-a26c-4219-a059-6d10d4e9c68a",
+                            ConcurrencyStamp = "f9a8dcf2-5c8b-4126-b8ae-e2fe89c0ecc1",
                             Name = "Instructor",
                             NormalizedName = "INSTRUCTOR"
                         });
@@ -263,6 +263,35 @@ namespace OnlineLearning.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("OnlineLearning.Models.AssignmentModel", b =>
+                {
+                    b.Property<int>("AssignmentID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AssignmentID"));
+
+                    b.Property<int>("CourseID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AssignmentID");
+
+                    b.HasIndex("CourseID");
+
+                    b.ToTable("Assignment");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CategoryModel", b =>
@@ -614,6 +643,17 @@ namespace OnlineLearning.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("OnlineLearning.Models.AssignmentModel", b =>
+                {
+                    b.HasOne("OnlineLearning.Models.CourseModel", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CourseMaterialModel", b =>

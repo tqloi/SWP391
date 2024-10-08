@@ -58,7 +58,7 @@
                 @if (ViewBag.IsEnrolled || User.IsInRole("Instructor"))
                     {
                         <div class="d-flex align-items-center mt-4">
-                            <a asp-action="MyCourse" asp-controller="Course" class="btn custom-btn smoothscroll me-4">Go to course</a>
+                        <a asp-action="LectureList" asp-controller="Participation" asp-route-id="@Model.CourseID" class="btn custom-btn smoothscroll me-4">Go to course</a>
                         </div>
                     }
                     else
