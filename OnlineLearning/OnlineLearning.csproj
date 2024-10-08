@@ -32,10 +32,10 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\Shared\Components\" />
-    <Folder Include="Areas\Instructor\" />
     <Folder Include="Areas\Student\" />
     <Folder Include="wwwroot\CourseMaterials\" />
     <Folder Include="wwwroot\ConfirmInstructor\" />
+    <Folder Include="wwwroot\CourseVideo\" />
 
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
 

@@ -10,7 +10,7 @@ using OnlineLearning.Models;
 using OnlineLearningApp.Respositories;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var configuration = builder.Configuration;
 builder.Services.AddTransient<EmailSender>();
 //connect database
 builder.Services.AddDbContext<DataContext>(options =>
@@ -32,6 +32,17 @@ builder.Services.AddNotyf(config =>
 );
 ///telling the application to use the specific ClientId, and the ClientSecret
 ///redirect user to the google login page for authentication
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+//})
+//    .AddCookie()
+//    .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+//    {
+//        options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
+//        options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
+//    });
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -43,6 +54,11 @@ builder.Services.AddAuthentication(options =>
         options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
         options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
     });
+//builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+//{
+//    googleOptions.ClientId = configuration["Authentication:Google: ClientId"];
+//    googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+//});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -99,4 +115,8 @@ app.MapControllerRoute(
     name: "Areas",
     pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
 
+app.MapAreaControllerRoute(
+       name: "instructor",
+       areaName: "Instructor",
+       pattern: "Instructor/{controller=Home}/{action=Index}/{id?}");
 app.Run();

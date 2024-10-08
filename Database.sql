@@ -14,8 +14,8 @@ CREATE TABLE InstructorConfirmation(
 	 ConfirmationID INT PRIMARY KEY,
 	 UserID nvarchar(450),
 	 Certificatelink nvarchar(400),
-	 SendDDate DATETIME DEFAULT GETDATE(),
-	 FOREIGN KEY (UserID) REFERENCES AspNetUsers(Id) 
+	 SendDate DATETIME DEFAULT GETDATE(),
+	 FOREIGN KEY (UserID) REFERENCES AspNetUsers(Id) ON DELETE CASCADE 
 )
 ALTER TABLE InstructorConfirmation
 ADD SendDDate DATETIME DEFAULT GETDATE();
@@ -57,20 +57,18 @@ CREATE TABLE Payment(
 	PaymentDate DATETIME DEFAULT GETDATE(), 
 	[Status] NVARCHAR(30) CHECK (status IN ('Pending', 'Completed', 'Failed', 'Cancelled')),
 	FOREIGN KEY (studentID) REFERENCES AspNetUsers(id),
-	FOREIGN KEY (courseID) REFERENCES Courses(courseID)
+	FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE 
 );
+ALTER TABLE Payment
+DROP CONSTRAINT FK__Payment__CourseI__123EB7A3; 
+
+ALTER TABLE Payment
+ADD CONSTRAINT FK_Payment_CourseID
+FOREIGN KEY (CourseID) REFERENCES Courses(CourseID) ON DELETE CASCADE;
+
 ALTER TABLE Payment
 ADD CONSTRAINT UC_Payment UNIQUE (StudentID, CourseID);
 go
-
--- Enrollment table
-CREATE TABLE Enrollment(
-    EnrollmentID INT PRIMARY KEY IDENTITY(1,1),
-    PaymentID INT,  -- Foreign key to Courses
-    EnrollmentDate DATETIME DEFAULT GETDATE(),  
-	[Status] NVARCHAR(50) CHECK (status IN ('Paid', 'Free')),
-    FOREIGN KEY (paymentID) REFERENCES Payment (paymentID)  
-);
 
 CREATE TABLE Cart (
     CartID INT IDENTITY(1,1) PRIMARY KEY,
@@ -131,7 +129,7 @@ CREATE TABLE LectureCompletion (
     IsCompleted BIT NOT NULL DEFAULT 0,
     CompletionDate DATETIME, 
     FOREIGN KEY (UserID) REFERENCES AspNetUsers(id),
-    FOREIGN KEY (LectureID) REFERENCES Lecture(LectureID) 
+    FOREIGN KEY (LectureID) REFERENCES Lecture(LectureID) ON DELETE CASCADE
 );
 
 -- Course image and video;
@@ -248,7 +246,7 @@ CREATE TABLE Review (
     Comment NVARCHAR(255),
     ReviewDate DATETIME,
     FOREIGN KEY (courseID) REFERENCES Courses(courseID),
-    FOREIGN KEY (studentID) REFERENCES AspNetUsers(id)
+    FOREIGN KEY (studentID) REFERENCES AspNetUsers(id) ON DELETE CASCADE
 );
 GO
 
@@ -326,7 +324,7 @@ go
 SELECT * FROM Courses;
 Insert into Instructors(InstructorID, Description)
 values
-('5c7c5bc0-06c9-4840-8dd5-7dc0860469ed','Heloo student');
+('35d441d5-21d3-4858-b6da-adb85ae9d40f','Heloo student');
 
 ALTER TABLE Courses
 ALTER COLUMN Description VARCHAR(MAX);
@@ -426,16 +424,29 @@ BEGIN
 END;
 
 INSERT INTO Lecture (CourseID, Title, [Description], UpLoadDate) VALUES
-(2, 'Giới thiệu về lập trình', 'Bài giảng giới thiệu về lập trình.', GETDATE()),
-(2, 'Cấu trúc dữ liệu', 'Tìm hiểu về cấu trúc dữ liệu cơ bản.', GETDATE()),
-(2, 'Giới thiệu về thuật toán', 'Các thuật toán cơ bản trong lập trình.', GETDATE()),
-(2, 'Lập trình hướng đối tượng', 'Khái niệm lập trình hướng đối tượng.', GETDATE()),
-(2, 'Xử lý chuỗi', 'Cách xử lý chuỗi trong lập trình.', GETDATE()),
-(2, 'Giới thiệu về cơ sở dữ liệu', 'Các khái niệm cơ bản về cơ sở dữ liệu.', GETDATE()),
-(2, 'Thao tác với SQL', 'Hướng dẫn các lệnh SQL cơ bản.', GETDATE()),
-(2, 'Xây dựng ứng dụng web', 'Các bước xây dựng ứng dụng web.', GETDATE()),
-(2, 'Kiểm thử phần mềm', 'Các phương pháp kiểm thử phần mềm.', GETDATE()),
-(2, 'Triển khai ứng dụng', 'Hướng dẫn triển khai ứng dụng lên server.', GETDATE());
+(27, 'Giới thiệu về lập trình', 'Bài giảng giới thiệu về lập trình.', GETDATE()),
+(27, 'Cấu trúc dữ liệu', 'Tìm hiểu về cấu trúc dữ liệu cơ bản.', GETDATE()),
+(27, 'Giới thiệu về thuật toán', 'Các thuật toán cơ bản trong lập trình.', GETDATE()),
+(27, 'Lập trình hướng đối tượng', 'Khái niệm lập trình hướng đối tượng.', GETDATE()),
+(27, 'Xử lý chuỗi', 'Cách xử lý chuỗi trong lập trình.', GETDATE()),
+(27, 'Giới thiệu về cơ sở dữ liệu', 'Các khái niệm cơ bản về cơ sở dữ liệu.', GETDATE()),
+(27, 'Thao tác với SQL', 'Hướng dẫn các lệnh SQL cơ bản.', GETDATE()),
+(27, 'Xây dựng ứng dụng web', 'Các bước xây dựng ứng dụng web.', GETDATE()),
+(27, 'Kiểm thử phần mềm', 'Các phương pháp kiểm thử phần mềm.', GETDATE()),
+(27, 'Triển khai ứng dụng', 'Hướng dẫn triển khai ứng dụng lên server.', GETDATE());
+
+INSERT INTO Lecture (CourseID, Title, [Description], UpLoadDate) VALUES
+(28, 'Introduction to Programming', 'An introductory lecture on programming concepts.', GETDATE()),
+(28, 'Data Structures', 'An overview of basic data structures.', GETDATE()),
+(28, 'Introduction to Algorithms', 'Basic algorithms in programming.', GETDATE()),
+(28, 'Object-Oriented Programming', 'Concepts of object-oriented programming.', GETDATE()),
+(28, 'String Manipulation', 'How to manipulate strings in programming.', GETDATE()),
+(28, 'Introduction to Databases', 'Basic concepts of databases.', GETDATE()),
+(28, 'SQL Basics', 'Guide to basic SQL commands.', GETDATE()),
+(28, 'Building Web Applications', 'Steps to build web applications.', GETDATE()),
+(28, 'Software Testing', 'Methods of software testing.', GETDATE()),
+(28, 'Application Deployment', 'Guide to deploying applications on a server.', GETDATE());
+
 
 INSERT INTO LectureCompletion (UserID, LectureID, IsCompleted, CompletionDate) VALUES
 ('5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 4, 1, GETDATE()),-- Bài giảng 1 đã hoàn thành
@@ -511,3 +522,11 @@ END;
 
 INSERT INTO Payment (CourseID, StudentID, Amount, [Status])
 VALUES (3, '5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 150.00, 'Pending');
+
+SELECT 
+    CONSTRAINT_NAME, 
+    TABLE_NAME 
+FROM 
+    INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+WHERE 
+    CONSTRAINT_TYPE = 'FOREIGN KEY';

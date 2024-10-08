@@ -60,5 +60,17 @@ namespace OnlineLearning.Controllers
             ViewBag.CourseId = course.CourseID;
             return View(course);
         }
+        public async Task<IActionResult> LectureDetail(int id)
+        {
+            var lecture = await datacontext.Lecture.FindAsync(id);
+
+            if (lecture == null)
+            {
+                return NotFound();
+            }
+            //------- code ----
+            ViewBag.CourseId = lecture.CourseID;
+            return View(lecture);
+        }
     }
 }

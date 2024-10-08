@@ -8,6 +8,10 @@ namespace OnlineLearning.Models.ViewModel
     public class CourseViewModel
     {
         [Required]
+        public int CourseID { get; set; }
+        [Required]
+        public int CategoryID { get; set; }
+        [Required]
         public string Title { get; set; }
         [Required]
         public string Description { get; set; }

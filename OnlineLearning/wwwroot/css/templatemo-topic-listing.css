@@ -1213,14 +1213,19 @@ blockquote {
 }
 
 .limited-text {
-    line-height: 1.5em; /* Chi?u cao c?a m?t dòng */
-    height: 3.0em; /* Chi?u cao cho 3 dòng (1.5em * 3) */
-    overflow: hidden; /* ?n ph?n v?n b?n v??t quá */
-    text-overflow: ellipsis; /* Thêm d?u ba ch?m n?u v?n b?n b? c?t ng?n */
+    line-height: 1.5em; 
+    height: 3.0em;
+    overflow: hidden; 
+    text-overflow: ellipsis; 
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     max-height: 4.5em;
     white-space: normal;
-    word-break: break-word; /* ??m b?o v?n b?n b? ng?t ?úng ch? */
+    word-break: break-word;
+}
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: #f8f9fa !important; 
+    color: #212529 !important; 
 }
