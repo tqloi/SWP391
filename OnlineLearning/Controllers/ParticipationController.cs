@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearningApp.Respositories;
+using YourNamespace.Models;
 
 namespace OnlineLearning.Controllers
 {
@@ -62,15 +63,15 @@ namespace OnlineLearning.Controllers
         }
         public async Task<IActionResult> LectureDetail(int id)
         {
-            var lecture = await datacontext.Lecture.FindAsync(id);
+            var lectureFile = await datacontext.LectureFiles
+                .Include(l => l.Lecture) 
+                .FirstOrDefaultAsync(l => l.LectureID == id);
 
-            if (lecture == null)
-            {
-                return NotFound();
-            }
-            //------- code ----
-            ViewBag.CourseId = lecture.CourseID;
-            return View(lecture);
+            var lecture = lectureFile.Lecture;
+
+            ViewBag.CourseId = lecture.CourseID; 
+            return View(lecture); 
         }
+
     }
 }
