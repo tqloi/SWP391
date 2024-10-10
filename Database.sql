@@ -171,6 +171,8 @@ CREATE TABLE Question (
     correctAnswer NVARCHAR(255),
     FOREIGN KEY (testID) REFERENCES Test(testID) ON DELETE CASCADE  
 );
+ALTER TABLE Question
+ADD ImagePath NVARCHAR(255)
 -- Assignment table
 CREATE TABLE Assignment (
     AssignmentID INT PRIMARY KEY IDENTITY(1,1),

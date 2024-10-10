@@ -16,7 +16,6 @@
   <ItemGroup>
     <PackageReference Include="AspNetCoreHero.ToastNotification" Version="1.1.0" />
     <PackageReference Include="MailKit" Version="4.7.1.1" />
-    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
@@ -32,10 +31,12 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\Shared\Components\" />
+    <Folder Include="Areas\Instructor\Models\ViewModel\" />
     <Folder Include="Areas\Student\" />
     <Folder Include="wwwroot\CourseMaterials\" />
     <Folder Include="wwwroot\ConfirmInstructor\" />
     <Folder Include="wwwroot\CourseVideo\" />
+    <Folder Include="wwwroot\Images\QuestionImages\" />
 
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
 

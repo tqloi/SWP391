@@ -145,3 +145,14 @@
     .text-decoration-none.text-dark.card:hover {
         background-color: #f0f0f0; /* Màu nền khi hover */
     }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar-nav {
+        text-align: center;
+    }
+
+    .nav-link {
+        margin-bottom: 0.5rem;
+    }
+}
