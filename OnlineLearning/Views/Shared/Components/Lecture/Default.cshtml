@@ -1,0 +1,17 @@
+﻿@model IEnumerable<LectureModel>
+
+   @for (int index = 0; index < Model.Count(); index++)
+    {
+        var lecture = Model.ElementAt(index);
+        <li class="list-inline-item">
+        <a asp-action="LectureDetail" asp-controller="Participation" asp-route-id="@lecture.LectureID" class="text-decoration-none text-dark card" style="width: 20rem;">
+                <div class="card-body">
+                <i class="fas fa-graduation-cap">
+                </i>
+                       <strong>@(index + 1). @lecture.Title</strong>
+                    
+                </div>
+        </a>
+        </li>
+    }
+

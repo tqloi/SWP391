@@ -13,7 +13,12 @@ using OnlineLearning.Email;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+
 using OnlineLearningApp.Respositories;
+
+using static QRCoder.PayloadGenerator.WiFi;
+using System.Data;
+
 
 namespace OnlineLearning.Controllers
 {
@@ -40,7 +45,7 @@ namespace OnlineLearning.Controllers
         {
             return View();
         }
-        //this method will be called first, redirect user to the google login page 
+
         public async Task LoginGoogle()
         {
             await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties
@@ -49,33 +54,72 @@ namespace OnlineLearning.Controllers
             });
 
         }
-        //selection and proper authentication from google and token exchange is return
-        //all claim value and print on the page
+
         public async Task<IActionResult> GoogleResponse()
         {
-            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
             if (result.Principal != null)
             {
                 var claims = result.Principal.Identities.FirstOrDefault()?.Claims;
                 if (claims != null)
                 {
-                    var claimValues = claims.Select(claim => new
+                    var emailClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                    var firstNameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName);
+                    var lastNameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname);
+
+                    if (emailClaim != null)
                     {
-                        claim.Issuer,
-                        claim.OriginalIssuer,
-                        claim.Type,
-                        claim.Value
-                    });
-                    //return Json(claimValues);
-                    return RedirectToAction("Index", "Home", new { area = "" });
+                        var email = emailClaim.Value;
+                        var existingUser = await _userManager.FindByEmailAsync(email);
+
+                        if (existingUser == null)
+                        {
+                            var user = new AppUserModel
+                            {
+                                UserName = email.Split('@')[0], 
+                                FirstName = firstNameClaim?.Value ?? "",
+                                LastName = lastNameClaim?.Value ?? "", 
+                                Email = email,
+                                PhoneNumber = "123456789", 
+                                ProfileImagePath = "default.jpg",
+                                Address = "", // Giá trị mặc định
+                                Dob = DateOnly.FromDateTime(DateTime.Now), 
+                                Gender = true, 
+                                EmailConfirmed = true
+                            };
+
+                            var createResult = await _userManager.CreateAsync(user);
+                            if (createResult.Succeeded)
+                            {
+                                // Set role cho người dùng mới
+                                await _userManager.AddToRoleAsync(user, "Student");
+                                await _signInManager.SignInAsync(user, isPersistent: false); 
+                                TempData["success"] = "Action successful!";
+                                return RedirectToAction("Index", "Home");
+                            }
+                        }
+                        else
+                        {
+                            // Nếu người dùng đã tồn tại, đăng nhập họ
+                            await _signInManager.SignInAsync(existingUser, isPersistent: false);
+                            var roles = await _userManager.GetRolesAsync(existingUser);
+                            HttpContext.Session.Remove("Otp");
+                            HttpContext.Session.Remove("Username");
+                            if (roles.Contains("Admin"))
+                            {
+                                return RedirectToAction("Index", "Admin", new { area = "Admin" });
+                            }
+                            TempData["success"] = "Action successful!";
+                            return RedirectToAction("Index", "Home");
+                        }
+                    }
                 }
             }
-            // Handle the case where Principal or Claims are null
-            return RedirectToAction("Index", "Home", new { area = "" });
+            TempData["error"] = "Action failed!";
+            return RedirectToAction("Login", "Account");
         }
 
 
-    
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -354,6 +398,7 @@ namespace OnlineLearning.Controllers
                     if (result.Succeeded)
                     {
                         result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                        TempData["success"] = "Changed successful!";
                         return RedirectToAction("Login", "Account");
                     }
                     else

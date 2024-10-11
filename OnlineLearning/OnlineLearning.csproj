@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\Shared\Components\" />
+
     <Folder Include="Areas\Instructor\Models\" />
     <Folder Include="Areas\Instructor\Views\Shared\Components\" />
     <Folder Include="Areas\Student\Models\" />
@@ -39,7 +40,16 @@
     <Folder Include="wwwroot\ConfirmInstructor\" />
     <Folder Include="wwwroot\Assignment\" />
 
+    <Folder Include="Areas\Student\" />
+    <Folder Include="wwwroot\CourseMaterials\" />
+    <Folder Include="wwwroot\ConfirmInstructor\" />
+    <Folder Include="wwwroot\CourseVideo\" />
+
+
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
+
+
+    <PackageReference Include="payOS" Version="1.0.7" />
 
     <PackageReference Include="QRCoder" Version="1.6.0" />
   </ItemGroup>

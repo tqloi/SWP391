@@ -1,0 +1,54 @@
+﻿@{
+    Layout = "~/Views/Shared/_CourseLayout.cshtml";
+    <partial name="_NoficationPartial" />
+}
+@model LectureModel
+
+<section>
+    <div class="container-fluid row">
+        <div class="sidebar col-md-3">
+            @if (User.IsInRole("Instructor"))
+            {
+                <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#createLectureModal">
+                    Add New Lecture
+                </button>
+            }
+            <ul class="list-inline">
+                @Html.Partial("_SideLecture", Model.CourseID)
+            </ul>
+        </div>
+        @*  <div class="content col-md-6">
+             <h2>@Model.</h2>
+             <p>@Model.Description</p>
+
+             <div class="video-container">
+                 <video width="100%" controls>
+                     <source src="@Model.vide" type="video/mp4"> 
+                     Your browser does not support the video tag.
+                 </video>
+             </div>
+
+             @if (Model.Files != null && Model.Files.Count > 0)
+             {
+                 <h3>Các file đính kèm:</h3>
+                 <ul>
+                     @foreach (var file in Model)
+                     {
+                         <li>
+                             <a href="@file.Url" target="_blank">@file.TenFile</a> 
+                         </li>
+                     }
+                 </ul>
+             }
+         </div> *@
+        <div class="right-sidebar col-md-3">
+            <div class="course-item">
+                <i class="fas fa-graduation-cap">
+                </i>
+                <span>
+                    ...
+                </span>
+            </div>
+        </div>
+    </div>
+</section>

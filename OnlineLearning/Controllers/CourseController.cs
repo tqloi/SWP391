@@ -112,6 +112,7 @@ namespace OnlineLearning.Controllers
             return View(course);
         }
 
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Create(CourseViewModel model)
@@ -198,5 +199,6 @@ namespace OnlineLearning.Controllers
         {
             return View();
         }
+
     }
 }

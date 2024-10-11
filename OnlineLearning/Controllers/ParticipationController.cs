@@ -5,7 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
+
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+
+using YourNamespace.Models;
+
 
 namespace OnlineLearning.Controllers
 {
@@ -69,5 +73,17 @@ namespace OnlineLearning.Controllers
             ViewBag.CourseId = course.CourseID;
             return View(course);
         }
+        public async Task<IActionResult> LectureDetail(int id)
+        {
+            var lectureFile = await datacontext.LectureFiles
+                .Include(l => l.Lecture) 
+                .FirstOrDefaultAsync(l => l.LectureID == id);
+
+            var lecture = lectureFile.Lecture;
+
+            ViewBag.CourseId = lecture.CourseID; 
+            return View(lecture); 
+        }
+
     }
 }

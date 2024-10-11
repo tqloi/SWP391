@@ -2,4 +2,58 @@
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
     <partial name="_NoficationPartial" />
 }
-<h1>Lecture<h1>
+@model CourseModel
+
+<section>
+    <div class="container-fluid row">
+        <div class="sidebar col-md-3">
+            @if(User.IsInRole("Instructor"))
+            {
+            <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#createLectureModal">
+                Add New Lecture
+            </button>
+            }
+            <ul class="list-inline">
+                @Html.Partial("_SideLecture", Model.CourseID)
+        </ul>
+        </div>
+        <div class="content col-md-6">
+       @*      <div class="search-bar">
+                <input placeholder="Search courses" type="text" />
+                <button>
+                    <i class="fas fa-search">
+                    </i>
+                </button>
+            </div> *@
+            <div class="mt-4">
+                <div class="card mb-3">
+                    <div class="row g-0">
+                        <!-- Course Details on Top, Aligned Left -->
+                        <div class="col-12">
+                            <div class="card-body">
+                                <h5 class="card-title"><strong>Course Title:</strong> @Model.Title</h5>
+                                <p class="card-text"><strong>Course Code:</strong> @Model.CourseCode</p>
+                                <p class="card-text"><strong>Description:</strong> @Model.Description</p>
+                            </div>
+                        </div>
+
+                        <!-- Course Image Below -->
+                        <div class="col-12 text-center mt-3">
+                            <img src="~/Images/@Model.CoverImagePath" class="img-fluid" alt="Course Image" style="max-width: 100%; height: auto; object-fit: contain;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="right-sidebar col-md-3">
+            <div class="course-item">
+                <i class="fas fa-graduation-cap">
+                </i>
+                <span>
+                   ...
+                </span>
+            </div>  
+        </div>
+    </div>
+</section>
