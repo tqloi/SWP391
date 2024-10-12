@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineLearningApp.Respositories;
 
@@ -11,9 +12,11 @@ using OnlineLearningApp.Respositories;
 namespace OnlineLearning.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241012090259_AddWalletuser")]
+    partial class AddWalletuser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,21 +55,21 @@ namespace OnlineLearning.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "fb7151db-a1a6-4e09-912f-2c1147ecf370",
+                            ConcurrencyStamp = "7f46332f-3c6b-43f4-a711-86ef157363a6",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "721bdf97-3ed8-456c-be0e-42585d4615a2",
+                            ConcurrencyStamp = "d77cbbd5-e47e-4252-9e13-1eaa83d69307",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = "3",
-                            ConcurrencyStamp = "a48bfe9f-3cc4-47c7-a408-8ef6b9420fb1",
+                            ConcurrencyStamp = "97187dfd-ff99-4f0b-98f3-74e6b7fe20a4",
                             Name = "Instructor",
                             NormalizedName = "INSTRUCTOR"
                         });
@@ -252,7 +255,7 @@ namespace OnlineLearning.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<double?>("WalletUser")
+                    b.Property<double>("WalletUser")
                         .HasColumnType("float");
 
                     b.HasKey("Id");

@@ -73,7 +73,7 @@ namespace OnlineLearning.Controllers
                 Address = user.Address,
                 Dob = user.Dob,
                 gender = user.Gender,
-
+                WalletUser = (double)user.WalletUser
             };
 
             return View(model);
