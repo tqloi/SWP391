@@ -1,0 +1,74 @@
+﻿@model List<OnlineLearning.Models.QuestionModel>
+
+@{
+    ViewData["Title"] = "Test Questions";
+}
+
+<!-- Applying Bootstrap classes for layout and styling -->
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Questions for Test: <span class="text-primary">@Model.FirstOrDefault()?.Test.Title</span></h2>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Question</th>
+                    <th>Answer A</th>
+                    <th>Answer B</th>
+                    <th>Answer C</th>
+                    <th>Answer D</th>
+                    <th>Correct Answer</th>
+                    <th>Image</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var question in Model)
+                {
+                    <tr>
+                        <td class="align-middle">@question.Question</td>
+                        <td class="align-middle">@question.AnswerA</td>
+                        <td class="align-middle">@question.AnswerB</td>
+                        <td class="align-middle">@question.AnswerC</td>
+                        <td class="align-middle">@question.AnswerD</td>
+                        <td class="align-middle">
+                            <span class="badge badge-success">@question.CorrectAnswer</span>
+                        </td>
+                        <td class="align-middle">
+                            @if (!string.IsNullOrEmpty(question.ImagePath))
+                            {
+                                <img src="@Url.Content(question.ImagePath)" alt="Question Image" class="img-thumbnail" style="max-width: 150px; max-height: 150px;" />
+                            }
+                            else
+                            {
+                                <span class="text-muted">No Image</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Custom CSS for additional styling -->
+<style>
+    h2 {
+        font-weight: bold;
+    }
+    table {
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+    .badge-success {
+        background-color: #28a745;
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+    img.img-thumbnail {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>

@@ -16,7 +16,7 @@ namespace OnlineLearning.Models
         [Required]
         [StringLength(255)]
         //the question itself 
-        public string QuestionText { get; set; }
+        public string Question { get; set; }
 
         [Required]
         [StringLength(255)]

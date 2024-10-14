@@ -53,9 +53,14 @@ namespace OnlineLearning.Controllers
         public IActionResult TestList(int id)
         {
             ViewBag.CourseId = id;
-            var TestList = datacontext.Test.ToList();
+
+            // Retrieve all tests that belong to the course with the specified id
+            var TestList = datacontext.Test
+                                      .Where(test => test.CourseID == id)
+                                      .ToList();
             return View(TestList);
         }
+
 
         public async Task<IActionResult> LectureDetail(int id)
         {

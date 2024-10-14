@@ -23,13 +23,13 @@ namespace OnlineLearning.Models.ViewModel
         public string AnswerA { get; set; }
 
         [StringLength(255)]
-        public string AnswerB { get; set; }
+        public string? AnswerB { get; set; }
 
         [StringLength(255)]
-        public string AnswerC { get; set; }
+        public string? AnswerC { get; set; }
 
         [StringLength(255)]
-        public string AnswerD { get; set; }
+        public string? AnswerD { get; set; }
 
         [StringLength(255)]
         public required string CorrectAnswer { get; set; }
@@ -39,5 +39,6 @@ namespace OnlineLearning.Models.ViewModel
 
         public IFormFile? QuestionImage { get; set; }
         public required TestModel Test { get; set; }
+        public int CourseID { get; set; }
     }
 }

@@ -34,7 +34,6 @@ namespace OnlineLearning.Controllers
             return View();
         }
 
-        //I'm not thinking the other way to do this so...
         public IActionResult CreateTestRedirector(int CourseID)
         {
             ViewBag.CourseID = CourseID;
@@ -82,7 +81,7 @@ namespace OnlineLearning.Controllers
                 Debug.WriteLine("Test saved to database");
 
                 TempData["success"] = "Test created successfully!";
-                return View();
+                return RedirectToAction("CreateTestRedirector", new { courseID = model.CourseID });
             }
             catch (Exception)
             {

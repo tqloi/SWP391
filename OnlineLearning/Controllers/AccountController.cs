@@ -72,15 +72,15 @@ namespace OnlineLearning.Controllers
                         {
                             var user = new AppUserModel
                             {
-                                UserName = email.Split('@')[0], 
+                                UserName = email.Split('@')[0],
                                 FirstName = firstNameClaim?.Value ?? "",
-                                LastName = lastNameClaim?.Value ?? "", 
+                                LastName = lastNameClaim?.Value ?? "",
                                 Email = email,
-                                PhoneNumber = "123456789", 
+                                PhoneNumber = "123456789",
                                 ProfileImagePath = "default.jpg",
                                 Address = "", // Giá trị mặc định
-                                Dob = DateOnly.FromDateTime(DateTime.Now), 
-                                Gender = true, 
+                                Dob = DateOnly.FromDateTime(DateTime.Now),
+                                Gender = true,
                                 EmailConfirmed = true
                             };
 
@@ -89,7 +89,7 @@ namespace OnlineLearning.Controllers
                             {
                                 // Set role cho người dùng mới
                                 await _userManager.AddToRoleAsync(user, "Student");
-                                await _signInManager.SignInAsync(user, isPersistent: false); 
+                                await _signInManager.SignInAsync(user, isPersistent: false);
                                 TempData["success"] = "Action successful!";
                                 return RedirectToAction("Index", "Home");
                             }
@@ -195,17 +195,17 @@ namespace OnlineLearning.Controllers
                 }
                 var user = new AppUserModel
 
-                 {
-                        UserName = model.Username,
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        Email = model.Email,
-                        PhoneNumber = "123456789",
-                        ProfileImagePath = "default.jpg",
-                        Address = "",
-                        Dob = DateOnly.FromDateTime(DateTime.Now),
-                        Gender = true
-                    };
+                {
+                    UserName = model.Username,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    PhoneNumber = "123456789",
+                    ProfileImagePath = "default.jpg",
+                    Address = "",
+                    Dob = DateOnly.FromDateTime(DateTime.Now),
+                    Gender = true
+                };
 
 
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -268,12 +268,12 @@ namespace OnlineLearning.Controllers
         {
             var storedOtp = HttpContext.Session.GetInt32("otp");
             var changeemail = HttpContext.Session.GetString("changeemail");
-             if (model.Otp == storedOtp && changeemail != null)
-                {
-                    HttpContext.Session.SetString("message", "emailsuccess");
-                    return RedirectToAction("AdminEdit", "Admin", new { Areas = "Admin" });
-                }
-                
+            if (model.Otp == storedOtp && changeemail != null)
+            {
+                HttpContext.Session.SetString("message", "emailsuccess");
+                return RedirectToAction("AdminEdit", "Admin", new { Areas = "Admin" });
+            }
+
             ModelState.AddModelError("", "Invalid OTP.");
             return View("OTP_ChangeEmail");
 
@@ -365,7 +365,7 @@ namespace OnlineLearning.Controllers
         public IActionResult ChangePassword(string username, int otp)
         {
             HttpContext.Session.Remove("otp");
-            if (string.IsNullOrEmpty(username) )
+            if (string.IsNullOrEmpty(username))
             {
                 return RedirectToAction("VerifyEmail", "Account");
             }
@@ -411,7 +411,5 @@ namespace OnlineLearning.Controllers
             }
 
         }
-
-
     }
 }

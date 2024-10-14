@@ -61,16 +61,21 @@
 
         <script>
             //should have be base on week that this test base on :/?
-            //all those shit didn't make sense now, there will be more to come 
+            //all those shit didn't make sense now, there will be more to come
             function validateDates() {
                 var startDate = new Date(document.getElementsByName('StartTime')[0].value);
                 var endDate = new Date(document.getElementsByName('EndTime')[0].value);
 
-                if (startDate >= endDate) {
-                    // Prevent form submission
+                if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                    alert("Please enter valid start and end dates.");
+                    return false;
+                }
+
+                if (startDate.getTime() >= endDate.getTime()) {
                     alert("End Date must be after Start Date.");
                     return false;
                 }
+
                 // Allow form submission
                 return true;
             }
