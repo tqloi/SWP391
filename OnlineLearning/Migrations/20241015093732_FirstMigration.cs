@@ -241,7 +241,7 @@ namespace OnlineLearning.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RequestTransfer",
+                name: "RequestTranfer",
                 columns: table => new
                 {
                     TranferID = table.Column<int>(type: "int", nullable: false)
@@ -251,13 +251,14 @@ namespace OnlineLearning.Migrations
                     AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MoneyNumber = table.Column<double>(type: "float", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RequestTransfer", x => x.TranferID);
+                    table.PrimaryKey("PK_RequestTranfer", x => x.TranferID);
                     table.ForeignKey(
-                        name: "FK_RequestTransfer_AspNetUsers_UserID",
+                        name: "FK_RequestTranfer_AspNetUsers_UserID",
                         column: x => x.UserID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -369,35 +370,6 @@ namespace OnlineLearning.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payment",
-                columns: table => new
-                {
-                    PaymentID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CourseID = table.Column<int>(type: "int", nullable: false),
-                    StudentID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payment", x => x.PaymentID);
-                    table.ForeignKey(
-                        name: "FK_Payment_AspNetUsers_StudentID",
-                        column: x => x.StudentID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Payment_Courses_CourseID",
-                        column: x => x.CourseID,
-                        principalTable: "Courses",
-                        principalColumn: "CourseID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Reviews",
                 columns: table => new
                 {
@@ -450,6 +422,31 @@ namespace OnlineLearning.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_StudentCourses_Courses_CourseID",
+                        column: x => x.CourseID,
+                        principalTable: "Courses",
+                        principalColumn: "CourseID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Test",
+                columns: table => new
+                {
+                    TestID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CourseID = table.Column<int>(type: "int", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NumberOfQuestion = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Test", x => x.TestID);
+                    table.ForeignKey(
+                        name: "FK_Test_Courses_CourseID",
                         column: x => x.CourseID,
                         principalTable: "Courses",
                         principalColumn: "CourseID",
@@ -519,6 +516,7 @@ namespace OnlineLearning.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     LectureID = table.Column<int>(type: "int", nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    FileType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     FilePath = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     UploadDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -533,14 +531,40 @@ namespace OnlineLearning.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Question",
+                columns: table => new
+                {
+                    QuestionID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TestID = table.Column<int>(type: "int", nullable: false),
+                    Question = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    AnswerA = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    AnswerB = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    AnswerC = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    AnswerD = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CorrectAnswer = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Question", x => x.QuestionID);
+                    table.ForeignKey(
+                        name: "FK_Question_Test_TestID",
+                        column: x => x.TestID,
+                        principalTable: "Test",
+                        principalColumn: "TestID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1", "6a8d5484-9c24-43e4-9535-1ed9db3d1e0d", "Admin", "ADMIN" },
-                    { "2", "edf8dabb-db80-4c1b-ab63-8755744d32db", "Student", "STUDENT" },
-                    { "3", "7c8148a5-286b-4108-83d6-6fa2570137ed", "Instructor", "INSTRUCTOR" }
+                    { "1", "a60cfe2a-5cc0-45c8-aea7-1b4d1069162a", "Admin", "ADMIN" },
+                    { "2", "ce201d6e-b5ed-44a1-b6af-4c6b4a4fdbbe", "Student", "STUDENT" },
+                    { "3", "24caebf2-fb4b-4e48-83f1-9610e9571b4c", "Instructor", "INSTRUCTOR" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -623,18 +647,13 @@ namespace OnlineLearning.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payment_CourseID",
-                table: "Payment",
-                column: "CourseID");
+                name: "IX_Question_TestID",
+                table: "Question",
+                column: "TestID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payment_StudentID",
-                table: "Payment",
-                column: "StudentID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestTransfer_UserID",
-                table: "RequestTransfer",
+                name: "IX_RequestTranfer_UserID",
+                table: "RequestTranfer",
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
@@ -676,6 +695,11 @@ namespace OnlineLearning.Migrations
                 name: "IX_Submission_StudentID",
                 table: "Submission",
                 column: "StudentID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Test_CourseID",
+                table: "Test",
+                column: "CourseID");
         }
 
         /// <inheritdoc />
@@ -709,10 +733,10 @@ namespace OnlineLearning.Migrations
                 name: "Notification");
 
             migrationBuilder.DropTable(
-                name: "Payment");
+                name: "Question");
 
             migrationBuilder.DropTable(
-                name: "RequestTransfer");
+                name: "RequestTranfer");
 
             migrationBuilder.DropTable(
                 name: "Reviews");
@@ -731,6 +755,9 @@ namespace OnlineLearning.Migrations
 
             migrationBuilder.DropTable(
                 name: "Lecture");
+
+            migrationBuilder.DropTable(
+                name: "Test");
 
             migrationBuilder.DropTable(
                 name: "Assignment");
