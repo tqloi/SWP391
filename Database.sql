@@ -207,6 +207,8 @@ CREATE TABLE Question (
     correctAnswer NVARCHAR(255),
     FOREIGN KEY (testID) REFERENCES Test(testID) ON DELETE CASCADE  
 );
+ALTER TABLE Question
+ADD ImagePath NVARCHAR(255)
 -- Assignment table
 CREATE TABLE Assignment (
     AssignmentID INT PRIMARY KEY IDENTITY(1,1),
@@ -217,14 +219,16 @@ CREATE TABLE Assignment (
     DueDate DATETIME,
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
-<<<<<<< HEAD
+
 alter table Assignment add AssignmentLink nvarchar(450)
-=======
-alter table assignment
-add AssignmentLink TEXT;
+
+
 go  
 
->>>>>>> 2382184d6998dfc2c31a925a33ec3a667a825c24
+Alter table Question
+Add Description NVARCHAR(255),
+Add Title NVARCHAR(255);
+
 CREATE TABLE ScoreAssignment (
 	ScoreAssignmentID INT PRIMARY KEY IDENTITY(1,1),
     studentID NVARCHAR(450) NOT NULL,

@@ -49,12 +49,19 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 InstructorID = userId,
                 //Status = true
             };
+            //Check if a cover image is provided
             if (model.CoverImage != null)
             {
+                //Define the upload path (wwwroot/Images)
                 string uploadpath = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
+
+                //Generate a unique image file name, this shit(Guid.NewGuid())
                 string imagename = Guid.NewGuid() + "_" + model.CoverImage.FileName;
+
+                //combine em
                 string filepath = Path.Combine(uploadpath, imagename);
 
+                //idk why?
                 using (var fs = new FileStream(filepath, FileMode.Create))
                 {
                     await model.CoverImage.CopyToAsync(fs);

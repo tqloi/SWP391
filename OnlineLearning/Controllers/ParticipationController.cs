@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
-
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using System.Diagnostics;
 
 using YourNamespace.Models;
 using System.Security.Claims;
@@ -47,6 +47,7 @@ namespace OnlineLearning.Controllers
             return View(course);
         }
 
+
         [HttpGet]
         [ServiceFilter(typeof(CourseAccessFilter))]
         public async Task<IActionResult> AssignmentList(int CourseID)
@@ -82,12 +83,23 @@ namespace OnlineLearning.Controllers
             }
 
             ViewBag.Course = course;
-            return View(course);
+            ViewBag.CourseID = CourseID;
+            var TestList = datacontext.Test
+                                      .Where(test => test.CourseID == CourseID)
+                                      .ToList();
+            return View(TestList);
+            
         }
 
-        [HttpGet]
+        
+
+        
+
+
+       [HttpGet]
         [ServiceFilter(typeof(CourseAccessFilter))]
         public async Task<IActionResult> LectureDetail(int LectureID)
+
         {
             var lecture = await datacontext.Lecture.FindAsync(LectureID);
             var course = await datacontext.Courses.FindAsync(lecture.CourseID);
