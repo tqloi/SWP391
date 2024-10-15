@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\assets\**" />
     <Compile Remove="wwwroot\Images\NewFolder\**" />
+    <Content Remove="wwwroot\assets\**" />
     <Content Remove="wwwroot\Images\NewFolder\**" />
+    <EmbeddedResource Remove="wwwroot\assets\**" />
     <EmbeddedResource Remove="wwwroot\Images\NewFolder\**" />
+    <None Remove="wwwroot\assets\**" />
     <None Remove="wwwroot\Images\NewFolder\**" />
   </ItemGroup>
 
@@ -45,6 +49,7 @@
     <Folder Include="wwwroot\CourseMaterials\" />
     <Folder Include="wwwroot\ConfirmInstructor\" />
     <Folder Include="wwwroot\CourseVideo\" />
+    <Folder Include="wwwroot\course\" />
 
 
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />

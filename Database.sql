@@ -167,11 +167,16 @@ alter table RequestTranfer add CreateAt datetime
 CREATE TABLE LectureFiles (
     FileID INT PRIMARY KEY IDENTITY(1,1),
     LectureID INT,  
-    [FileName] NVARCHAR(255),  
+    [FileName] NVARCHAR(255),
+	FileType NVARCHAR(255) CHECK (FileType IN ('Document', 'Video')),
     FilePath NVARCHAR(500),  
     UploadDate DATETIME DEFAULT GETDATE(),  
     FOREIGN KEY (lectureID) REFERENCES Lecture(lectureID) ON DELETE CASCADE  
 );
+alter table LectureFiles
+add FileType NVARCHAR(255) CHECK (FileType IN ('Document', 'Video'));
+go
+
 -- Test table
 CREATE TABLE Test (
     TestID INT PRIMARY KEY IDENTITY(1,1), 
@@ -207,11 +212,19 @@ CREATE TABLE Assignment (
     AssignmentID INT PRIMARY KEY IDENTITY(1,1),
     CourseID INT,  -- Foreign key to Courses
     Title NVARCHAR(255),
+	AssignmentLink TEXT,
     [Description] TEXT,
     DueDate DATETIME,
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
+<<<<<<< HEAD
 alter table Assignment add AssignmentLink nvarchar(450)
+=======
+alter table assignment
+add AssignmentLink TEXT;
+go  
+
+>>>>>>> 2382184d6998dfc2c31a925a33ec3a667a825c24
 CREATE TABLE ScoreAssignment (
 	ScoreAssignmentID INT PRIMARY KEY IDENTITY(1,1),
     studentID NVARCHAR(450) NOT NULL,
@@ -325,11 +338,11 @@ INSERT INTO Courses
     (Title, CourseCode, [Description], CoverImagePath, InstructorID, NumberOfStudents, Price, CategoryID, [Level], [Status], CreateDate, LastUpdate, EndDate, NumberOfRate) 
 VALUES
     -- Programming Category
-    ('Python for Beginners', 'CS101', 'Learn Python programming from scratch.', 'cover/python.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 100.00, 1, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
-    ('Java Advanced Techniques', 'CS102', 'Explore advanced Java programming concepts.', 'cover/java.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 120.00, 1, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
-    ('C# for Beginners', 'CS103', 'Introduction to C# programming.', 'cover/csharp.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 90.00, 1, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
-    ('Full-Stack Development with Node.js', 'CS104', 'Learn full-stack development using Node.js.', 'cover/nodejs.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 150.00, 1, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
-    ('Introduction to Algorithms', 'CS105', 'Learn about algorithms and data structures.', 'cover/algorithms.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 110.00, 1, 'Advanced', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
+    ('Python for Beginners', 'CS101', 'Learn Python programming from scratch.', 'cover/python.jpg', '039f2d18-90fe-412c-89a4-038d55908b65', 0, 100.00, 1, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
+    ('Java Advanced Techniques', 'CS102', 'Explore advanced Java programming concepts.', 'cover/java.jpg', '039f2d18-90fe-412c-89a4-038d55908b65', 0, 120.00, 1, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
+    ('C# for Beginners', 'CS103', 'Introduction to C# programming.', 'cover/csharp.jpg', '039f2d18-90fe-412c-89a4-038d55908b65', 0, 90.00, 1, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
+    ('Full-Stack Development with Node.js', 'CS104', 'Learn full-stack development using Node.js.', 'cover/nodejs.jpg', '039f2d18-90fe-412c-89a4-038d55908b65', 0, 150.00, 1, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
+    ('Introduction to Algorithms', 'CS105', 'Learn about algorithms and data structures.', 'cover/algorithms.jpg', '039f2d18-90fe-412c-89a4-038d55908b65', 0, 110.00, 1, 'Advanced', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
 
     -- Data Science Category
     ('Data Analysis with R', 'DS101', 'Learn data analysis using R programming.', 'cover/data_analysis.jpg', '5c7c5bc0-06c9-4840-8dd5-7dc0860469ed', 0, 130.00, 2, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
@@ -368,7 +381,7 @@ go
 SELECT * FROM Courses;
 Insert into Instructors(InstructorID, Description)
 values
-('35d441d5-21d3-4858-b6da-adb85ae9d40f','Heloo student');
+('039f2d18-90fe-412c-89a4-038d55908b65','Heloo student');
 
 ALTER TABLE Courses
 ALTER COLUMN Description VARCHAR(MAX);
@@ -468,28 +481,16 @@ BEGIN
 END;
 
 INSERT INTO Lecture (CourseID, Title, [Description], UpLoadDate) VALUES
-(27, 'Giới thiệu về lập trình', 'Bài giảng giới thiệu về lập trình.', GETDATE()),
-(27, 'Cấu trúc dữ liệu', 'Tìm hiểu về cấu trúc dữ liệu cơ bản.', GETDATE()),
-(27, 'Giới thiệu về thuật toán', 'Các thuật toán cơ bản trong lập trình.', GETDATE()),
-(27, 'Lập trình hướng đối tượng', 'Khái niệm lập trình hướng đối tượng.', GETDATE()),
-(27, 'Xử lý chuỗi', 'Cách xử lý chuỗi trong lập trình.', GETDATE()),
-(27, 'Giới thiệu về cơ sở dữ liệu', 'Các khái niệm cơ bản về cơ sở dữ liệu.', GETDATE()),
-(27, 'Thao tác với SQL', 'Hướng dẫn các lệnh SQL cơ bản.', GETDATE()),
-(27, 'Xây dựng ứng dụng web', 'Các bước xây dựng ứng dụng web.', GETDATE()),
-(27, 'Kiểm thử phần mềm', 'Các phương pháp kiểm thử phần mềm.', GETDATE()),
-(27, 'Triển khai ứng dụng', 'Hướng dẫn triển khai ứng dụng lên server.', GETDATE());
-
-INSERT INTO Lecture (CourseID, Title, [Description], UpLoadDate) VALUES
-(28, 'Introduction to Programming', 'An introductory lecture on programming concepts.', GETDATE()),
-(28, 'Data Structures', 'An overview of basic data structures.', GETDATE()),
-(28, 'Introduction to Algorithms', 'Basic algorithms in programming.', GETDATE()),
-(28, 'Object-Oriented Programming', 'Concepts of object-oriented programming.', GETDATE()),
-(28, 'String Manipulation', 'How to manipulate strings in programming.', GETDATE()),
-(28, 'Introduction to Databases', 'Basic concepts of databases.', GETDATE()),
-(28, 'SQL Basics', 'Guide to basic SQL commands.', GETDATE()),
-(28, 'Building Web Applications', 'Steps to build web applications.', GETDATE()),
-(28, 'Software Testing', 'Methods of software testing.', GETDATE()),
-(28, 'Application Deployment', 'Guide to deploying applications on a server.', GETDATE());
+(1, 'Introduction to Programming', 'An introductory lecture on programming concepts.', GETDATE()),
+(1, 'Data Structures', 'An overview of basic data structures.', GETDATE()),
+(1, 'Introduction to Algorithms', 'Basic algorithms in programming.', GETDATE()),
+(1, 'Object-Oriented Programming', 'Concepts of object-oriented programming.', GETDATE()),
+(1, 'String Manipulation', 'How to manipulate strings in programming.', GETDATE()),
+(1, 'Introduction to Databases', 'Basic concepts of databases.', GETDATE()),
+(1, 'SQL Basics', 'Guide to basic SQL commands.', GETDATE()),
+(1, 'Building Web Applications', 'Steps to build web applications.', GETDATE()),
+(1, 'Software Testing', 'Methods of software testing.', GETDATE()),
+(1, 'Application Deployment', 'Guide to deploying applications on a server.', GETDATE());
 
 
 INSERT INTO LectureCompletion (UserID, LectureID, IsCompleted, CompletionDate) VALUES
@@ -574,3 +575,5 @@ FROM
     INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
 WHERE 
     CONSTRAINT_TYPE = 'FOREIGN KEY';
+
+	ALTER TABLE [AspNetUsers] ADD [WalletUser] float NULL DEFAULT 0.0;

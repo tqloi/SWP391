@@ -39,10 +39,10 @@ namespace OnlineLearning.Controllers
             _vnPayservice = vnPayservice;
         }
         [HttpGet]
-        public async Task<IActionResult> PaymentConfirmation(int id)
+        public async Task<IActionResult> PaymentConfirmation(int CourseID)
         {
             var course = await datacontext.Courses
-                .FirstOrDefaultAsync(c => c.CourseID == id);
+                .FirstOrDefaultAsync(c => c.CourseID == CourseID);
 
             if (course == null)
             {
@@ -111,7 +111,7 @@ namespace OnlineLearning.Controllers
                 if (result.Succeeded && result1.Succeeded)
                 {
                     TempData["success"] = "Payment completed successfully!";
-                    return RedirectToAction("CourseDetail", "Course", new { id = model.CourseID });
+                    return RedirectToAction("CourseDetail", "Course", new { CourseID = model.CourseID });
                 }
 
             }
@@ -190,9 +190,9 @@ namespace OnlineLearning.Controllers
             if (result.Succeeded)
             {
                 TempData["success"] = "successfully!";
-                return RedirectToAction("CourseDetail", "Course", new { id = studentCourse.CourseID });
+                return RedirectToAction("CourseDetail", "Course", new { CourseID = studentCourse.CourseID });
             }
-            return RedirectToAction("CourseDetail", "Course", new { id = studentCourse.CourseID });
+            return RedirectToAction("CourseDetail", "Course", new { CourseID = studentCourse.CourseID });
 
 
 

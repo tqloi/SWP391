@@ -9,6 +9,7 @@ using OnlineLearningApp.Respositories;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 using YourNamespace.Models;
+using System.Security.Claims;
 
 
 namespace OnlineLearning.Controllers
@@ -30,30 +31,38 @@ namespace OnlineLearning.Controllers
             _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
         }
-        public async Task<IActionResult> LectureList(int id)
-        {
-            var course = await datacontext.Courses.FindAsync(id);
+
+        [HttpGet]
+        [ServiceFilter(typeof(CourseAccessFilter))]
+        public async Task<IActionResult> CourseInfo(int CourseID)
+        {     
+            var course = await datacontext.Courses.FindAsync(CourseID);
 
             if (course == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
-            //------- code ----
-            ViewBag.CourseId = course.CourseID;
-            return View(course); 
+
+            ViewBag.Course = course;
+            return View(course);
         }
-        public async Task<IActionResult> AssignmentList(int id)
+
+        [HttpGet]
+        [ServiceFilter(typeof(CourseAccessFilter))]
+        public async Task<IActionResult> AssignmentList(int CourseID)
         {
-            var assignments = await datacontext.Assignment.Where(a => a.CourseID == id).ToListAsync();
+            var course = await datacontext.Courses.FindAsync(CourseID);
+            var assignments = await datacontext.Assignment.Where(a => a.CourseID == CourseID).ToListAsync();
 
             if (assignments == null)
             {
                 return NotFound();
             }
-            HttpContext.Session.SetInt32("courseid", id);
-           
+            HttpContext.Session.SetInt32("courseid", CourseID);
+            ViewBag.Course = course;
             return View(assignments);
         }
+
         public ActionResult ViewAssignmentPdf(int Id)
         {
             var assignmentlink = datacontext.Assignment.FirstOrDefault(c => c.AssignmentID == Id);
@@ -61,29 +70,30 @@ namespace OnlineLearning.Controllers
             return View(assignmentlink);
         }
 
-        public async Task<IActionResult> TestList(int id)
+        [HttpGet]
+        [ServiceFilter(typeof(CourseAccessFilter))]
+        public async Task<IActionResult> TestList(int CourseID)
         {
-            var course = await datacontext.Courses.FindAsync(id);
+            var course = await datacontext.Courses.FindAsync(CourseID);
 
             if (course == null)
             {
                 return NotFound();
             }
-            // ------ codde ----------
-            ViewBag.CourseId = course.CourseID;
+
+            ViewBag.Course = course;
             return View(course);
         }
-        public async Task<IActionResult> LectureDetail(int id)
+
+        [HttpGet]
+        [ServiceFilter(typeof(CourseAccessFilter))]
+        public async Task<IActionResult> LectureDetail(int LectureID)
         {
-            var lectureFile = await datacontext.LectureFiles
-                .Include(l => l.Lecture) 
-                .FirstOrDefaultAsync(l => l.LectureID == id);
+            var lecture = await datacontext.Lecture.FindAsync(LectureID);
+            var course = await datacontext.Courses.FindAsync(lecture.CourseID);
 
-            var lecture = lectureFile.Lecture;
-
-            ViewBag.CourseId = lecture.CourseID; 
+            ViewBag.Course = course;
             return View(lecture); 
         }
-
     }
 }

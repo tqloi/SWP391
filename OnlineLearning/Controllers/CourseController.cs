@@ -91,12 +91,12 @@ namespace OnlineLearning.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> CourseDetail(int id)
+        public async Task<IActionResult> CourseDetail(int CourseID)
         {
             var course = await datacontext.Courses
                      .Include(course => course.Instructor)       
                      .ThenInclude(instructor => instructor.AppUser)
-                     .FirstOrDefaultAsync(c => c.CourseID == id);
+                     .FirstOrDefaultAsync(c => c.CourseID == CourseID);
 
             if (course == null)
             {
@@ -105,7 +105,7 @@ namespace OnlineLearning.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var isEnrolled = await datacontext.StudentCourses
-                .AnyAsync(sc => sc.CourseID == id && sc.StudentID == userId);
+                .AnyAsync(sc => sc.CourseID == CourseID && sc.StudentID == userId);
 
             ViewBag.IsEnrolled = isEnrolled;
 

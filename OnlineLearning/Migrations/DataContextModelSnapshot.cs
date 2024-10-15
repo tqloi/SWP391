@@ -52,21 +52,27 @@ namespace OnlineLearning.Migrations
                         new
                         {
                             Id = "1",
+
                             ConcurrencyStamp = "c29ef634-856f-4572-886a-fb742c32a18e",
+
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
+
                             ConcurrencyStamp = "7b0d32b7-1d6d-435d-bd61-2298f203d4bb",
+
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = "3",
+
                             ConcurrencyStamp = "7bbed806-ede1-4cec-8bb6-33f4d8e91bc6",
+
                             Name = "Instructor",
                             NormalizedName = "INSTRUCTOR"
                         });

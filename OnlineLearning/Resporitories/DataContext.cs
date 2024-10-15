@@ -29,11 +29,15 @@ namespace OnlineLearningApp.Respositories
         public DbSet<CourseMaterialModel> CourseMaterials { get; set; }
         public DbSet<PaymentModel> Payment { get; set; }
         public DbSet<LectureModel> Lecture { get; set; }
-        public DbSet<LectureFileModlel> LectureFiles { get; set; }
+
         public DbSet<RequestTranferModel> RequestTranfer { get; set; }
         public DbSet<ChatBoxModel> ChatBox { get; set; }
         public DbSet<MessageModel> Message { get; set; }
         public DbSet<MessageFileModel> MessageFile { get; set; }
+
+        public DbSet<LectureFileModel> LectureFiles { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
