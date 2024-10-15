@@ -18,6 +18,7 @@ using OnlineLearningApp.Respositories;
 
 using static QRCoder.PayloadGenerator.WiFi;
 using System.Data;
+using Newtonsoft.Json;
 
 
 namespace OnlineLearning.Controllers
@@ -105,6 +106,15 @@ namespace OnlineLearning.Controllers
                             var roles = await _userManager.GetRolesAsync(existingUser);
                             HttpContext.Session.Remove("Otp");
                             HttpContext.Session.Remove("Username");
+
+                            claims = new List<Claim>
+                            {
+                                new Claim("FirstName", existingUser.FirstName),
+                                new Claim("FirstName", existingUser.LastName),
+                                  new Claim("ID", existingUser.Id),
+                                new Claim("ProfileImagePath", existingUser.ProfileImagePath)
+                             };
+                            await _userManager.AddClaimsAsync(existingUser, claims);
                             if (roles.Contains("Admin"))
                             {
                                 return RedirectToAction("Index", "Admin", new { area = "Admin" });
@@ -162,13 +172,17 @@ namespace OnlineLearning.Controllers
             }
             HttpContext.Session.Remove("Otp");
             HttpContext.Session.Remove("Username");
+            HttpContext.Session.SetString("UserSession", JsonConvert.SerializeObject(user));
             var roles = await _userManager.GetRolesAsync(user);
 
             var claims = new List<Claim>
             {
                 new Claim("FirstName", user.FirstName),
+                 new Claim("FirstName", user.LastName),
+                    new Claim("ID", user.Id),
                 new Claim("ProfileImagePath", user.ProfileImagePath)
             };
+            await _userManager.AddClaimsAsync(user, claims);
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
@@ -189,6 +203,7 @@ namespace OnlineLearning.Controllers
             TempData["success"] = "Login successful!";
             return RedirectToAction("Index", "Home");
         }
+
         [HttpGet]
         public IActionResult Create()
         {

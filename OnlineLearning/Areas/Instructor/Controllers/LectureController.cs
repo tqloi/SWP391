@@ -51,7 +51,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     {
                         await model.VideoFile.CopyToAsync(fs);
                     }
-                    var lectueFile = new LectureFileModlel
+                    var lectueFile = new LectureFileModel
                     {
                         LectureID = lecture.LectureID,
                         FilePath = fileName,
@@ -72,7 +72,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                         {
                             await file.CopyToAsync(fileStream);
                         }
-                        var lectueFile = new LectureFileModlel
+                        var lectueFile = new LectureFileModel
                         {
                             LectureID = lecture.LectureID,
                             FilePath = fileName,

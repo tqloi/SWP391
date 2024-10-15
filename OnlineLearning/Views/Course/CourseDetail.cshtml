@@ -57,7 +57,7 @@
                 @if (ViewBag.IsEnrolled || User.IsInRole("Instructor"))
                 {
                     <div class="d-flex align-items-center mt-4">
-                        <a asp-action="LectureList" asp-controller="Participation" asp-route-id="@Model.CourseID" class="btn custom-btn smoothscroll me-4">Go to course</a>
+                        <a asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@Model.CourseID" class="btn custom-btn smoothscroll me-4">Go to course</a>
                     </div>
                 }
                 else
@@ -65,7 +65,7 @@
                     @if (@Model.Status != false)
                     {
                         <div class="d-flex align-items-center mt-4">
-                            <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-id="@Model.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
+                            <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@Model.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
 
                             <a href="#top" class="custom-icon bi-bookmark smoothscroll"></a>
                             @*  <a href="#top" class="custom-icon bi-bookmark-fill smoothscroll"></a> *@

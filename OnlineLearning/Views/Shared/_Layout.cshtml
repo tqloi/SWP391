@@ -1,4 +1,8 @@
-﻿<!doctype html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AppUserModel> SignInManager
+@inject UserManager<AppUserModel> UserManager
+
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -47,7 +51,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse d-flex justify-content-center align-items-center" id="navbarNav">
+                <div class="collapse d-flex justify-content-center align-items-center me-auto" id="navbarNav">
                     <ul class="navbar-nav ms-lg-5 me-lg-auto">
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")"
@@ -73,9 +77,11 @@
                         </li>
                         }
                     </ul>
+                </div>
 
+                <div class="d-none d-lg-flex me-auto align-items-center">
                     <!-- Search Form -->
-                    <div class="d-none d-lg-block me-3">
+                    <div class="d-none d-lg-block me-auto">
                         <form asp-action="Search" asp-controller="Course" method="GET" class="navbar-form" style="display: inline; position: relative;">
                             <input type="text" name="keyword" placeholder="Search"
                                    style="padding: 10px 15px; border-radius: 25px; border: 1px solid #ccc; outline: none; width: 250px;">
@@ -88,13 +94,19 @@
 
 
                     <!-- Authentication Dropdown -->
-                    <div class="d-none d-lg-block">
-                        <div class="dropdown">
+                        <div class="dropdown ms-3">
                             @if (User.Identity?.IsAuthenticated ?? false)
                             {
+
+                                var user = await UserManager.GetUserAsync(User);
+
                                 <a href="#" class="me-5 navbar-icon d-flex justify-content-between align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="ms-2 bi bi-person"></i>
-                                    <span class="ms-4">@User.Identity.Name</span>
+                                    <img src="~/Images/@user.ProfileImagePath"
+                                         class="rounded-circle"
+                                         style="width: 45px; height: 45px; border: 1px solid #ccc;"
+                                         alt="Profile Image">
+                                    <span class="ms-3">@user.FirstName</span>
+                                    <i class="fas fa-caret-down ms-2"></i>
                                 </a>  
                                 <ul class="dropdown-menu" aria-labelledby="profileDropdown">
                                     <li><a class="dropdown-item" asp-action="UserProfile" asp-controller="Home">Your Profile</a></li>
@@ -111,7 +123,7 @@
                             }
                         </div>
                     </div>
-                </div>
+             
             </div>
         </nav>
 

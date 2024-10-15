@@ -1,17 +1,22 @@
 ﻿@model IEnumerable<LectureModel>
 
+    <style>
+    .collapse-item {
+    display: block; 
+    max-width: 200px; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    }
+    </style>
+
    @for (int index = 0; index < Model.Count(); index++)
     {
         var lecture = Model.ElementAt(index);
-        <li class="list-inline-item">
-        <a asp-action="LectureDetail" asp-controller="Participation" asp-route-id="@lecture.LectureID" class="text-decoration-none text-dark card" style="width: 20rem;">
-                <div class="card-body">
-                <i class="fas fa-graduation-cap">
-                </i>
-                       <strong>@(index + 1). @lecture.Title</strong>
-                    
-                </div>
+    <strong> <i class="fas fa-graduation-cap mr-1"></i>Lecture @(index + 1)</strong>
+    <br />
+    <a asp-action="LectureDetail" asp-controller="Participation" asp-route-LectureID="@lecture.LectureID" class="collapse-item" title="@lecture.Title">
+               @lecture.Title            
         </a>
-        </li>
     }
 
