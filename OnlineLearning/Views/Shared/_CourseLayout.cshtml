@@ -84,7 +84,7 @@
 
     @{
         var currentCourse = ViewBag.Course as CourseModel;
-        var courseID = 1;
+        var courseID = currentCourse.CourseID;
         var user = await UserManager.GetUserAsync(User);
     }
 
@@ -125,7 +125,7 @@
                             </a>
                         </h6>
                       }
-                        @Html.Partial("_SideLecture", courseID)
+               @*          @Html.Partial("_SideLecture", courseID) *@
                     </div>
                 </div>
             </li>
