@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "TestList";
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
-    await Html.PartialAsync("_NoficationPartial");
+   <partial name="_NoficationPartial" />
 }
 @model List<TestModel>
 <head>
@@ -59,11 +59,11 @@
 
 </head>
 <body>
-<h1>Test List</h1>
+    <h1>Test List</h1>
 
-<section class="topics-detail-section section-padding" id="topics-detail">
-    @if (User.IsInRole("Instructor"))
-    {
+    <section class="topics-detail-section section-padding" id="topics-detail">
+        @if (User.IsInRole("Instructor"))
+        {
             <div class="row align-items-end">
                 <div class="col">
                     <form asp-controller="Test" asp-action="CreateTestRedirector" method="post" asp-route-CourseID="@ViewBag.CourseID">
@@ -73,9 +73,9 @@
                     </form>
                 </div>
             </div>
-        
-    }
-         @if (Model != null)
+
+        }
+        @if (Model != null)
         {
             foreach (var test in Model)
             {
@@ -98,14 +98,14 @@
                         </div>
                         @if (User.IsInRole("Instructor"))
                         {       @*
-                                <div class="d-flex justify-content-between">
-                                    <a class="btn btn-success">Edit Question</a>
-                                    <a class="btn btn-success">Add Question</a>
-                                </div>
-                                *@
+                <div class="d-flex justify-content-between">
+                <a class="btn btn-success">Edit Question</a>
+                <a class="btn btn-success">Add Question</a>
+                </div>
+                *@
                             <div class="d-flex justify-content-between">
-                                
-                                <form asp-controller="Question" asp-action="EditQuestion" method="post" asp-route-CourseID="@ViewBag.CourseID" asp-route-TestID="@test.TestID">
+
+                                <form asp-controller="Question" asp-action="EditQuestionRedirector" method="post" asp-route-TestID="@test.TestID">
                                     <button type="submit" class="btn btn-success">
                                         Edit Question
                                     </button>
@@ -118,11 +118,11 @@
                             </div>
                         }
                         @if (User.IsInRole("Student"))
-                        {   @* 
-                            <div class="d-flex justify-content-between">
-                                <a class="btn btn-success">Do Test </a>
-                            </div> 
-                            *@
+                        {   @*
+                <div class="d-flex justify-content-between">
+                <a class="btn btn-success">Do Test </a>
+                </div>
+                *@
                             <div class="d-flex justify-content-between">
                                 <form asp-controller="Test" asp-action="DoTest" method="post" asp-route-CourseID="@test.CourseID" asp-route-TestID="@test.TestID">
                                     <button type="submit" class="btn btn-success">
@@ -139,5 +139,5 @@
         {
             <h2>No Test available, you should add some new Test</h2>
         }
-</section>
+    </section>
 </body>

@@ -83,6 +83,7 @@ namespace OnlineLearning.Controllers
                 TempData["success"] = "Test created successfully!";
                 return RedirectToAction("CreateTestRedirector", new { courseID = model.CourseID });
             }
+
             catch (Exception)
             {
                 TempData["error"] = "Test creation failed!";

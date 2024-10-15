@@ -1,0 +1,183 @@
+﻿@{
+    ViewData["Title"] = "Edit Question";
+    Layout = "~/Views/Shared/_CourseLayout.cshtml";
+    <partial name="_NoficationPartial" />
+}
+@model OnlineLearning.Models.ViewModel.QuestionViewModel
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Edit Question</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Main container for the form */
+        form#newQuestionForm {
+            max-width: 600px; /* Adjust width as needed */
+            margin: 0 auto;
+            background-color: #f8f9fa; /* Light background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+
+        /* Form section header */
+        section h2 {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Form labels */
+        form .form-label {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        /* Textarea fields */
+        form textarea.form-control {
+            border-radius: 5px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+        }
+
+        /* File upload input */
+        form input[type="file"].form-control {
+            border-radius: 5px;
+            padding: 6px;
+            border: 1px solid #ced4da;
+        }
+
+        /* Submit button styling */
+        form button.custom-btn {
+            display: block;
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+            form button.custom-btn:hover {
+                background-color: #218838;
+            }
+
+        /* Extra button for importing Excel/CSV */
+        div > button.btn-primary {
+            display: inline-block;
+            margin-right: 10px;
+            background-color: #007bff;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+            div > button.btn-primary:hover {
+                background-color: #0056b3;
+            }
+
+        /* Space between form elements */
+        .mb-3 {
+            margin-bottom: 1.5rem !important;
+        }
+
+        /* Correct answer styling (how you want it to stand out) */
+        form input[name="CorrectAnswer"] {
+            border-color: #28a745;
+        }
+
+        /* Form heading */
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Adjusting overall body (optional) */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+        }
+
+        /* Styling the section containing the form */
+        section {
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<h2>Edit Question</h2>
+
+<form id="QuestionForm" enctype="multipart/form-data" method="post" asp-controller="Question" asp-action="EditQuestion" onsubmit="return correctAnswerValidation()">
+    <div class="mb-3">
+        <label for="QuestionText" class="form-label">Enter question:</label>
+        <textarea class="form-control" name="QuestionText" rows="2" asp-for="QuestionText" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="ImageUpload">Upload image:</label>
+        <input type="file" name="QuestionImage" class="form-control" asp-for="QuestionImage" accept="image/*" />
+    </div>
+
+    <div class="mb-3">
+        <label for="Description" class="form-label">Answer A: </label>
+        <textarea class="form-control" name="AnswerA" rows="2" asp-for="AnswerA" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="Description" class="form-label">Answer B: </label>
+        <textarea class="form-control" name="AnswerB" rows="2" asp-for="AnswerB" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="Description" class="form-label">Answer C: </label>
+        <textarea class="form-control" name="AnswerC" rows="2" asp-for="AnswerC" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="Description" class="form-label">Answer D: </label>
+        <textarea class="form-control" name="AnswerD" rows="2" asp-for="AnswerD" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="CorrectAnswer" class="form-label">Correct Answer: </label>
+        <input type="text" class="form-control" name="CorrectAnswer" asp-for="CorrectAnswer" placeholder="A, B, C or D" required />
+    </div>
+
+    <input type="hidden" class="form-control" asp-for="Test" value="@Model.Test" />
+    <input type="hidden" class="form-control" asp-for="TestID" value="@Model.TestID" />
+    <input type="hidden" class="form-control" asp-for="CourseID" value="@ViewBag.CourseID" />
+    <input type="hidden" class="form-control" asp-for="QuestionID" value="@Model.QuestionID" />
+    <button type="submit" class="btn custom-btn">Save Changes</button>
+</form>
+
+<!-- Add the JavaScript function here -->
+<script>
+    function correctAnswerValidation() {
+        const correctAnswer = document.querySelector('input[name="CorrectAnswer"]').value.trim().toUpperCase();
+        const validAnswers = ['A', 'B', 'C', 'D'];
+
+        if (!validAnswers.includes(correctAnswer)) {
+            alert('Correct answer must be A, B, C, or D.');
+            return false; // Prevent form submission
+        }
+
+        return true; // Allow form submission
+    }
+</script>

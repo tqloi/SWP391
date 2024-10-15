@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging.Signing;
 using OfficeOpenXml;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
@@ -8,6 +9,7 @@ using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
 using System.Security.Claims;
+using System.IO;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace OnlineLearning.Controllers
@@ -33,6 +35,7 @@ namespace OnlineLearning.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Instructor")]
         public IActionResult CreateQuestionRedirector(int TestID)
         {
             ViewBag.TestID = TestID;
@@ -40,6 +43,19 @@ namespace OnlineLearning.Controllers
             ViewBag.CourseID = test.CourseID;
             ViewBag.Test = test;
             return View("CreateQuestion");
+        }
+
+        [Authorize(Roles = "Instructor")]
+        public IActionResult EditQuestionRedirector(int TestID)
+        {
+            ViewBag.TestID = TestID;
+            TestModel test = datacontext.Test.Find(TestID);
+            ViewBag.CourseID = test.CourseID;
+            ViewBag.Test = test;
+            List<QuestionModel> list = datacontext.Question
+                .Where(t => t.TestID == TestID)
+                .ToList();
+            return View("ViewQuestionsToEdit", list);
         }
 
         [Authorize(Roles = "Instructor")]
@@ -103,7 +119,7 @@ namespace OnlineLearning.Controllers
         [HttpPost]
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> ImportExcel(IFormFile ExcelFile, bool skipFirstLine, int TestID)
-        {  
+        {
             // Set the license context to non-commercial use
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
@@ -311,6 +327,110 @@ namespace OnlineLearning.Controllers
             TempData["Success"] = "CSV file processed successfully!";
             return RedirectToAction("CreateQuestionRedirector", new { testID = TestID }); // Redirect back to the CreateQuestion page
         }
+        // GET: Edit a specific question 
+        // Act as a redirector, actual things are in the post method below
+        //QuestionID for abstraction 
+        [HttpGet]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult EditQuestion(int QuestionID, int TestID)
+        {
+            // Retrieve the question from the database
+            var question = datacontext.Question.FirstOrDefault(q => q.QuestionID == QuestionID && q.TestID == TestID);
+            if (question == null)
+            {
+                return NotFound();
+            }
+
+            // Retrieve the test and set up ViewBag for Test and CourseID
+            TestModel test = datacontext.Test.Find(TestID);
+            ViewBag.CourseID = test.CourseID;
+           // ViewBag.TestID = TestID;
+
+            //not sure if necessary
+            ViewBag.QuestionID = QuestionID;
+            // Populate the QuestionViewModel with the existing question data
+            var questionViewModel = new QuestionViewModel
+            {
+                QuestionID = question.QuestionID,
+                TestID = test.TestID,
+                Test = test,
+                AnswerA = question.AnswerA,
+                AnswerB = question.AnswerB,
+                AnswerC = question.AnswerC,
+                AnswerD = question.AnswerD,
+                CorrectAnswer = question.CorrectAnswer,
+                CourseID = test.CourseID,
+                ImagePath = question.ImagePath,  // Add the existing image path here
+                QuestionText = question.Question,
+                // Leave QuestionImage null, as no file is uploaded yet
+            };
+
+            // Return the view with the pre-filled model
+            return View(questionViewModel); 
+        }
+
+        // POST: Update the question
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> EditQuestion(QuestionViewModel model)
+        {
+            // Retrieve the question from the database
+            var question = datacontext.Question.FirstOrDefault(q => q.QuestionID == model.QuestionID
+            && q.TestID == model.TestID);
+
+            if (question != null)
+            {
+                // Update the question details
+                question.Question = model.QuestionText;
+                question.AnswerA = model.AnswerA;
+                question.AnswerB = model.AnswerB;
+                question.AnswerC = model.AnswerC;
+                question.AnswerD = model.AnswerD;
+                question.CorrectAnswer = model.CorrectAnswer;
+
+                // Handle image update
+                if (model.QuestionImage != null)
+                {
+                    // Get the current image path
+                    string oldImagePath = question.ImagePath;
+
+                    // If there's an existing image, delete it
+                    if (!string.IsNullOrEmpty(oldImagePath))
+                    {
+                        string oldImageFullPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "QuestionImages", oldImagePath);
+                        if (System.IO.File.Exists(oldImageFullPath))
+                        {
+                            System.IO.File.Delete(oldImageFullPath);
+                        }
+                    }
+
+                    // Save the new image
+                    string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "QuestionImages");
+                    string imageName = Guid.NewGuid() + "_" + model.QuestionImage.FileName;
+                    string filePath = Path.Combine(uploadPath, imageName);
+
+                    using (var fs = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.QuestionImage.CopyToAsync(fs);
+                    }
+
+                    // Update the image path in the database
+                    question.ImagePath = imageName;
+                }
+
+                // Update the question in the database
+                datacontext.Update(question);
+                await datacontext.SaveChangesAsync();
+
+                TempData["Success"] = "Question updated successfully!";
+            }
+            else
+            {
+                TempData["Error"] = "Question not found.";
+            }
+
+             return RedirectToAction("EditQuestionRedirector", new {TestID = model.TestID });
+        }
 
         /// <summary>
         /// Check if the instructor have permision from a file 
@@ -318,6 +438,7 @@ namespace OnlineLearning.Controllers
         /// </summary>
         /// <param name="TestID"></param>
         /// <returns></returns>
+        [Authorize(Roles = "Instructor")]
         private async Task<bool> CheckValidTestToInstructor(int TestID)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
