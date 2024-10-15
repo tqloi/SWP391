@@ -52,21 +52,21 @@ namespace OnlineLearning.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "fb7151db-a1a6-4e09-912f-2c1147ecf370",
+                            ConcurrencyStamp = "c29ef634-856f-4572-886a-fb742c32a18e",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "721bdf97-3ed8-456c-be0e-42585d4615a2",
+                            ConcurrencyStamp = "7b0d32b7-1d6d-435d-bd61-2298f203d4bb",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = "3",
-                            ConcurrencyStamp = "a48bfe9f-3cc4-47c7-a408-8ef6b9420fb1",
+                            ConcurrencyStamp = "7bbed806-ede1-4cec-8bb6-33f4d8e91bc6",
                             Name = "Instructor",
                             NormalizedName = "INSTRUCTOR"
                         });
@@ -556,6 +556,47 @@ namespace OnlineLearning.Migrations
                     b.ToTable("Payment");
                 });
 
+            modelBuilder.Entity("OnlineLearning.Models.RequestTranferModel", b =>
+                {
+                    b.Property<int>("TranferID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TranferID"));
+
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("MoneyNumber")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("TranferID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("RequestTranfer");
+                });
+
             modelBuilder.Entity("OnlineLearning.Models.ScoreAssignmentModel", b =>
                 {
                     b.Property<int>("ScoreAssignmentID")
@@ -874,6 +915,17 @@ namespace OnlineLearning.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("OnlineLearning.Models.RequestTranferModel", b =>
+                {
+                    b.HasOne("OnlineLearning.Models.AppUserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.ScoreAssignmentModel", b =>

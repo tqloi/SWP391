@@ -65,13 +65,15 @@
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Contact" ? "active" : "")"
                                asp-action="Contact" asp-controller="Home">Contact</a>
                         </li>
+                        
                         @if (!User.IsInRole("Instructor"))
                         {
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Profile" && ViewContext.RouteData.Values["action"].ToString() == "InstructorRegistration" ? "active" : "")"
                                asp-action="InstructorRegistration" asp-controller="Profile">Teaching</a>
-                        </li>
+                            </li>
                         }
+                        
                     </ul>
 
                     <!-- Search Form -->
@@ -98,6 +100,7 @@
                                 </a>  
                                 <ul class="dropdown-menu" aria-labelledby="profileDropdown">
                                     <li><a class="dropdown-item" asp-action="UserProfile" asp-controller="Home">Your Profile</a></li>
+                                    <li><a class="dropdown-item" asp-area="Student" asp-action="TransferStudent" asp-controller="Payment">Request A Transfer</a></li>
                                     <li>
                                         <form asp-action="Logout" asp-controller="Account" method="post">
                                             <button type="submit" class="dropdown-item">Logout</button>

@@ -1,0 +1,69 @@
+﻿@model IEnumerable<dynamic>
+
+<div class="chat-container">
+    <div class="user-list">
+        <h3>Danh sách người đã nhắn tin</h3>
+        <ul id="userList">
+            @foreach (var user in Model)
+            {
+                <li onclick="loadChat('@user.UserID')">@user.UserName</li>
+            }
+        </ul>
+    </div>
+
+    <div class="chat-box">
+        <h3>Khung chat</h3>
+        <div id="messageList"></div>
+        <input type="text" id="messageInput" placeholder="Nhập tin nhắn..." />
+        <button onclick="sendMessage()">Gửi</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft.signalr/3.1.9/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .build();
+
+        connection.on("ReceiveMessage", function (senderId, message) {
+            var messageElement = $('<div>').text(`${senderId}: ${message}`);
+            $('#messageList').append(messageElement);
+        });
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        function loadChat(userId) {
+            $.ajax({
+                url: '/Chat/GetMessages',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (messages) {
+                    var messageList = $('#messageList');
+                    messageList.empty(); // Xóa các tin nhắn cũ
+                    messages.forEach(message => {
+                        var messageElement = $('<div>').text(`${message.senderName}: ${message.content}`);
+                        messageList.append(messageElement);
+                    });
+                }
+            });
+        }
+
+        function sendMessage() {
+            var userId = $('#userList li.active').data('userid'); // Giả định bạn có cách xác định userId
+            var message = $('#messageInput').val();
+
+            $.ajax({
+                url: '/Chat/SendMessage',
+                type: 'POST',
+                data: { userId: userId, content: message },
+                success: function () {
+                    $('#messageInput').val(''); // Xóa ô nhập liệu
+                }
+            });
+        }
+    </script>
+}

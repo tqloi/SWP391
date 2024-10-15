@@ -175,10 +175,38 @@ namespace OnlineLearning.Controllers
             TempData["erorr"] = "Edit failed!";
             return View(model);
         }
-        
+
+        [HttpGet]
+        public async Task<IActionResult> ViewUserProfile(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
 
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+
+            var model = new InstructorProfileViewModel
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                ExistingProfileImagePath = user.ProfileImagePath,
+                Address = user.Address,
+                Dob = user.Dob,
+                gender = user.Gender,
+                
+            };
+
+            return View(model);
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
 		{
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

@@ -17,7 +17,8 @@ CREATE TABLE Notification (
     CreatedAt DATETIME DEFAULT GETDATE() 
     FOREIGN KEY (UserID) REFERENCES AspNetUsers(Id) 
 );
-
+ALTER TABLE AspNetUsers
+ADD WalletUser float DEFAULT 0.0;
 select * from Notification
 -- InstructorConfirmation
 CREATE TABLE InstructorConfirmation(
@@ -149,6 +150,19 @@ CREATE TABLE LectureCompletion (
     FOREIGN KEY (LectureID) REFERENCES Lecture(LectureID) ON DELETE CASCADE
 );
 
+CREATE TABLE RequestTranfer (
+    TranferID INT PRIMARY KEY IDENTITY(1,1),
+    UserID NVARCHAR(450), -- Kích thước tùy thuộc vào kích thước của UserId trong AppUserModel
+    BankName NVARCHAR(255) NOT NULL,
+    AccountNumber NVARCHAR(255) NOT NULL,
+    FullName NVARCHAR(255) NOT NULL,
+    MoneyNumber FLOAT NOT NULL,
+    Status NVARCHAR(255), -- Tùy thuộc vào yêu cầu, có thể thay đổi kiểu dữ liệu
+    FOREIGN KEY (UserID) REFERENCES AspNetUsers(Id) -- Thay AspNetUsers với tên bảng của người dùng nếu khác
+);
+
+alter table RequestTranfer add CreateAt datetime 
+
 -- Course image and video;
 CREATE TABLE LectureFiles (
     FileID INT PRIMARY KEY IDENTITY(1,1),
@@ -197,6 +211,7 @@ CREATE TABLE Assignment (
     DueDate DATETIME,
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
+alter table Assignment add AssignmentLink nvarchar(450)
 CREATE TABLE ScoreAssignment (
 	ScoreAssignmentID INT PRIMARY KEY IDENTITY(1,1),
     studentID NVARCHAR(450) NOT NULL,

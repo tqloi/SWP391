@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+
 using OnlineLearning.Email;
-using OnlineLearning.Migrations;
+
 using OnlineLearning.Models;
 using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
@@ -14,6 +15,11 @@ using OnlineLearningApp.Respositories;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 builder.Services.AddTransient<EmailSender>();
+
+//chathub
+builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
+
 //connect database
 builder.Services.AddDbContext<DataContext>(options =>
 {
@@ -123,5 +129,9 @@ app.MapAreaControllerRoute(
     name: "Areas",
     areaName:"Admin",
     pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
+
+
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();

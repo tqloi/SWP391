@@ -68,7 +68,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 d-flex justify-content-end ">
-                                <a asp-action="ViewAssignmentPdf" asp-controller="Participation" asp-route-id="@item.AssignmentID" class="btn custom-btn mt-3 mt-lg-4">View Detail</a>
+                                <a target="_blank" asp-action="ViewAssignmentPdf" asp-controller="Participation" asp-route-id="@item.AssignmentID" class="btn custom-btn mt-3 mt-lg-4">View Detail</a>
                                 </div>
                                 @if(User.IsInRole("Instructor"))
                                 {

@@ -71,9 +71,22 @@ namespace OnlineLearning.Areas.Student.Controllers
             }
             else
             {
+
                 string filesubmit = "";
                 if (model.SubmissionLink != null)
                 {
+                     var existingSubmission = _dataContext.Submission
+                        .FirstOrDefault(s => s.AssignmentID == assignment.AssignmentID && s.StudentID == user.Id);
+
+                    if (existingSubmission != null)
+                    {
+                        string oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, "Assignment", existingSubmission.SubmissionLink);
+                        if (System.IO.File.Exists(oldFilePath))
+                        {
+                            System.IO.File.Delete(oldFilePath);
+                        }
+                    }
+
                     string originalFileName = Path.GetFileName(model.SubmissionLink.FileName);
                     string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Assignment");
                     string fileName = Guid.NewGuid() + "_" + originalFileName;
@@ -84,18 +97,32 @@ namespace OnlineLearning.Areas.Student.Controllers
                         await model.SubmissionLink.CopyToAsync(fileStream);
                     }
                     filesubmit = fileName;
-                    var submit = new SubmissionModel
-                    {
-                        AssignmentID = assignment.AssignmentID,
-                        StudentID = user.Id,
-                        SubmissionDate = DateTime.Now,
-                        SubmissionLink = filesubmit
 
-                    };
-                    TempData["success"] = "Nop bai thanh cong";
-                    _dataContext.Submission.Add(submit);
+                    if (existingSubmission != null)
+                    {
+                        existingSubmission.SubmissionDate = DateTime.Now;
+                        existingSubmission.SubmissionLink = filesubmit;
+                        TempData["success"] = "Update submission successful!";
+                        _dataContext.Submission.Update(existingSubmission);
+                    }
+                    else
+                    {
+                        var submit = new SubmissionModel
+                        {
+                            AssignmentID = assignment.AssignmentID,
+                            StudentID = user.Id,
+                            SubmissionDate = DateTime.Now,
+                            SubmissionLink = filesubmit
+                        };
+                        _dataContext.Submission.Add(submit);
+                        TempData["success"] = "Submit successful!";
+                    }
+
+                    // Lưu thay đổi vào cơ sở dữ liệu
                     await _dataContext.SaveChangesAsync();
                 }
+
+            
                 else
                 {
                     TempData["error"] = "Student did not submit file pdf";
