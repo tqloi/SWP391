@@ -33,19 +33,20 @@ namespace OnlineLearning.Controllers
             ViewBag.Course = Course;
             return View();
         }
+
         [HttpGet]
-        public IActionResult CreateTest(int CourseID)
+        public async Task<IActionResult> CreateTest(int CourseID)
         {
             ViewBag.CourseID = CourseID;
-            var Course = datacontext.Courses.Find(CourseID);
-            if (Course == null)
+            var course = await datacontext.Courses.FindAsync(CourseID);
+
+            if (course == null)
             {
                 return NotFound();
             }
-            var Course2 = datacontext.Courses.Find(1);
-            //absolutely useless foking line but i add it just for fun
-            ViewBag.Course = Course;
-            return RedirectToAction("CreateTest");
+
+            ViewBag.Course = course;
+            return View();
         }
 
 
@@ -83,7 +84,7 @@ namespace OnlineLearning.Controllers
                 Debug.WriteLine("Test saved to database");
 
                 TempData["success"] = "Test created successfully!";
-                return RedirectToAction("CreateTest", new { courseID = model.CourseID });
+                return RedirectToAction("TestList", new { courseID = model.CourseID });
             }
 
             catch (Exception)

@@ -42,6 +42,8 @@ namespace OnlineLearning.Controllers
             TestModel test = datacontext.Test.Find(TestID);
             ViewBag.CourseID = test.CourseID;
             ViewBag.Test = test;
+            var course = datacontext.Courses.Find(test.CourseID);
+            ViewBag.Course = course;
             return View("CreateQuestion");
         }
 
@@ -51,6 +53,8 @@ namespace OnlineLearning.Controllers
             ViewBag.TestID = TestID;
             TestModel test = datacontext.Test.Find(TestID);
             ViewBag.CourseID = test.CourseID;
+            var course = datacontext.Courses.Find(test.CourseID);
+            ViewBag.Course = course;
             ViewBag.Test = test;
             List<QuestionModel> list = datacontext.Question
                 .Where(t => t.TestID == TestID)
@@ -102,7 +106,7 @@ namespace OnlineLearning.Controllers
             {
                 newQuestion.ImagePath = "";
             }
-
+            model.Test.NumberOfQuestion += 1;
             datacontext.Question.Add(newQuestion);
             await datacontext.SaveChangesAsync();
             TempData["success"] = "Course created successfully!";
@@ -364,7 +368,8 @@ namespace OnlineLearning.Controllers
                 QuestionText = question.Question,
                 // Leave QuestionImage null, as no file is uploaded yet
             };
-
+            var course = datacontext.Courses.Find(test.CourseID);
+            ViewBag.Course = course;
             // Return the view with the pre-filled model
             return View(questionViewModel); 
         }

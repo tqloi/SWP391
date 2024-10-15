@@ -61,16 +61,20 @@
 <body>
     <h1>Test List</h1>
 
+    @{
+        var currentCourse = ViewBag.Course as CourseModel;
+        var courseID = currentCourse.CourseID;
+    }
+    <div>@courseID</div>
+
     <section class="topics-detail-section section-padding" id="topics-detail">
         @if (User.IsInRole("Instructor"))
         {
             <div class="row align-items-end">
                 <div class="col">
-                    <form asp-controller="Test" asp-action="CreateTest"  asp-route-CourseID="@ViewBag.CourseID">
-                        <button type="submit" class="btn custom-btn active">
+                    <a class="custom-btn btn" asp-action="CreateTest" asp-controller="Test" asp-route-CourseID="@courseID">
                             <i class="fas fa-plus new-icon"></i> Create new Test
-                        </button>
-                    </form>
+                    </a>
                 </div>
             </div>
 
@@ -105,16 +109,16 @@
                 *@
                             <div class="d-flex justify-content-between">
 
-                                <form asp-controller="Question" asp-action="EditQuestionRedirector" method="post" asp-route-TestID="@test.TestID">
-                                    <button type="submit" class="btn btn-success">
+                                <a class="btn btn-success"  asp-controller="Question" asp-action="EditQuestionRedirector" method="post" asp-route-TestID="@test.TestID">
+                                
                                         Edit Question
-                                    </button>
-                                </form>
-                                <form asp-controller="Question" asp-action="CreateQuestionRedirector" method="post" asp-route-TestID="@test.TestID">
-                                    <button type="submit" class="btn btn-success">
+                               
+                                </a>
+                                <a class="btn btn-success" asp-controller="Question" asp-action="CreateQuestionRedirector" method="post" asp-route-TestID="@test.TestID">
+                         
                                         Add Question
-                                    </button>
-                                </form>
+                            
+                                </a>
                             </div>
                         }
                         @if (User.IsInRole("Student"))
