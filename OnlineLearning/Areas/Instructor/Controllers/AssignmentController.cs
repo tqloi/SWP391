@@ -58,7 +58,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 _dataContext.Assignment.Add(assignment);
                 await _dataContext.SaveChangesAsync();
                 TempData["success"] = "Create Assignment successfully!";
-                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", id = assignment.CourseID });
+                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
 
             }
             return RedirectToAction("CourseList", "Course", new {Areas =""});
@@ -115,7 +115,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             _dataContext.Update(assignment);
             await _dataContext.SaveChangesAsync();
             TempData["success"] = "Edit successful!";
-            return RedirectToAction("AssignmentList", "Participation", new {Areas = "", id = assignment.CourseID });
+            return RedirectToAction("AssignmentList", "Participation", new {Areas = "", CourseID = assignment.CourseID });
         }
         
         public async Task<IActionResult> DeleteAssignmentConfirmed(int id)
@@ -138,24 +138,28 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             _dataContext.Assignment.Remove(assignment);
             await _dataContext.SaveChangesAsync();
             TempData["success"] = "Remove Assignment successful!";
-            return RedirectToAction("AssignmentList", "Participation", new { Areas = "", id = assignment.CourseID });
+            return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
         }
         public async Task<IActionResult> ListAssignment(int id)
         {
             var submissions = await _dataContext.Submission.Where(s => s.AssignmentID == id).Include(s => s.User).ToListAsync();
+            var assignment = await _dataContext.Assignment.FindAsync(id);
             if (submissions.Count == 0)
             {
-                return NotFound();
+                TempData["error"] = "No students have submitted their assignments yet.";
+                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
             }
             return View(submissions);
         }
 		public async Task<IActionResult> ListScore(int id)
 		{
 			var listScore = await _dataContext.ScoreAssignment.Include(i => i.Student).Where(s => s.AssignmentID == id).ToListAsync();
-			if (listScore.Count == 0)
+            var assignment = await _dataContext.Assignment.FindAsync(id);
+            if (listScore.Count == 0)
 			{
-				return NotFound();
-			}
+                TempData["error"] = "No students have been graded yet.";
+                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
+            }
 			return View(listScore);
 		}
 		public ActionResult ViewSubmissonPdf(int Id)

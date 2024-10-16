@@ -67,29 +67,29 @@
                                         <h8>Ends on: @item.DueDate</h8>
                                     </div>
                                 </div>
-                                <div class="col-md-3 d-flex justify-content-end ">
+                                <div class="col-md-2 d-flex justify-content-end ">
                                 <a target="_blank" asp-action="ViewAssignmentPdf" asp-controller="Participation" asp-route-id="@item.AssignmentID" class="btn custom-btn mt-3 mt-lg-4">View Detail</a>
                                 </div>
                                 @if(User.IsInRole("Instructor"))
                                 {
-                                     <div class="col-md-3">
-                                <a asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment" asp-route-id="@item.AssignmentID" class="btn custom-btn mt-3 mt-lg-4">Edit Assignment </a>
+                                     <div class="col-md-2">
+                                <a asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment" asp-route-id="@item.AssignmentID" class="btn custom-btn active btn-warning mt-3 mt-lg-4">Edit Assignment </a>
                                     </div>
-                            
-                                <div class="col-md-3">
-                                <a asp-area="Instructor" asp-action="DeleteAssignmentConfirmed" asp-controller="Assignment" asp-route-id="@item.AssignmentID" class="btn btn-danger ">Remove Assignment</a>
+                                <div class="col-md-2">
+                                    <a asp-area="Instructor" asp-action="ListAssignment" asp-controller="Assignment" asp-route-id="@item.AssignmentID" class="btn custom-btn active btn-success mt-3 mt-lg-4">View List Submited</a>
                                 </div>
-                                <div class="col-md-3">
-                                    <a asp-area="Instructor" asp-action="ListAssignment" asp-controller="Assignment" asp-route-id="@item.AssignmentID" class="btn btn-danger ">View List Submited</a>
+                                <div class="col-md-2">
+                                    <a asp-area="Instructor" asp-action="ListScore" asp-controller="Assignment" asp-route-id="@item.AssignmentID" class="btn custom-btn mt-3 mt-lg-4">View Score Student</a>
                                 </div>
-                                <div class="col-md-3">
-                                    <a asp-area="Instructor" asp-action="ListScore" asp-controller="Assignment" asp-route-id="@item.AssignmentID" class="btn btn-danger ">View Score Student</a>
+                                <div class="col-md-2">
+                                    <a asp-area="Instructor" asp-action="DeleteAssignmentConfirmed" asp-controller="Assignment" asp-route-id="@item.AssignmentID" class="btn custom-btn active btn-danger mt-3 mt-lg-4">Remove Assignment</a>
+
                                 </div>
                                 }
                             @if (User.IsInRole("Student"))
                             {
                                 <div class="col-md-3">
-                                    <a asp-area="Student" asp-controller="Assignment" asp-action="SubmitAssignment" asp-route-id="@item.AssignmentID" class="btn custom-btn mt-3 mt-lg-4">Submit Assignment </a>
+                                    <a asp-area="Student" asp-controller="Assignment" asp-action="SubmitAssignment" asp-route-id="@item.AssignmentID"  class="btn custom-btn mt-3 mt-lg-4">Submit Assignment </a>
                                 </div>
 
                             }
