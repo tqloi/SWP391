@@ -10,6 +10,7 @@ namespace OnlineLearning.Models
 
         [ForeignKey("Course")]
         public int CourseID { get; set; }
+        public string FIleName { get; set; }
 
         [Required]
         [StringLength(255)]

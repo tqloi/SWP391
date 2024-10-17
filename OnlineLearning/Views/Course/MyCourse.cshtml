@@ -15,7 +15,7 @@
                         <li class="breadcrumb-item active" aria-current="page">My Courses</li>
                     </ol>
                 </nav>
-                <h2 class="text-white">Topics Listing</h2>
+                <h2 class="text-white">My Courses</h2>
             </div>
         </div>
     </div>
@@ -51,7 +51,7 @@
                 </div>
         }
             <div>
-                <select class="filter-select" id="categoryFilter">
+                <select class="filter-select me-2" id="categoryFilter">
                     <option value="">All Category</option>
                     <option value="programming">Programming</option>
                     <option value="design">Design</option>
@@ -74,7 +74,7 @@
             <div class="row">
 
                 <div class="col-md-2">
-                    <img src="~/Images/@course.CoverImagePath" class="custom-block-image img-fluid ms-3" alt="">
+                    <img src="@course.CoverImagePath" class="custom-block-image img-fluid ms-3" alt="">
                 </div>
                 <div class="col-md-9 row custom-block-topics-listing-info">
                     <div class="col-md-11 ms-3">
@@ -157,7 +157,7 @@
                             <!-- Hiển thị ảnh bìa hiện tại -->
                             <div class="mb-3">
                                 <label for="CoverImage" class="form-label">Cover Image</label>
-                                <img id="currentCoverImage" src="~/Images/@course.CoverImagePath" alt="Current Cover Image" class="img-fluid mb-3" style="max-width: 100%; height: auto;">
+                                <img id="currentCoverImage" src="@course.CoverImagePath" alt="Current Cover Image" class="img-fluid mb-3" style="max-width: 100%; height: auto;">
 @*                                 <input type="hidden" name="ExistingProfileImagePath" value="@course.CoverImagePath" /> *@
                                 <input type="file" class="form-control" name="CoverImage" accept="image/*">
                             </div>

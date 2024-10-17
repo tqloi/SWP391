@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Firebase.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OnlineLearning.Controllers;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
+using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
 using System.Security.Claims;
 
@@ -12,19 +14,20 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
     [Authorize]
-
     [Route("/[controller]/[action]")]
     public class CourseController : Controller
     {
         private readonly DataContext datacontext;
         private UserManager<AppUserModel> _userManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly FileService _fileService;
 
-        public CourseController(DataContext context, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment)
+        public CourseController(DataContext context, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, FileService fileService)
         {
             datacontext = context;
             _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
+            _fileService = fileService;
         }
 
         [HttpPost]
@@ -52,23 +55,19 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             //Check if a cover image is provided
             if (model.CoverImage != null)
             {
-                //Define the upload path (wwwroot/Images)
-                string uploadpath = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
-
-                //Generate a unique image file name, this shit(Guid.NewGuid())
-                string imagename = Guid.NewGuid() + "_" + model.CoverImage.FileName;
-
-                //combine em
-                string filepath = Path.Combine(uploadpath, imagename);
-
-                //idk why?
-                using (var fs = new FileStream(filepath, FileMode.Create))
+                try
                 {
-                    await model.CoverImage.CopyToAsync(fs);
+                    string downloadUrl = await _fileService.UploadImage(model.CoverImage);
+                    course.CoverImagePath = downloadUrl;
                 }
-                course.CoverImagePath = imagename;
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                    TempData["error"] = "Edit failed due to file upload error!";
+                    return View(model);
+                }
             }
-            else { course.CoverImagePath = ""; }
+            else { course.CoverImagePath = "faq_graphic.jpg"; }
 
             datacontext.Courses.Add(course);
             await datacontext.SaveChangesAsync();
@@ -77,29 +76,32 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             if (model.CourseMaterials != null && model.CourseMaterials.Count > 0)
             {
-                string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "CourseMaterials");
                 foreach (var file in model.CourseMaterials)
                 {
-                    string fileName = Guid.NewGuid() + "_" + file.FileName;
-                    string filePath = Path.Combine(uploadPath, fileName);
+                    var material = new CourseMaterialModel();
+                    string fileName = file.FileName;
+                    try
+                    {
+                        string downloadUrl = await _fileService.UploadCourseDocument(file);
+                        material.MaterialsLink = downloadUrl;
+                        material.CourseID = newCourseId;
+                        material.FIleName = fileName;
 
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await file.CopyToAsync(fileStream);
+                        datacontext.CourseMaterials.Add(material);
+                        await datacontext.SaveChangesAsync();
                     }
-                    var material = new CourseMaterialModel
+                    catch (Exception ex)
                     {
-                        CourseID = newCourseId,
-                        MaterialsLink = fileName
-                    };
-                    datacontext.CourseMaterials.Add(material);
-                    await datacontext.SaveChangesAsync();
+                        ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                        TempData["error"] = "Edit failed due to file upload error!";
+                        return View(model);
+                    }
                 }
             }
 
             TempData["success"] = "Course created successfully!";
             //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-            return RedirectToAction("MyCourse", "Course");
+            return RedirectToAction("CourseInfo", "Participation", new { CourseID = newCourseId });
         }
 
         [HttpPost]
@@ -133,15 +135,17 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             if (model.CoverImage != null)
             {
-                string uploadpath = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
-                string imagename = Guid.NewGuid() + "_" + model.CoverImage.FileName;
-                string filepath = Path.Combine(uploadpath, imagename);
-
-                using (var fs = new FileStream(filepath, FileMode.Create))
+                try
                 {
-                    await model.CoverImage.CopyToAsync(fs);
+                    string downloadUrl = await _fileService.UploadImage(model.CoverImage);
+                    course.CoverImagePath = downloadUrl;
                 }
-                course.CoverImagePath = imagename;
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                    TempData["error"] = "Edit failed due to file upload error!";
+                    return View(model);
+                }
             }
 
             await datacontext.SaveChangesAsync();

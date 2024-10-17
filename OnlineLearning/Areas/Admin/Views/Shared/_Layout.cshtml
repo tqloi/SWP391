@@ -1,4 +1,7 @@
-﻿
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AppUserModel> SignInManager
+@inject UserManager<AppUserModel> UserManager
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -538,7 +541,10 @@
                                    href="#"
                                    aria-expanded="false">
                                     <div class="avatar-sm">
-                                        <img src="~/Images/default.jpg"
+                                        @{
+                                            var user = await UserManager.GetUserAsync(User);
+                                        }
+                                        <img src="@user.ProfileImagePath"
                                              alt="..."
                                              class="avatar-img rounded-circle" />
                                     </div>

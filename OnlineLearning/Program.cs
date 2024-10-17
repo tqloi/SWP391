@@ -1,5 +1,6 @@
 ﻿using AspNetCoreHero.ToastNotification;
 using AspNetCoreHero.ToastNotification.Extensions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +15,11 @@ using OnlineLearningApp.Respositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+
 builder.Services.AddTransient<EmailSender>();
+
+//file 
+builder.Services.AddScoped<FileService>();
 
 //chathub
 builder.Services.AddControllersWithViews();
@@ -51,6 +56,12 @@ builder.Services.AddAuthentication(options =>
     {
         options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
         options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
+
+        // Map claim để nhận URL ảnh đại diện
+        options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
+
+        // Lưu token nếu cần thiết
+        options.SaveTokens = true;
     });
 
 // Add services to the container.

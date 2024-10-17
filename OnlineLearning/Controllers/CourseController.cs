@@ -194,7 +194,6 @@ namespace OnlineLearning.Controllers
             //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
             return RedirectToAction("MyCourse", "Course");
         }
-
         public IActionResult Create()
         {
             return View();

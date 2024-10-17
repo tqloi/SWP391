@@ -6,6 +6,7 @@ using OnlineLearning.Models;
 using Microsoft.AspNetCore.Identity;
 using OnlineLearningApp.Respositories;
 using System.Security.Claims;
+using OnlineLearning.Services;
 
 namespace OnlineLearning.Controllers
 {
@@ -17,49 +18,157 @@ namespace OnlineLearning.Controllers
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly FileService _fileService;
 
-        public ProfileController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment)
+        public ProfileController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, FileService fileService)
         {
             datacontext = context;
             _logger = logger;
             _signInManager = signInManager;
             _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
+            _fileService = fileService;
         }
-        public IActionResult InstructorRegistration()
+   
+        [HttpGet]
+        public async Task<IActionResult> UserProfile()
         {
-            return View();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new EditUserViewModel
+            {
+                UserName = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                ExistingProfileImagePath = user.ProfileImagePath,
+                Address = user.Address,
+                Dob = user.Dob,
+                gender = user.Gender,
+                WalletUser = (double)user.WalletUser
+            };
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new EditUserViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                ExistingProfileImagePath = user.ProfileImagePath,
+                Address = user.Address,
+                Dob = user.Dob,
+                gender = user.Gender,
+            };
+
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> InstructorRegistration(UploadFileViewModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditUserViewModel model)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (model.Filepdf != null)
+            if (ModelState.IsValid)
             {
-                string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "ConfirmInstructor");
-                string fileName = Guid.NewGuid() + "_" + model.Filepdf.FileName;
-                string filePath = Path.Combine(uploadPath, fileName);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _userManager.FindByIdAsync(userId);
 
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                if (user == null)
                 {
-                    await model.Filepdf.CopyToAsync(fileStream);
+                    return NotFound();
+                }
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.UserName = model.UserName;
+                user.Email = model.Email;
+                user.PhoneNumber = model.PhoneNumber;
+                user.Address = model.Address;
+                user.Dob = model.Dob;
+                user.Gender = model.gender;
+
+                if (model.ProfileImage != null)
+                {
+                    try
+                    {
+                        string downloadUrl = await _fileService.UploadImage(model.ProfileImage);
+                        user.ProfileImagePath = downloadUrl;
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                        TempData["error"] = "Edit failed due to file upload error!";
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    user.ProfileImagePath = user.ProfileImagePath;
                 }
 
-                var instructorConfirmation = new InstructorConfirmationModel
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
                 {
-                    UserID = userId,
-                    Certificatelink = fileName,
-                    SendDate = DateTime.Now,
-                    Description = model.Description
-                };
-                datacontext.InstructorConfirmation.Add(instructorConfirmation);
-                await datacontext.SaveChangesAsync();
 
-                TempData["success"] = "Request sended successfully!";
-                return View();
+                    TempData["success"] = "Edit successful!";
+
+                    return RedirectToAction("UserProfile");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
             }
-            TempData["error"] = "An error occurred while processing the payment. Please try again.";
+            TempData["erorr"] = "Edit failed!";
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ViewUserProfile(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new InstructorProfileViewModel
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                ExistingProfileImagePath = user.ProfileImagePath,
+                Address = user.Address,
+                Dob = user.Dob,
+                gender = user.Gender,
+
+            };
+
             return View(model);
         }
     }
