@@ -29,16 +29,30 @@ namespace OnlineLearning.Controllers
             _basicChatHub = basicChatHub;
         }
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string id)
         {
-
+           
             var model = new RoleViewModel();
             var user = await _userManager.GetUserAsync(User);
-            if (user is not null)
+            var list = await _db.Users.Where(u => !u.Id.Equals(user.Id)).ToListAsync();
+            var receiver = await _db.Users.FirstOrDefaultAsync(i => i.Id.Equals(id));
+            if (user != null)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 model.UserRoles = roles;
+                model.ListUser = list;
+                model.ReceiverId = id;
+                model.SendName = user.FirstName + " " + user.LastName;
+                if(receiver != null)
+                {
+                    model.ReceiveName = receiver.FirstName + " " + receiver.LastName;
+                }
+                else
+                {
+                    model.ReceiveName = "Please choose someone to get message";
+                }
             }
+
             return View(model);
 
         }
@@ -53,7 +67,7 @@ namespace OnlineLearning.Controllers
         [Authorize]
         public async Task<IActionResult> SendMessageToReceiver(string sender, string receiver, string message)
         {
-            var userId = _db.Users.FirstOrDefault(u => u.Email.ToLower() == receiver.ToLower())?.Id;
+            var userId = _db.Users.FirstOrDefault(u => u.Id.Equals(receiver))?.Id;
 
             if (!string.IsNullOrEmpty(userId))
             {

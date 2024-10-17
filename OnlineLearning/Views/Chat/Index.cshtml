@@ -1,141 +1,227 @@
 ﻿@model RoleViewModel
-
-<div class="container mt-5">
-    <div class="row mb-4">
-        <h2 class="text-center">Chat Application</h2>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-3"><strong>Role:</strong></div>
-        <div class="col-md-6 text-primary" id="role">@Model.UserRoles?.FirstOrDefault()</div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-3"><strong>Sender:</strong></div>
-        <div class="col-md-6">
-            <input class="form-control" type="text" value="@User.Identity?.Name" id="senderEmail" disabled />
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-3"><strong>Receiver:</strong></div>
-        <div class="col-md-6">
-            <input class="form-control" type="text" id="receiverEmail" placeholder="Enter receiver's email" />
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-3"><strong>Message:</strong></div>
-        <div class="col-md-6">
-            <input class="form-control" type="text" id="chatMessage" placeholder="Type your message" />
-        </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <button class="btn btn-primary" id="sendMessage">Send Message</button>
-        </div>
-        <div class="col-md-6">
-            <button class="btn btn-secondary" id="sendMessageToGroup">Send Message to Group</button>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <hr />
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-12">
-            <h5>Messages:</h5>
-            <ul id="messagesList" class="list-group"></ul>
-        </div>
-    </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.js"></script>
-
-<script>
-    var connectionChat = new signalR.HubConnectionBuilder().withUrl("/ChatHub").build();
-
-    document.getElementById("sendMessage").disabled = false;
-
-    // Listen for the MessageReceived event from SignalR
-    connectionChat.on("MessageReceived", function (user, message) {
-        var li = document.createElement("li");
-        li.classList.add("list-group-item");
-        var senderEmail = document.getElementById("senderEmail").value; // Current sender's email
-
-        // Check if the sender is the current user
-        if (user === senderEmail) {
-            li.textContent = `You: ${message}`; // If it's the current sender
-            li.classList.add("list-group-item-info"); // Optional: Add a different style for self messages
-        } else {
-            li.textContent = `${user}: ${message}`; // If not the current sender
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        .chat-online {
+            color: #34ce57;
         }
 
-        document.getElementById("messagesList").appendChild(li);
-    });
-
-    document.getElementById("sendMessage").addEventListener("click", function (event) {
-        var sender = document.getElementById("senderEmail").value;
-        var message = document.getElementById("chatMessage").value;
-        var receiver = document.getElementById("receiverEmail").value;
-
-        if (receiver.length > 0) {
-            // If there is a receiver, send the message to that user
-            $.ajax({
-                url: '/SendMessageToReceiver',
-                type: 'GET',
-                data: { sender: sender, receiver: receiver, message: message },
-                success: function (response) {
-                    console.log(response);
-                },
-                error: function (error) {
-                    console.error('Error:', error);
-                }
-            });
-        } else {
-            // If no receiver, send the message to all users
-            $.ajax({
-                url: '/SendMessageToAll',
-                type: 'GET',
-                data: { user: sender, message: message },
-                success: function (response) {
-                    console.log(response);
-                },
-                error: function (error) {
-                    console.error('Error:', error);
-                }
-            });
+        .chat-offline {
+            color: #e4606d;
         }
 
-        // Display the sent message in the list immediately
-        var li = document.createElement("li");
-        li.classList.add("list-group-item", "list-group-item-info");
-        li.textContent = `You: ${message}`; // Display the sender's name
-        document.getElementById("messagesList").appendChild(li); // Add the message to the list
-        document.getElementById("chatMessage").value = ""; // Clear the message input
-        event.preventDefault(); // Prevent the default behavior of the button
-    });
+        .chat-messages {
+            height: 400px;
+            overflow-y: scroll;
+        }
 
-    document.getElementById("sendMessageToGroup").addEventListener("click", function (event) {
-        var message = document.getElementById("chatMessage").value;
+        .border-right {
+            border-right: 1px solid #dee2e6 !important;
+        }
 
-        $.ajax({
-            url: '/SendMessageToGroup',
-            type: 'GET',
-            data: { message: message },
-            success: function (response) {
-                console.log(response);
-            },
-            error: function (error) {
-                console.error('Error:', error);
-            }
+        .chat-message-left,
+        .chat-message-right {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .chat-message-right {
+            justify-content: flex-end;
+        }
+
+        .bg-light {
+            background-color: #f8f9fa !important;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="content">
+        <div class="container p-0">
+            <h1 class="h3 mb-3"><input class="form-control" asp-for="SendName" id="senderEmail" disabled /></h1>
+            <div class="card">
+                <div class="row g-0">
+                    <div class="col-12 col-lg-5 col-xl-3 border-right">
+                        <div class="px-4 d-none d-md-block">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <input type="text" class="form-control my-3" placeholder="Search...">
+                                </div>
+                            </div>
+                        </div>
+                        @foreach (var item in Model.ListUser)
+                        {
+                            <div class="list-group">
+                                <a asp-action="Index" asp-controller="Chat" asp-route-id="@item.Id" class="list-group-item list-group-item-action border-0">
+                                    <div class="badge bg-success float-right">5</div>
+                                    <div class="d-flex align-items-start">
+                                        <img src="https://bootdey.com/img/Content/avatar/avatar5.png" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
+                                        <div class="flex-grow-1 ml-3">
+                                            @item.FirstName @item.LastName
+                                            <div class="small"><span class="fas fa-circle chat-online"></span> Online</div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <!-- Thêm các người dùng khác tương tự ở đây -->
+                            </div>
+                        }
+                        <!-- Add more user items here -->
+                        <hr class="d-block d-lg-none mt-1 mb-0">
+                    </div>
+                    <div class="col-12 col-lg-7 col-xl-9">
+                        <div class="py-2 px-4 border-bottom d-none d-lg-block">
+                            <div class="d-flex align-items-center py-1">
+                                <div class="position-relative">
+                                    <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="rounded-circle mr-1" alt="Sharon Lessman" width="40" height="40">
+                                </div>
+                                <div class="flex-grow-1 pl-3">
+                                    <strong><input class="form-control" asp-for="ReceiverId" id="receiverEmail" hidden />@Model.ReceiveName</strong>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary btn-lg mr-1 px-3"><i class="fas fa-phone"></i></button>
+                                    <button class="btn btn-info btn-lg mr-1 px-3 d-none d-md-inline-block"><i class="fas fa-video"></i></button>
+                                    <button class="btn btn-light border btn-lg px-3"><i class="fas fa-ellipsis-h"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="position-relative">
+                            <div class="chat-messages p-4">
+                                <ul id="messagesList">
+                               
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="flex-grow-0 py-3 px-4 border-top">
+                            <div class="input-group">
+                                <input class="form-control" type="text" id="chatMessage" placeholder="Type your message" />
+                                <button class="btn btn-primary" id="sendMessage">Send Message</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popperjs/core@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.js"></script>
+
+    
+    <script>
+        var connectionChat = new signalR.HubConnectionBuilder().withUrl("/ChatHub").build();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById("sendMessage").disabled = false;
+
+            // Lắng nghe sự kiện MessageReceived từ SignalR
+            connectionChat.on("MessageReceived", function (user, message) {
+                var messageDiv = document.createElement("div");
+                var avatarDiv = document.createElement("div");
+                var textDiv = document.createElement("div");
+                var img = document.createElement("img");
+                var timeDiv = document.createElement("div");
+
+                var senderEmail = document.getElementById("senderEmail").value;
+
+                // Cấu trúc cho người gửi
+                if (user === senderEmail) {
+                    messageDiv.classList.add("chat-message-right", "pb-4");
+                    img.src = "https://bootdey.com/img/Content/avatar/avatar1.png";
+                    img.alt = "You";
+                    textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "mr-3");
+                }
+                // Cấu trúc cho người nhận
+                else {
+                    messageDiv.classList.add("chat-message-left", "pb-4");
+                    img.src = "https://bootdey.com/img/Content/avatar/avatar3.png";
+                    img.alt = user;
+                    textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "ml-3");
+                }
+
+                img.classList.add("rounded-circle", "mr-1");
+                img.width = 40;
+                img.height = 40;
+
+                var usernameDiv = document.createElement("div");
+                usernameDiv.classList.add("font-weight-bold", "mb-1");
+                usernameDiv.textContent = user === senderEmail ? "You" : user;
+
+                var messageContent = document.createElement("div");
+                messageContent.textContent = message;
+
+                timeDiv.classList.add("text-muted", "small", "text-nowrap", "mt-2");
+                timeDiv.textContent = new Date().toLocaleTimeString();
+
+                textDiv.appendChild(usernameDiv);
+                textDiv.appendChild(messageContent);
+                messageDiv.appendChild(avatarDiv);
+                avatarDiv.appendChild(img);
+                avatarDiv.appendChild(timeDiv);
+                messageDiv.appendChild(textDiv);
+
+                document.getElementById("messagesList").appendChild(messageDiv);
+            });
+
+            document.getElementById("sendMessage").addEventListener("click", function (event) {
+                var sender = document.getElementById("senderEmail").value;
+                var message = document.getElementById("chatMessage").value;
+                var receiver = document.getElementById("receiverEmail").value;
+
+                if (receiver.length > 0) {
+                    // Nếu có người nhận, gửi tin nhắn đến người đó
+                    $.ajax({
+                        url: '/SendMessageToReceiver',
+                        type: 'GET',
+                        data: { sender: sender, receiver: receiver, message: message },
+                        success: function (response) {
+                            console.log(response);
+                        },
+                        error: function (error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                } else {
+                    // Nếu không có người nhận, gửi tin nhắn đến tất cả người dùng
+                    $.ajax({
+                        url: '/SendMessageToAll',
+                        type: 'GET',
+                        data: { user: sender, message: message },
+                        success: function (response) {
+                            console.log(response);
+                        },
+                        error: function (error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }
+
+                // Hiển thị tin nhắn đã gửi ngay lập tức
+                var li = document.createElement("li");
+                li.classList.add("list-group-item", "list-group-item-info");
+                li.textContent = `You: ${message}`; // Hiển thị tên người gửi
+                document.getElementById("messagesList").appendChild(li); // Sửa từ messagesListsend thành messagesList
+                document.getElementById("chatMessage").value = ""; // Xóa ô nhập tin nhắn
+                event.preventDefault(); // Ngăn chặn hành vi mặc định của nút
+            });
+
+            // Khởi động kết nối SignalR
+            connectionChat.start().then(function () {
+                var sender = document.getElementById("senderEmail").value;
+                connectionChat.send("JoinGroup", sender);
+                document.getElementById("sendMessage").disabled = false; // Kích hoạt nút gửi tin nhắn
+            });
         });
+    </script>
 
-        event.preventDefault(); // Prevent the default behavior of the button
-    });
 
-    connectionChat.start().then(function () {
-        var sender = document.getElementById("senderEmail").value;
-        connectionChat.send("JoinGroup", sender);
-        document.getElementById("sendMessage").disabled = false; // Enable the send message button
-    });
-</script>
-
+</body>
+</html>
