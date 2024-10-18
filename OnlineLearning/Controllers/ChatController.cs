@@ -51,6 +51,8 @@ namespace OnlineLearning.Controllers
                 model.SendName = user.FirstName + " " + user.LastName;
                 model.Messages = messages;
                 model.SendId = user.Id;
+                model.sendimg = user.ProfileImagePath;
+                model.receiveimg = receiver.ProfileImagePath;
                if (receiver != null)
                 {
                     model.ReceiveName = receiver.FirstName + " " + receiver.LastName;

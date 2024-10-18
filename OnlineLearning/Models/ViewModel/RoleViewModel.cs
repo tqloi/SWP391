@@ -9,5 +9,7 @@
         public string SendName { get; set; }
         public string ReceiveName { get; set; }
         public List<MessageModel> Messages { get; set; }
+        public string sendimg { get; set; }
+        public string receiveimg { get; set; }
     }
 }
