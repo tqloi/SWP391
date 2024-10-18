@@ -7,6 +7,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using OnlineLearning.Controllers;
 using Microsoft.AspNetCore.Authorization;
+using OnlineLearning.Services;
 
 namespace OnlineLearning.Areas.Student.Controllers
 {
@@ -20,14 +21,15 @@ namespace OnlineLearning.Areas.Student.Controllers
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
-        public StudentController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment)
+        private readonly FileService _fileService;
+        public StudentController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, FileService fileService)
         {
             datacontext = context;
             _logger = logger;
             _signInManager = signInManager;
             _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
+            _fileService = fileService;
         }
         public IActionResult InstructorRegistration()
         {
@@ -40,22 +42,24 @@ namespace OnlineLearning.Areas.Student.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (model.Filepdf != null)
             {
-                string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "ConfirmInstructor");
-                string fileName = Guid.NewGuid() + "_" + model.Filepdf.FileName;
-                string filePath = Path.Combine(uploadPath, fileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                var instructorConfirmation = new InstructorConfirmationModel();
+                string fileName = model.Filepdf.FileName;
+                try
                 {
-                    await model.Filepdf.CopyToAsync(fileStream);
+                    string downloadUrl = await _fileService.UploadInstructorCV(model.Filepdf);
+                    instructorConfirmation.Certificatelink = downloadUrl;
+                    instructorConfirmation.FileName = fileName;
                 }
-
-                var instructorConfirmation = new InstructorConfirmationModel
+                catch (Exception ex)
                 {
-                    UserID = userId,
-                    Certificatelink = fileName,
-                    SendDate = DateTime.Now,
-                    Description = model.Description
-                };
+                    ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                    TempData["error"] = "Edit failed due to file upload error!";
+                    return View(model);
+                }
+                instructorConfirmation.UserID = userId;
+                instructorConfirmation.SendDate = DateTime.Now;
+                instructorConfirmation.Description = model.Description;
+
                 datacontext.InstructorConfirmation.Add(instructorConfirmation);
                 await datacontext.SaveChangesAsync();
 

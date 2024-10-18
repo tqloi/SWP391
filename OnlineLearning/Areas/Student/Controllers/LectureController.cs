@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearningApp.Respositories;
 using System.Security.Claims;
+using YourNamespace.Models;
 
 namespace OnlineLearning.Areas.Student.Controllers
 {
@@ -50,6 +51,74 @@ namespace OnlineLearning.Areas.Student.Controllers
             ViewBag.Completion = completion;
 
             return View(lectureFiles);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Complete(int LectureID) 
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var lecture = await _dataContext.Lecture.FindAsync(LectureID);
+            var completion = new LectureCompletionModel
+            {
+                UserID = userId,
+                LectureID = LectureID,
+                CompletionDate = DateTime.Now,
+            };
+            _dataContext.LectureCompletion.Add(completion);
+            await _dataContext.SaveChangesAsync();
+
+            TempData["success"] = "Lecture Completed";
+            return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = LectureID});
+        }
+
+        public async Task<IActionResult> GoNext(int lectureID)
+        {
+            var currentLecture = await _dataContext.Lecture.FindAsync(lectureID);
+            if (currentLecture == null)
+            {
+                return NotFound();
+            }
+
+            var nextLecture = await _dataContext.Lecture
+                .Where(l => l.CourseID == currentLecture.CourseID && l.LectureID > currentLecture.LectureID)
+                .OrderBy(l => l.LectureID)
+                .FirstOrDefaultAsync();
+
+            if (nextLecture != null)
+            {
+                return RedirectToAction("LectureDetail", new { area = "Student", LectureID = nextLecture.LectureID });
+            }
+            else
+            {
+                TempData["error"] = "This is the last lecture in the course.";
+                return RedirectToAction("LectureDetail", new { area = "Student", LectureID = lectureID });
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GoPrevious(int lectureID)
+        {
+            var currentLecture = await _dataContext.Lecture.FindAsync(lectureID);
+            if (currentLecture == null)
+            {
+                return NotFound();
+            }
+
+            var previousLecture = await _dataContext.Lecture
+                .Where(l => l.CourseID == currentLecture.CourseID && l.LectureID < currentLecture.LectureID)
+                .OrderByDescending(l => l.LectureID)
+                .FirstOrDefaultAsync();
+
+            if (previousLecture != null)
+            {
+                return RedirectToAction("LectureDetail", new { area = "Student", LectureID = previousLecture.LectureID });
+            }
+            else
+            {
+                TempData["info"] = "This is the first lecture in the course.";
+                return RedirectToAction("LectureDetail", new { area = "Student", LectureID = lectureID });
+            }
         }
     }
 }

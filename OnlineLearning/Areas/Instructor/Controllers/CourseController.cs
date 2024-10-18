@@ -67,7 +67,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     return View(model);
                 }
             }
-            else { course.CoverImagePath = "faq_graphic.jpg"; }
+            else { course.CoverImagePath = "/Images/faq_graphic.jpg"; }
 
             datacontext.Courses.Add(course);
             await datacontext.SaveChangesAsync();

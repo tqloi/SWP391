@@ -326,7 +326,7 @@
                                                 </th>
                                                 <td>
                                                     <div class="event-img">
-                                                        <img src="~/Images/@item.user.ProfileImagePath" alt="" />
+                                                        <img src="@item.user.ProfileImagePath" alt="" />
                                                     </div>
                                                 </td>
                                                 <td>
@@ -342,7 +342,7 @@
                                                 </td>
                                                 <td>
                                                     <div class="r-no">
-                                                        <h3><a asp-area="Admin" asp-action="Viewpdf" asp-controller="User" asp-route-Id="@item.ConfirmationID">@item.Certificatelink </a></h3>
+                                                        <h3><a href="@item.Certificatelink" target="_blank"> @item.FileName</a></h3>
                                                     </div>
                                                 </td>
                                                 <td>
@@ -351,10 +351,7 @@
                                                     </div>
                                                 </td>
                                             </tr>
-                                        }
-                                      
-                                        
-                                      
+                                        }    
                                     </tbody>
                                 </table>
                             </div>

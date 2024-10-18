@@ -24,6 +24,7 @@ CREATE TABLE InstructorConfirmation(
 	 ConfirmationID INT PRIMARY KEY IDENTITY(1,1),
 	 UserID nvarchar(450),
 	 Certificatelink nvarchar(400),
+	 [FileName] NVARCHAR(255),
 	 SendDate DATETIME DEFAULT GETDATE(),
 	 [Description] TEXT,
 	 FOREIGN KEY (UserID) REFERENCES AspNetUsers(Id) ON DELETE CASCADE 
@@ -542,4 +543,7 @@ Alter table Question
 Add ImagePath NVARCHAR(MAX);
 
 Alter table CourseMaterials
+Add [FileName] NVARCHAR(255);
+
+Alter table InstructorConfirmation
 Add [FileName] NVARCHAR(255);

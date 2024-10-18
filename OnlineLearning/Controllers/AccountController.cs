@@ -219,7 +219,7 @@ namespace OnlineLearning.Controllers
                     LastName = model.LastName,
                     Email = model.Email,
                     PhoneNumber = "123456789",
-                    ProfileImagePath = "~Images/default.jpg",
+                    ProfileImagePath = "/Images/default.jpg",
                     Address = "",
                     Dob = DateOnly.FromDateTime(DateTime.Now),
                     Gender = true

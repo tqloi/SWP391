@@ -9,12 +9,13 @@
     var lecture = ViewBag.Lecture;
     var completion = ViewBag.Completion;
 }
+
 <div class="container-fluid">
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800 d-flex align-items-center">
         @lecture.Title
-        <i class="ml-2 fas @(completion == null ? "text-gray-400" : "text-success") fa-check-circle"></i>
+        <i class="ml-2 fas @(completion == null ? "text-gray-400" : "text-xbox") fa-check-circle"></i>
         <i class="fas fa-cog ml-auto"></i>
         </h1>
     <p class="mb-4">
@@ -28,18 +29,6 @@
 
             <!-- Area Chart -->
             <div class="card shadow mb-4">
-                @foreach (var file in Model)
-                {
-                    if (file.FileType.Equals("Video"))
-                    {
-                        <div class="position-relative">
-                            <video class="card-img-top" controls style="height: 100%; width: 100%;">
-                                <source src="@file.FilePath" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>
-                    }
-                }
 
                 <div class="m-3">
                     <h5>Documents</h5>
@@ -52,7 +41,7 @@
                         {
                             hasDocuments = true; 
                             <div class="position-relative mb-1">
-                                <a href="~/CourseMaterials/@file.FilePath" class="btn btn-link"> @file.FileName</a>
+                                <a href="@file.FilePath" class="btn btn-link" target="_blank"> @file.FileName</a>
                             </div>
                         }
                     }
@@ -64,16 +53,16 @@
                     }
                     @if (completion == null)
                     {
-                        <form asp-action="" asp-controller="" method="post" class="d-flex">
-                            <input type="hidden" name="CourseID" value="@lecture.CourseID">
-                            <button type="submit" class="btn btn-success p-3 m-2 ml-auto">Mark as Completed  <i class="fas fa-check-circle ml-1"></i></button>
+                        <form asp-action="Complete" asp-controller="Lecture" asp-area="Student" method="post" class="d-flex">
+                            <input type="hidden" name="LectureID" value="@lecture.LectureID">
+                            <button type="submit" class="btn btn-completed p-3 m-2 ml-auto">Mark as completed  <i class="fas fa-check-circle ml-1"></i></button>
                         </form>
                     }
                     else
                     {
-                        <form asp-action="" asp-controller="" method="get" class="d-flex">
-                            <input type="hidden" name="CourseID" value="@lecture.CourseID">
-                            <button type="submit" class="btn btn-success p-3 m-2 ml-auto">Go to new lecture  <i class="fas fa-check-circle ml-1"></i></button>
+                        <form asp-action="GoNext" asp-controller="Lecture" asp-area="Student" method="get" class="d-flex">
+                            <input type="hidden" name="LectureID" value="@lecture.LectureID">
+                            <button type="submit" class="btn btn-outline-black p-3 m-2 ml-auto">Go to next lecture</button>
                         </form>
                     }
                 </div>

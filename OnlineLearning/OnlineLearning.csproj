@@ -49,11 +49,6 @@
     <Folder Include="Areas\Instructor\Views\Shared\Components\" />
     <Folder Include="Areas\Student\Models\" />
     <Folder Include="wwwroot\Assignment\" />
-    <Folder Include="wwwroot\CourseMaterials\" />
-    <Folder Include="wwwroot\ConfirmInstructor\" />
-    <Folder Include="wwwroot\CourseMaterials\" />
-    <Folder Include="wwwroot\ConfirmInstructor\" />
-    <Folder Include="wwwroot\CourseVideo\" />
 
 
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
@@ -64,7 +59,6 @@
   <ItemGroup>
     <Folder Include="Areas\Instructor\Data\" />
     <Folder Include="Areas\Instructor\Models\" />
-    <Folder Include="wwwroot\CourseMaterials\" />
 
   </ItemGroup>
 
