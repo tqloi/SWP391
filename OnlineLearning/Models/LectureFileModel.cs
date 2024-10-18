@@ -1,9 +1,7 @@
-﻿using OnlineLearning.Models;
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace YourNamespace.Models
+namespace OnlineLearning.Models
 {
     public class LectureFileModel
     {

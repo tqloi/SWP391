@@ -10,6 +10,13 @@
     }
     </style>
 
+@if (Model == null || !Model.Any())
+{
+      <h6 class="collapse-header mt-2 mb-2">No lecture yet</h6>
+}
+else
+{
+    <div class="mt-2">
    @for (int index = 0; index < Model.Count(); index++)
     {
         var lecture = Model.ElementAt(index);
@@ -19,4 +26,5 @@
                @lecture.Title            
         </a>
     }
-
+    </div>
+}

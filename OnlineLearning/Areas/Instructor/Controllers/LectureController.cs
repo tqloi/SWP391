@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Firebase.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic.FileIO;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
+using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
 using System.Security.Claims;
 using YourNamespace.Models;
@@ -18,16 +21,21 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         private readonly DataContext datacontext;
         private UserManager<AppUserModel> _userManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly FileService _fileService;
 
-        public LectureController(DataContext context, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment)
+        public LectureController(DataContext context, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, FileService fileService)
         {
             datacontext = context;
             _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
+            _fileService = fileService;
         }
         [HttpPost]
         public async Task<IActionResult> Create(LectureViewModel model)
         {
+            var course = await datacontext.Courses.FindAsync(model.CourseID);
+            ViewBag.Course = course;
+
             try
             {
                 var lecture = new LectureModel
@@ -43,54 +51,61 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
                 if (model.VideoFile != null)
                 {
-                    string uploadpath = Path.Combine(_webHostEnvironment.WebRootPath, "CourseVideo");
-                    string fileName = Guid.NewGuid() + "_" + model.VideoFile.FileName;
-                    string filepath = Path.Combine(uploadpath, fileName);
-
-                    using (var fs = new FileStream(filepath, FileMode.Create))
+                    var lectueFile = new LectureFileModel();
+                    string fileName = model.VideoFile.FileName;
+                    try
                     {
-                        await model.VideoFile.CopyToAsync(fs);
+                        string downloadUrl = await _fileService.UploadVideo(model.VideoFile);
+                        lectueFile.LectureID = lecture.LectureID;
+                        lectueFile.FilePath = downloadUrl;
+                        lectueFile.FileName = fileName;
+                        lectueFile.FileType = "Video";
+                        datacontext.LectureFiles.Add(lectueFile);
+                        await datacontext.SaveChangesAsync();
                     }
-                    var lectueFile = new LectureFileModel
+                    catch (Exception ex)
                     {
-                        LectureID = lecture.LectureID,
-                        FilePath = fileName,
-                    };
-                    datacontext.LectureFiles.Add(lectueFile);
-                    await datacontext.SaveChangesAsync();
+                        ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                        TempData["error"] = "Edit failed due to file upload error!";
+                        return View(model);
+                    }
                 }
 
                 if (model.LectureFile != null && model.LectureFile.Count > 0)
                 {
-                    string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "CourseMaterials");
                     foreach (var file in model.LectureFile)
                     {
-                        string fileName = Guid.NewGuid() + "_" + file.FileName;
-                        string filePath = Path.Combine(uploadPath, fileName);
-
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        var lectueFile = new LectureFileModel();
+                        string fileName = file.FileName;
+                        try
                         {
-                            await file.CopyToAsync(fileStream);
+                            string downloadUrl = await _fileService.UploadLectureDocument(file);
+                            lectueFile.LectureID = lecture.LectureID;
+                            lectueFile.FilePath = downloadUrl;
+                            lectueFile.FileName = fileName;
+                            lectueFile.FileType = "Document";
+                            datacontext.LectureFiles.Add(lectueFile);
+                            await datacontext.SaveChangesAsync();
                         }
-                        var lectueFile = new LectureFileModel
+                        catch (Exception ex)
                         {
-                            LectureID = lecture.LectureID,
-                            FilePath = fileName,
-                        };
-                        datacontext.LectureFiles.Add(lectueFile);
-                        await datacontext.SaveChangesAsync();
+                            ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                            TempData["error"] = "Edit failed due to file upload error!";
+                            return View(model);
+                        }
                     }
+
                 }
 
                 TempData["success"] = "Lecture Addded successfully!";
                 //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-                return RedirectToAction("LectureList", "Participation", new { id = lecture.CourseID });
+                return RedirectToAction("LectureDetail", "Participation", new { LectureID = lecture.LectureID });
             }
             catch
             {
                 TempData["success"] = "Added Failed!";
                 //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-                return RedirectToAction("LectureList", "Participation", new { id = model.CourseID });
+                return RedirectToAction("CourseInfo", "Participation", new { CourseID = model.CourseID });
             }
         }
     }

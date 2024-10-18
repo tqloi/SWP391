@@ -67,6 +67,7 @@ namespace OnlineLearning.Controllers
                     var emailClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
                     var firstNameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName);
                     var lastNameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname);
+                    var pictureClaim = claims.FirstOrDefault(c => c.Type == "urn:google:picture"); 
 
                     if (emailClaim != null)
                     {
@@ -82,7 +83,7 @@ namespace OnlineLearning.Controllers
                                 LastName = lastNameClaim?.Value ?? "",
                                 Email = email,
                                 PhoneNumber = "123456789",
-                                ProfileImagePath = "default.jpg",
+                                ProfileImagePath = pictureClaim?.Value ?? "default.jpg",
                                 Address = "", // Giá trị mặc định
                                 Dob = DateOnly.FromDateTime(DateTime.Now),
                                 Gender = true,
@@ -106,20 +107,12 @@ namespace OnlineLearning.Controllers
                             var roles = await _userManager.GetRolesAsync(existingUser);
                             HttpContext.Session.Remove("Otp");
                             HttpContext.Session.Remove("Username");
-
-                            claims = new List<Claim>
-                            {
-                                new Claim("FirstName", existingUser.FirstName),
-                                new Claim("FirstName", existingUser.LastName),
-                                  new Claim("ID", existingUser.Id),
-                                new Claim("ProfileImagePath", existingUser.ProfileImagePath)
-                             };
                             await _userManager.AddClaimsAsync(existingUser, claims);
                             if (roles.Contains("Admin"))
                             {
                                 return RedirectToAction("Index", "Admin", new { area = "Admin" });
                             }
-                            TempData["success"] = "Action successful!";
+                            TempData["success"] = "Login successful!";
                             return RedirectToAction("Index", "Home");
                         }
                     }
@@ -178,8 +171,6 @@ namespace OnlineLearning.Controllers
             var claims = new List<Claim>
             {
                 new Claim("FirstName", user.FirstName),
-                 new Claim("FirstName", user.LastName),
-                    new Claim("ID", user.Id),
                 new Claim("ProfileImagePath", user.ProfileImagePath)
             };
             await _userManager.AddClaimsAsync(user, claims);
@@ -228,7 +219,7 @@ namespace OnlineLearning.Controllers
                     LastName = model.LastName,
                     Email = model.Email,
                     PhoneNumber = "123456789",
-                    ProfileImagePath = "default.jpg",
+                    ProfileImagePath = "~Images/default.jpg",
                     Address = "",
                     Dob = DateOnly.FromDateTime(DateTime.Now),
                     Gender = true

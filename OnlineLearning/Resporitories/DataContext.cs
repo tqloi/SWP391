@@ -37,6 +37,7 @@ namespace OnlineLearningApp.Respositories
         public DbSet<MessageFileModel> MessageFile { get; set; }
 
         public DbSet<LectureFileModel> LectureFiles { get; set; }
+        public DbSet<LectureCompletionModel> LectureCompletion { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

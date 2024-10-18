@@ -10,6 +10,7 @@ using System.Diagnostics;
 
 using YourNamespace.Models;
 using System.Security.Claims;
+using Google.Api;
 
 
 namespace OnlineLearning.Controllers
@@ -90,22 +91,26 @@ namespace OnlineLearning.Controllers
             return View(TestList);
             
         }
-
         
-
-        
-
-
-       [HttpGet]
-        [ServiceFilter(typeof(CourseAccessFilter))]
+        [HttpGet]
         public async Task<IActionResult> LectureDetail(int LectureID)
-
         {
-            var lecture = await datacontext.Lecture.FindAsync(LectureID);
-            var course = await datacontext.Courses.FindAsync(lecture.CourseID);
+            //var lectue = await datacontext.Lecture.FindAsync(LectureID);
+            //var course = await datacontext.Courses.FindAsync(lectue.CourseID);
+            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            ViewBag.Course = course;
-            return View(lecture); 
+            if (User.IsInRole("Student"))
+            {
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = LectureID });
+            }
+            if (User.IsInRole("Instructor"))
+            {
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = LectureID });
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

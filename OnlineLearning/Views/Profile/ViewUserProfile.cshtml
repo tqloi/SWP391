@@ -1,0 +1,45 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model InstructorProfileViewModel
+
+
+<partial name="_NoficationPartial" />
+<section class="profile-section">
+    <div class="container emp-profile">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="profile-img">
+                    <img src="@Model.ExistingProfileImagePath" alt="Profile Image" />
+                </div>
+            </div>
+            <div class="col-md-8">
+                <h5>@Model.UserName</h5>
+                <p>Full Name: @Model.FirstName @Model.LastName</p>
+                <p>Email: @Model.Email</p>
+                <p>Phone: @Model.PhoneNumber</p>
+                <p>Address: @Model.Address</p>
+                <p>Date of birth: @Model.Dob</p>
+                <p>
+                    Gender:@if (@Model.gender == true)
+                    {
+                        @:Male
+                    }
+
+                    else
+
+                    {
+                        @:Female
+                    }
+                </p>
+<<<<<<< HEAD:OnlineLearning/Views/Home/ViewUserProfile.cshtml
+                <a asp-action="Index" asp-controller="Chat" asp-route-id="@Model.UserId" class="btn custom-btn">Message</a>
+
+=======
+                <a asp-action="Chat" asp-controller="Chat" asp-route-receiverId="@Model.UserId" class="btn custom-btn">Message</a>
+>>>>>>> 769c5be67e4be216db31656986825dd96a4f4857:OnlineLearning/Views/Profile/ViewUserProfile.cshtml
+            </div>
+        </div>
+    </div>
+</section>
