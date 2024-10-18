@@ -33,9 +33,15 @@ namespace OnlineLearning.Controllers
         {
            
             var model = new RoleViewModel();
-            var user = await _userManager.GetUserAsync(User);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
             var list = await _db.Users.Where(u => !u.Id.Equals(user.Id)).ToListAsync();
             var receiver = await _db.Users.FirstOrDefaultAsync(i => i.Id.Equals(id));
+            var messages = await _db.Message
+        .Where(m => (m.SenderId == user.Id && m.ReceiverId == id) ||
+                     (m.SenderId == id && m.ReceiverId == user.Id))
+        .OrderBy(m => m.Timestamp)
+        .ToListAsync();
             if (user != null)
             {
                 var roles = await _userManager.GetRolesAsync(user);
@@ -43,7 +49,9 @@ namespace OnlineLearning.Controllers
                 model.ListUser = list;
                 model.ReceiverId = id;
                 model.SendName = user.FirstName + " " + user.LastName;
-                if(receiver != null)
+                model.Messages = messages;
+                model.SendId = user.Id;
+               if (receiver != null)
                 {
                     model.ReceiveName = receiver.FirstName + " " + receiver.LastName;
                 }
@@ -68,9 +76,19 @@ namespace OnlineLearning.Controllers
         public async Task<IActionResult> SendMessageToReceiver(string sender, string receiver, string message)
         {
             var userId = _db.Users.FirstOrDefault(u => u.Id.Equals(receiver))?.Id;
-
+             
             if (!string.IsNullOrEmpty(userId))
             {
+                var messageModel = new MessageModel
+                {
+                    SenderId = sender,
+                    ReceiverId = receiver,
+                    Content = message,
+                    Timestamp = DateTime.Now,
+                };
+
+                _db.Message.Add(messageModel);
+                await _db.SaveChangesAsync();
                 await _basicChatHub.Clients.User(userId).SendAsync("MessageReceived", sender, message);
             }
             return Ok();

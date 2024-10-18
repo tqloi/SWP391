@@ -11,8 +11,9 @@ namespace OnlineLearning.Models
         public string ReceiverId { get; set; }
         public string Content { get; set; }
         public DateTime Timestamp { get; set; }
-
+        [ForeignKey("SenderId")]
         public AppUserModel Sender { get; set; }
+        [ForeignKey("ReceiverId")]
         public AppUserModel Receiver { get; set; }
     }
 }
