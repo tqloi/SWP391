@@ -54,6 +54,8 @@ namespace OnlineLearning.Controllers
         public async Task<IActionResult> CreateTest(TestModel model)
         {
             var Course = datacontext.Courses.Find(model.CourseID);
+            ViewBag.Course = Course;
+
             if (Course == null)
             {
                 return NotFound();
@@ -66,25 +68,34 @@ namespace OnlineLearning.Controllers
             // if (ModelState.IsValid) invalid as always
             try
             {
-                Debug.WriteLine("ID retrieved valid");
-                var newTest = new TestModel
+                if (model.StartTime < model.EndTime)
                 {
-                    Title = model.Title,
-                    Course = model.Course,
-                    Description = model.Description,
-                    StartTime = model.StartTime,
-                    EndTime = model.EndTime,
-                    Status = model.Status,
-                    CourseID = model.CourseID,
-                    NumberOfQuestion = 0
-                };
-                // Add the test to the context and save changes
-                datacontext.Test.Add(newTest);
-                await datacontext.SaveChangesAsync();
-                Debug.WriteLine("Test saved to database");
+                    Debug.WriteLine("ID retrieved valid");
+                    var newTest = new TestModel
+                    {
+                        Title = model.Title,
+                        Course = model.Course,
+                        Description = model.Description,
+                        StartTime = model.StartTime,
+                        EndTime = model.EndTime,
+                        Status = model.Status,
+                        CourseID = model.CourseID,
+                        NumberOfQuestion = 0
+                    };
 
-                TempData["success"] = "Test created successfully!";
-                return RedirectToAction("TestList", new { courseID = model.CourseID });
+                    datacontext.Test.Add(newTest);
+                    await datacontext.SaveChangesAsync();
+                    Debug.WriteLine("Test saved to database");
+
+
+                    TempData["success"] = "Test created successfully!";
+                    return RedirectToAction("TestList", "Participation", new { CourseID = model.CourseID });
+                }
+                else
+                {
+                    TempData["error"] = "End Time must after start time";
+                    return View(model);
+                }
             }
 
             catch (Exception)

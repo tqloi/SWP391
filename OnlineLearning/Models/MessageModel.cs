@@ -6,26 +6,14 @@ namespace OnlineLearning.Models
     public class MessageModel
     {
         [Key]
-        public int MessageID { get; set; }
-
-        [Required]
-        public int ChatBoxID { get; set; }
-
-        [Required]
-        public string SenderID { get; set; }
-
-        [Required]
+        public int Id { get; set; }
+        public string SenderId { get; set; }
+        public string ReceiverId { get; set; }
         public string Content { get; set; }
-
-        public bool IsRead { get; set; } = false;
-
-        [Required]
-        public DateTime Timestamp { get; set; } = DateTime.Now;
-
-        [ForeignKey("ChatBoxID")]
-        public ChatBoxModel ChatBox { get; set; }
-
-        [ForeignKey("SenderID")]
+        public DateTime Timestamp { get; set; }
+        [ForeignKey("SenderId")]
         public AppUserModel Sender { get; set; }
+        [ForeignKey("ReceiverId")]
+        public AppUserModel Receiver { get; set; }
     }
 }

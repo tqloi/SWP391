@@ -129,6 +129,6 @@ app.MapAreaControllerRoute(
 
 
 
-app.MapHub<ChatHub>("/chatHub");
+app.MapHub<ChatHub>("/ChatHub");
 
 app.Run();

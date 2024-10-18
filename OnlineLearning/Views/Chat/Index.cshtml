@@ -1,69 +1,263 @@
-﻿@model IEnumerable<dynamic>
+﻿@model RoleViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        .chat-online {
+            color: #34ce57;
+        }
 
-<div class="chat-container">
-    <div class="user-list">
-        <h3>Danh sách người đã nhắn tin</h3>
-        <ul id="userList">
-            @foreach (var user in Model)
-            {
-                <li onclick="loadChat('@user.UserID')">@user.UserName</li>
-            }
-        </ul>
-    </div>
+        .chat-offline {
+            color: #e4606d;
+        }
 
-    <div class="chat-box">
-        <h3>Khung chat</h3>
-        <div id="messageList"></div>
-        <input type="text" id="messageInput" placeholder="Nhập tin nhắn..." />
-        <button onclick="sendMessage()">Gửi</button>
-    </div>
-</div>
+        .chat-messages {
+            height: 400px;
+            overflow-y: scroll;
+        }
 
-@section Scripts {
-    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft.signalr/3.1.9/signalr.min.js"></script>
+        .border-right {
+            border-right: 1px solid #dee2e6 !important;
+        }
+
+        .chat-message-left,
+        .chat-message-right {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .chat-message-right {
+            justify-content: flex-end;
+        }
+
+        .bg-light {
+            background-color: #f8f9fa !important;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="content">
+        <div class="container p-0">
+            <h1 class="h3 mb-3"><input class="form-control" asp-for="SendId" id="senderEmail"  disabled /></h1>
+            <div class="card">
+                <div class="row g-0">
+                    <div class="col-12 col-lg-5 col-xl-3 border-right">
+                        <div class="px-4 d-none d-md-block">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <input type="text" class="form-control my-3" placeholder="Search...">
+                                </div>
+                            </div>
+                        </div>
+                        @foreach (var item in Model.ListUser)
+                        {
+                            <div class="list-group">
+                                <a asp-action="Index" asp-controller="Chat" asp-route-id="@item.Id" class="list-group-item list-group-item-action border-0">
+                                    <div class="badge bg-success float-right">5</div>
+                                    <div class="d-flex align-items-start">
+                                        <img src="https://bootdey.com/img/Content/avatar/avatar5.png" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
+                                        <div class="flex-grow-1 ml-3">
+                                            @item.FirstName @item.LastName
+                                            <div class="small"><span class="fas fa-circle chat-online"></span> Online</div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <!-- Thêm các người dùng khác tương tự ở đây -->
+                            </div>
+                        }
+                        <!-- Add more user items here -->
+                        <hr class="d-block d-lg-none mt-1 mb-0">
+                    </div>
+                    <div class="col-12 col-lg-7 col-xl-9">
+                        <div class="py-2 px-4 border-bottom d-none d-lg-block">
+                            <div class="d-flex align-items-center py-1">
+                                <div class="position-relative">
+                                    <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="rounded-circle mr-1" alt="Sharon Lessman" width="40" height="40">
+                                </div>
+                                <div class="flex-grow-1 pl-3">
+                                    <strong><input class="form-control" asp-for="ReceiverId" id="receiverEmail" hidden />@Model.ReceiveName</strong>
+                                    <strong><input class="form-control" asp-for="ReceiveName" id="receivername" hidden /></strong>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary btn-lg mr-1 px-3"><i class="fas fa-phone"></i></button>
+                                    <button class="btn btn-info btn-lg mr-1 px-3 d-none d-md-inline-block"><i class="fas fa-video"></i></button>
+                                    <button class="btn btn-light border btn-lg px-3"><i class="fas fa-ellipsis-h"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="position-relative">
+                            <div class="chat-messages p-4">
+                                <ul id="messagesList">
+                                    @if (Model.Messages != null && Model.Messages.Count > 0)
+                                     {
+                                         foreach (var msg in Model.Messages)
+                                         {
+                                             var senderName = msg.SenderId == Model.SendId ? "You" : msg.Receiver.FirstName + " " + msg.Receiver.LastName;
+                                            @if(senderName == "You")
+                                            {
+                                                <div class="chat-message-right pb-4">
+                                                    <div>
+                                                        <img src="@msg.Sender.ProfileImagePath" class="rounded-circle mr-1"  width="40" height="40">
+                                                        <div class="text-muted small text-nowrap mt-2">@msg.Timestamp</div>
+                                                    </div>
+                                                    <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
+                                                        <div class="font-weight-bold mb-1">You</div>
+                                                        @msg.Content <br />
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="chat-message-left pb-4">
+                                                    <div>
+                                                        <img src="@msg.Receiver.ProfileImagePath" class="rounded-circle mr-1" alt="Sharon Lessman" width="40" height="40">
+                                                        <div class="text-muted small text-nowrap mt-2">@msg.Timestamp</div>
+                                                    </div>
+                                                    <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
+                                                        <div class="font-weight-bold mb-1">@msg.Receiver.FirstName @msg.Receiver.LastName</div>
+                                                         @msg.Content <br />
+                                                    </div>
+                                                </div>
+                                            }
+
+                                    }
+                                     
+                                     }
+                                      
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="flex-grow-0 py-3 px-4 border-top">
+                            <div class="input-group">
+                                <input class="form-control" type="text" id="chatMessage" placeholder="Type your message" />
+                                <button class="btn btn-primary" id="sendMessage">Send Message</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popperjs/core@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.js"></script>
+
+    
     <script>
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/chathub")
-            .build();
+        var connectionChat = new signalR.HubConnectionBuilder().withUrl("/ChatHub").build();
 
-        connection.on("ReceiveMessage", function (senderId, message) {
-            var messageElement = $('<div>').text(`${senderId}: ${message}`);
-            $('#messageList').append(messageElement);
-        });
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById("sendMessage").disabled = false;
 
-        connection.start().catch(function (err) {
-            return console.error(err.toString());
-        });
+            // Lắng nghe sự kiện MessageReceived từ SignalR
+            connectionChat.on("MessageReceived", function (user, message) {
+                var messageDiv = document.createElement("div");
+                var avatarDiv = document.createElement("div");
+                var textDiv = document.createElement("div");
+                var img = document.createElement("img");
+                var timeDiv = document.createElement("div");
 
-        function loadChat(userId) {
-            $.ajax({
-                url: '/Chat/GetMessages',
-                type: 'GET',
-                data: { userId: userId },
-                success: function (messages) {
-                    var messageList = $('#messageList');
-                    messageList.empty(); // Xóa các tin nhắn cũ
-                    messages.forEach(message => {
-                        var messageElement = $('<div>').text(`${message.senderName}: ${message.content}`);
-                        messageList.append(messageElement);
+                var senderEmail = document.getElementById("senderEmail").value;
+
+                // Cấu trúc cho người gửi
+                if (user === senderEmail) {
+                    messageDiv.classList.add("chat-message-right", "pb-4");
+                    img.src = "@Model.sendimg";
+                    img.alt = "You";
+                    textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "mr-3");
+                }
+                // Cấu trúc cho người nhận
+                else {
+                    messageDiv.classList.add("chat-message-left", "pb-4");
+                    img.src = "@Model.receiveimg";
+                    img.alt = user;
+                    textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "ml-3");
+                }
+
+                img.classList.add("rounded-circle", "mr-1");
+                img.width = 40;
+                img.height = 40;
+
+                var usernameDiv = document.createElement("div");
+                usernameDiv.classList.add("font-weight-bold", "mb-1");
+                usernameDiv.textContent = user === senderEmail ? "You" : "@Model.ReceiveName";
+
+                var messageContent = document.createElement("div");
+                messageContent.textContent = message;
+
+                timeDiv.classList.add("text-muted", "small", "text-nowrap", "mt-2");
+                timeDiv.textContent = new Date().toLocaleTimeString();
+
+                textDiv.appendChild(usernameDiv);
+                textDiv.appendChild(messageContent);
+                messageDiv.appendChild(avatarDiv);
+                avatarDiv.appendChild(img);
+                avatarDiv.appendChild(timeDiv);
+                messageDiv.appendChild(textDiv);
+
+                document.getElementById("messagesList").appendChild(messageDiv);
+            });
+
+            document.getElementById("sendMessage").addEventListener("click", function (event) {
+                var sender = document.getElementById("senderEmail").value;
+                var message = document.getElementById("chatMessage").value;
+                var receiver = document.getElementById("receiverEmail").value;
+
+                if (receiver.length > 0) {
+                    // Nếu có người nhận, gửi tin nhắn đến người đó
+                    $.ajax({
+                        url: '/SendMessageToReceiver',
+                        type: 'GET',
+                        data: { sender: sender, receiver: receiver, message: message },
+                        success: function (response) {
+                            console.log(response);
+                        },
+                        error: function (error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                } else {
+                    // Nếu không có người nhận, gửi tin nhắn đến tất cả người dùng
+                    $.ajax({
+                        url: '/SendMessageToAll',
+                        type: 'GET',
+                        data: { user: sender, message: message },
+                        success: function (response) {
+                            console.log(response);
+                        },
+                        error: function (error) {
+                            console.error('Error:', error);
+                        }
                     });
                 }
-            });
-        }
 
-        function sendMessage() {
-            var userId = $('#userList li.active').data('userid'); // Giả định bạn có cách xác định userId
-            var message = $('#messageInput').val();
-
-            $.ajax({
-                url: '/Chat/SendMessage',
-                type: 'POST',
-                data: { userId: userId, content: message },
-                success: function () {
-                    $('#messageInput').val(''); // Xóa ô nhập liệu
-                }
+                // Hiển thị tin nhắn đã gửi ngay lập tức
+                var li = document.createElement("li");
+                li.classList.add("list-group-item", "list-group-item-info");
+                li.textContent = `You: ${message}`; // Hiển thị tên người gửi
+                document.getElementById("messagesList").appendChild(li); // Sửa từ messagesListsend thành messagesList
+                document.getElementById("chatMessage").value = ""; // Xóa ô nhập tin nhắn
+                event.preventDefault(); // Ngăn chặn hành vi mặc định của nút
             });
-        }
+
+            // Khởi động kết nối SignalR
+            connectionChat.start().then(function () {
+                var sender = document.getElementById("senderEmail").value;
+                connectionChat.send("JoinGroup", sender);
+                document.getElementById("sendMessage").disabled = false; // Kích hoạt nút gửi tin nhắn
+            });
+        });
     </script>
-}
+
+
+</body>
+</html>

@@ -195,10 +195,18 @@ CREATE TABLE Test (
     [Status] NVARCHAR(255),
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
+<<<<<<< HEAD
+
+Alter table Test
+Add Description NVARCHAR(255)
+Alter table Test
+Add Title NVARCHAR(255)
+=======
 Alter table Test
 Add Description NVARCHAR(255);
 Alter table Test
 Add Title NVARCHAR(255);
+>>>>>>> 769c5be67e4be216db31656986825dd96a4f4857
 
 -- Score table
 CREATE TABLE Score (
