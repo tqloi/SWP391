@@ -1,74 +1,141 @@
-﻿@model List<OnlineLearning.Models.QuestionModel>
+﻿@model IEnumerable<OnlineLearning.Models.QuestionModel>
 
 @{
-    ViewData["Title"] = "Test Questions";
+    ViewData["Title"] = "Do Test";
+    Layout = null;
+    <partial name="_NoficationPartial" />
 }
 
-<!-- Applying Bootstrap classes for layout and styling -->
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Questions for Test: <span class="text-primary">@Model.FirstOrDefault()?.Test.Title</span></h2>
+@if (User.IsInRole("Student"))
+{
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Take Test</title>
 
-    <div class="table-responsive">
-        <table class="table table-hover table-striped table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Question</th>
-                    <th>Answer A</th>
-                    <th>Answer B</th>
-                    <th>Answer C</th>
-                    <th>Answer D</th>
-                    <th>Correct Answer</th>
-                    <th>Image</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var question in Model)
-                {
-                    <tr>
-                        <td class="align-middle">@question.Question</td>
-                        <td class="align-middle">@question.AnswerA</td>
-                        <td class="align-middle">@question.AnswerB</td>
-                        <td class="align-middle">@question.AnswerC</td>
-                        <td class="align-middle">@question.AnswerD</td>
-                        <td class="align-middle">
-                            <span class="badge badge-success">@question.CorrectAnswer</span>
-                        </td>
-                        <td class="align-middle">
-                            @if (!string.IsNullOrEmpty(question.ImagePath))
-                            {
-                                <img src="@Url.Content(question.ImagePath)" alt="Question Image" class="img-thumbnail" style="max-width: 150px; max-height: 150px;" />
-                            }
-                            else
-                            {
-                                <span class="text-muted">No Image</span>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Custom CSS for additional styling -->
-<style>
-    h2 {
-        font-weight: bold;
-    }
-    table {
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    }
-    .table-hover tbody tr:hover {
-        background-color: #f1f1f1;
-    }
-    .badge-success {
-        background-color: #28a745;
-        font-size: 0.9rem;
-        padding: 0.5rem;
-    }
-    img.img-thumbnail {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-</style>
+        <!-- Font Awesome for icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+        <!-- Custom CSS for additional styling -->
+        <link rel="stylesheet" href="~/css/DoTest.css" />
+
+        <!-- Include JavaScript for question navigation and timer -->
+        <script src="~/js/DoTest.js"></script>
+
+        <!-- Initialize totalQuestions for the JavaScript code -->
+        <script>
+            totalQuestions = @Model.Count();
+        </script>
+    </head>
+
+    <body>
+        <form asp-action="DoTest" asp-controller="Test" method="post">
+            <!-- Hidden fields for course, courseID, and testID -->
+            <input type="hidden" name="course" value="@ViewBag.Course" />
+            <input type="hidden" name="courseID" value="@ViewBag.CourseID" />
+            <input type="hidden" name="testID" value="@ViewBag.TestID" />
+
+            @Html.AntiForgeryToken()
+            <div class="container">
+                <div class="test-container">
+                    <!-- Left-side question navigation with timer -->
+                    <div class="question-nav">
+                        <div class="timer mb-4">
+                            Time left: 40:12
+                        </div>
+
+                        <div class="progress mb-4">
+                            <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+
+                        <!-- Question navigation buttons -->
+                        <div class="question-nav-buttons">
+                            @for (int i = 1; i <= Model.Count(); i++)
+                            {
+                                <button type="button" class="btn @(i == 1 ? "btn-primary active" : "btn-secondary")" onclick="showQuestion(@i - 1)">@i</button>
+                            }
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100 mt-3">Submit</button>
+                    </div>
+
+                    <!-- Right-side question and answers section -->
+                    <div class="question-content">
+                        @{
+                            int questionNumber = 1;
+                        }
+                        @foreach (var question in Model.Select((q, index) => new { Question = q, Index = index }))
+                        {
+                            // The 'question' variable now holds an anonymous object
+                            // containing the current QuestionModel (q) and its index (position) in the collection.
+
+                            <div class="question-box" id="question-@question.Index" style="display: @(question.Index == 0 ? "block" : "none");">
+                                <!-- Each question is wrapped in a div with a unique ID based on its index. -->
+
+                                <h5><strong>Question @questionNumber:</strong> @question.Question.Question</h5>
+                                <!-- Display the question ID and the question text. -->
+                                @if (!string.IsNullOrEmpty(question.Question.ImagePath))
+                                {
+                                    string imagePath = $"~/Images/QuestionImages/{question.Question.ImagePath}";
+                                    <div class="mt-3">
+                                        <img src="@Url.Content(imagePath)" alt="Question Image" class="img-fluid img-thumbnail" style="max-width: 500px; max-height: 500px;" />
+                                        <!-- If the question has an associated image, display it. -->
+                                    </div>
+                                }
+
+                                <div class="answer-options">
+                                    <!-- For each question, create answer options. -->
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="answers[@question.Question.QuestionID]" value="A" id="answerA-@question.Question.QuestionID">
+                                        <label class="form-check-label" for="answerA-@question.Question.QuestionID">
+                                            A. @question.Question.AnswerA
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="answers[@question.Question.QuestionID]" value="B" id="answerB-@question.Question.QuestionID">
+                                        <label class="form-check-label" for="answerB-@question.Question.QuestionID">
+                                            B. @question.Question.AnswerB
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="answers[@question.Question.QuestionID]" value="C" id="answerC-@question.Question.QuestionID">
+                                        <label class="form-check-label" for="answerC-@question.Question.QuestionID">
+                                            C. @question.Question.AnswerC
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="answers[@question.Question.QuestionID]" value="D" id="answerD-@question.Question.QuestionID">
+                                        <label class="form-check-label" for="answerD-@question.Question.QuestionID">
+                                            D. @question.Question.AnswerD
+                                        </label>
+                                    </div>
+                                    <!-- Each answer option is a radio button, allowing the user to select only one answer per question. -->
+                                </div>
+                            </div>
+                            questionNumber++;
+                        }
+
+                        <!-- Next question button -->
+                        <div class="next-button mt-4">
+                            <button type="button" class="btn btn-success" onclick="nextQuestion()">Next question <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Bootstrap JS for functionality -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+}
+else
+{
+    <h1>Your are not allowed</h1>
+}

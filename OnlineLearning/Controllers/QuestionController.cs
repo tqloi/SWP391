@@ -84,6 +84,7 @@ namespace OnlineLearning.Controllers
                 Test = model.Test,
                 QuestionID = model.QuestionID,
                 Question = model.QuestionText,
+                
                 //  ImagePath=model.ImagePath, null for now
             };
             if (model.QuestionImage != null)
@@ -102,9 +103,17 @@ namespace OnlineLearning.Controllers
             {
                 newQuestion.ImagePath = "";
             }
-
+            
             datacontext.Question.Add(newQuestion);
-            await datacontext.SaveChangesAsync();
+
+            var numberOfQuestions = datacontext.Question.ToList()
+                .Where(q => q.TestID == model.TestID)
+                .Count();
+
+            model.Test.NumberOfQuestion = numberOfQuestions;
+
+            datacontext.Test.Update(model.Test);
+            datacontext.SaveChanges();
             TempData["success"] = "Course created successfully!";
 
             //ViewBag.CourseID = model.CourseID;
@@ -152,14 +161,13 @@ namespace OnlineLearning.Controllers
                 return RedirectToAction("CreateQuestionRedirector", new { testID = TestID });
             }
             List<QuestionModel> questions = new List<QuestionModel>();
-
+            var test = await datacontext.Test.FindAsync(TestID);
             // Use EPPlus to read the Excel file
             using (var package = new OfficeOpenXml.ExcelPackage(ExcelFile.OpenReadStream()))
             {
                 var worksheet = package.Workbook.Worksheets[0]; // Assuming the first sheet
 
                 int rowCount = worksheet.Dimension.Rows;
-                var test = await datacontext.Test.FindAsync(TestID);
 
                 for (int row = startRow; row <= rowCount; row++)
                 {
@@ -221,12 +229,19 @@ namespace OnlineLearning.Controllers
 
             // Save all the questions to the database
             datacontext.Question.AddRange(questions);
+
+            var numberOfQuestions = datacontext.Question.ToList()
+                .Where(q => q.TestID == TestID)
+                .Count();
+
+             test.NumberOfQuestion = numberOfQuestions;
+
+            datacontext.Test.Update(test);
             await datacontext.SaveChangesAsync();
 
             TempData["Success"] = "Excel file processed successfully!";
             return RedirectToAction("CreateQuestionRedirector", new { testID = TestID });
         }
-
 
         [HttpPost]
         [Authorize(Roles = "Instructor")]
@@ -321,7 +336,16 @@ namespace OnlineLearning.Controllers
                 }
             }
             datacontext.Question.AddRange(questions);
-            await datacontext.SaveChangesAsync();
+
+            var numberOfQuestions = datacontext.Question.ToList()
+                .Where(q => q.TestID == TestID)
+                .Count();
+
+            test.NumberOfQuestion = numberOfQuestions;
+
+            datacontext.Test.Update(test);
+
+            datacontext.SaveChanges();
             ViewBag.CourseID = test.CourseID;
 
             TempData["Success"] = "CSV file processed successfully!";
@@ -342,7 +366,12 @@ namespace OnlineLearning.Controllers
             }
 
             // Retrieve the test and set up ViewBag for Test and CourseID
-            TestModel test = datacontext.Test.Find(TestID);
+            var test = datacontext.Test.Find(TestID);   
+
+            var numberOfQuestions = datacontext.Question.ToList()
+                .Where(q => q.TestID == TestID)
+                .Count();
+            test.NumberOfQuestion = numberOfQuestions;
             ViewBag.CourseID = test.CourseID;
            // ViewBag.TestID = TestID;
 
@@ -364,7 +393,8 @@ namespace OnlineLearning.Controllers
                 QuestionText = question.Question,
                 // Leave QuestionImage null, as no file is uploaded yet
             };
-
+            datacontext.Test.Update(test);
+            datacontext.SaveChanges();
             // Return the view with the pre-filled model
             return View(questionViewModel); 
         }

@@ -11,9 +11,10 @@ namespace OnlineLearningApp.Respositories
     public class DataContext : IdentityDbContext<AppUserModel>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
-        {
+        { 
 
         }
+        public DbSet<ScoreModel> Score { get; set; }
         public DbSet<QuestionModel> Question { get; set; }
         public DbSet<TestModel> Test {  get; set; }
 		public DbSet<AppUserModel> Users { get; set; }

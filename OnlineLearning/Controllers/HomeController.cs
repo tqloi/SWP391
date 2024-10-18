@@ -60,8 +60,6 @@ namespace OnlineLearning.Controllers
                 return NotFound();
             }
 
-            
-
             var model = new EditUserViewModel
             {
                 UserName = user.UserName,
