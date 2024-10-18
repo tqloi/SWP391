@@ -48,7 +48,7 @@ namespace OnlineLearning.Controllers
                                  course.Instructor.AppUser.FirstName.Contains(keyword) ||
                                  course.Instructor.AppUser.LastName.Contains(keyword))
                 .ToListAsync();
-
+            ViewBag.Keyword = keyword;
             return View("CourseList", courses); 
         }
 
