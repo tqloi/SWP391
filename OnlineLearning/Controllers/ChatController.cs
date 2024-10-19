@@ -36,7 +36,7 @@ namespace OnlineLearning.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
             var list = await _db.Users.Where(u => !u.Id.Equals(user.Id)).ToListAsync();
-            var receiver = await _db.Users.FirstOrDefaultAsync(i => i.Id.Equals(id));
+            var receiver = await _userManager.FindByIdAsync(id);
             var messages = await _db.Message
         .Where(m => (m.SenderId == user.Id && m.ReceiverId == id) ||
                      (m.SenderId == id && m.ReceiverId == user.Id))
@@ -52,9 +52,10 @@ namespace OnlineLearning.Controllers
                 model.Messages = messages;
                 model.SendId = user.Id;
                 model.sendimg = user.ProfileImagePath;
-                model.receiveimg = receiver.ProfileImagePath;
+                
                if (receiver != null)
                 {
+                    model.receiveimg = receiver.ProfileImagePath;
                     model.ReceiveName = receiver.FirstName + " " + receiver.LastName;
                 }
                 else
@@ -66,13 +67,7 @@ namespace OnlineLearning.Controllers
             return View(model);
 
         }
-        [HttpGet("SendMessageToAll")]
-        [Authorize]
-        public async Task<IActionResult> SendMessageToAll(string user, string message)
-        {
-            await _basicChatHub.Clients.All.SendAsync("MessageReceived", user, message);
-            return Ok();
-        }
+        
         [HttpGet("SendMessageToReceiver")]
         [Authorize]
         public async Task<IActionResult> SendMessageToReceiver(string sender, string receiver, string message)
@@ -95,18 +90,18 @@ namespace OnlineLearning.Controllers
             }
             return Ok();
         }
-        [HttpGet("SendMessageToGroup")]
-        [Authorize]
-        public async Task SendMessageToGroup(string message)
-        {
-            var user = GetUserId();
-            var role = (await GetUserRoles(user)).FirstOrDefault();
-            var username = _db.Users.FirstOrDefault(u => u.Id == user)?.Email ?? "";
-            if (!string.IsNullOrEmpty(role))
-            {
-                await _basicChatHub.Clients.Group(role).SendAsync("MessageReceived", username, message);
-            }
-        }
+        //[HttpGet("SendMessageToGroup")]
+        //[Authorize]
+        //public async Task SendMessageToGroup(string message)
+        //{
+        //    var user = GetUserId();
+        //    var role = (await GetUserRoles(user)).FirstOrDefault();
+        //    var username = _db.Users.FirstOrDefault(u => u.Id == user)?.Email ?? "";
+        //    if (!string.IsNullOrEmpty(role))
+        //    {
+        //        await _basicChatHub.Clients.Group(role).SendAsync("MessageReceived", username, message);
+        //    }
+        //}
         private string GetUserId()
         {
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

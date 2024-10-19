@@ -127,14 +127,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 return RedirectToAction("CourseList", "Course");
             }
 
-            if (!string.IsNullOrEmpty(assignment.AssignmentLink))
-            {
-                string filePath = Path.Combine(_webHostEnvironment.WebRootPath, "Assignment", assignment.AssignmentLink);
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
-            }
+            
             _dataContext.Assignment.Remove(assignment);
             await _dataContext.SaveChangesAsync();
             TempData["success"] = "Remove Assignment successful!";
@@ -142,9 +135,12 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         }
         public async Task<IActionResult> ListAssignment(int id)
         {
+            
             var submissions = await _dataContext.Submission.Where(s => s.AssignmentID == id).Include(s => s.User).ToListAsync();
             var assignment = await _dataContext.Assignment.FindAsync(id);
-            if (submissions.Count == 0)
+			var course = await _dataContext.Courses.FirstOrDefaultAsync(c => c.CourseID == assignment.CourseID);
+			ViewBag.Course = course;
+			if (submissions.Count == 0)
             {
                 TempData["error"] = "No students have submitted their assignments yet.";
                 return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });

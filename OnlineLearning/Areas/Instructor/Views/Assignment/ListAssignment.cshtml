@@ -1,16 +1,13 @@
 ﻿
 	@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_CourseLayout.cshtml";
 
     <partial name="_NoficationPartial" />
 
 }
 @model IEnumerable<SubmissionModel>
 <body>
-	<br />
-	<br />
-	<br />
-	<br />
+	
 
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 <div class="container">
@@ -33,7 +30,7 @@
 								{
 									<tr>
 										<td>
-											<img src="~/Images/@item.User.ProfileImagePath" alt="">
+											<img src="@item.User.ProfileImagePath" alt="">
 											<a href="#" class="user-link">@item.User.FirstName @item.User.LastName</a>
 											<span class="user-subhead">@item.User.Email</span>
 										</td>
@@ -42,10 +39,10 @@
 										</td>
 										
 										<td>
-											<a target="_blank" asp-area="Instructor" asp-controller="Assignment" asp-action="ViewSubmissonPdf" asp-route-id="@item.SubmissionID">@item.SubmissionLink</a>
+											<a href="@item.SubmissionLink" class="btn btn-link" target="_blank"> @item.FileName</a>
 										</td>
 										<td style="width: 20%;">
-											<a target="_blank" asp-area="Instructor" asp-controller="Assignment" asp-action="ViewSubmissonPdf" asp-route-id="@item.SubmissionID" class="table-link">
+											<a href="@item.SubmissionLink" class="btn btn-link table-link" target="_blank">
 												<span class="fa-stack">
 													<i class="fa fa-square fa-stack-2x"></i>
 													<i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>

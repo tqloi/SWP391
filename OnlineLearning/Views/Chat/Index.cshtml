@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
+       
         .chat-online {
             color: #34ce57;
         }
@@ -25,7 +26,10 @@
             border-right: 1px solid #dee2e6 !important;
         }
 
-        .chat-message-left,
+        .chat-message-left {
+            display: flex;
+            align-items: flex-start;
+        }
         .chat-message-right {
             display: flex;
             align-items: flex-start;
@@ -36,16 +40,41 @@
         }
 
         .bg-light {
-            background-color: #f8f9fa !important;
+            background-color: lightseagreen;
+        }
+        .card{
+            height: calc(100vh - 100px);
+        }
+        .khungchat{
+            height: calc(100vh - 100px);
+        }
+
+        .inputchat {
+            height: 1.18752px;
+            transform: translate(0px, 86.4px);
         }
     </style>
 </head>
 <body>
 
     <main class="content">
-        <div class="container p-0">
-            <h1 class="h3 mb-3"><input class="form-control" asp-for="SendId" id="senderEmail"  disabled /></h1>
-            <div class="card">
+        <div class="container">
+            <h1 class="h3 mb-3"><input class="form-control" hidden asp-for="SendId" id="senderEmail"  disabled /></h1>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" >Message</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" asp-action="Index" asp-controller="Home" asp-area="">Home <span class="sr-only">(current)</span></a>
+      </li>
+      
+    </ul>
+  </div>
+</nav>
+            <div class="card" >
                 <div class="row g-0">
                     <div class="col-12 col-lg-5 col-xl-3 border-right">
                         <div class="px-4 d-none d-md-block">
@@ -74,11 +103,11 @@
                         <!-- Add more user items here -->
                         <hr class="d-block d-lg-none mt-1 mb-0">
                     </div>
-                    <div class="col-12 col-lg-7 col-xl-9">
+                    <div class="col-12 col-lg-7 col-xl-9 khungchat">
                         <div class="py-2 px-4 border-bottom d-none d-lg-block">
                             <div class="d-flex align-items-center py-1">
                                 <div class="position-relative">
-                                    <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="rounded-circle mr-1" alt="Sharon Lessman" width="40" height="40">
+                                    <img src="@Model.receiveimg" class="rounded-circle mr-1" width="40" height="40">
                                 </div>
                                 <div class="flex-grow-1 pl-3">
                                     <strong><input class="form-control" asp-for="ReceiverId" id="receiverEmail" hidden />@Model.ReceiveName</strong>
@@ -94,17 +123,18 @@
                         <div class="position-relative">
                             <div class="chat-messages p-4">
                                 <ul id="messagesList">
+                                   
                                     @if (Model.Messages != null && Model.Messages.Count > 0)
                                      {
                                          foreach (var msg in Model.Messages)
                                          {
-                                             var senderName = msg.SenderId == Model.SendId ? "You" : msg.Receiver.FirstName + " " + msg.Receiver.LastName;
-                                            @if(senderName == "You")
+                                             var senderName = msg.SenderId == Model.SendId ? "You" : Model.ReceiveName;
+                                            @if(senderName.Equals("You"))
                                             {
                                                 <div class="chat-message-right pb-4">
                                                     <div>
-                                                        <img src="@msg.Sender.ProfileImagePath" class="rounded-circle mr-1"  width="40" height="40">
-                                                        <div class="text-muted small text-nowrap mt-2">@msg.Timestamp</div>
+                                                        <img src="@msg.Sender.ProfileImagePath" class="rounded-circle mr-1" width="40" height="40" >
+                                                        <div class="text-muted small text-nowrap mt-2">@msg.Timestamp.ToString("hh:mm tt")</div>
                                                     </div>
                                                     <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
                                                         <div class="font-weight-bold mb-1">You</div>
@@ -116,29 +146,30 @@
                                             {
                                                 <div class="chat-message-left pb-4">
                                                     <div>
-                                                        <img src="@msg.Receiver.ProfileImagePath" class="rounded-circle mr-1" alt="Sharon Lessman" width="40" height="40">
-                                                        <div class="text-muted small text-nowrap mt-2">@msg.Timestamp</div>
+                                                        <img src="@Model.receiveimg" class="rounded-circle mr-1" width="40" height="40" >
+                                                        <div class="text-muted small text-nowrap mt-2">@msg.Timestamp.ToString("hh:mm tt")</div>
                                                     </div>
                                                     <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
-                                                        <div class="font-weight-bold mb-1">@msg.Receiver.FirstName @msg.Receiver.LastName</div>
+                                                        <div class="font-weight-bold mb-1">@Model.ReceiveName</div>
                                                          @msg.Content <br />
                                                     </div>
                                                 </div>
                                             }
-
+                                        }                                
                                     }
-                                     
-                                     }
                                       
                                 </ul>
                             </div>
                         </div>
-                        <div class="flex-grow-0 py-3 px-4 border-top">
+                        @if(Model.ReceiverId != null)
+                        {
+                        <div class="flex-grow-0 py-3 px-4 border-top inputchat">
                             <div class="input-group">
                                 <input class="form-control" type="text" id="chatMessage" placeholder="Type your message" />
-                                <button class="btn btn-primary" id="sendMessage">Send Message</button>
+                                <button tabindex="1" class="btn btn-primary" id="sendMessage">Send Message</button>
                             </div>
                         </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -171,15 +202,15 @@
                 // Cấu trúc cho người gửi
                 if (user === senderEmail) {
                     messageDiv.classList.add("chat-message-right", "pb-4");
-                    img.src = "@Model.sendimg";
-                    img.alt = "You";
+                    img.src = '@Html.Raw(Model.sendimg)';
+                    
                     textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "mr-3");
                 }
                 // Cấu trúc cho người nhận
                 else {
                     messageDiv.classList.add("chat-message-left", "pb-4");
-                    img.src = "@Model.receiveimg";
-                    img.alt = user;
+                    img.src = '@Html.Raw(Model.receiveimg)';;
+                   
                     textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "ml-3");
                 }
 
@@ -195,7 +226,7 @@
                 messageContent.textContent = message;
 
                 timeDiv.classList.add("text-muted", "small", "text-nowrap", "mt-2");
-                timeDiv.textContent = new Date().toLocaleTimeString();
+                timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                 textDiv.appendChild(usernameDiv);
                 textDiv.appendChild(messageContent);
@@ -205,6 +236,7 @@
                 messageDiv.appendChild(textDiv);
 
                 document.getElementById("messagesList").appendChild(messageDiv);
+                messageDiv.scrollIntoView({ behavior: "smooth" });
             });
 
             document.getElementById("sendMessage").addEventListener("click", function (event) {
@@ -225,28 +257,50 @@
                             console.error('Error:', error);
                         }
                     });
-                } else {
-                    // Nếu không có người nhận, gửi tin nhắn đến tất cả người dùng
-                    $.ajax({
-                        url: '/SendMessageToAll',
-                        type: 'GET',
-                        data: { user: sender, message: message },
-                        success: function (response) {
-                            console.log(response);
-                        },
-                        error: function (error) {
-                            console.error('Error:', error);
-                        }
-                    });
                 }
+                
 
                 // Hiển thị tin nhắn đã gửi ngay lập tức
                 var li = document.createElement("li");
-                li.classList.add("list-group-item", "list-group-item-info");
-                li.textContent = `You: ${message}`; // Hiển thị tên người gửi
-                document.getElementById("messagesList").appendChild(li); // Sửa từ messagesListsend thành messagesList
-                document.getElementById("chatMessage").value = ""; // Xóa ô nhập tin nhắn
+                li.classList.add("chat-message-right", "pb-4"); 
+                var messageContainer = document.createElement("div");
+
+                // Tạo phần tử img cho hình ảnh của người gửi
+                var img = document.createElement("img");
+                img.src =  '@Html.Raw(Model.sendimg)'; // Đường dẫn đến hình ảnh
+                img.classList.add("rounded-circle", "mr-1");
+                img.width = 40;
+                img.height = 40;
+
+                // Thêm hình ảnh vào messageContainer
+                messageContainer.appendChild(img);
+
+                // Tạo phần tử chứa nội dung tin nhắn
+                var messageContent = document.createElement("div");
+                messageContent.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "mr-3");
+
+                // Tạo tên người gửi
+                var senderName = document.createElement("div");
+                senderName.classList.add("font-weight-bold", "mb-1");
+                senderName.textContent = "You"; 
+
+                // Thêm tên người gửi và nội dung tin nhắn
+                messageContent.appendChild(senderName);
+                messageContent.appendChild(document.createTextNode(message)); // Thay thế nội dung bằng biến message
+                messageContent.appendChild(document.createElement("br")); // Thêm dòng ngắt nếu cần
+
+                // Thêm cả messageContent và messageContainer vào li
+                li.appendChild(messageContainer);
+                li.appendChild(messageContent);
+
+                // Thêm li vào danh sách tin nhắn
+                document.getElementById("messagesList").appendChild(li);
+
+                // Xóa ô nhập tin nhắn
+                document.getElementById("chatMessage").value = "";
+                li.scrollIntoView({ behavior: "smooth" }); // Cuộn tới tin nhắn mới
                 event.preventDefault(); // Ngăn chặn hành vi mặc định của nút
+
             });
 
             // Khởi động kết nối SignalR

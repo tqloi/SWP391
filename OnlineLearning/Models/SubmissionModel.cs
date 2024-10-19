@@ -15,5 +15,6 @@ namespace OnlineLearning.Models
         public AssignmentModel Assignment { get; set; }
         [ForeignKey("StudentID")]
         public AppUserModel User { get; set; }
+        public string FileName { get; set; }
     }
 }

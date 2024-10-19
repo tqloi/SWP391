@@ -1,10 +1,12 @@
-﻿using System.Security.Claims;
+﻿using System.Linq;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
+using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
 
 namespace OnlineLearning.Areas.Student.Controllers
@@ -19,13 +21,16 @@ namespace OnlineLearning.Areas.Student.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly DataContext _dataContext;
         private IConfiguration _configuration;
-        public AssignmentController(DataContext dataContext, UserManager<AppUserModel> userManager, SignInManager<AppUserModel> signInManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
+        private readonly FileService _fileService;
+
+        public AssignmentController(DataContext dataContext, UserManager<AppUserModel> userManager, SignInManager<AppUserModel> signInManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, FileService file)
         {
             _dataContext = dataContext;
             _userManager = userManager;
             _signInManager = signInManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
+            _fileService = file;
         }
         public IActionResult Index()
         {
@@ -42,7 +47,8 @@ namespace OnlineLearning.Areas.Student.Controllers
             }
             var model = new SubmissionViewModel();
             model.AssignmentID = id;
-           
+           var course = _dataContext.Courses.FirstOrDefault(c => c.CourseID == assignment.CourseID);
+            ViewBag.Course= course;
             return View(model);
         }
         [HttpPost]
@@ -67,7 +73,7 @@ namespace OnlineLearning.Areas.Student.Controllers
             if (DateTime.Now > assignment.DueDate)
             {
                 TempData["error"] = "Qua han nop bai";
-                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", id = assignment.CourseID });
+                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
             }
             else
             {
@@ -75,62 +81,38 @@ namespace OnlineLearning.Areas.Student.Controllers
                 string filesubmit = "";
                 if (model.SubmissionLink != null)
                 {
-                     var existingSubmission = _dataContext.Submission
-                        .FirstOrDefault(s => s.AssignmentID == assignment.AssignmentID && s.StudentID == user.Id);
-
-                    if (existingSubmission != null)
+                    string filename = model.SubmissionLink.FileName;
+                    var submit = new SubmissionModel();
+                    try
                     {
-                        string oldFilePath = Path.Combine(_webHostEnvironment.WebRootPath, "Assignment", existingSubmission.SubmissionLink);
-                        if (System.IO.File.Exists(oldFilePath))
-                        {
-                            System.IO.File.Delete(oldFilePath);
-                        }
-                    }
+                        string downloadUrl = await _fileService.UploadAssignment(model.SubmissionLink);
+                        submit.AssignmentID = model.AssignmentID;
+                        submit.SubmissionLink = downloadUrl;
+                        submit.StudentID = user.Id;
+                        submit.SubmissionDate = DateTime.Now;
+                        submit.FileName = filename;
 
-                    string originalFileName = Path.GetFileName(model.SubmissionLink.FileName);
-                    string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Assignment");
-                    string fileName = Guid.NewGuid() + "_" + originalFileName;
-                    string filePath = Path.Combine(uploadPath, fileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.SubmissionLink.CopyToAsync(fileStream);
-                    }
-                    filesubmit = fileName;
-
-                    if (existingSubmission != null)
-                    {
-                        existingSubmission.SubmissionDate = DateTime.Now;
-                        existingSubmission.SubmissionLink = filesubmit;
-                        TempData["success"] = "Update submission successful!";
-                        _dataContext.Submission.Update(existingSubmission);
-                    }
-                    else
-                    {
-                        var submit = new SubmissionModel
-                        {
-                            AssignmentID = assignment.AssignmentID,
-                            StudentID = user.Id,
-                            SubmissionDate = DateTime.Now,
-                            SubmissionLink = filesubmit
-                        };
-                        _dataContext.Submission.Add(submit);
                         TempData["success"] = "Submit successful!";
+                        _dataContext.Submission.Add(submit);
+                        await _dataContext.SaveChangesAsync();
+
                     }
-
-                    // Lưu thay đổi vào cơ sở dữ liệu
-                    await _dataContext.SaveChangesAsync();
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                        TempData["error"] = "Edit failed due to file upload error!";
+                        return View(model);
+                    }
+                    
                 }
-
-            
                 else
                 {
                     TempData["error"] = "Student did not submit file pdf";
-                    return RedirectToAction("AssignmentList", "Participation", new { Areas = "", id = assignment.CourseID });
+                    return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
                 }
             }
             
-            return RedirectToAction("AssignmentList", "Participation", new { Areas = "", id = assignment.CourseID });
+            return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
         }
     }
 }

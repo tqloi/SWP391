@@ -275,7 +275,7 @@ CREATE TABLE Submission (
     FOREIGN KEY (assignmentID) REFERENCES Assignment(assignmentID),
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id)  -- References Users table
 );
-
+alter table Submission add FileName nvarchar(250)
 -- Chatbox
 CREATE TABLE ChatBox (
     ChatBoxID INT PRIMARY KEY IDENTITY(1,1),

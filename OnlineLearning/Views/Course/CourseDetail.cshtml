@@ -50,7 +50,7 @@
                     <h7 class="text-white">@Model.NumberOfStudents students</h7>
                 </div>
                 <h4 class="text-white">$@Model.Price</h4>
-                <h7 class="text-white">Create by: <a class="text-white-50" asp-area="" asp-action="ViewUserProfile" asp-controller="Home" asp-route-id="@Model.InstructorID"> @Model.Instructor?.AppUser?.FirstName @Model.Instructor?.AppUser?.LastName</a></h7>
+                <h7 class="text-white">Create by: <a class="text-white-50" asp-area="" asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@Model.InstructorID"> @Model.Instructor?.AppUser?.FirstName @Model.Instructor?.AppUser?.LastName</a></h7>
                 <h7 class="text-white d-flex mt-2 me-2">
                     Last Update: @Model.LastUpdate
                 </h7>

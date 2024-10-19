@@ -34,19 +34,6 @@ public class ChatHub : Hub
         return roles;
     }
 
-    public static List<string> GroupsJoined { get; set; } = new List<string>();
-
-    [Authorize]
-    public async Task JoinGroup(string sender)
-    {
-        var user = GetUserId();
-        var role = (await GetUserRoles(user)).FirstOrDefault();
-        if (!GroupsJoined.Contains(Context.ConnectionId + ":" + role))
-        {
-            GroupsJoined.Add(Context.ConnectionId + ":" + role);
-            //do something else
-            await Groups.AddToGroupAsync(Context.ConnectionId, role);
-        }
-    }
+    
 
 }
