@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Controllers;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
@@ -121,22 +122,24 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             course.Price = model.Price;
 
             if (model.CategoryID != 0)
+            {
                 course.CategoryID = model.CategoryID;
-
+            }
             if (model.Level != "none")
+            {
                 course.Level = model.Level;
-
-            if (model.EndDate != null)
+            }
+            if (model.EndDate != DateTime.MinValue)
             {
                 course.EndDate = model.EndDate;
             }
-            course.Level = model.Level;
             course.LastUpdate = DateTime.Now;
 
             if (model.CoverImage != null)
             {
                 try
                 {
+                    //await _fileService.DeleteFile(course.CoverImagePath);
                     string downloadUrl = await _fileService.UploadImage(model.CoverImage);
                     course.CoverImagePath = downloadUrl;
                 }
@@ -144,7 +147,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 {
                     ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                     TempData["error"] = "Edit failed due to file upload error!";
-                    return View(model);
+                    return RedirectToAction("MyCourse", "Course", new { area = "" });
                 }
             }
 
@@ -152,7 +155,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             TempData["success"] = "Update created successfully!";
             //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-            return RedirectToAction("MyCourse", "Course");
+            return RedirectToAction("InstructorCourse", "Course",  new { area = "Instructor" });
         }
 
         [HttpPost]
@@ -162,14 +165,14 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (course == null)
             {
                 TempData["error"] = "Course not found!";
-                return RedirectToAction("MyCourse", "Course");
+                return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
             }
 
             datacontext.Courses.Remove(course);
             await datacontext.SaveChangesAsync();
 
             TempData["success"] = "Course deleted successfully!";
-            return RedirectToAction("MyCourse", "Course");
+            return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
         }
 
         [HttpPost]
@@ -179,7 +182,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (course == null)
             {
                 TempData["error"] = "Course not found!";
-                return RedirectToAction("MyCourse", "Course");
+                return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
             }
 
             course.Status = !course.Status;
@@ -187,7 +190,23 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             await datacontext.SaveChangesAsync();
 
             TempData["success"] = course.Status ? "Course enabled successfully!" : "Course disable successfully!";
-            return RedirectToAction("MyCourse", "Course");
+            return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> InstructorCourse()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var model = new ListViewModel();
+
+                model.Courses = await datacontext.Courses
+                    .Where(course => course.InstructorID == userId)
+                    .Include(course => course.Instructor)
+                    .ThenInclude(instructor => instructor.AppUser)
+                    .OrderByDescending(sc => sc.CourseID)
+                    .ToListAsync();
+
+            return View(model);
         }
     }
 }

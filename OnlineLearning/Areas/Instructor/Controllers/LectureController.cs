@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic.FileIO;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
@@ -18,14 +19,14 @@ namespace OnlineLearning.Areas.Instructor.Controllers
     [Route("/[controller]/[action]")]
     public class LectureController : Controller
     {
-        private readonly DataContext datacontext;
+        private readonly DataContext _dataContext;
         private UserManager<AppUserModel> _userManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly FileService _fileService;
 
         public LectureController(DataContext context, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, FileService fileService)
         {
-            datacontext = context;
+            _dataContext = context;
             _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
             _fileService = fileService;
@@ -33,7 +34,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(LectureViewModel model)
         {
-            var course = await datacontext.Courses.FindAsync(model.CourseID);
+            var course = await _dataContext.Courses.FindAsync(model.CourseID);
             ViewBag.Course = course;
 
             try
@@ -46,8 +47,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     UpLoadDate = DateTime.Now,
                 };
 
-                datacontext.Lecture.Add(lecture);
-                await datacontext.SaveChangesAsync();
+                _dataContext.Lecture.Add(lecture);
+                await _dataContext.SaveChangesAsync();
 
                 if (model.VideoFile != null)
                 {
@@ -60,8 +61,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                         lectueFile.FilePath = downloadUrl;
                         lectueFile.FileName = fileName;
                         lectueFile.FileType = "Video";
-                        datacontext.LectureFiles.Add(lectueFile);
-                        await datacontext.SaveChangesAsync();
+                        _dataContext.LectureFiles.Add(lectueFile);
+                        await _dataContext.SaveChangesAsync();
                     }
                     catch (Exception ex)
                     {
@@ -84,8 +85,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                             lectueFile.FilePath = downloadUrl;
                             lectueFile.FileName = fileName;
                             lectueFile.FileType = "Document";
-                            datacontext.LectureFiles.Add(lectueFile);
-                            await datacontext.SaveChangesAsync();
+                            _dataContext.LectureFiles.Add(lectueFile);
+                            await _dataContext.SaveChangesAsync();
                         }
                         catch (Exception ex)
                         {
@@ -106,6 +107,67 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 TempData["success"] = "Added Failed!";
                 //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
                 return RedirectToAction("CourseInfo", "Participation", new { CourseID = model.CourseID });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> LectureDetail(int LectureID)
+        {
+            var lecture = await _dataContext.Lecture.FindAsync(LectureID);
+            var course = await _dataContext.Courses.FindAsync(lecture.CourseID);
+            var lectureFiles = await _dataContext.LectureFiles.Where(lf => lf.LectureID == LectureID).ToListAsync();
+
+            ViewBag.Course = course;
+            ViewBag.Lecture = lecture;
+
+            return View(lectureFiles);
+        }
+        public async Task<IActionResult> GoNext(int lectureID)
+        {
+            var currentLecture = await _dataContext.Lecture.FindAsync(lectureID);
+            if (currentLecture == null)
+            {
+                return NotFound();
+            }
+
+            var nextLecture = await _dataContext.Lecture
+                .Where(l => l.CourseID == currentLecture.CourseID && l.LectureID > currentLecture.LectureID)
+                .OrderBy(l => l.LectureID)
+                .FirstOrDefaultAsync();
+
+            if (nextLecture != null)
+            {
+                return RedirectToAction("LectureDetail", new { area = "Instructor", LectureID = nextLecture.LectureID });
+            }
+            else
+            {
+                TempData["error"] = "This is the last lecture in the course.";
+                return RedirectToAction("LectureDetail", new { area = "Instructor", LectureID = lectureID });
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GoPrevious(int lectureID)
+        {
+            var currentLecture = await _dataContext.Lecture.FindAsync(lectureID);
+            if (currentLecture == null)
+            {
+                return NotFound();
+            }
+
+            var previousLecture = await _dataContext.Lecture
+                .Where(l => l.CourseID == currentLecture.CourseID && l.LectureID < currentLecture.LectureID)
+                .OrderByDescending(l => l.LectureID)
+                .FirstOrDefaultAsync();
+
+            if (previousLecture != null)
+            {
+                return RedirectToAction("LectureDetail", new { area = "Instructor", LectureID = previousLecture.LectureID });
+            }
+            else
+            {
+                TempData["error"] = "This is the first lecture in the course.";
+                return RedirectToAction("LectureDetail", new { area = "Instructor", LectureID = lectureID });
             }
         }
     }

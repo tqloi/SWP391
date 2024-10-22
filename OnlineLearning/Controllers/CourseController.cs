@@ -12,8 +12,7 @@ namespace OnlineLearning.Controllers
 {
     public class CourseController : Controller
     {
-
-       private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> _logger;
         private readonly DataContext datacontext;
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
@@ -91,6 +90,24 @@ namespace OnlineLearning.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Instructor, Student")]
+        public IActionResult UserCourse()
+        {
+            if (User.IsInRole("Student"))
+            {
+                return RedirectToAction("StudentCourse", "Course", new { area = "Student"});
+            }
+            if (User.IsInRole("Instructor"))
+            {
+                return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor"});
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> CourseDetail(int CourseID)
         {
             var course = await datacontext.Courses
@@ -113,87 +130,6 @@ namespace OnlineLearning.Controllers
         }
 
 
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> Create(CourseViewModel model)
-        {   
-            
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                var course = new CourseModel
-            {
-                Title = model.Title,
-                Description = model.Description,
-                CourseCode = model.CourseCode,
-                CategoryID = model.CategoryId,
-                Level = model.Level,
-                EndDate = model.EndDate,
-                Price = model.Price,
-                CreateDate = DateTime.Now,
-                LastUpdate = DateTime.Now,
-                NumberOfStudents = 0,
-                NumberOfRate = 0,
-                InstructorID = userId,
-                //Status = true
-            };
-                 if (model.CoverImage != null)
-            {
-                string uploadpath = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
-                string imagename = Guid.NewGuid() + "_" + model.CoverImage.FileName;
-                string filepath = Path.Combine(uploadpath, imagename);
-
-                using (var fs = new FileStream(filepath, FileMode.Create))
-                {
-                    await model.CoverImage.CopyToAsync(fs);
-                }
-                course.CoverImagePath = imagename;
-            }
-            else { course.CoverImagePath = ""; }
-
-            datacontext.Courses.Add(course);
-            await datacontext.SaveChangesAsync();
-
-            int newCourseId = course.CourseID;
-
-            if (model.CourseMaterials != null && model.CourseMaterials.Count > 0)
-            {
-                string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "CourseMaterials");
-                foreach (var file in model.CourseMaterials)
-                {
-                    string fileName = Guid.NewGuid() + "_" + file.FileName;
-                    string filePath = Path.Combine(uploadPath, fileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await file.CopyToAsync(fileStream);
-                    }
-                    var material = new CourseMaterialModel
-                    {
-                        CourseID = newCourseId,
-                        MaterialsLink = fileName
-                    };
-                    datacontext.CourseMaterials.Add(material);
-                    await datacontext.SaveChangesAsync();
-                }
-            }
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user != null)
-            {
-                //notification for admin
-                var notification = new NotificationModel
-                {
-                    UserId = userId,
-                    Description = $"{user.UserName} has just created a courses",
-                    CreatedAt = DateTime.Now
-                };
-
-                datacontext.Notification.Add(notification);
-                await datacontext.SaveChangesAsync();
-            }
-            TempData["success"] = "Course created successfully!";
-            //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-            return RedirectToAction("MyCourse", "Course");
-        }
         public IActionResult Create()
         {
             return View();

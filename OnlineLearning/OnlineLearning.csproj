@@ -48,7 +48,6 @@
     <Folder Include="Areas\Instructor\Views\Payment\" />
     <Folder Include="Areas\Instructor\Views\Shared\Components\" />
     <Folder Include="Areas\Student\Models\" />
-    <Folder Include="wwwroot\Assignment\" />
 
 
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />

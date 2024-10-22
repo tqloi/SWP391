@@ -65,34 +65,26 @@ namespace OnlineLearning.Areas.Student.Controllers
                 CompletionDate = DateTime.Now,
             };
             _dataContext.LectureCompletion.Add(completion);
+            await _dataContext.SaveChangesAsync();
             var studentCourse = _dataContext.StudentCourses.
                 Where(sc => sc.CourseID == lecture.CourseID && sc.StudentID == userId).FirstOrDefault();
 
-            if (studentCourse == null)
-            {
-                TempData["erroe"] = "Lecture Completed";
-            }
 
-                if (studentCourse != null)
-            {
-                var completedLecturesCount = await _dataContext.LectureCompletion
-                    .CountAsync(c => c.UserID == userId &&
-                                     c.LectureID == lecture.LectureID);
+            var completedLecturesCount = await _dataContext.LectureCompletion
+                .CountAsync(c => c.UserID == userId &&
+                 _dataContext.Lecture.Where(l => l.CourseID == lecture.CourseID)
+                .Select(l => l.LectureID)
+                .Contains(c.LectureID));
 
-                var totalLecturesCount = await _dataContext.Lecture
-                    .CountAsync(l => l.CourseID == lecture.CourseID);
+            var totalLecturesCount = await _dataContext.Lecture
+                .CountAsync(l => l.CourseID == lecture.CourseID);
 
-                if (totalLecturesCount > 0)
+            if (totalLecturesCount > 0)
                 {
-                    studentCourse.Progress = (decimal) completedLecturesCount / totalLecturesCount; 
+                    studentCourse.Progress = (decimal)completedLecturesCount / totalLecturesCount * 100;
                 }
                 _dataContext.StudentCourses.Update(studentCourse);
-                Console.WriteLine($"User ID: {userId}");
-                Console.WriteLine($"Total Lectures Completed: {completedLecturesCount}");
-                Console.WriteLine($"Total Lectures in Course: {totalLecturesCount}");
-                Console.WriteLine($"Progress: {studentCourse.Progress}%");
-            }
-
+            
             await _dataContext.SaveChangesAsync();
 
             TempData["success"] = "Lecture Completed";
@@ -144,7 +136,7 @@ namespace OnlineLearning.Areas.Student.Controllers
             }
             else
             {
-                TempData["erroe"] = "This is the first lecture in the course.";
+                TempData["error"] = "This is the first lecture in the course.";
                 return RedirectToAction("LectureDetail", new { area = "Student", LectureID = lectureID });
             }
         }

@@ -102,11 +102,30 @@
                 <span>Topic</span>
             </a>
 
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item">
-                <a class="nav-link" href="index.html">
+            @if (currentCourse.InstructorID.Equals(user.Id))
+            {
+                <!-- Nav Item - Dashboard -->
+                <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Instructor" && ViewContext.RouteData.Values["action"].ToString() == "Dashboard" ? "active" : "")">
+                    <a class="nav-link" asp-action="Dashboard" asp-controller="Instructor" asp-route-CourseID="@courseID">
+                        <i class="fas fa-fw fa-tachometer-alt"></i>
+                        <nav-link>Dashboard</nav-link>
+                    </a>
+                </li>
+            }
+
+            <!-- Nav Item - Course Info -->
+            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "CourseInfo" ? "active" : "")">
+                <a class="nav-link" asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@courseID">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <nav-link>Dashboard</nav-link>
+                    <nav-link>Course Info</nav-link>
+                </a>
+            </li>
+
+            <!-- Nav Item - Material -->
+            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "MaterialList" ? "active" : "")">
+                <a class="nav-link" asp-action="MaterialList" asp-controller="Participation" asp-route-CourseID="@courseID">
+                    <i class="fas fa-file-alt"></i>
+                    <nav-link> Materials</nav-link>
                 </a>
             </li>
 
@@ -120,7 +139,7 @@
                 <div id="lectureList" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
 
-                        @if (User.IsInRole("Instructor"))
+                        @if (currentCourse.InstructorID.Equals(user.Id))
                         {
                             <h6 class="ml-4 mt-1">
                                 <a class="btn btn-outline active" data-bs-toggle="modal" data-bs-target="#createLectureModal">
@@ -134,26 +153,31 @@
                 </div>
             </li>
 
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID">
-                    <i class="fas fa-tasks"></i>
-                    <nav-link>Assignments</nav-link>
+            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "Grades" ? "active" : "")">
+                <a class="nav-link" asp-action="GradeList" asp-controller="Participation" asp-route-CourseID="@courseID">
+                    <i class="fas fa-clipboard-list"></i>
+                    <nav-link>Grades</nav-link>
                 </a>
             </li>
 
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
+            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "TestList" ? "active" : "")">
                 <a class="nav-link" asp-action="TestList" asp-controller="Participation" asp-route-CourseID="@courseID">
                     <i class="fas fa-clipboard-list"></i>
                     <nav-link>Tests</nav-link>
                 </a>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link" asp-action="TestList" asp-controller="Participation" asp-route-CourseID="@courseID">
-                    <i class="fas fa-file-alt"></i>
-                    <nav-link> Materials</nav-link>
+            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "AssignmentList" ? "active" : "")">
+                <a class="nav-link" asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID">
+                    <i class="fas fa-tasks"></i>
+                    <nav-link>Assignments</nav-link>
+                </a>
+            </li>
+
+            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "AssignmentList" ? "active" : "")">
+                <a class="nav-link" asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID">
+                    <i class="bi bi-broadcast"></i>
+                    <nav-link>Live stream</nav-link>
                 </a>
             </li>
 
@@ -185,7 +209,7 @@
 
                     <ol class="breadcrumb mb-0 mr-auto">
                         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Home</a></li>
-                        <li class="breadcrumb-item"><a asp-action="MyCourse" asp-controller="Course">My Courses</a></li>
+                        <li class="breadcrumb-item"><a asp-action="UserCourse" asp-controller="Course">My Courses</a></li>
                         @if (currentCourse != null)
                         {
                             <li class="breadcrumb-item active" aria-current="page">@currentCourse.Title</li>
