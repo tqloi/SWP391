@@ -2,15 +2,20 @@
     Layout = "~/Areas/Admin/Views/Shared/_layout.cshtml";
 }
   @using OnlineLearning.Models
-  @model IEnumerable<CourseModel>
+  @model IEnumerable<CategoryModel>
 <partial name="_NoficationPartial" />
 <body>
     <div>
         <br />
         <br />
+        <br />
+        <br />
+        
+        
+        
     </div>
     <style>
-       
+
         body {
             margin-top: 20px;
         }
@@ -298,9 +303,10 @@
 
                     </div>
                 </div>
+               
                 <!-- /.col end-->
             </div>
-            
+
             <!-- row end-->
             <div class="row">
                 <div class="col-lg-12">
@@ -314,12 +320,13 @@
                                             <th class="text-center" scope="col">ID</th>
                                             <th scope="col">Name</th>
                                             <th scope="col">Decription</th>
-                                            <th scope="col">Price</th>
-                                            <th class="text-center" scope="col">Venue</th>
+                                            <th class="text-center" scope="col">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @{int index = 1;}
+                                        @{
+                                            int index = 1;
+                                        }
                                         @foreach (var item in Model)
                                         {
                                             <tr class="inner-box">
@@ -329,45 +336,28 @@
 
                                                     </div>
                                                 </th>
-                                                <td>
-                                                    <div class="event-img">
-                                                        <img src="@item.CoverImagePath" alt="" />
-                                                    </div>
-                                                </td>
+                                                
                                                 <td>
                                                     <div class="event-wrap">
-                                                        <h3><a href="#">@item.Title</a></h3>
-                                                        <div class="meta">
-                                                            <div class="organizers">
-                                                                <a href="#">@item.Instructor.AppUser.FirstName @item.Instructor.AppUser.LastName</a>
-                                                            </div>
-                                                            <div class="categories">
-                                                                <a href="#"></a>
-                                                            </div>
-                                                            <div class="time">
-                                                                <span>@item.CreateDate</span>
-                                                            </div>
-                                                        </div>
+                                                        <h3><a href="#">@item.FullName</a></h3>
+                                                        
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <div class="r-no">
-                                                        <span>@item.Price</span>
+                                                        <span>@item.Description</span>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    @if(item.Status == true)
-                                                    {
+                                                    
                                                         <div class="primary-btn">
-                                                            <a class="btn btn-danger asp-action="SetStatusCourse" asp-action="SetStatusCourse" asp-controller="Course" asp-area="Admin" asp-route-Id="@item.CourseID">Set Unavailable</a>
+                                                        <a class="btn btn-warning" style="width: 91.8px; transform: translate(-4.4e-06px, -0.800033px); height: 41.6px;" asp-action="EditCategory" asp-controller="Course" asp-area="Admin" asp-route-id="@item.CategoryID">Edit</a>
                                                         </div>
-                                                    }
-                                                    else
-                                                    {
+                                                    
                                                         <div class="primary-btn">
-                                                            <a class="btn btn-success asp-action="SetStatusCourse" asp-action="SetStatusCourse" asp-controller="Course" asp-area="Admin" asp-route-Id="@item.CourseID">Set Available</a>
+                                                            <a class="btn btn-danger" asp-action="RemoveCate" asp-controller="Course" asp-area="Admin" asp-route-id="@item.CategoryID">Remove</a>
                                                         </div>
-                                                    }
+                                                    
 
                                                 </td>
                                             </tr>
@@ -379,10 +369,11 @@
                                 </table>
                             </div>
                         </div>
+                        <div class="primary-btn text-center">
+                            <a asp-action="AddCategory" asp-controller="Course" asp-area="Admin" class="btn btn-primary">Add New Category</a>
+                        </div>
                     </div>
-                    <div class="primary-btn text-center">
-                        <a href="#" class="btn btn-primary">Download Schedule</a>
-                    </div>
+                    
                 </div>
                 <!-- /col end-->
             </div>

@@ -28,6 +28,7 @@ namespace OnlineLearning.Controllers
             _userManager = userManager;
             _basicChatHub = basicChatHub;
         }
+        
         [Authorize]
         public async Task<IActionResult> Index(string id)
         {
@@ -42,6 +43,18 @@ namespace OnlineLearning.Controllers
                      (m.SenderId == id && m.ReceiverId == user.Id))
         .OrderBy(m => m.Timestamp)
         .ToListAsync();
+            var isreadmess = await _db.Message.Where(m => (m.ReceiverId.Equals(userId) && m.SenderId.Equals(id)) || (m.SenderId.Equals(userId) && m.ReceiverId.Equals(id))).OrderByDescending(t => t.Timestamp).Select(m => new {m.Content, m.SenderId, m.ReceiverId}).FirstOrDefaultAsync();
+            if(isreadmess == null)
+            {
+                model.IsReadmess = null;
+            }
+            else
+            {
+                model.receimess = $"{isreadmess.ReceiverId}";
+                model.IsReadmess = $"{isreadmess.SenderId}: {isreadmess.Content}";
+            }
+                
+            
             if (user != null)
             {
                 var roles = await _userManager.GetRolesAsync(user);
@@ -51,8 +64,7 @@ namespace OnlineLearning.Controllers
                 model.SendName = user.FirstName + " " + user.LastName;
                 model.Messages = messages;
                 model.SendId = user.Id;
-                model.sendimg = user.ProfileImagePath;
-                
+                model.sendimg = user.ProfileImagePath;               
                if (receiver != null)
                 {
                     model.receiveimg = receiver.ProfileImagePath;

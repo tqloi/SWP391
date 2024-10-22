@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Firebase.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ using System.Web.Helpers;
 namespace OnlineLearning.Controllers
 {
 
-    [Authorize(Roles = "Student")]
+    [Authorize(Roles = "Student, Instructor" )]
     public class PaymentController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -50,6 +51,7 @@ namespace OnlineLearning.Controllers
             }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
+
 
             var payment = new PaymentViewModel
             {
@@ -125,8 +127,9 @@ namespace OnlineLearning.Controllers
                     FullName = model.UserFullName,
                     OrderID = new Random().Next(1000, 100000)
                 };
+                HttpContext.Session.SetString("UserWallet", user.WalletUser.ToString());
                 HttpContext.Session.SetInt32("CourseId", model.CourseID);
-                HttpContext.Session.SetString("UserId", model.UserID);
+               // HttpContext.Session.SetString("UserId", model.UserID);
                 HttpContext.Session.SetString("Price", model.Price.ToString());
                 return Redirect(_vnPayservice.CreatePaymentUrl(HttpContext, vnPayModel));
             }
@@ -143,10 +146,11 @@ namespace OnlineLearning.Controllers
                 TempData["error"] = $"Lỗi thanh toán VN Pay: {response.VnPayResponseCode}";
                 return RedirectToAction("ErrorPayment");
             }
-
+            var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userid);
             // thanh toan thanh cong
             int courseid = (int)HttpContext.Session.GetInt32("CourseId");
-            var userid = HttpContext.Session.GetString("UserId");
+            //var userid = HttpContext.Session.GetString("UserId");
             double price = -1;
             string pricevalue = HttpContext.Session.GetString("Price");
             if (double.TryParse(pricevalue, out price))
@@ -162,8 +166,14 @@ namespace OnlineLearning.Controllers
                 datacontext.Payment.Add(payment);
                 await datacontext.SaveChangesAsync();
             }
-            
-
+            var course = await datacontext.Courses.FindAsync(courseid);
+            var notify = new NotificationModel
+            {
+                UserId = userid,
+                Description = $"{user.UserName} just paid for the Course: {course.Title}",
+                CreatedAt = DateTime.Now
+            };
+            datacontext.Notification.Add(notify);
                 var studentCourse = new StudentCourseModel
                 {
                     CourseID = courseid,
@@ -174,11 +184,20 @@ namespace OnlineLearning.Controllers
                 };
 
                 datacontext.StudentCourses.Add(studentCourse);
-                var course = await datacontext.Courses.FirstOrDefaultAsync(c => c.CourseID == courseid);
+                
                 course.NumberOfStudents += 1;
                 await datacontext.SaveChangesAsync();
-            
-            HttpContext.Session.Remove("UserId");
+            string getwallet = HttpContext.Session.GetString("UserWallet");
+            if(getwallet != null)
+            {
+                double userwallet = double.Parse(getwallet);
+                user.WalletUser -= userwallet;
+                datacontext.Users.Update(user);
+                await datacontext.SaveChangesAsync();
+            }
+
+
+            HttpContext.Session.Remove("UserWallet");
                  HttpContext.Session.Remove("CourseId");
                  HttpContext.Session.Remove("Price");
                 TempData["success"] = "Payment completed successfully!";
@@ -202,8 +221,70 @@ namespace OnlineLearning.Controllers
             {
                 return View();
              }
-      
-         }
+        [HttpGet]
+        [Authorize]
+        
+        public async Task<IActionResult> RequestWithdraw()
+        {
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+            var request = new RequestTransferViewModel
+            {
+                UserID = user.Id,
+                Status = "In processing",
+                CreateAtTime = DateTime.Now
+            };
+            return View(request);
+        }
+        [HttpPost]
+        public async Task<IActionResult> RequestWithdraw(RequestTransferViewModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.UserID);
+            if (user == null)
+            {
+                TempData["error"] = "User not exist!";
+                return RedirectToAction("UserProfile", "Home", new { Areas = "" });
+            }
+            if (model.MoneyNumber > user.WalletUser)
+            {
+                TempData["error"] = "Your wallet don't have enough money";
+                return View(model);
+            }
+            else
+            {
+                var notify = new NotificationModel
+                {
+                    UserId = user.Id,
+                    Description = $"{user.UserName} has just requested to withdraw {model.MoneyNumber} VND",
+                    CreatedAt = DateTime.Now
+                };
+                datacontext.Notification.Add(notify);
+                var request = new RequestTranferModel
+                {
+                    UserID = model.UserID,
+                    Status = "In processing",
+                    FullName = model.FullName,
+                    BankName = model.BankName,
+                    AccountNumber = model.AccountNumber,
+                    MoneyNumber = model.MoneyNumber,
+                    CreateAt = DateTime.Now
+                };
+                datacontext.RequestTranfer.Add(request);
+                await datacontext.SaveChangesAsync();
+                TempData["success"] = "Request successfully!";
+                return RedirectToAction("Index", "Home", new { Areas = "" });
+            }
+
+
+
+        }
+        public IActionResult ListRequest()
+        {
+            return View();
+        }
+
+    }
 
     }
 

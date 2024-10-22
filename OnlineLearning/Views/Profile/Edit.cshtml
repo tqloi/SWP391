@@ -6,7 +6,7 @@
 
 <partial name="_NoficationPartial" />
 
-<partial name="_NoficationPartial" />
+
 <section class="profile-section">
     <div class="container emp-profile">
         <form asp-action="Edit" asp-controller="Profile" method="post" enctype="multipart/form-data">
@@ -66,7 +66,9 @@
                     </div>
                     <button type="submit"
                         style="margin-top: 10px;"
-                        class="btn custom-btn">Save Changes</button>
+                            class="btn custom-btn" onclick="toggleLoader()">
+                        Save Changes
+                    </button>
                 </div>
             </div>
         </form>

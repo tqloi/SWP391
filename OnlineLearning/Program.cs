@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-
+using OnlineLearning.BackgroundServices;
 using OnlineLearning.Email;
 
 using OnlineLearning.Models;
@@ -30,6 +30,10 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration["ConnectionStrings:ConnectedDb"]);
 });
+
+//dang ki background service
+builder.Services.AddHostedService<NotificationCleanupService>();
+
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(5); // Thời gian sống của session
     options.Cookie.HttpOnly = true;
@@ -126,8 +130,6 @@ app.MapAreaControllerRoute(
     name: "Areas",
     areaName:"Admin",
     pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
-
-
 
 app.MapHub<ChatHub>("/ChatHub");
 

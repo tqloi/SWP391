@@ -90,10 +90,39 @@
                                 <a asp-action="Index" asp-controller="Chat" asp-route-id="@item.Id" class="list-group-item list-group-item-action border-0">
                                     <div class="badge bg-success float-right">5</div>
                                     <div class="d-flex align-items-start">
-                                        <img src="https://bootdey.com/img/Content/avatar/avatar5.png" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
+                                        <img src="@item.ProfileImagePath" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
                                         <div class="flex-grow-1 ml-3">
                                             @item.FirstName @item.LastName
                                             <div class="small"><span class="fas fa-circle chat-online"></span> Online</div>
+                                            <div>
+                                                @if (Model.IsReadmess != null)
+                                                {
+                                                    
+                                                   if(Model.IsReadmess.StartsWith(item.Id) && Model.receimess.Equals(Model.SendId))
+                                                    {
+                                                        int index = Model.IsReadmess.IndexOf(":");
+                                                        string contentAfterColon = index != -1 ? Model.IsReadmess.Substring(index + 1).Trim() : Model.IsReadmess;
+                                                        contentAfterColon = contentAfterColon.Substring(0, 10) + "...";
+                                                        <p>
+
+                                                            @item.LastName: @contentAfterColon
+                                                        </p>
+                                                    }
+                                                    else if (Model.IsReadmess.StartsWith(Model.SendId) && Model.receimess.Equals(item.Id))
+                                                    {
+                                                        int index = Model.IsReadmess.IndexOf(":");
+                                                        string contentAfterColon = index != -1 ? Model.IsReadmess.Substring(index + 1).Trim() : Model.IsReadmess;
+                                                        contentAfterColon = contentAfterColon.Substring(0, 10) + "...";
+                                                        <p>
+
+                                                            You: @contentAfterColon
+                                                        </p>
+                                                    }
+                                                    
+                                                }
+                                                    
+                                                
+                                            </div>
                                         </div>
                                     </div>
                                 </a>

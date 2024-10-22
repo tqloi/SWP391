@@ -205,9 +205,7 @@
                             <thead>
                                 <tr>
                                     <th>User Name</th>
-                                    
                                     <th class="text-center">Description</th>
-
                                 </tr>
                             </thead>
                             <tbody>
@@ -218,7 +216,7 @@
                                     <tr class="candidates-list">
                                         <td class="title">
                                             <div class="thumb">
-                                                <img class="img-fluid" src="~/Images/@item.User.ProfileImagePath" alt="">
+                                                <img class="img-fluid" src="@item.User.ProfileImagePath" alt="">
                                             </div>
                                             <div class="candidate-list-details">
                                                 <div class="candidate-list-info">
@@ -247,13 +245,20 @@
                         </table>
                         <div class="text-center mt-3 mt-sm-3">
                             <ul class="pagination justify-content-center mb-0">
-                                <li class="page-item disabled"> <span class="page-link">Prev</span> </li>
-                                <li class="page-item active" aria-current="page"><span class="page-link">1 </span> <span class="sr-only">(current)</span></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item"><a class="page-link" href="#">...</a></li>
-                                <li class="page-item"><a class="page-link" href="#">25</a></li>
-                                <li class="page-item"> <a class="page-link" href="#">Next</a> </li>
+                                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="?page=@(ViewBag.CurrentPage - 1)">Prev</a>
+                                </li>
+
+                                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                {
+                                    <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                        <a class="page-link" href="?page=@i">@i</a>
+                                    </li>
+                                }
+
+                                <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                    <a class="page-link" href="?page=@(ViewBag.CurrentPage + 1)">Next</a>
+                                </li>
                             </ul>
                         </div>
                     </div>

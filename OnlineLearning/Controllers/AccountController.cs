@@ -19,6 +19,7 @@ using OnlineLearningApp.Respositories;
 using static QRCoder.PayloadGenerator.WiFi;
 using System.Data;
 using Newtonsoft.Json;
+using Firebase.Auth;
 
 
 namespace OnlineLearning.Controllers
@@ -125,6 +126,17 @@ namespace OnlineLearning.Controllers
 
         public async Task<IActionResult> Logout()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+            //notification for admin
+            var notification = new NotificationModel();
+            notification.UserId = user.Id;
+            notification.Description = $"{user.UserName} has just logged out";
+            notification.CreatedAt = DateTime.Now;
+
+            _dataContext.Notification.Add(notification);
+            await _dataContext.SaveChangesAsync();
+
             await _signInManager.SignOutAsync();
             TempData["success"] = "Logout Success!";
             return RedirectToAction("Login", "Account");

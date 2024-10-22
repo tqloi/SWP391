@@ -12,6 +12,7 @@ using OnlineLearningApp.Respositories;
 
 namespace OnlineLearning.Controllers
 {
+    
 	public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
@@ -30,14 +31,16 @@ namespace OnlineLearning.Controllers
         }
 
         public async Task<IActionResult> Index()
-		{
+        {
+            if (User.IsInRole("Admin"))
+            {
+                return RedirectToAction("Index", "Admin", new { area = "Admin" });
+            }
             var model = new ListViewModel();
-            model.Courses = await datacontext.Courses.Include(c => c.Category)
-                .OrderByDescending(sc => sc.CourseID).ToListAsync();
+            model.Courses = await datacontext.Courses.Include(c => c.Category).OrderByDescending(sc => sc.CourseID).ToListAsync();
             model.Categories = await datacontext.Category.ToListAsync();
-           
-			return View(model);
-		}
+            return View(model);
+        }
 
         [Authorize]
         public IActionResult Contact()

@@ -1,0 +1,52 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_layout.cshtml";
+}
+@using OnlineLearning.Areas.Admin.Models.ViewModel
+@model CategoryViewModel
+<partial name="_NoficationPartial" />
+<style>
+    body {
+        background: #f7f7ff;
+        margin-top: 20px;
+    }
+
+    .card {
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 6px rgba(218, 218, 253, 0.65), 0 2px 6px rgba(206, 206, 238, 0.54);
+    }
+</style>
+
+<div class="container">
+    <div class="main-body">
+        <div class="row">
+
+
+            <div class="col-lg-8">
+                <div class="card">
+                    <form asp-action="EditCategory" asp-controller="Course" asp-area="Admin" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="card-body">
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">FullName</label>
+                                <div class="col-sm-9">
+                                    <input asp-for="FullName" class="form-control" />
+                                    <span asp-validation-for="FullName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">Description</label>
+                                <div class="col-sm-9">
+                                    <input asp-for="Description" class="form-control" />
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
