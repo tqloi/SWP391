@@ -100,10 +100,10 @@ namespace OnlineLearning.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var isEnrolled = await datacontext.StudentCourses
-                                                  .AnyAsync(sc => sc.StudentID == userId && sc.CourseID == course.CourseID);
+                                      .FirstOrDefaultAsync(sc => sc.StudentID == userId && sc.CourseID == course.CourseID);
 
             var isInstrucotr = await datacontext.Courses
-                                        .AnyAsync(c => c.InstructorID == userId && c.CourseID == course.CourseID);
+                                        .FirstOrDefaultAsync(c => c.InstructorID == userId && c.CourseID == course.CourseID);
 
             if (isEnrolled != null)
             {

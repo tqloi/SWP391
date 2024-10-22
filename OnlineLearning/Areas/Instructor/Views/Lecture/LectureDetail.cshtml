@@ -74,12 +74,12 @@
             </div>
 
             <div class="d-flex justify-content-between mt-3 mb-5">
-                <form asp-action="GoPrevious" asp-controller="Lecture" asp-area="Student" method="get" class="d-flex">
+                <form asp-action="GoPrevious" asp-controller="Lecture" asp-area="Instructor" method="get" class="d-flex">
                     <input type="hidden" name="LectureID" value="@lecture.LectureID">
                     <button type="submit" class="btn btn btn-outline-black"><i class="fas fa-chevron-left mr-2"></i>Previous</button>
                 </form>
 
-                <form asp-action="GoNext" asp-controller="Lecture" asp-area="Student" method="get" class="d-flex">
+                <form asp-action="GoNext" asp-controller="Lecture" asp-area="Instructor" method="get" class="d-flex">
                     <input type="hidden" name="LectureID" value="@lecture.LectureID">
                     <button type="submit" class="btn btn btn-outline-black">Next <i class="fas fa-chevron-right ml-1"></i></button>
                 </form>

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic.FileIO;
+using OnlineLearning.Filter;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearning.Services;
@@ -14,9 +15,8 @@ using YourNamespace.Models;
 namespace OnlineLearning.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
-    [Authorize]
-
-    [Route("/[controller]/[action]")]
+    [Authorize(Roles = "Instructor")]
+    [Route("Instructor/[controller]/[action]")]
     public class LectureController : Controller
     {
         private readonly DataContext _dataContext;
@@ -100,7 +100,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
                 TempData["success"] = "Lecture Addded successfully!";
                 //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-                return RedirectToAction("LectureDetail", "Participation", new { LectureID = lecture.LectureID });
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lecture.LectureID });
             }
             catch
             {
@@ -110,6 +110,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             }
         }
         [HttpGet]
+        [ServiceFilter(typeof(CourseAccessFilter))]
         public async Task<IActionResult> LectureDetail(int LectureID)
         {
             var lecture = await _dataContext.Lecture.FindAsync(LectureID);
@@ -136,12 +137,12 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             if (nextLecture != null)
             {
-                return RedirectToAction("LectureDetail", new { area = "Instructor", LectureID = nextLecture.LectureID });
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = nextLecture.LectureID });
             }
             else
             {
                 TempData["error"] = "This is the last lecture in the course.";
-                return RedirectToAction("LectureDetail", new { area = "Instructor", LectureID = lectureID });
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lectureID });
             }
         }
 
@@ -162,12 +163,12 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             if (previousLecture != null)
             {
-                return RedirectToAction("LectureDetail", new { area = "Instructor", LectureID = previousLecture.LectureID });
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = previousLecture.LectureID });
             }
             else
             {
                 TempData["error"] = "This is the first lecture in the course.";
-                return RedirectToAction("LectureDetail", new { area = "Instructor", LectureID = lectureID });
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lectureID });
             }
         }
     }
