@@ -1,11 +1,6 @@
 ﻿@model IEnumerable<CategoryModel>
      
-    <option value="">All Category</option>
-    @{
-        int count = 1; 
-    }
     @foreach (var category in Model)
     {
-    <option value="@count"><a asp-action="Category">@category.FullName</a></option>
-        count++; 
+    <option value="@category.CategoryID"><a asp-action="Category">@category.FullName</a></option>
     }
