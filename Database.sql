@@ -306,12 +306,12 @@ CREATE TABLE CommentFile (
 CREATE TABLE Review (
     ReviewID INT PRIMARY KEY IDENTITY(1,1),
     CourseID INT,
-    StudentID NVARCHAR(450),
+    UserID NVARCHAR(450),
     Rating FLOAT CHECK (rating >= 0 AND rating <= 5),
     Comment NVARCHAR(255),
     ReviewDate DATETIME,
     FOREIGN KEY (courseID) REFERENCES Courses(courseID),
-    FOREIGN KEY (studentID) REFERENCES AspNetUsers(id) ON DELETE CASCADE
+    FOREIGN KEY (UserID) REFERENCES AspNetUsers(id) ON DELETE CASCADE
 );
 GO
 

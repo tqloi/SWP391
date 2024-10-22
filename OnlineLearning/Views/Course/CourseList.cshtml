@@ -2,7 +2,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     <partial name="_NoficationPartial" />
 }
-@model List<CourseModel>
+@model CourseListViewModel
 
 <header class="site-header d-flex flex-column justify-content-center align-items-center">
     <div class="container">
@@ -52,7 +52,7 @@
 
              
 
-                @foreach (var course in Model)
+                @foreach (var course in Model.CourseList)
                 {
                     <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
                         <div class="row">
@@ -77,7 +77,7 @@
                                                 else
                                                 {
                                                     <h5>
-                                                        @course.Rating
+                                                        @course.Rating.ToString("F2")
                                                         @*       <span class="star">&#9733;</span> *@
                                                         @for (int i = 1; i <= 5; i++)
                                                         {
@@ -104,45 +104,60 @@
                         </div>
                     </div>
                 }
+             
+                @if (Model.TotalPage > 1)
+                {
+                    <nav aria-label="Review pagination">
+                        <ul class="pagination justify-content-center">
+                            @if (Model.CurrentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("CourseList", new { page = Model.CurrentPage - 1 })">Prev</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="page-item disabled">
+                                    <span class="page-link">Previous</span>
+                                </li>
+                            }
+
+                            @{
+                                int startPage = Math.Max(1, Model.CurrentPage - 2);
+                                int endPage = Math.Min(Model.TotalPage, startPage + 4);
+
+                                if (endPage - startPage < 4)
+                                {
+                                    startPage = Math.Max(1, endPage - 4);
+                                }
+                            }
+
+                            @for (int i = startPage; i <= endPage; i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("CourseList", new { page = i })">@i</a>
+                                </li>
+                            }
+
+                            @if (Model.CurrentPage < Model.TotalPage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("CourseList", new {page = Model.CurrentPage + 1 })">Next</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="page-item disabled">
+                                    <span class="page-link">Next</span>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+                
             </div>
 
-            <div class="col-lg-12 col-12">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center mb-0">
-                        <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Previous">
-                                <span aria-hidden="true">Prev</span>
-                            </a>
-                        </li>
-
-                        <li class="page-item active" aria-current="page">
-                            <a class="page-link" href="#">1</a>
-                        </li>
-
-                        <li class="page-item">
-                            <a class="page-link" href="#">2</a>
-                        </li>
-
-                        <li class="page-item">
-                            <a class="page-link" href="#">3</a>
-                        </li>
-
-                        <li class="page-item">
-                            <a class="page-link" href="#">4</a>
-                        </li>
-
-                        <li class="page-item">
-                            <a class="page-link" href="#">5</a>
-                        </li>
-
-                        <li class="page-item">
-                            <a class="page-link" href="#" aria-label="Next">
-                                <span aria-hidden="true">Next</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+            
 
         </div>
     </div>

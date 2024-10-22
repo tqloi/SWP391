@@ -7,6 +7,7 @@ using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 
 using System.Security.Claims;
+using System.Drawing.Printing;
 
 namespace OnlineLearning.Controllers
 {
@@ -27,14 +28,28 @@ namespace OnlineLearning.Controllers
             _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
         }
-        public async Task<IActionResult> CourseList()
+        public async Task<IActionResult> CourseList(int page = 1)
         {
+            int pageSize = 5;
             var courses = await datacontext.Courses
                      .Include(course => course.Instructor)
                      .ThenInclude(instructor => instructor.AppUser)
+                     .OrderByDescending(course => course.Rating)
+                     .ThenByDescending(course => course.NumberOfRate)
                      .ToListAsync();
+            var pagecourses = courses.Skip((page - 1) * pageSize)
+                              .Take(pageSize)
+                              .ToList();
+            var totalCourse = courses.Count();
+            var totalPages = (int)Math.Ceiling(totalCourse / (double)pageSize);
+            var model = new CourseListViewModel
+            {
+                CourseList = pagecourses,
+                TotalPage = totalPages,
+                CurrentPage = page
+            };
 
-            return View(courses);
+            return View(model);
 
         }
 
@@ -91,25 +106,52 @@ namespace OnlineLearning.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> CourseDetail(int CourseID)
+        public async Task<IActionResult> CourseDetail(int CourseID, int page = 1)
         {
-            var course = await datacontext.Courses
-                     .Include(course => course.Instructor)       
-                     .ThenInclude(instructor => instructor.AppUser)
-                     .FirstOrDefaultAsync(c => c.CourseID == CourseID);
-
-            if (course == null)
-            {
-                return NotFound();
-            }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int pageSize = 5;
+                var course = await datacontext.Courses
+                         .Include(course => course.Instructor)       
+                         .ThenInclude(instructor => instructor.AppUser)
+                         .FirstOrDefaultAsync(c => c.CourseID == CourseID);
 
-            var isEnrolled = await datacontext.StudentCourses
-                .AnyAsync(sc => sc.CourseID == CourseID && sc.StudentID == userId);
+                var review = await datacontext.Review
+                     .Include(r => r.User)
+                     .Include(r => r.Course)
+                     .Where(c => c.CourseID == CourseID)
+                     .OrderByDescending(r => r.ReviewDate)
+                     .ToListAsync();
+            var pagedReviews = review.Skip((page - 1) * pageSize)
+                              .Take(pageSize)
+                              .ToList();
+            var totalReview = review.Count();
+            var totalPages = (int)Math.Ceiling(totalReview / (double)pageSize);
 
-            ViewBag.IsEnrolled = isEnrolled;
+            var yourReview = await datacontext.Review
+                         .Include(r => r.User)
+                         .Include(r => r.Course)
+                         .Where(c => c.CourseID == CourseID && c.UserID == userId)
+                         .FirstOrDefaultAsync();
+            if (course == null)
+                {
+                    return NotFound();
+                }
 
-            return View(course);
+                var isEnrolled = await datacontext.StudentCourses
+                    .AnyAsync(sc => sc.CourseID == CourseID && sc.StudentID == userId);
+
+                ViewBag.IsEnrolled = isEnrolled;
+
+            var model = new CourseDetailViewModel
+            {
+                Course = course,
+                Reviews = pagedReviews,
+                TotalPage = totalPages,
+                CurrentPage = page,
+                YourReview = yourReview,
+            };
+
+            return View(model);
         }
 
 

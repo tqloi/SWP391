@@ -1,13 +1,52 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    <partial name="_NoficationPartial" />
+            <partial name="_NoficationPartial" />
 }
-@model CourseModel
+@model CourseDetailViewModel
 <style>
     .star {
         color: gold; /* Màu sắc của sao */
         font-size: 30px; /* Kích thước của sao */
     }
+
+    .review {
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .star-rating {
+        direction: rtl;
+    }
+
+        .star-rating input[type="radio"] {
+            display: none; 
+        }
+
+        .star-rating label {
+            font-size: 30px; 
+            color: #ccc; 
+            cursor: pointer;
+            margin-right: 5px; 
+            transition: color 0.2s;
+        }
+
+        .star-rating input[type="radio"]:checked ~ label {
+            color: gold; 
+        }
+
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: gold; 
+        }
 </style>
 <header class="site-header d-flex flex-column justify-content-center align-items-center">
     <div class="container">
@@ -18,24 +57,24 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
                         <li class="breadcrumb-item"><a asp-action="CourseList" asp-controller="Course">Courses</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+                        <li class="breadcrumb-item active" aria-current="page">@Model.Course.Title</li>
                     </ol>
                 </nav>
-                <h2 class="text-white"> @Model.Title</h2>
-                <h6>@Model.Level</h6>
+                <h2 class="text-white"> @Model.Course.Title</h2>
+                <h6>@Model.Course.Level</h6>
                 <div class="d-flex align-items-center">
-                    @if (@Model.NumberOfRate == 0)
+                    @if (@Model.Course.NumberOfRate == 0)
                     {
                         <h7 class="text-whit text-white-50 me-2">(No reviews yet)</h7>
                     }
                     else
                     {
-                        <h7 class="me-1 text-white">@Model.Rating</h7>
+                        <h7 class="me-1 text-white" >@Model.Course.Rating.ToString("F2")</h7>
                         <div class="stars me-2">
                             @*  <span class="star">&#9733;</span> *@
                             @for (int i = 1; i <= 5; i++)
                             {
-                                if (i <= @Model.Rating)
+                                if (i <= @Model.Course.Rating)
                                 {
                                     <span class="star">&#9733;</span> <!-- Ngôi sao đầy -->
                                 }
@@ -45,27 +84,27 @@
                                 }
                             }
                         </div>
-                        <a class="me-3" href="#comments"><h7 class="text-white-50">(@Model.NumberOfRate rates)</h7></a>
+                        <a class="me-3" href="#comments"><h7 class="text-white-50">(@Model.Course.NumberOfRate rates)</h7></a>
                     }
-                    <h7 class="text-white">@Model.NumberOfStudents students</h7>
+                    <h7 class="text-white">@Model.Course.NumberOfStudents students</h7>
                 </div>
-                <h4 class="text-white">$@Model.Price</h4>
-                <h7 class="text-white">Create by: <a class="text-white-50" asp-area="" asp-action="ViewUserProfile" asp-controller="Home" asp-route-id="@Model.InstructorID"> @Model.Instructor?.AppUser?.FirstName @Model.Instructor?.AppUser?.LastName</a></h7>
+                <h4 class="text-white">$@Model.Course.Price</h4>
+                <h7 class="text-white">Create by: <a class="text-white-50" asp-area="" asp-action="ViewUserProfile" asp-controller="Home" asp-route-id="@Model.Course.InstructorID"> @Model.Course.Instructor?.AppUser?.FirstName @Model.Course.Instructor?.AppUser?.LastName</a></h7>
                 <h7 class="text-white d-flex mt-2 me-2">
-                    Last Update: @Model.LastUpdate
+                    Last Update: @Model.Course.LastUpdate
                 </h7>
                 @if (ViewBag.IsEnrolled || User.IsInRole("Instructor"))
                 {
                     <div class="d-flex align-items-center mt-4">
-                        <a asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@Model.CourseID" class="btn custom-btn smoothscroll me-4">Go to course</a>
+                        <a asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@Model.Course.CourseID" class="btn custom-btn smoothscroll me-4">Go to course</a>
                     </div>
                 }
                 else
                 {
-                    @if (@Model.Status != false)
+                    @if (@Model.Course.Status != false)
                     {
                         <div class="d-flex align-items-center mt-4">
-                            <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@Model.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
+                            <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@Model.Course.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
 
                             <a href="#top" class="custom-icon bi-bookmark smoothscroll"></a>
                             @*  <a href="#top" class="custom-icon bi-bookmark-fill smoothscroll"></a> *@
@@ -90,7 +129,7 @@
 
             <div class="col-lg-5 col-12">
                 <div class="topics-detail-block bg-white shadow-lg">
-                    <img src="~/Images/@Model.CoverImagePath" class="topics-detail-block-image img-fluid">
+                    <img src="~/Images/@Model.Course.CoverImagePath" class="topics-detail-block-image img-fluid">
                 </div>
             </div>
         </div>
@@ -103,8 +142,8 @@
         <div class="row">
 
             <div class="col-lg-8 col-12 m-auto">
-                <h3 class="mb-4">Introduction to @Model.Title</h3>
-                <p>@Model.Description</p>
+                <h3 class="mb-4">Introduction to @Model.Course.Title</h3>
+                <p>@Model.Course.Description</p>
                 <p>So how can you stand out, do something unique and interesting, build an online business, and get paid enough to change life. Please visit TemplateMo website to download free website templates.</p>
 
                 <p><strong>There are so many ways to make money online</strong>. Below are several platforms you can use to find success. Keep in mind that there is no one path everyone can take. If that were the case, everyone would have a million dollars.</p>
@@ -131,6 +170,199 @@
 </section>
 
 
+<section id="review" class="section-padding bg-light">
+     <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-12">
+                <h3 class="mb-4 text-center ">Student Reviews</h3>
+                
+                @if (Model.YourReview != null && Model.CurrentPage == 1)
+                {
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center">
+                                    <img src="~/Images/@Model.YourReview.User.ProfileImagePath" alt="Profile Image" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                                    <div >
+                                        <h5 class="mb-0">My review<h5>
+                                        <div id="my-review-rating">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= @Model.YourReview.Rating)
+                                                {
+                                                    <span class="text-warning">&#9733;</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">&#9734;</span>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Dropdown for more options (aligned with avatar and name) -->
+                                <div class="dropdown ms-auto">
+                                    <button class="btn btn-sm p-0" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: transparent; border: none;">
+                                        <span style="font-size: 1.5rem; color: #333;">&#x22EE;</span> <!-- Three dots icon -->
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                        <li>
+                                            <button class="dropdown-item" onclick="showUpdateForm()">Update</button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item" onclick="openDeleteModal('@Model.YourReview.CourseID')">Delete</button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Hiển thị review hiện tại -->
+                            <p id="my-review-text" class="card-text">@Model.YourReview.Comment</p>
+
+                            <!-- Form cập nhật review, ban đầu sẽ được ẩn đi -->
+                            <div id="update-review-form" style="display: none;">
+                                <form asp-action="UpdateReview" asp-controller="Review" method="post" id="reviewForm">
+                                    <div class="mb-3">
+                                        <label for="Rating" class="form-label">Rating</label>
+                                        <div class="star-rating">
+                                            @for (int i = 5; i >= 1; i--)
+                                            {
+                                                <input type="radio" id="star@(i)" name="Rating" value="@i" @(i == Model.YourReview.Rating ? "checked" : "") required />
+                                                <label for="star@(i)">★</label>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="comment" class="form-label">Comment</label>
+                                        <textarea class="form-control" id="Comment" name="comment" rows="5" required>@Model.YourReview.Comment</textarea>
+                                    </div>
+                                    <input type="hidden" id="CourseID" name="CourseID" value="@Model.Course.CourseID" />
+                                    <button type="submit" class="btn btn-primary w-100">Submit Review</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!-- Hiện danh sách review-->
+                @if (Model.Reviews != null && Model.Reviews.Any())
+                {
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="~/Images/@review.User.ProfileImagePath" alt="Profile Image" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                                    <div>
+                                        <h5 class="mb-0">@review.User.FirstName @review.User.LastName</h5>
+                                        <div>
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= @review.Rating)
+                                                {
+                                                    <span class="text-warning">&#9733;</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">&#9734;</span>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="card-text">@review.Comment</p>
+                            </div>
+                        </div>
+                    }
+                    //Phân trang
+                   @if (Model.TotalPage > 1)
+{
+                        <nav aria-label="Review pagination">
+                            <ul class="pagination justify-content-center">
+                                @if (Model.CurrentPage > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("CourseDetail", new { CourseID = Model.Course.CourseID, page = Model.CurrentPage - 1 })">Prev</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Previous</span>
+                                    </li>
+                                }
+
+                                @{
+                                    int startPage = Math.Max(1, Model.CurrentPage - 2);
+                                    int endPage = Math.Min(Model.TotalPage, startPage + 4);
+
+                                    if (endPage - startPage < 4)
+                                    {
+                                        startPage = Math.Max(1, endPage - 4);
+                                    }
+                                }
+
+                                @for (int i = startPage; i <= endPage; i++)
+                                {
+                                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("CourseDetail", new { CourseID = Model.Course.CourseID, page = i })">@i</a>
+                                    </li>
+                                }
+
+                                @if (Model.CurrentPage < Model.TotalPage)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("CourseDetail", new { CourseID = Model.Course.CourseID, page = Model.CurrentPage + 1 })">Next</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Next</span>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+}
+                }
+                else
+                {
+                    <p class="text-muted">No reviews available.</p>
+                }
+
+                <!-- Chỗ để viết review-->
+                @if (Model.YourReview == null)
+                {
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4 text-center">Write a Review</h3>
+                            <form asp-action="SummitReview" asp-controller="Review" method="post" id="reviewForm">
+                                <div class="mb-3">
+                                    <label for="Rating" class="form-label">Rating</label>
+                                    <div class="star-rating">
+                                        @for (int i = 5; i >= 1; i--)
+                                        {
+                                            <input type="radio" id="star@(i)" name="Rating" value="@i" required />
+                                            <label for="star@(i)">★</label>
+                                        }
+                                    </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="comment" class="form-label">Comment</label>
+                                        <textarea class="form-control" id="Comment" name="comment" rows="5" required></textarea>
+                                    </div>
+                                    <input type="hidden" id="CourseID" name="CourseID" value="@Model.Course.CourseID" />
+                                    <button type="submit" class="btn btn-primary w-100">Submit Review</button>
+                                </form>
+                            </div>
+                        </div>
+                }
+                    </div>
+                </div>
+            </div>
+        
+</section>
+
 <section id="comments" class="section-padding section-bg">
     <div class="container">
         <div class="row justify-content-center">
@@ -154,3 +386,78 @@
         </div>
     </div>
 </section>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Do you really want to delete this review?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancle</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Delete Review</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+     document.addEventListener('DOMContentLoaded', function() {
+         var form = document.getElementById('reviewForm');
+         var stars = document.querySelectorAll('.star-rating input');
+
+         stars.forEach(function(star) {
+             star.addEventListener('change', function() {
+                 console.log('Selected rating: ' + this.value);
+             });
+         });
+
+         form.addEventListener('submit', function(event) {
+             event.preventDefault();
+             var formData = new FormData(form);
+             var rating = formData.get('Rating');
+             var comment = formData.get('Comment');
+             var courseId = formData.get('CourseID');
+
+             console.log('Submitting review:', {
+                 rating: rating,
+                 comment: comment,
+                 courseId: courseId
+             });          
+             form.submit();
+         });
+     });
+    function showUpdateForm() {
+        document.getElementById('my-review-rating').style.display = 'none';
+        document.getElementById('my-review-text').style.display = 'none';  // Ẩn phần review hiện tại
+        document.getElementById('update-review-form').style.display = 'block';  // Hiện form cập nhật  
+    }
+    let courseIdToDelete;
+
+    function openDeleteModal(courseId) {
+        courseIdToDelete = courseId; // Lưu CourseID để sử dụng khi xác nhận xóa
+        $('#confirmDeleteModal').modal('show'); // Hiện modal
+    }
+
+    document.getElementById('confirmDeleteButton').addEventListener('click', function () {
+        const deleteForm = document.createElement('form');
+        deleteForm.method = 'post';
+        deleteForm.action = '@Url.Action("DeleteReview", "Review")'; // Thay đổi nếu cần
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'CourseID';
+        hiddenInput.value = courseIdToDelete; // Sử dụng CourseID đã lưu
+        deleteForm.appendChild(hiddenInput);
+        document.body.appendChild(deleteForm);
+        deleteForm.submit(); // Gửi biểu mẫu
+    });
+    
+    
+</script>
