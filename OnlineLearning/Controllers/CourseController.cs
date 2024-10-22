@@ -110,15 +110,33 @@ namespace OnlineLearning.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             int pageSize = 5;
+
+            //Tìm course
                 var course = await datacontext.Courses
                          .Include(course => course.Instructor)       
                          .ThenInclude(instructor => instructor.AppUser)
                          .FirstOrDefaultAsync(c => c.CourseID == CourseID);
+            if (course == null)
+                {
+                    return NotFound();
+                }
+                var isEnrolled = await datacontext.StudentCourses
+                    .AnyAsync(sc => sc.CourseID == CourseID && sc.StudentID == userId);
+                ViewBag.IsEnrolled = isEnrolled;
 
-                var review = await datacontext.Review
+
+            //Tìm Review của người xem
+            var yourReview = await datacontext.Review
+                         .Include(r => r.User)
+                         .Include(r => r.Course)
+                         .Where(c => c.CourseID == CourseID && c.UserID == userId)
+                         .FirstOrDefaultAsync();  
+            
+            //Hiện List Review
+            var review = await datacontext.Review
                      .Include(r => r.User)
                      .Include(r => r.Course)
-                     .Where(c => c.CourseID == CourseID)
+                     .Where(c => c.CourseID == CourseID && (userId == null || c.UserID != userId))
                      .OrderByDescending(r => r.ReviewDate)
                      .ToListAsync();
             var pagedReviews = review.Skip((page - 1) * pageSize)
@@ -127,20 +145,7 @@ namespace OnlineLearning.Controllers
             var totalReview = review.Count();
             var totalPages = (int)Math.Ceiling(totalReview / (double)pageSize);
 
-            var yourReview = await datacontext.Review
-                         .Include(r => r.User)
-                         .Include(r => r.Course)
-                         .Where(c => c.CourseID == CourseID && c.UserID == userId)
-                         .FirstOrDefaultAsync();
-            if (course == null)
-                {
-                    return NotFound();
-                }
 
-                var isEnrolled = await datacontext.StudentCourses
-                    .AnyAsync(sc => sc.CourseID == CourseID && sc.StudentID == userId);
-
-                ViewBag.IsEnrolled = isEnrolled;
 
             var model = new CourseDetailViewModel
             {
@@ -149,6 +154,10 @@ namespace OnlineLearning.Controllers
                 TotalPage = totalPages,
                 CurrentPage = page,
                 YourReview = yourReview,
+                //Tìm tiến độ hoàn thành của người dùng nếu có
+                StudentCourses = isEnrolled
+                                        ? await datacontext.StudentCourses.FirstOrDefaultAsync(sc => sc.CourseID == CourseID && sc.StudentID == userId)
+                                        : null 
             };
 
             return View(model);

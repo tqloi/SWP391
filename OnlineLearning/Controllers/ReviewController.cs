@@ -60,7 +60,7 @@ namespace OnlineLearning.Controllers
             var existReview = datacontext.Review
                                  .Where(r => r.CourseID == model.CourseID && r.UserID == userId)
                                  .FirstOrDefault(); 
-            if (existReview != null)            
+            if (existReview == null)            
             {
                 var review = new ReviewModel
                 {
@@ -71,7 +71,7 @@ namespace OnlineLearning.Controllers
                     ReviewDate = DateTime.Now,
                 };
                 datacontext.Review.Add(review);
-                datacontext.SaveChanges();
+               await datacontext.SaveChangesAsync();
 
             }
             var FCourse = await datacontext.Courses
@@ -93,7 +93,7 @@ namespace OnlineLearning.Controllers
 
                 await datacontext.SaveChangesAsync();
             }
-            return RedirectToAction("CourseDetail", "Course", new {CourseID = model.CourseID});
+            return Redirect(Request.Headers["Referer"].ToString());
         }
         
         [HttpPost]
@@ -135,37 +135,38 @@ namespace OnlineLearning.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteReview(ReviewModel model)
+        public async Task<IActionResult> DeleteReview(int ReviewID)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var existReview = datacontext.Review
-                                 .Where(r => r.CourseID == model.CourseID && r.UserID == userId)
-                                 .FirstOrDefault();
-            if (existReview != null) {
-                datacontext.Review.Remove(existReview); 
+            var existReview = await datacontext.Review.FindAsync(ReviewID);
+
+            var course = await datacontext.Courses.FindAsync(existReview.CourseID);
+            if (existReview != null)
+            {
+                datacontext.Review.Remove(existReview);
                 await datacontext.SaveChangesAsync();
             }
-            var FCourse = await datacontext.Courses
-                            .FirstOrDefaultAsync(c => c.CourseID == model.CourseID);
-            if (FCourse != null)
+
+            if (course != null)
             {
+                course.NumberOfRate -= 1;
                 var reviews = await datacontext.Review
-                                     .Where(r => r.CourseID == model.CourseID)
+                                     .Where(r => r.CourseID == course.CourseID)
                                      .ToListAsync();
 
-                var Nor = reviews.Count;
+
                 var Sum = reviews.Sum(r => r.Rating);
 
-                if (Nor > 0)
+                if (course.NumberOfRate > 0)
                 {
-                    FCourse.Rating = (double)Sum / Nor; // Chia cho số lượng review
-                    FCourse.NumberOfRate = Nor;
+                    course.Rating = (double)Sum / course.NumberOfRate;
+
                 }
 
                 await datacontext.SaveChangesAsync();
             }
-            return RedirectToAction("CourseDetail", "Course", new { CourseID = model.CourseID });
+            return RedirectToAction("CourseDetail", "Course", new { CourseID = course.CourseID });
         }
         public IActionResult Index()
         {
