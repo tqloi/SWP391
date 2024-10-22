@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearning.Filter;
 using OnlineLearning.Models;
 using OnlineLearningApp.Respositories;
 using System.Security.Claims;
@@ -10,7 +11,7 @@ using YourNamespace.Models;
 namespace OnlineLearning.Areas.Student.Controllers
 {
     [Area("Student")]
-    [Authorize(Roles = "Student")]
+    [Authorize]
     [Route("Student/[controller]/[action]")]
     public class LectureController : Controller
     {
@@ -34,6 +35,7 @@ namespace OnlineLearning.Areas.Student.Controllers
 
         [HttpGet]
         [ServiceFilter(typeof(CourseAccessFilter))]
+        [ServiceFilter(typeof(LectureAccessFilter))]
         public async Task<IActionResult> LectureDetail(int LectureID)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -106,12 +108,12 @@ namespace OnlineLearning.Areas.Student.Controllers
 
             if (nextLecture != null)
             {
-                return RedirectToAction("LectureDetail", new { area = "Student", LectureID = nextLecture.LectureID });
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = nextLecture.LectureID });
             }
             else
             {
 				TempData["error"] = "This is the last lecture in the course.";
-                return RedirectToAction("LectureDetail", new { area = "Student", LectureID = lectureID });
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = lectureID });
             }
         }
 
@@ -132,12 +134,12 @@ namespace OnlineLearning.Areas.Student.Controllers
 
             if (previousLecture != null)
             {
-                return RedirectToAction("LectureDetail", new { area = "Student", LectureID = previousLecture.LectureID });
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = previousLecture.LectureID });
             }
             else
             {
                 TempData["error"] = "This is the first lecture in the course.";
-                return RedirectToAction("LectureDetail", new { area = "Student", LectureID = lectureID });
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = lectureID });
             }
         }
     }

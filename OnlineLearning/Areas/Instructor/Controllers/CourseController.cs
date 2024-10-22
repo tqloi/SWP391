@@ -14,7 +14,7 @@ using System.Security.Claims;
 namespace OnlineLearning.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
-    [Authorize]
+    [Authorize(Roles = "Instructor")]
     [Route("/[controller]/[action]")]
     public class CourseController : Controller
     {
@@ -36,6 +36,14 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         {
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var existingCourse = await datacontext.Courses.FirstOrDefaultAsync(c => c.CourseCode == model.CourseCode);
+
+            if (existingCourse != null)
+            {
+                TempData["error"] = "Course code already exists!";
+                return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
+            }
 
             var course = new CourseModel
             {
@@ -112,6 +120,15 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var course = await datacontext.Courses.FindAsync(model.CourseID);
 
+            var existingCourse = await datacontext.Courses
+                      .FirstOrDefaultAsync(c => c.CourseCode == model.CourseCode && c.CourseID != model.CourseID);
+
+            if (existingCourse != null)
+            {
+                TempData["error"] = "Course code already exists!";
+                return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
+            }
+
             if (course == null)
             {
                 return NotFound();
@@ -147,7 +164,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 {
                     ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                     TempData["error"] = "Edit failed due to file upload error!";
-                    return RedirectToAction("MyCourse", "Course", new { area = "" });
+                    return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
                 }
             }
 
