@@ -114,8 +114,9 @@ namespace OnlineLearning.Areas.Admin.Controllers
                     FullName = model.FullName,
                     Description = model.Description
                 };
-                _dataContext.Category.Add(category);
+                _dataContext.Category.Update(category);
                 await _dataContext.SaveChangesAsync();
+                TempData["success"] = "Edit successfully!";
                 return RedirectToAction("ViewCategory", "Course", new { area = "Admin" });
             }
             return View(model);
@@ -130,6 +131,7 @@ namespace OnlineLearning.Areas.Admin.Controllers
             }
             _dataContext.Category.Remove(category);
             await _dataContext.SaveChangesAsync();
+            TempData["success"] = "Remove successfully!";
             return RedirectToAction("ViewCategory", "Course", new { area = "Admin" });
         }
     }

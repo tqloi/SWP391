@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<AppUserModel> SignInManager
 @inject UserManager<AppUserModel> UserManager
 
@@ -360,7 +360,7 @@
                                            class="form-control" name="search" />
                                 </form>
 
-                               
+
                             </div>
                         </nav>
 
@@ -384,26 +384,26 @@
                                     </form>
                                 </ul>
                             </li>
-                            
-                                <a class="nav-link dropdown-toggle"
-                                   asp-action="Index" asp-controller="Chat" asp-area=""
-                                   class="btn">
-                                    <i class="fa fa-envelope"></i>
-                                </a>
-                                 @* <ul class="dropdown-menu messages-notif-box animated fadeIn"
-                                    aria-labelledby="messageDropdown">
-                                    
-                                    
-                                    <li>
-                                        <a class="see-all" asp-action="Index" asp-controller="Chat" asp-area="">
-                                            See all messages<i class="fa fa-angle-right"></i>
-                                        </a>
-                                    </li>
-                                </ul>  *@
-                            
-                           
-                                
-                            
+
+                            <a class="nav-link dropdown-toggle"
+                               asp-action="Index" asp-controller="Chat" asp-area=""
+                               class="btn">
+                                <i class="fa fa-envelope"></i>
+                            </a>
+                            @* <ul class="dropdown-menu messages-notif-box animated fadeIn"
+                            aria-labelledby="messageDropdown">
+
+
+                            <li>
+                            <a class="see-all" asp-action="Index" asp-controller="Chat" asp-area="">
+                            See all messages<i class="fa fa-angle-right"></i>
+                            </a>
+                            </li>
+                            </ul>  *@
+
+
+
+
 
                             <li class="nav-item topbar-icon dropdown hidden-caret">
                                 <a class="nav-link"
@@ -492,37 +492,37 @@
                                         <span class="fw-bold">@User.Identity.Name</span>
                                     </span>
                                 </a>
-                                 @if (User.Identity?.IsAuthenticated ?? false)
-                            {
-                                <ul class="dropdown-menu dropdown-user animated fadeIn">
-                                    <div class="dropdown-user-scroll scrollbar-outer">
-                                    <li>
-                                        <div class="user-box">
-                                            <div class="avatar-lg">
-                                                <img src="@user.ProfileImagePath"
-                                                     alt="image profile"
-                                                     class="avatar-img rounded" />
+                                @if (User.Identity?.IsAuthenticated ?? false)
+                                {
+                                    <ul class="dropdown-menu dropdown-user animated fadeIn">
+                                        <div class="dropdown-user-scroll scrollbar-outer">
+                                        <li>
+                                            <div class="user-box">
+                                                <div class="avatar-lg">
+                                                    <img src="@user.ProfileImagePath"
+                                                         alt="image profile"
+                                                         class="avatar-img rounded" />
+                                                </div>
+                                                <div class="u-text">
+                                                    <h4>@User.Identity.Name</h4>
+
+                                                    <a asp-area="Admin" asp-controller="Admin" asp-action="AdminProfile"
+                                                       class="btn btn-xs btn-secondary btn-sm">View Profile</a>
+                                                </div>
                                             </div>
-                                            <div class="u-text">
-                                                <h4>@User.Identity.Name</h4>
-                                                
-                                                <a asp-area="Admin" asp-controller="Admin" asp-action="AdminProfile"
-                                                   class="btn btn-xs btn-secondary btn-sm">View Profile</a>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-divider"></div>
+                                        </li>
+                                        <li>
+                                            <div class="dropdown-divider"></div>
                                             <a class="dropdown-item" asp-area="Admin" asp-controller="Admin" asp-action="AdminProfile">My Profile</a>
-                                        <a class="dropdown-item" asp-action="Index" asp-controller="Chat" asp-area="">Inbox</a>
-                                        <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" asp-action="Index" asp-controller="Chat" asp-area="">Inbox</a>
+                                            <div class="dropdown-divider"></div>
                                             <a class="dropdown-item" asp-action="AdminEdit" asp-area="Admin" asp-controller="Admin">Account Setting</a>
-                                        <div class="dropdown-divider"></div>
+                                            <div class="dropdown-divider"></div>
                                             <a class="dropdown-item" asp-area="" asp-action="Logout" asp-controller="Account">Logout</a>
-                                    </li>
-                    </div>
-                    </ul>
-                            }
+                                        </li>
+                        </div>
+                        </ul>
+                                }
                     </li>
                     </ul>
             </div>
@@ -530,7 +530,7 @@
             <!-- End Navbar -->
         </div>
 
-        @RenderBody()
+            @RenderBody()
 
         <footer class="footer">
             <div class="container-fluid d-flex justify-content-between">
@@ -710,8 +710,8 @@
     <!-- Datatables -->
     <script src="~/js/plugin/datatables/datatables.min.js"></script>
 
-    <!-- Bootstrap Notify -->
-    <script src="~/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+    @* <!-- Bootstrap Notify -->
+    <script src="~/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script> *@
 
     <!-- jQuery Vector Maps -->
     <script src="~/js/plugin/jsvectormap/jsvectormap.min.js"></script>
