@@ -4676,6 +4676,7 @@ input[type=button].btn-block, input[type=reset].btn-block, input[type=submit].bt
         }
 
 .breadcrumb {
+    color: #000000;
     display: flex;
     flex-wrap: wrap;
     padding: .75rem 1rem;

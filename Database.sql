@@ -287,16 +287,14 @@ CREATE TABLE ChatBox (
 
 -- Message table
 CREATE TABLE [Message] (
-    MessageID INT PRIMARY KEY IDENTITY(1,1),
-    SenderID NVARCHAR(450),  -- Foreign key to Users
-	ChatBoxID INT,
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    SenderId NVARCHAR(450),  -- Foreign key to Users
+	ReceiverId NVARCHAR(450),
     Content TEXT,
-	IsRead BIT DEFAULT 0,
     [Timestamp] DATETIME DEFAULT GETDATE(),
-	FOREIGN KEY (chatBoxID) REFERENCES ChatBox(ChatBoxID) ON DELETE CASCADE,
+	FOREIGN KEY (ReceiverId) REFERENCES  AspNetUsers(Id),
     FOREIGN KEY (senderID) REFERENCES AspNetUsers(Id),  -- Can be a Student or Instructor
 );
-alter table Message add IsRead bit,
 
 --MessageFile
 CREATE TABLE MessageFile (
