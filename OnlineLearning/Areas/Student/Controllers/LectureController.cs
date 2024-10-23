@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearning.Filter;
 using OnlineLearning.Models;
 using OnlineLearningApp.Respositories;
 using System.Security.Claims;
@@ -10,7 +11,7 @@ using YourNamespace.Models;
 namespace OnlineLearning.Areas.Student.Controllers
 {
     [Area("Student")]
-    [Authorize(Roles = "Student")]
+    [Authorize]
     [Route("Student/[controller]/[action]")]
     public class LectureController : Controller
     {
@@ -34,6 +35,7 @@ namespace OnlineLearning.Areas.Student.Controllers
 
         [HttpGet]
         [ServiceFilter(typeof(CourseAccessFilter))]
+        [ServiceFilter(typeof(LectureAccessFilter))]
         public async Task<IActionResult> LectureDetail(int LectureID)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -54,48 +56,47 @@ namespace OnlineLearning.Areas.Student.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Complete(int LectureID) 
+        public async Task<IActionResult> SetComplete(int LectureID) 
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var lecture = await _dataContext.Lecture.FindAsync(LectureID);
-            var completion = new LectureCompletionModel
+            var completion = _dataContext.LectureCompletion.Where(lc => lc.LectureID == lecture.LectureID && lc.UserID == userId).FirstOrDefault();
+            if (completion != null)
             {
-                UserID = userId,
-                LectureID = LectureID,
-                CompletionDate = DateTime.Now,
-            };
-            _dataContext.LectureCompletion.Add(completion);
+                _dataContext.LectureCompletion.Remove(completion);
+                await _dataContext.SaveChangesAsync();
+            }
+            else
+            {
+                completion = new LectureCompletionModel
+                {
+                    UserID = userId,
+                    LectureID = LectureID,
+                    CompletionDate = DateTime.Now,
+                };
+                _dataContext.LectureCompletion.Add(completion);
+                await _dataContext.SaveChangesAsync();
+            }
             var studentCourse = _dataContext.StudentCourses.
                 Where(sc => sc.CourseID == lecture.CourseID && sc.StudentID == userId).FirstOrDefault();
 
-            if (studentCourse == null)
-            {
-                TempData["erroe"] = "Lecture Completed";
-            }
 
-                if (studentCourse != null)
-            {
-                var completedLecturesCount = await _dataContext.LectureCompletion
-                    .CountAsync(c => c.UserID == userId &&
-                                     c.LectureID == lecture.LectureID);
+            var completedLecturesCount = await _dataContext.LectureCompletion
+                .CountAsync(c => c.UserID == userId &&
+                 _dataContext.Lecture.Where(l => l.CourseID == lecture.CourseID)
+                .Select(l => l.LectureID)
+                .Contains(c.LectureID));
 
-                var totalLecturesCount = await _dataContext.Lecture
-                    .CountAsync(l => l.CourseID == lecture.CourseID);
+            var totalLecturesCount = await _dataContext.Lecture
+                .CountAsync(l => l.CourseID == lecture.CourseID);
 
-                if (totalLecturesCount > 0)
+            if (totalLecturesCount > 0)
                 {
-                    studentCourse.Progress = (decimal) completedLecturesCount / totalLecturesCount; 
+                    studentCourse.Progress = (decimal)completedLecturesCount / totalLecturesCount * 100;
                 }
                 _dataContext.StudentCourses.Update(studentCourse);
-                Console.WriteLine($"User ID: {userId}");
-                Console.WriteLine($"Total Lectures Completed: {completedLecturesCount}");
-                Console.WriteLine($"Total Lectures in Course: {totalLecturesCount}");
-                Console.WriteLine($"Progress: {studentCourse.Progress}%");
-            }
-
+            
             await _dataContext.SaveChangesAsync();
-
-            TempData["success"] = "Lecture Completed";
             return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = LectureID});
         }
 
@@ -114,12 +115,12 @@ namespace OnlineLearning.Areas.Student.Controllers
 
             if (nextLecture != null)
             {
-                return RedirectToAction("LectureDetail", new { area = "Student", LectureID = nextLecture.LectureID });
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = nextLecture.LectureID });
             }
             else
             {
-				TempData["error"] = "This is the last lecture in the course.";
-                return RedirectToAction("LectureDetail", new { area = "Student", LectureID = lectureID });
+				TempData["info"] = "This is the last lecture in the course.";
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = lectureID });
             }
         }
 
@@ -140,12 +141,12 @@ namespace OnlineLearning.Areas.Student.Controllers
 
             if (previousLecture != null)
             {
-                return RedirectToAction("LectureDetail", new { area = "Student", LectureID = previousLecture.LectureID });
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = previousLecture.LectureID });
             }
             else
             {
-                TempData["erroe"] = "This is the first lecture in the course.";
-                return RedirectToAction("LectureDetail", new { area = "Student", LectureID = lectureID });
+                TempData["info"] = "This is the first lecture in the course.";
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = lectureID });
             }
         }
     }

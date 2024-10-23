@@ -1,14 +1,6 @@
 ﻿@model IEnumerable<CategoryModel>
-<div class="row">
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-tab-pane" type="button" role="tab" aria-controls="all-tab-pane" aria-selected="true">All Categories</button>
-        </li>
-        @foreach (var category in Model)
-        {
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab-@category.CategoryID-tab" data-bs-toggle="tab" data-bs-target="#tab-@category.CategoryID-tab-pane" type="button" role="tab" aria-controls="tab-@category.CategoryID-tab-pane" aria-selected="false">@category.FullName</button>
-            </li>
-        }
-</ul>
-</div>
+     
+    @foreach (var category in Model)
+    {
+    <option value="@category.CategoryID"><a asp-action="Category">@category.FullName</a></option>
+    }

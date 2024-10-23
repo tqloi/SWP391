@@ -95,15 +95,21 @@ namespace OnlineLearning.Controllers
         [HttpGet]
         public async Task<IActionResult> LectureDetail(int LectureID)
         {
-            //var lectue = await datacontext.Lecture.FindAsync(LectureID);
-            //var course = await datacontext.Courses.FindAsync(lectue.CourseID);
-            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var lectue = await datacontext.Lecture.FindAsync(LectureID);
+            var course = await datacontext.Courses.FindAsync(lectue.CourseID);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (User.IsInRole("Student"))
+            var isEnrolled = await datacontext.StudentCourses
+                                      .FirstOrDefaultAsync(sc => sc.StudentID == userId && sc.CourseID == course.CourseID);
+
+            var isInstrucotr = await datacontext.Courses
+                                        .FirstOrDefaultAsync(c => c.InstructorID == userId && c.CourseID == course.CourseID);
+
+            if (isEnrolled != null)
             {
                 return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = LectureID });
             }
-            if (User.IsInRole("Instructor"))
+            if (isInstrucotr != null)
             {
                 return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = LectureID });
             }

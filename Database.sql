@@ -149,10 +149,14 @@ CREATE TABLE LectureCompletion (
     CompletionID INT PRIMARY KEY IDENTITY(1,1),
     UserID NVARCHAR(450),
     LectureID INT, 
+	CourseID INT,
     CompletionDate DATETIME, 
     FOREIGN KEY (UserID) REFERENCES AspNetUsers(id),
     FOREIGN KEY (LectureID) REFERENCES Lecture(LectureID) ON DELETE CASCADE
 );
+alter table LectureCompletion
+add CourseID INT;
+go
 DROP TABLE LectureCompletion
 
 -- Course image and video;
@@ -340,6 +344,16 @@ CREATE TABLE Review (
 );
 GO
 
+CREATE TABLE Report (
+    ReportID INT PRIMARY KEY IDENTITY(1,1), 
+    UserID NVARCHAR(450),  
+	[Subject] NVARCHAR(50), 
+    Comment NVARCHAR(MAX), 
+    FeedbackDate DATETIME DEFAULT GETDATE(),  
+    FOREIGN KEY (UserID) REFERENCES AspNetUsers(id) ON DELETE CASCADE
+);
+go
+
 CREATE TRIGGER trg_DeleteChildComments
 ON Comment
 INSTEAD OF DELETE
@@ -399,47 +413,10 @@ VALUES
 	
 	
 	-- sua id instructor
-SELECT * FROM Courses;
 Insert into Instructors(InstructorID, Description)
 values
 ('039f2d18-90fe-412c-89a4-038d55908b65','Heloo student');
 go
-
-CREATE TRIGGER trg_UpdateNumberOfRates
-ON Review
-AFTER INSERT
-AS
-BEGIN
-    UPDATE Courses
-    SET NumberOfRate = (
-        SELECT COUNT(*)
-        FROM Review
-        WHERE Review.CourseID = Courses.CourseID
-    )
-    WHERE CourseID IN (
-        SELECT DISTINCT CourseID
-        FROM inserted
-    );
-END;
-GO
-
-CREATE TRIGGER trg_UpdateNumberOfRates_Delete
-ON Review
-AFTER DELETE
-AS
-BEGIN
-    UPDATE Courses
-    SET NumberOfRate = (
-        SELECT COUNT(*)
-        FROM Review
-        WHERE Review.CourseID = Courses.CourseID
-    )
-    WHERE CourseID IN (
-        SELECT DISTINCT CourseID
-        FROM deleted
-    );
-END;
-GO
 
 INSERT INTO StudentCourses (StudentID, CourseID, Progress, CertificateStatus, EnrollmentDate)
 VALUES ('5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 2, 0, 'Not Started', GETDATE());
@@ -457,21 +434,6 @@ ALTER TABLE Courses
 ADD Rating FLOAT NULL;
 go
 
-CREATE TRIGGER UpdateCourseRating
-ON Review
-AFTER INSERT
-AS
-BEGIN
-    -- Cập nhật Rating cho từng CourseID trong bảng Review
-    UPDATE Courses
-    SET Rating = (
-        SELECT AVG(Rating)
-        FROM Review
-        WHERE CourseID = Courses.CourseID
-    )
-    WHERE CourseID IN (SELECT CourseID FROM inserted);
-END;
-
 INSERT INTO Lecture (CourseID, Title, [Description], UpLoadDate) VALUES
 (1, 'Introduction to Programming', 'An introductory lecture on programming concepts.', GETDATE()),
 (1, 'Data Structures', 'An overview of basic data structures.', GETDATE()),
@@ -483,40 +445,6 @@ INSERT INTO Lecture (CourseID, Title, [Description], UpLoadDate) VALUES
 (1, 'Building Web Applications', 'Steps to build web applications.', GETDATE()),
 (1, 'Software Testing', 'Methods of software testing.', GETDATE()),
 (1, 'Application Deployment', 'Guide to deploying applications on a server.', GETDATE());
-go
-
-ALTER TABLE Test
-ADD NumberOfQuestion INT NOT NULL;
-GO
-
-CREATE TRIGGER trg_UpdateNumberOfQuestion
-ON Question
-AFTER INSERT, UPDATE, DELETE
-AS
-BEGIN
-    UPDATE t
-    SET t.NumberOfQuestion = q.CountOfQuestions
-    FROM Test t
-    INNER JOIN (
-        SELECT testID, COUNT(*) AS CountOfQuestions
-        FROM Question
-        GROUP BY testID
-    ) q ON t.TestID = q.testID;
-END;
-
-INSERT INTO Payment (CourseID, StudentID, Amount, [Status])
-VALUES (3, '5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 150.00, 'Pending');
-
-SELECT 
-    CONSTRAINT_NAME, 
-    TABLE_NAME 
-FROM 
-    INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
-WHERE 
-    CONSTRAINT_TYPE = 'FOREIGN KEY';
-
-	ALTER TABLE [AspNetUsers] ADD [WalletUser] float NULL DEFAULT 0.0;
-
 go
 
 ALTER TABLE AspNetUsers
@@ -551,3 +479,9 @@ Add [FileName] NVARCHAR(255);
 
 Alter table InstructorConfirmation
 Add [FileName] NVARCHAR(255);
+
+ALTER TABLE LectureFiles 
+ADD FileExtension NVARCHAR(20);
+
+ALTER TABLE CourseMaterials 
+ADD FileExtension NVARCHAR(20);

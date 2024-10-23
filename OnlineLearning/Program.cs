@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.BackgroundServices;
 using OnlineLearning.Email;
-
+using OnlineLearning.Filter;
 using OnlineLearning.Models;
 using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
@@ -77,6 +77,8 @@ builder.Services.AddIdentity<AppUserModel, IdentityRole>()
 
 builder.Services.AddScoped<CourseAccessFilter>();
 
+builder.Services.AddScoped<LectureAccessFilter>();
+
 builder.Services.Configure<IdentityOptions>(options =>
 {
     // Password settings.
@@ -130,6 +132,10 @@ app.MapAreaControllerRoute(
     name: "Areas",
     areaName:"Admin",
     pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
+app.MapAreaControllerRoute(
+    name: "Areas",
+    areaName: "Student",
+    pattern: "{area:exists}/{controller=Student}/{action=Index}/{id?}");
 
 app.MapHub<ChatHub>("/ChatHub");
 

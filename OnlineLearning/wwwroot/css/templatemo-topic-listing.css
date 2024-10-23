@@ -1277,3 +1277,14 @@ blockquote {
         background-color: var(--primary-color);
         color: white;
     }
+
+.topics-section {
+    padding: 50px 100px 50px 100px;
+    background-color: #f7f7f7;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+}

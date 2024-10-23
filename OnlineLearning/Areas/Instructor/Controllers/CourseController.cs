@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Controllers;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
@@ -13,8 +14,8 @@ using System.Security.Claims;
 namespace OnlineLearning.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
-    [Authorize]
-    [Route("/[controller]/[action]")]
+    [Authorize(Roles = "Instructor")]
+    [Route("Instructor/[controller]/[action]")]
     public class CourseController : Controller
     {
         private readonly DataContext datacontext;
@@ -36,6 +37,19 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            var existingCourse = await datacontext.Courses.FirstOrDefaultAsync(c => c.CourseCode == model.CourseCode);
+
+            if (existingCourse != null)
+            {
+                TempData["warning"] = "Course code already exists!";
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            }
+            if (model.EndDate <= DateTime.Now)
+            {
+                TempData["warning"] = "Invalid end date!";
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            }
+
             var course = new CourseModel
             {
                 Title = model.Title,
@@ -50,9 +64,9 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 NumberOfStudents = 0,
                 NumberOfRate = 0,
                 InstructorID = userId,
-                //Status = true
+                Status = false
             };
-            //Check if a cover image is provided
+ 
             if (model.CoverImage != null)
             {
                 try
@@ -63,8 +77,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", "Error uploading file: " + ex.Message);
-                    TempData["error"] = "Edit failed due to file upload error!";
-                    return View(model);
+                    return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
                 }
             }
             else { course.CoverImagePath = "/Images/faq_graphic.jpg"; }
@@ -86,6 +99,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                         material.MaterialsLink = downloadUrl;
                         material.CourseID = newCourseId;
                         material.FIleName = fileName;
+                        material.fileExtension = Path.GetExtension(fileName);
 
                         datacontext.CourseMaterials.Add(material);
                         await datacontext.SaveChangesAsync();
@@ -94,7 +108,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     {
                         ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                         TempData["error"] = "Edit failed due to file upload error!";
-                        return View(model);
+                        return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
                     }
                 }
             }
@@ -111,6 +125,20 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var course = await datacontext.Courses.FindAsync(model.CourseID);
 
+            var existingCourse = await datacontext.Courses
+                      .FirstOrDefaultAsync(c => c.CourseCode == model.CourseCode && c.CourseID != model.CourseID);
+
+            if (existingCourse != null)
+            {
+                TempData["warning"] = "Course code already exists!";
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            }
+            if (model.EndDate <= DateTime.Now)
+            {
+                TempData["warning"] = "Invalid end date!";
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            }
+
             if (course == null)
             {
                 return NotFound();
@@ -121,22 +149,24 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             course.Price = model.Price;
 
             if (model.CategoryID != 0)
+            {
                 course.CategoryID = model.CategoryID;
-
+            }
             if (model.Level != "none")
+            {
                 course.Level = model.Level;
-
-            if (model.EndDate != null)
+            }
+            if (model.EndDate != DateTime.MinValue)
             {
                 course.EndDate = model.EndDate;
             }
-            course.Level = model.Level;
             course.LastUpdate = DateTime.Now;
 
             if (model.CoverImage != null)
             {
                 try
                 {
+                    //await _fileService.DeleteFile(course.CoverImagePath);
                     string downloadUrl = await _fileService.UploadImage(model.CoverImage);
                     course.CoverImagePath = downloadUrl;
                 }
@@ -144,7 +174,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 {
                     ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                     TempData["error"] = "Edit failed due to file upload error!";
-                    return View(model);
+                    return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
                 }
             }
 
@@ -152,7 +182,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             TempData["success"] = "Update created successfully!";
             //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-            return RedirectToAction("MyCourse", "Course");
+            return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
         }
 
         [HttpPost]
@@ -162,14 +192,21 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (course == null)
             {
                 TempData["error"] = "Course not found!";
-                return RedirectToAction("MyCourse", "Course");
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
             }
 
+            var deleteAllowedDate = course.LastUpdate.AddDays(30);
+            if (deleteAllowedDate > DateTime.Now)
+            {
+                var daysRemaining = (deleteAllowedDate - DateTime.Now).Days;
+                TempData["warning"] = $"Can be deleted after {daysRemaining} days.";
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            }
             datacontext.Courses.Remove(course);
             await datacontext.SaveChangesAsync();
 
             TempData["success"] = "Course deleted successfully!";
-            return RedirectToAction("MyCourse", "Course");
+            return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
         }
 
         [HttpPost]
@@ -179,7 +216,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (course == null)
             {
                 TempData["error"] = "Course not found!";
-                return RedirectToAction("MyCourse", "Course");
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
             }
 
             course.Status = !course.Status;
@@ -187,7 +224,23 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             await datacontext.SaveChangesAsync();
 
             TempData["success"] = course.Status ? "Course enabled successfully!" : "Course disable successfully!";
-            return RedirectToAction("MyCourse", "Course");
+            return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MyCourse()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var model = new ListViewModel();
+
+                model.Courses = await datacontext.Courses
+                    .Where(course => course.InstructorID == userId)
+                    .Include(course => course.Instructor)
+                    .ThenInclude(instructor => instructor.AppUser)
+                    .OrderByDescending(sc => sc.CourseID)
+                    .ToListAsync();
+
+            return View(model);
         }
     }
 }

@@ -66,7 +66,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Course" && ViewContext.RouteData.Values["action"].ToString() == "MyCourse" ? "active" : "")"
-                               asp-action="MyCourse" asp-controller="Course" style="white-space: nowrap;" >My Courses</a>
+                               asp-action="UserCourse" asp-controller="Course" style="white-space: nowrap;">My Courses</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Contact" ? "active" : "")"
@@ -112,7 +112,7 @@
                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <img src="@user.ProfileImagePath"
                                          class="rounded-circle"
-                                         style="width: 45px; height: 45px; border: 1px solid #ccc;"
+                                         style="width: 45px; height: 45px;"
                                          alt="Profile Image">
                                     <span class="d-none d-lg-inline ms-3">
                                         @(fullName.Length > 25 ? fullName.Substring(0, 25) + "..." : fullName)

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
 namespace OnlineLearning.Services
 {
     public class FileService
@@ -12,6 +13,7 @@ namespace OnlineLearning.Services
         private static string Bucket = "online-88d8b.appspot.com";
         private static string AuthEmail = "quyloivn@gmail.com";
         private static string AuthPassword = "Abc123";
+
         public async Task<string> UploadImage(IFormFile file)
         {
             return await UploadFile(file, "Images");
@@ -36,17 +38,21 @@ namespace OnlineLearning.Services
         {
             return await UploadFile(file, "Assignments");
         }
+
         public async Task<string> UploadFile(IFormFile file, string folder)
         {
             if (file == null || file.Length == 0)
             {
                 throw new Exception("File is empty or not provided.");
             }
+
             var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
             var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+
             var cancellation = new CancellationTokenSource();
             var fileName = $"{Guid.NewGuid()}_{file.FileName}";
             var stream = file.OpenReadStream();
+
             try
             {
                 var task = new FirebaseStorage(
@@ -59,6 +65,7 @@ namespace OnlineLearning.Services
                     .Child(folder)
                     .Child(fileName)
                     .PutAsync(stream, cancellation.Token);
+
                 string downloadUrl = await task;
                 return downloadUrl;
             }
@@ -68,19 +75,25 @@ namespace OnlineLearning.Services
                 throw;
             }
         }
+
         public async Task DeleteFile(string downloadUrl)
         {
             if (string.IsNullOrEmpty(downloadUrl))
             {
                 throw new Exception("Download URL is empty or not provided.");
             }
-            var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
-            var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
-            var uri = new Uri(downloadUrl);
-            var filePath = Uri.UnescapeDataString(uri.AbsolutePath.TrimStart('/'));
-            var fileName = filePath.Substring(filePath.IndexOf('/') + 1);
+
             try
             {
+                var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
+                var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+
+                var uri = new Uri(downloadUrl);
+
+                string filePath = uri.AbsolutePath.Replace("/v0/b/online-88d8b.appspot.com/o/", "");
+
+                filePath = Uri.UnescapeDataString(filePath);
+
                 var storage = new FirebaseStorage(
                     Bucket,
                     new FirebaseStorageOptions
@@ -88,13 +101,17 @@ namespace OnlineLearning.Services
                         AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
                         ThrowOnCancel = true
                     });
+
                 await storage.Child(filePath).DeleteAsync();
+                Console.WriteLine($"File {filePath} đã được xóa thành công.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception was thrown: {0}", ex);
+                Console.WriteLine($"Xóa file thất bại. Lỗi: {ex.Message}");
                 throw;
             }
         }
+
+
     }
 }

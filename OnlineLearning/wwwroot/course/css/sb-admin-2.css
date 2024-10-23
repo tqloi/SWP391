@@ -1940,11 +1940,6 @@ pre code {
   opacity: 1;
 }
 
-.form-control:disabled, .form-control[readonly] {
-  background-color: #eaecf4;
-  opacity: 1;
-}
-
 input[type="date"].form-control,
 input[type="time"].form-control,
 input[type="datetime-local"].form-control,

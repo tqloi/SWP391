@@ -24,7 +24,7 @@ namespace OnlineLearning.Controllers
                 .Where(p => p.CategoryID == category.CategoryID)
                 .ToListAsync();
 
-            return View(courses);
+            return RedirectToAction("StudentCourse", "Course", new {area = "Student"});
         } 
     }
 }
