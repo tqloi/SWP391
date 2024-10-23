@@ -121,6 +121,11 @@
                                 <!-- Dropdown - User Information -->
                                 <ul class="dropdown-menu" aria-labelledby="profileDropdown">
                                     <li>
+                                        <a class="dropdown-item" asp-action="Index" asp-controller="Chat" asp-area="">
+                                            <i class="fa fa-envelope fa-sm fa-fw me-2 text-gray-400"></i>Message
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a class="dropdown-item" asp-action="UserProfile" asp-controller="Profile">
                                             <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>Your Profile
                                         </a>
@@ -128,11 +133,6 @@
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-action="RequestWithdraw" asp-controller="Payment">
                                             <i class="fas fas fa-exchange-alt fa-sm fa-fw me-2 text-gray-400"></i>Request A Transfer
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" asp-action="Index" asp-controller="Chat" asp-area="">
-                                            <i class="fa fa-envelope fa-sm fa-fw me-2 text-gray-400"></i>Message
                                         </a>
                                     </li>
                                     <li class="dropdown-divider"></li>

@@ -4675,7 +4675,7 @@ input[type=button].btn-block, input[type=reset].btn-block, input[type=submit].bt
             margin-bottom: -1px
         }
 
-.breadcrumb {
+/*.breadcrumb {
     color: #000000;
     display: flex;
     flex-wrap: wrap;
@@ -4707,7 +4707,7 @@ input[type=button].btn-block, input[type=reset].btn-block, input[type=submit].bt
 
 .breadcrumb-item.active {
     color: #858796
-}
+}*/
 
 .pagination {
     display: flex;
@@ -9784,9 +9784,9 @@ a.text-light:focus, a.text-light:hover {
     color: #c2cbe5 !important
 }
 
-.text-dark {
+/*.text-dark {
     color: #5a5c69 !important
-}
+}*/
 
 a.text-dark:focus, a.text-dark:hover {
     color: #373840 !important
@@ -11521,7 +11521,7 @@ body.sidebar-toggled footer.sticky-footer {
 
 .breadcrumb {
     background-color: white;
-    color: black;
+    color: black !important;
     padding: 10px;
     border-radius: 5px;
 }
@@ -11533,20 +11533,20 @@ body.sidebar-toggled footer.sticky-footer {
     .breadcrumb-item + .breadcrumb-item:before {
         content: "/";
         margin: 0 5px;
-        color: black;
+        color: black !important;
     }
 
     .breadcrumb-item a {
-        color: gray;
+        color: #13547a;
         text-decoration: none;
     }
 
         .breadcrumb-item a:hover {
-            color: black;
+            color: black !important;
         }
 
     .breadcrumb-item.active {
-        color: black;
+        color: black !important;
     }
 
 .navbar-search .input-group {
