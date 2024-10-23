@@ -59,16 +59,12 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\Shared\Components\" />
 
-<<<<<<< HEAD
-=======
     <Folder Include="Areas\Instructor\Models\" />
     <Folder Include="Areas\Instructor\Views\Shared\Components\" />
     <Folder Include="Areas\Student\Models\" />
     <Folder Include="VideoCall\" />
     <Folder Include="wwwroot\Assignment\" />
 
-
->>>>>>> 6a6e9432d9808979947931af68401e73a4abac15
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
 
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
