@@ -141,7 +141,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             }
             else
             {
-                TempData["error"] = "This is the last lecture in the course.";
+                TempData["info"] = "This is the last lecture in the course.";
                 return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lectureID });
             }
         }
@@ -167,7 +167,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             }
             else
             {
-                TempData["error"] = "This is the first lecture in the course.";
+                TempData["info"] = "This is the first lecture in the course.";
                 return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lectureID });
             }
         }

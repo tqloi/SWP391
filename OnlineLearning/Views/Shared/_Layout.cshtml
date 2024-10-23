@@ -65,7 +65,7 @@
                                asp-action="CourseList" asp-controller="Course">Courses</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Course" && ViewContext.RouteData.Values["action"].ToString() == "InstructorCourse" || ViewContext.RouteData.Values["action"].ToString() == "StudentCourse" ? "active" : "")"
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Course" && ViewContext.RouteData.Values["action"].ToString() == "MyCourse" ? "active" : "")"
                                asp-action="UserCourse" asp-controller="Course" style="white-space: nowrap;">My Courses</a>
                         </li>
                         <li class="nav-item">

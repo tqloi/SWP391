@@ -7,12 +7,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Instructor\Data\**" />
+    <Compile Remove="Areas\Instructor\Models\**" />
+    <Compile Remove="Areas\Instructor\Views\Payment\**" />
+    <Compile Remove="Areas\Instructor\Views\Shared\Components\**" />
     <Compile Remove="wwwroot\assets\**" />
     <Compile Remove="wwwroot\Images\NewFolder\**" />
+    <Content Remove="Areas\Instructor\Data\**" />
+    <Content Remove="Areas\Instructor\Models\**" />
+    <Content Remove="Areas\Instructor\Views\Payment\**" />
+    <Content Remove="Areas\Instructor\Views\Shared\Components\**" />
     <Content Remove="wwwroot\assets\**" />
     <Content Remove="wwwroot\Images\NewFolder\**" />
+    <EmbeddedResource Remove="Areas\Instructor\Data\**" />
+    <EmbeddedResource Remove="Areas\Instructor\Models\**" />
+    <EmbeddedResource Remove="Areas\Instructor\Views\Payment\**" />
+    <EmbeddedResource Remove="Areas\Instructor\Views\Shared\Components\**" />
     <EmbeddedResource Remove="wwwroot\assets\**" />
     <EmbeddedResource Remove="wwwroot\Images\NewFolder\**" />
+    <None Remove="Areas\Instructor\Data\**" />
+    <None Remove="Areas\Instructor\Models\**" />
+    <None Remove="Areas\Instructor\Views\Payment\**" />
+    <None Remove="Areas\Instructor\Views\Shared\Components\**" />
     <None Remove="wwwroot\assets\**" />
     <None Remove="wwwroot\Images\NewFolder\**" />
   </ItemGroup>
@@ -43,22 +59,10 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\Shared\Components\" />
 
-    <Folder Include="Areas\Instructor\Models\" />
-
-    <Folder Include="Areas\Instructor\Views\Payment\" />
-    <Folder Include="Areas\Instructor\Views\Shared\Components\" />
-    <Folder Include="Areas\Student\Models\" />
-
 
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
 
     <PackageReference Include="QRCoder" Version="1.6.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\Instructor\Data\" />
-    <Folder Include="Areas\Instructor\Models\" />
-
   </ItemGroup>
 
   <ItemGroup>

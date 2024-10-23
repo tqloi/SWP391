@@ -34,7 +34,7 @@ namespace OnlineLearning.Areas.Student.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> StudentCourse()
+        public async Task<IActionResult> MyCourse()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var model = new ListViewModel();

@@ -15,7 +15,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
     [Authorize(Roles = "Instructor")]
-    [Route("/[controller]/[action]")]
+    [Route("Instructor/[controller]/[action]")]
     public class CourseController : Controller
     {
         private readonly DataContext datacontext;
@@ -41,8 +41,13 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             if (existingCourse != null)
             {
-                TempData["error"] = "Course code already exists!";
-                return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
+                TempData["warning"] = "Course code already exists!";
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            }
+            if (model.EndDate <= DateTime.Now)
+            {
+                TempData["warning"] = "Invalid end date!";
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
             }
 
             var course = new CourseModel
@@ -59,9 +64,9 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 NumberOfStudents = 0,
                 NumberOfRate = 0,
                 InstructorID = userId,
-                //Status = true
+                Status = false
             };
-            //Check if a cover image is provided
+ 
             if (model.CoverImage != null)
             {
                 try
@@ -72,8 +77,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", "Error uploading file: " + ex.Message);
-                    TempData["error"] = "Edit failed due to file upload error!";
-                    return View(model);
+                    return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
                 }
             }
             else { course.CoverImagePath = "/Images/faq_graphic.jpg"; }
@@ -103,7 +107,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     {
                         ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                         TempData["error"] = "Edit failed due to file upload error!";
-                        return View(model);
+                        return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
                     }
                 }
             }
@@ -125,8 +129,13 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             if (existingCourse != null)
             {
-                TempData["error"] = "Course code already exists!";
-                return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
+                TempData["warning"] = "Course code already exists!";
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            }
+            if (model.EndDate <= DateTime.Now)
+            {
+                TempData["warning"] = "Invalid end date!";
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
             }
 
             if (course == null)
@@ -164,7 +173,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 {
                     ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                     TempData["error"] = "Edit failed due to file upload error!";
-                    return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
+                    return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
                 }
             }
 
@@ -172,7 +181,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             TempData["success"] = "Update created successfully!";
             //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-            return RedirectToAction("InstructorCourse", "Course",  new { area = "Instructor" });
+            return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
         }
 
         [HttpPost]
@@ -182,14 +191,21 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (course == null)
             {
                 TempData["error"] = "Course not found!";
-                return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
             }
 
+            var deleteAllowedDate = course.LastUpdate.AddDays(30);
+            if (deleteAllowedDate > DateTime.Now)
+            {
+                var daysRemaining = (deleteAllowedDate - DateTime.Now).Days;
+                TempData["warning"] = $"Can be deleted after {daysRemaining} days.";
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            }
             datacontext.Courses.Remove(course);
             await datacontext.SaveChangesAsync();
 
             TempData["success"] = "Course deleted successfully!";
-            return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
+            return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
         }
 
         [HttpPost]
@@ -199,7 +215,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (course == null)
             {
                 TempData["error"] = "Course not found!";
-                return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
             }
 
             course.Status = !course.Status;
@@ -207,11 +223,11 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             await datacontext.SaveChangesAsync();
 
             TempData["success"] = course.Status ? "Course enabled successfully!" : "Course disable successfully!";
-            return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor" });
+            return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
         }
 
         [HttpGet]
-        public async Task<IActionResult> InstructorCourse()
+        public async Task<IActionResult> MyCourse()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var model = new ListViewModel();

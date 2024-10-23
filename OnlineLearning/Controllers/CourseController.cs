@@ -53,53 +53,15 @@ namespace OnlineLearning.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Instructor, Student")]
-        public async Task<IActionResult> MyCourse()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var model = new ListViewModel();
-
-            if (User.IsInRole("Admin"))
-            {
-                return Forbid(); 
-            }
-            if (User.IsInRole("Instructor"))
-            {
-                model.Courses = await datacontext.Courses
-                    .Where(course => course.InstructorID == userId)
-                    .Include(course => course.Instructor)   
-                    .ThenInclude(instructor => instructor.AppUser)
-                    .OrderByDescending(sc => sc.CourseID)
-                    .ToListAsync();
-            }
-            if (User.IsInRole("Student"))
-            {
-                model.StudentCourses = await datacontext.StudentCourses
-                    .Where(sc => sc.StudentID == userId)
-                    .Include(sc => sc.Course)
-                    .ToListAsync();
-                model.Courses = await datacontext.StudentCourses
-                    .Where(sc => sc.StudentID == userId)
-                    .Include(sc => sc.Course)
-                    .ThenInclude(course => course.Instructor)      
-                    .ThenInclude(instructor => instructor.AppUser)
-                    .Select(sc => sc.Course)
-                    .OrderByDescending(sc => sc.CourseID)
-                    .ToListAsync();
-            }
-            return View(model);
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "Instructor, Student")]
         public IActionResult UserCourse()
         {
             if (User.IsInRole("Student"))
             {
-                return RedirectToAction("StudentCourse", "Course", new { area = "Student"});
+                return RedirectToAction("MyCourse", "Course", new { area = "Student"});
             }
             if (User.IsInRole("Instructor"))
             {
-                return RedirectToAction("InstructorCourse", "Course", new { area = "Instructor"});
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor"});
             }
             else
             {

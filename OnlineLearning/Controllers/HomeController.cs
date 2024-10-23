@@ -19,14 +19,12 @@ namespace OnlineLearning.Controllers
         private readonly DataContext _dataContext;
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         
-        public HomeController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment)
+        public HomeController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager)
         {
             _dataContext = context;
             _logger = logger;
             _signInManager = signInManager;
-            _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
         }
 
