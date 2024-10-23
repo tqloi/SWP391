@@ -144,7 +144,9 @@
                                 </div>
                                 <div>
                                     <button class="btn btn-primary btn-lg mr-1 px-3"><i class="fas fa-phone"></i></button>
-                                    <button class="btn btn-info btn-lg mr-1 px-3 d-none d-md-inline-block"><i class="fas fa-video"></i></button>
+                                    <a id="videoCallButton" class="btn btn-info btn-lg mr-1 px-3 d-none d-md-inline-block">
+                                        <i class="fas fa-video"></i>
+                                    </a>
                                     <button class="btn btn-light border btn-lg px-3"><i class="fas fa-ellipsis-h"></i></button>
                                 </div>
                             </div>
@@ -341,6 +343,19 @@
         });
     </script>
 
+    <script>
+         var callerId = '@Model.SendId'; 
+        var receiverId = '@Model.ReceiverId'; 
 
+        document.getElementById('videoCallButton').addEventListener('click', function() {
+            if (callerId && receiverId) {
+                var url = `/api/VideoCall/${callerId}/${receiverId}`;
+                window.location.href = url;
+            } else {
+                console.error('Caller ID or Receiver ID is invalid.');
+                alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            }
+        });
+    </script>
 </body>
 </html>
