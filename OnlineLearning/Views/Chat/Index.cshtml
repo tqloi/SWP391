@@ -102,25 +102,29 @@
                                                     {
                                                         int index = Model.IsReadmess.IndexOf(":");
                                                         string contentAfterColon = index != -1 ? Model.IsReadmess.Substring(index + 1).Trim() : Model.IsReadmess;
-                                                        contentAfterColon = contentAfterColon.Substring(0, 10) + "...";
+                                                      //  contentAfterColon = contentAfterColon.Substring(0, 10) + "...";
                                                         <p>
 
-                                                            @item.LastName: @contentAfterColon
+                                                            @item.LastName: @(contentAfterColon.Length > 10 ? contentAfterColon.Substring(0, 10) + "..." : contentAfterColon) 
                                                         </p>
                                                     }
                                                     else if (Model.IsReadmess.StartsWith(Model.SendId) && Model.receimess.Equals(item.Id))
                                                     {
                                                         int index = Model.IsReadmess.IndexOf(":");
                                                         string contentAfterColon = index != -1 ? Model.IsReadmess.Substring(index + 1).Trim() : Model.IsReadmess;
-                                                        contentAfterColon = contentAfterColon.Substring(0, 10) + "...";
+                                                        //  contentAfterColon = contentAfterColon.Substring(0, 10) + "...";
                                                         <p>
 
-                                                            You: @contentAfterColon
+                                                            You: @(contentAfterColon.Length > 10 ? contentAfterColon.Substring(0, 10) + "..." : contentAfterColon)
                                                         </p>
                                                     }
-                                                    
+
                                                 }
-                                                    
+                                                else
+                                                {
+                                                    <p>Null</p>
+                                                }
+
                                                 
                                             </div>
                                         </div>
