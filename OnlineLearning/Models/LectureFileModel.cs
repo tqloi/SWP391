@@ -23,6 +23,7 @@ namespace OnlineLearning.Models
         [Required]
         [StringLength(500)]
         public string FilePath { get; set; }
+        public string fileExtension { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime UploadDate { get; set; } = DateTime.Now;

@@ -99,6 +99,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                         material.MaterialsLink = downloadUrl;
                         material.CourseID = newCourseId;
                         material.FIleName = fileName;
+                        material.fileExtension = Path.GetExtension(fileName);
 
                         datacontext.CourseMaterials.Add(material);
                         await datacontext.SaveChangesAsync();

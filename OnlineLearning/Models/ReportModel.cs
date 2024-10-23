@@ -3,10 +3,10 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-public class FeedbackModel
+public class ReportModel
 {
     [Key]
-    public int FeedbackID { get; set; }
+    public int ReportID { get; set; }
 
     [Required]
     [StringLength(450)] 

@@ -61,6 +61,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                         lectueFile.FilePath = downloadUrl;
                         lectueFile.FileName = fileName;
                         lectueFile.FileType = "Video";
+                        lectueFile.fileExtension = Path.GetExtension(fileName);
                         _dataContext.LectureFiles.Add(lectueFile);
                         await _dataContext.SaveChangesAsync();
                     }
@@ -85,6 +86,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                             lectueFile.FilePath = downloadUrl;
                             lectueFile.FileName = fileName;
                             lectueFile.FileType = "Document";
+                            lectueFile.fileExtension = Path.GetExtension(fileName);
                             _dataContext.LectureFiles.Add(lectueFile);
                             await _dataContext.SaveChangesAsync();
                         }

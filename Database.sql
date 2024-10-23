@@ -348,8 +348,8 @@ CREATE TABLE Review (
 );
 GO
 
-CREATE TABLE Feedback (
-    FeedbackID INT PRIMARY KEY IDENTITY(1,1), 
+CREATE TABLE Report (
+    ReportID INT PRIMARY KEY IDENTITY(1,1), 
     UserID NVARCHAR(450),  
 	[Subject] NVARCHAR(50), 
     Comment NVARCHAR(MAX), 
@@ -483,3 +483,9 @@ Add [FileName] NVARCHAR(255);
 
 Alter table InstructorConfirmation
 Add [FileName] NVARCHAR(255);
+
+ALTER TABLE LectureFiles 
+ADD FileExtension NVARCHAR(20);
+
+ALTER TABLE CourseMaterials 
+ADD FileExtension NVARCHAR(20);

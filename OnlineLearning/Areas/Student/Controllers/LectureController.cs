@@ -56,18 +56,27 @@ namespace OnlineLearning.Areas.Student.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Complete(int LectureID) 
+        public async Task<IActionResult> SetComplete(int LectureID) 
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var lecture = await _dataContext.Lecture.FindAsync(LectureID);
-            var completion = new LectureCompletionModel
+            var completion = _dataContext.LectureCompletion.Where(lc => lc.LectureID == lecture.LectureID && lc.UserID == userId).FirstOrDefault();
+            if (completion != null)
             {
-                UserID = userId,
-                LectureID = LectureID,
-                CompletionDate = DateTime.Now,
-            };
-            _dataContext.LectureCompletion.Add(completion);
-            await _dataContext.SaveChangesAsync();
+                _dataContext.LectureCompletion.Remove(completion);
+                await _dataContext.SaveChangesAsync();
+            }
+            else
+            {
+                completion = new LectureCompletionModel
+                {
+                    UserID = userId,
+                    LectureID = LectureID,
+                    CompletionDate = DateTime.Now,
+                };
+                _dataContext.LectureCompletion.Add(completion);
+                await _dataContext.SaveChangesAsync();
+            }
             var studentCourse = _dataContext.StudentCourses.
                 Where(sc => sc.CourseID == lecture.CourseID && sc.StudentID == userId).FirstOrDefault();
 
@@ -88,8 +97,6 @@ namespace OnlineLearning.Areas.Student.Controllers
                 _dataContext.StudentCourses.Update(studentCourse);
             
             await _dataContext.SaveChangesAsync();
-
-            TempData["success"] = "Lecture Completed";
             return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = LectureID});
         }
 

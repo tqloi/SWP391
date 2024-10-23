@@ -51,7 +51,7 @@ namespace OnlineLearning.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Contact(FeedbackModel model)
+        public async Task<IActionResult> Contact(ReportModel model)
         {
             if (User.IsInRole("Admin"))
             {
@@ -62,14 +62,14 @@ namespace OnlineLearning.Controllers
 
             try
             {
-                var feedback = new FeedbackModel
-            {
-                UserID = userId,
-                Subject = model.Subject,
-                Comment = model.Comment,
-                FeedbackDate = DateTime.Now,
-            };
-                _dataContext.Feedback.Add(feedback);
+                var feedback = new ReportModel
+                {
+                    UserID = userId,
+                    Subject = model.Subject,
+                    Comment = model.Comment,
+                    FeedbackDate = DateTime.Now,
+                };
+                _dataContext.Report.Add(feedback);
                 await _dataContext.SaveChangesAsync();
 
                 TempData["success"] = "Feedback has been submitted successfully!";

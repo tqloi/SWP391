@@ -24,21 +24,22 @@ namespace OnlineLearning.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ReportCourse(int CourseID, string Reason)
+        public async Task<IActionResult> ReportCourse(int CourseID, string Reason, string OtherReason)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var course = await _dataContext.Courses.FindAsync(CourseID);
+            if (OtherReason != null) { Reason = OtherReason; }
 
             try
             {
-                var feedback = new FeedbackModel
+                var feedback = new ReportModel
                 {
                     UserID = userId,
                     Subject = "COURSE REPORT",
-                    Comment = $"Course ({course.Title}): {Reason}",
+                    Comment = $"Course [{course.Title}] : {Reason}",
                     FeedbackDate = DateTime.Now,
                 };
-                _dataContext.Feedback.Add(feedback);
+                _dataContext.Report.Add(feedback);
                 await _dataContext.SaveChangesAsync();
 
                 TempData["success"] = "Feedback has been submitted successfully!";
@@ -50,6 +51,37 @@ namespace OnlineLearning.Controllers
             }
 
             return RedirectToAction("MyCourse", "Course", new { area = "Student" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReportLecture(int LectureID, string Reason, string OtherReason)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var lecture = await _dataContext.Lecture.FindAsync(LectureID);
+            var course = await _dataContext.Courses.FindAsync(lecture.CourseID);
+            if (OtherReason != null) { Reason = OtherReason; }
+
+            try
+            {
+                var feedback = new ReportModel
+                {
+                    UserID = userId,
+                    Subject = "LECTURE REPORT",
+                    Comment = $"Course [{course.Title}] : Lecture [{lecture.Title}] : {Reason}",
+                    FeedbackDate = DateTime.Now,
+                };
+                _dataContext.Report.Add(feedback);
+                await _dataContext.SaveChangesAsync();
+
+                TempData["success"] = "Feedback has been submitted successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = "Failed to submit feedback. Please try again later.";
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = LectureID });
+            }
+
+            return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = LectureID });
         }
     }
 }
