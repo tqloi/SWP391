@@ -14,17 +14,7 @@ namespace OnlineLearning.Controllers
         }
         public async Task<IActionResult> Index(int CategoryId)
         {
-            CategoryModel category = await _dataContext.Category.FirstOrDefaultAsync(c => c.CategoryID == CategoryId);
-
-            if (category == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            var courses = await _dataContext.Courses
-                .Where(p => p.CategoryID == category.CategoryID)
-                .ToListAsync();
-
-            return RedirectToAction("StudentCourse", "Course", new {area = "Student"});
+            return RedirectToAction("CourseList", "Course");
         } 
     }
 }

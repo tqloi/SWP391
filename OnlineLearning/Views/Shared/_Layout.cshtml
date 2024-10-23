@@ -90,7 +90,7 @@
                         var keyword = ViewBag.Keyword;
                     }
                     <div class="d-none d-lg-block me-auto">
-                        <form asp-action="Search" asp-controller="Course" method="GET" class="navbar-form" style="display: inline; position: relative;">
+                        <form asp-action="CourseList" asp-controller="Course" method="GET" class="navbar-form" style="display: inline; position: relative;">
                             <input type="text" name="keyword" value="@keyword" placeholder="Search"
                                    style="padding: 10px 15px; border-radius: 25px; border: 1px solid #ccc; outline: none; width: 250px;">
                             <button type="submit"

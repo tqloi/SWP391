@@ -27,43 +27,55 @@ namespace OnlineLearning.Controllers
             _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
         }
-        public async Task<IActionResult> CourseList(int page = 1)
+        public async Task<IActionResult> CourseList(string keyword = null, int? category = null, string level = null, int page = 1)
         {
-            int pageSize = 5;
-            var courses = await datacontext.Courses
-                     .Include(course => course.Instructor)
-                     .ThenInclude(instructor => instructor.AppUser)
-                     .OrderByDescending(course => course.Rating)
-                     .ThenByDescending(course => course.NumberOfRate)
-                     .ToListAsync();
-            var pagecourses = courses.Skip((page - 1) * pageSize)
-                              .Take(pageSize)
-                              .ToList();
-            var totalCourse = courses.Count();
-            var totalPages = (int)Math.Ceiling(totalCourse / (double)pageSize);
+            var coursesQuery = datacontext.Courses
+                .Include(course => course.Instructor)
+                .ThenInclude(instructor => instructor.AppUser)
+                .AsQueryable();
+
+            // Tìm kiếm theo keyword
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                coursesQuery = coursesQuery.Where(course =>
+                    course.Title.Contains(keyword) ||
+                    course.Instructor.AppUser.FirstName.Contains(keyword) ||
+                    course.Instructor.AppUser.LastName.Contains(keyword));
+            }
+
+            // Lọc theo category nếu có
+            if (category.HasValue)
+            {
+                coursesQuery = coursesQuery.Where(course => course.CategoryID == category.Value);
+            }
+
+            // Lọc theo level nếu có
+            if (!string.IsNullOrEmpty(level))
+            {
+                coursesQuery = coursesQuery.Where(course => course.Level == level);
+            }
+
+            var totalCourses = await coursesQuery.CountAsync();
+            var pageSize = 5;
+            var courses = await coursesQuery
+                .OrderByDescending(course => course.Rating)
+                .ThenByDescending(course => course.NumberOfRate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
             var model = new CourseListViewModel
             {
-                CourseList = pagecourses,
-                TotalPage = totalPages,
-                CurrentPage = page
+                CourseList = courses,
+                TotalPage = (int)Math.Ceiling(totalCourses / (double)pageSize),
+                CurrentPage = page,
+                Keyword = keyword,
+                Category = category,
+                Level = level
             };
-
-            return View(model);
-
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Search(string keyword)
-        {
-            var courses = await datacontext.Courses
-                .Include(course => course.Instructor) 
-                .ThenInclude(instructor => instructor.AppUser) 
-                .Where(course => course.Title.Contains(keyword) ||
-                                 course.Instructor.AppUser.FirstName.Contains(keyword) ||
-                                 course.Instructor.AppUser.LastName.Contains(keyword))
-                .ToListAsync();
             ViewBag.Keyword = keyword;
-            return View("CourseList", courses); 
+            ViewBag.Action = "CourseList";
+            return View(model);
         }
 
         [HttpGet]
