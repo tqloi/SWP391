@@ -17,6 +17,9 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services.AddTransient<EmailSender>();
+builder.Services.AddHttpClient();
+//stringee
+builder.Services.AddTransient<StringeeService>();
 
 //file 
 builder.Services.AddScoped<FileService>();
