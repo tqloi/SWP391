@@ -58,7 +58,7 @@ CREATE TABLE Courses (
 	CoverImagePath NVARCHAR(MAX),
 	InstructorID NVARCHAR(450), -- instructor
     NumberOfStudents INT DEFAULT 0, 
-	Price DECIMAL(10,2),
+	Price DECIMAL(10,1),
     CategoryID INT,
     [Level] NVARCHAR(50) CHECK (level IN ('Beginner', 'Intermediate', 'Advanced')),
     [Status] BIT NOT NULL DEFAULT 1, -- true: active, false: inactive
@@ -72,6 +72,9 @@ CREATE TABLE Courses (
 );
 alter table Courses
 ADD Rating FLOAT NULL;
+alter table Courses
+Alter column Price DECIMAL(10,1);
+go
 
 -- them bang material, 1 khoa hoc co nhieu material
 CREATE TABLE CourseMaterials (
@@ -333,12 +336,12 @@ CREATE TABLE CommentFile (
 CREATE TABLE Review (
     ReviewID INT PRIMARY KEY IDENTITY(1,1),
     CourseID INT,
-    StudentID NVARCHAR(450),
+    UserID NVARCHAR(450),
     Rating FLOAT CHECK (rating >= 0 AND rating <= 5),
     Comment NVARCHAR(255),
     ReviewDate DATETIME,
     FOREIGN KEY (courseID) REFERENCES Courses(courseID),
-    FOREIGN KEY (studentID) REFERENCES AspNetUsers(id) ON DELETE CASCADE
+    FOREIGN KEY (UserID) REFERENCES AspNetUsers(id) ON DELETE CASCADE
 );
 GO
 

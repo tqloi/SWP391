@@ -66,8 +66,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\Shared\Components\" />
-
-    <Folder Include="Areas\Instructor\Models\" />
     <Folder Include="Areas\Instructor\Views\Shared\Components\" />
     <Folder Include="Areas\Student\Models\" />
 

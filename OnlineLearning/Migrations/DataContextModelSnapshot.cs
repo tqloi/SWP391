@@ -23,1256 +23,1256 @@ namespace OnlineLearning.Migrations
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+            {
+                b.Property<string>("Id")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("Name")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("NormalizedName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                b.HasIndex("NormalizedName")
+                    .IsUnique()
+                    .HasDatabaseName("RoleNameIndex")
+                    .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                b.ToTable("AspNetRoles", (string)null);
 
-                    b.HasData(
-                        new
-                        {
-                            Id = "1",
-                            ConcurrencyStamp = "d83a197e-e819-4f67-88cb-674564598162",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "2",
-                            ConcurrencyStamp = "6f71d88e-0e1a-46d9-bfd9-1f090e37fbe7",
-                            Name = "Student",
-                            NormalizedName = "STUDENT"
-                        },
-                        new
-                        {
-                            Id = "3",
-                            ConcurrencyStamp = "4e283010-d20c-446f-9a17-de4eb6aa2b9c",
-                            Name = "Instructor",
-                            NormalizedName = "INSTRUCTOR"
-                        });
-                });
+                b.HasData(
+                    new
+                    {
+                        Id = "1",
+                        ConcurrencyStamp = "d83a197e-e819-4f67-88cb-674564598162",
+                        Name = "Admin",
+                        NormalizedName = "ADMIN"
+                    },
+                    new
+                    {
+                        Id = "2",
+                        ConcurrencyStamp = "6f71d88e-0e1a-46d9-bfd9-1f090e37fbe7",
+                        Name = "Student",
+                        NormalizedName = "STUDENT"
+                    },
+                    new
+                    {
+                        Id = "3",
+                        ConcurrencyStamp = "4e283010-d20c-446f-9a17-de4eb6aa2b9c",
+                        Name = "Instructor",
+                        NormalizedName = "INSTRUCTOR"
+                    });
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimValue")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("RoleId")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
+                b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
-                });
+                b.ToTable("AspNetRoleClaims", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimValue")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("UserId")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
+                b.ToTable("AspNetUserClaims", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+            {
+                b.Property<string>("LoginProvider")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ProviderKey")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ProviderDisplayName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("UserId")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("LoginProvider", "ProviderKey");
+                b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
+                b.ToTable("AspNetUserLogins", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+            {
+                b.Property<string>("UserId")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("RoleId")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("UserId", "RoleId");
+                b.HasKey("UserId", "RoleId");
 
-                    b.HasIndex("RoleId");
+                b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
+                b.ToTable("AspNetUserRoles", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+            {
+                b.Property<string>("UserId")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("LoginProvider")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Value")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId", "LoginProvider", "Name");
+                b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
+                b.ToTable("AspNetUserTokens", (string)null);
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.AppUserModel", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+            {
+                b.Property<string>("Id")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                b.Property<int>("AccessFailedCount")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Address")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("Dob")
-                        .HasColumnType("date");
+                b.Property<DateOnly>("Dob")
+                    .HasColumnType("date");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("Email")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
+                b.Property<bool>("EmailConfirmed")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FirstName")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Gender")
-                        .HasColumnType("bit");
+                b.Property<bool>("Gender")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("LastName")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
+                b.Property<bool>("LockoutEnabled")
+                    .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                b.Property<DateTimeOffset?>("LockoutEnd")
+                    .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("NormalizedEmail")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("NormalizedUserName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PasswordHash")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PhoneNumber")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
+                b.Property<bool>("PhoneNumberConfirmed")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("ProfileImagePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ProfileImagePath")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SecurityStamp")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
+                b.Property<bool>("TwoFactorEnabled")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("UserName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<double?>("WalletUser")
-                        .HasColumnType("float");
+                b.Property<double?>("WalletUser")
+                    .HasColumnType("float");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
+                b.HasIndex("NormalizedEmail")
+                    .HasDatabaseName("EmailIndex");
 
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                b.HasIndex("NormalizedUserName")
+                    .IsUnique()
+                    .HasDatabaseName("UserNameIndex")
+                    .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", (string)null);
-                });
+                b.ToTable("AspNetUsers", (string)null);
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.AssignmentModel", b =>
-                {
-                    b.Property<int>("AssignmentID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("AssignmentID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AssignmentID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AssignmentID"));
 
-                    b.Property<string>("AssignmentLink")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AssignmentLink")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
+                b.Property<int>("CourseID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DueDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("AssignmentID");
+                b.HasKey("AssignmentID");
 
-                    b.HasIndex("CourseID");
+                b.HasIndex("CourseID");
 
-                    b.ToTable("Assignment");
-                });
+                b.ToTable("Assignment");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.CategoryModel", b =>
-                {
-                    b.Property<int>("CategoryID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("CategoryID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryID"));
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("FullName")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("CategoryID");
+                b.HasKey("CategoryID");
 
-                    b.ToTable("Category");
-                });
+                b.ToTable("Category");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.ChatBoxModel", b =>
-                {
-                    b.Property<int>("ChatBoxID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("ChatBoxID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChatBoxID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChatBoxID"));
 
-                    b.Property<string>("ReceiverID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ReceiverID")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SenderID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("SenderID")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ChatBoxID");
+                b.HasKey("ChatBoxID");
 
-                    b.HasIndex("ReceiverID");
+                b.HasIndex("ReceiverID");
 
-                    b.HasIndex("SenderID");
+                b.HasIndex("SenderID");
 
-                    b.ToTable("ChatBox");
-                });
+                b.ToTable("ChatBox");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.CourseMaterialModel", b =>
-                {
-                    b.Property<int>("MaterialID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("MaterialID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaterialID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaterialID"));
 
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
+                b.Property<int>("CourseID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("MaterialsLink")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("MaterialsLink")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.HasKey("MaterialID");
+                b.HasKey("MaterialID");
 
-                    b.HasIndex("CourseID");
+                b.HasIndex("CourseID");
 
-                    b.ToTable("CourseMaterials");
-                });
+                b.ToTable("CourseMaterials");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.CourseModel", b =>
-                {
-                    b.Property<int>("CourseID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("CourseID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseID"));
 
-                    b.Property<int>("CategoryID")
-                        .HasColumnType("int");
+                b.Property<int>("CategoryID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("CourseCode")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                b.Property<string>("CourseCode")
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("CoverImagePath")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("CoverImagePath")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreateDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("EndDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("InstructorID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("InstructorID")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("LastUpdate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastUpdate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Level")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("Level")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("NumberOfRate")
-                        .HasColumnType("int");
+                b.Property<int>("NumberOfRate")
+                    .HasColumnType("int");
 
-                    b.Property<int>("NumberOfStudents")
-                        .HasColumnType("int");
+                b.Property<int>("NumberOfStudents")
+                    .HasColumnType("int");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(10,2)");
+                b.Property<decimal>("Price")
+                    .HasColumnType("decimal(10,2)");
 
-                    b.Property<double>("Rating")
-                        .HasColumnType("float");
+                b.Property<double>("Rating")
+                    .HasColumnType("float");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
+                b.Property<bool>("Status")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("Title")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.HasKey("CourseID");
+                b.HasKey("CourseID");
 
-                    b.HasIndex("CategoryID");
+                b.HasIndex("CategoryID");
 
-                    b.HasIndex("InstructorID");
+                b.HasIndex("InstructorID");
 
-                    b.ToTable("Courses");
-                });
+                b.ToTable("Courses");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.InstructorConfirmationModel", b =>
-                {
-                    b.Property<int>("ConfirmationID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("ConfirmationID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ConfirmationID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ConfirmationID"));
 
-                    b.Property<string>("Certificatelink")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Certificatelink")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("SendDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("SendDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("UserID")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ConfirmationID");
+                b.HasKey("ConfirmationID");
 
-                    b.HasIndex("UserID");
+                b.HasIndex("UserID");
 
-                    b.ToTable("InstructorConfirmation");
-                });
+                b.ToTable("InstructorConfirmation");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.InstructorModel", b =>
-                {
-                    b.Property<string>("InstructorID")
-                        .HasColumnType("nvarchar(450)");
+            {
+                b.Property<string>("InstructorID")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasColumnType("text");
 
-                    b.HasKey("InstructorID");
+                b.HasKey("InstructorID");
 
-                    b.ToTable("Instructors");
-                });
+                b.ToTable("Instructors");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.LectureModel", b =>
-                {
-                    b.Property<int>("LectureID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("LectureID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LectureID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LectureID"));
 
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
+                b.Property<int>("CourseID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("Title")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<DateTime>("UpLoadDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("UpLoadDate")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("LectureID");
+                b.HasKey("LectureID");
 
-                    b.HasIndex("CourseID");
+                b.HasIndex("CourseID");
 
-                    b.ToTable("Lecture");
-                });
+                b.ToTable("Lecture");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.MessageFileModel", b =>
-                {
-                    b.Property<int>("FileID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("FileID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FileID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FileID"));
 
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("FileName")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                b.Property<string>("FilePath")
+                    .IsRequired()
+                    .HasMaxLength(500)
+                    .HasColumnType("nvarchar(500)");
 
-                    b.Property<int>("MessageID")
-                        .HasColumnType("int");
+                b.Property<int>("MessageID")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("UploadDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("UploadDate")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("FileID");
+                b.HasKey("FileID");
 
-                    b.HasIndex("MessageID");
+                b.HasIndex("MessageID");
 
-                    b.ToTable("MessageFile");
-                });
+                b.ToTable("MessageFile");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.MessageModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Content")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ReceiverId")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SenderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("SenderId")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("Timestamp")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ReceiverId");
+                b.HasIndex("ReceiverId");
 
-                    b.HasIndex("SenderId");
+                b.HasIndex("SenderId");
 
-                    b.ToTable("Message");
-                });
+                b.ToTable("Message");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.NotificationModel", b =>
-                {
-                    b.Property<int>("NotificationID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("NotificationID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationID"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedAt")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("UserId")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("NotificationID");
+                b.HasKey("NotificationID");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("Notification");
-                });
+                b.ToTable("Notification");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.PaymentModel", b =>
-                {
-                    b.Property<int>("PaymentID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("PaymentID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentID"));
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(10, 2)");
+                b.Property<decimal>("Amount")
+                    .HasColumnType("decimal(10, 2)");
 
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
+                b.Property<int>("CourseID")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("PaymentDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)")
-                        .HasColumnName("Status");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasMaxLength(30)
+                    .HasColumnType("nvarchar(30)")
+                    .HasColumnName("Status");
 
-                    b.Property<string>("StudentID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("StudentID")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("PaymentID");
+                b.HasKey("PaymentID");
 
-                    b.HasIndex("CourseID");
+                b.HasIndex("CourseID");
 
-                    b.HasIndex("StudentID");
+                b.HasIndex("StudentID");
 
-                    b.ToTable("Payment");
-                });
+                b.ToTable("Payment");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.QuestionModel", b =>
-                {
-                    b.Property<int>("QuestionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("QuestionID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuestionID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuestionID"));
 
-                    b.Property<string>("AnswerA")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("AnswerA")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("AnswerB")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("AnswerB")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("AnswerC")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("AnswerC")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("AnswerD")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("AnswerD")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("CorrectAnswer")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("CorrectAnswer")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("ImagePath")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("ImagePath")
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("Question")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("Question")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("TestID")
-                        .HasColumnType("int");
+                b.Property<int>("TestID")
+                    .HasColumnType("int");
 
-                    b.HasKey("QuestionID");
+                b.HasKey("QuestionID");
 
-                    b.HasIndex("TestID");
+                b.HasIndex("TestID");
 
-                    b.ToTable("Question");
-                });
+                b.ToTable("Question");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.RequestTranferModel", b =>
-                {
-                    b.Property<int>("TranferID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("TranferID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TranferID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TranferID"));
 
-                    b.Property<string>("AccountNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AccountNumber")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BankName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("BankName")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreateAt")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreateAt")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FullName")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("MoneyNumber")
-                        .HasColumnType("float");
+                b.Property<double>("MoneyNumber")
+                    .HasColumnType("float");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("UserID")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("TranferID");
+                b.HasKey("TranferID");
 
-                    b.HasIndex("UserID");
+                b.HasIndex("UserID");
 
-                    b.ToTable("RequestTranfer");
-                });
+                b.ToTable("RequestTranfer");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.ScoreAssignmentModel", b =>
-                {
-                    b.Property<int>("ScoreAssignmentID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("ScoreAssignmentID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ScoreAssignmentID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ScoreAssignmentID"));
 
-                    b.Property<int>("AssignmentID")
-                        .HasColumnType("int");
+                b.Property<int>("AssignmentID")
+                    .HasColumnType("int");
 
-                    b.Property<double>("Score")
-                        .HasColumnType("float");
+                b.Property<double>("Score")
+                    .HasColumnType("float");
 
-                    b.Property<string>("StudentID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("StudentID")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ScoreAssignmentID");
+                b.HasKey("ScoreAssignmentID");
 
-                    b.HasIndex("AssignmentID");
+                b.HasIndex("AssignmentID");
 
-                    b.HasIndex("StudentID");
+                b.HasIndex("StudentID");
 
-                    b.ToTable("ScoreAssignment");
-                });
+                b.ToTable("ScoreAssignment");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.StudentCourseModel", b =>
-                {
-                    b.Property<int>("StudentCourseID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("StudentCourseID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentCourseID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentCourseID"));
 
-                    b.Property<string>("CertificateStatus")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                b.Property<string>("CertificateStatus")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime?>("CompletionDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("CompletionDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
+                b.Property<int>("CourseID")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("EnrollmentDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("EnrollmentDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Progress")
-                        .HasColumnType("decimal(5,2)");
+                b.Property<decimal>("Progress")
+                    .HasColumnType("decimal(5,2)");
 
-                    b.Property<string>("StudentID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("StudentID")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("StudentCourseID");
+                b.HasKey("StudentCourseID");
 
-                    b.HasIndex("CourseID");
+                b.HasIndex("CourseID");
 
-                    b.HasIndex("StudentID");
+                b.HasIndex("StudentID");
 
-                    b.ToTable("StudentCourses");
-                });
+                b.ToTable("StudentCourses");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.SubmissionModel", b =>
-                {
-                    b.Property<int>("SubmissionID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("SubmissionID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubmissionID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubmissionID"));
 
-                    b.Property<int>("AssignmentID")
-                        .HasColumnType("int");
+                b.Property<int>("AssignmentID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("StudentID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("StudentID")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("SubmissionDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("SubmissionDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("SubmissionLink")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SubmissionLink")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("SubmissionID");
+                b.HasKey("SubmissionID");
 
-                    b.HasIndex("AssignmentID");
+                b.HasIndex("AssignmentID");
 
-                    b.HasIndex("StudentID");
+                b.HasIndex("StudentID");
 
-                    b.ToTable("Submission");
-                });
+                b.ToTable("Submission");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.TestModel", b =>
-                {
-                    b.Property<int>("TestID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("TestID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TestID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TestID"));
 
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
+                b.Property<int>("CourseID")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("EndTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("NumberOfQuestion")
-                        .HasColumnType("int");
+                b.Property<int>("NumberOfQuestion")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("StartTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Status")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("Title")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.HasKey("TestID");
+                b.HasKey("TestID");
 
-                    b.HasIndex("CourseID");
+                b.HasIndex("CourseID");
 
-                    b.ToTable("Test");
-                });
+                b.ToTable("Test");
+            });
 
             modelBuilder.Entity("ReviewMoel", b =>
-                {
-                    b.Property<int>("ReviewID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("ReviewID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
 
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("Comment")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
+                b.Property<int>("CourseID")
+                    .HasColumnType("int");
 
-                    b.Property<float>("Rating")
-                        .HasColumnType("real");
+                b.Property<float>("Rating")
+                    .HasColumnType("real");
 
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("ReviewDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("StudentID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("StudentID")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("UserId")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ReviewID");
+                b.HasKey("ReviewID");
 
-                    b.HasIndex("CourseID");
+                b.HasIndex("CourseID");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("Reviews");
-                });
+                b.ToTable("Reviews");
+            });
 
             modelBuilder.Entity("YourNamespace.Models.LectureFileModel", b =>
-                {
-                    b.Property<int>("FileID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("FileID")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FileID"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FileID"));
 
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("FileName")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                b.Property<string>("FilePath")
+                    .IsRequired()
+                    .HasMaxLength(500)
+                    .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("FileType")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                b.Property<string>("FileType")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("LectureID")
-                        .HasColumnType("int");
+                b.Property<int>("LectureID")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("UploadDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("UploadDate")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("FileID");
+                b.HasKey("FileID");
 
-                    b.HasIndex("LectureID");
+                b.HasIndex("LectureID");
 
-                    b.ToTable("LectureFiles");
-                });
+                b.ToTable("LectureFiles");
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    .WithMany()
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.AppUserModel", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("OnlineLearning.Models.AppUserModel", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.AppUserModel", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("OnlineLearning.Models.AppUserModel", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    .WithMany()
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("OnlineLearning.Models.AppUserModel", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("OnlineLearning.Models.AppUserModel", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.AppUserModel", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("OnlineLearning.Models.AppUserModel", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.AssignmentModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.CourseModel", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.CourseModel", "Course")
+                    .WithMany()
+                    .HasForeignKey("CourseID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Course");
-                });
+                b.Navigation("Course");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.ChatBoxModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "UserReceive")
-                        .WithMany()
-                        .HasForeignKey("ReceiverID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.AppUserModel", "UserReceive")
+                    .WithMany()
+                    .HasForeignKey("ReceiverID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "UserSend")
-                        .WithMany()
-                        .HasForeignKey("SenderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("OnlineLearning.Models.AppUserModel", "UserSend")
+                    .WithMany()
+                    .HasForeignKey("SenderID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("UserReceive");
+                b.Navigation("UserReceive");
 
-                    b.Navigation("UserSend");
-                });
+                b.Navigation("UserSend");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.CourseMaterialModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.CourseModel", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.CourseModel", "Course")
+                    .WithMany()
+                    .HasForeignKey("CourseID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Course");
-                });
+                b.Navigation("Course");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.CourseModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.CategoryModel", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.CategoryModel", "Category")
+                    .WithMany()
+                    .HasForeignKey("CategoryID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("OnlineLearning.Models.InstructorModel", "Instructor")
-                        .WithMany()
-                        .HasForeignKey("InstructorID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("OnlineLearning.Models.InstructorModel", "Instructor")
+                    .WithMany()
+                    .HasForeignKey("InstructorID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Category");
+                b.Navigation("Category");
 
-                    b.Navigation("Instructor");
-                });
+                b.Navigation("Instructor");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.InstructorConfirmationModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "user")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.AppUserModel", "user")
+                    .WithMany()
+                    .HasForeignKey("UserID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("user");
-                });
+                b.Navigation("user");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.InstructorModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "AppUser")
-                        .WithMany()
-                        .HasForeignKey("InstructorID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.AppUserModel", "AppUser")
+                    .WithMany()
+                    .HasForeignKey("InstructorID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("AppUser");
-                });
+                b.Navigation("AppUser");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.LectureModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.CourseModel", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.CourseModel", "Course")
+                    .WithMany()
+                    .HasForeignKey("CourseID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Course");
-                });
+                b.Navigation("Course");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.MessageFileModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.MessageModel", "Message")
-                        .WithMany()
-                        .HasForeignKey("MessageID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.MessageModel", "Message")
+                    .WithMany()
+                    .HasForeignKey("MessageID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Message");
-                });
+                b.Navigation("Message");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.MessageModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "Receiver")
-                        .WithMany()
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.AppUserModel", "Receiver")
+                    .WithMany()
+                    .HasForeignKey("ReceiverId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("OnlineLearning.Models.AppUserModel", "Sender")
+                    .WithMany()
+                    .HasForeignKey("SenderId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Receiver");
+                b.Navigation("Receiver");
 
-                    b.Navigation("Sender");
-                });
+                b.Navigation("Sender");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.NotificationModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.AppUserModel", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.PaymentModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.CourseModel", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.CourseModel", "Course")
+                    .WithMany()
+                    .HasForeignKey("CourseID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("OnlineLearning.Models.AppUserModel", "Student")
+                    .WithMany()
+                    .HasForeignKey("StudentID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Course");
+                b.Navigation("Course");
 
-                    b.Navigation("Student");
-                });
+                b.Navigation("Student");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.QuestionModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.TestModel", "Test")
-                        .WithMany()
-                        .HasForeignKey("TestID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.TestModel", "Test")
+                    .WithMany()
+                    .HasForeignKey("TestID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Test");
-                });
+                b.Navigation("Test");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.RequestTranferModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.AppUserModel", "User")
+                    .WithMany()
+                    .HasForeignKey("UserID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.ScoreAssignmentModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.AssignmentModel", "Assignment")
-                        .WithMany()
-                        .HasForeignKey("AssignmentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.AssignmentModel", "Assignment")
+                    .WithMany()
+                    .HasForeignKey("AssignmentID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("OnlineLearning.Models.AppUserModel", "Student")
+                    .WithMany()
+                    .HasForeignKey("StudentID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Assignment");
+                b.Navigation("Assignment");
 
-                    b.Navigation("Student");
-                });
+                b.Navigation("Student");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.StudentCourseModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.CourseModel", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.CourseModel", "Course")
+                    .WithMany()
+                    .HasForeignKey("CourseID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "AppUser")
-                        .WithMany()
-                        .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("OnlineLearning.Models.AppUserModel", "AppUser")
+                    .WithMany()
+                    .HasForeignKey("StudentID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("AppUser");
+                b.Navigation("AppUser");
 
-                    b.Navigation("Course");
-                });
+                b.Navigation("Course");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.SubmissionModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.AssignmentModel", "Assignment")
-                        .WithMany()
-                        .HasForeignKey("AssignmentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.AssignmentModel", "Assignment")
+                    .WithMany()
+                    .HasForeignKey("AssignmentID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "User")
-                        .WithMany()
-                        .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("OnlineLearning.Models.AppUserModel", "User")
+                    .WithMany()
+                    .HasForeignKey("StudentID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Assignment");
+                b.Navigation("Assignment");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("OnlineLearning.Models.TestModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.CourseModel", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.CourseModel", "Course")
+                    .WithMany()
+                    .HasForeignKey("CourseID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Course");
-                });
+                b.Navigation("Course");
+            });
 
             modelBuilder.Entity("ReviewMoel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.CourseModel", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.CourseModel", "Course")
+                    .WithMany()
+                    .HasForeignKey("CourseID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                b.HasOne("OnlineLearning.Models.AppUserModel", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId");
 
-                    b.Navigation("Course");
+                b.Navigation("Course");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("YourNamespace.Models.LectureFileModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.LectureModel", "Lecture")
-                        .WithMany()
-                        .HasForeignKey("LectureID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("OnlineLearning.Models.LectureModel", "Lecture")
+                    .WithMany()
+                    .HasForeignKey("LectureID")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Lecture");
-                });
+                b.Navigation("Lecture");
+            });
 #pragma warning restore 612, 618
         }
     }

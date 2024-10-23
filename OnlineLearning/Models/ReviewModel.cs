@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-public class ReviewMoel
+public class ReviewModel
 {
     [Key]
     public int ReviewID { get; set; }
@@ -11,11 +11,11 @@ public class ReviewMoel
     [ForeignKey("Course")]
     public int CourseID { get; set; }
 
-    [ForeignKey("Student")]
-    public string StudentID { get; set; }
+    [ForeignKey("User")]
+    public string UserID { get; set; }
 
     [Range(0, 5, ErrorMessage = "Rating must be between 0 and 5.")]
-    public float Rating { get; set; }
+    public double Rating { get; set; }
 
     [MaxLength(255)]
     public string Comment { get; set; }

@@ -1,4 +1,4 @@
-﻿using AspNetCoreHero.ToastNotification;
+﻿    using AspNetCoreHero.ToastNotification;
 using AspNetCoreHero.ToastNotification.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineLearning.BackgroundServices;
 using OnlineLearning.Email;
 using OnlineLearning.Filter;
+using OnlineLearning.Hubs;
 using OnlineLearning.Models;
 using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
@@ -140,6 +141,7 @@ app.MapAreaControllerRoute(
     areaName: "Student",
     pattern: "{area:exists}/{controller=Student}/{action=Index}/{id?}");
 
-app.MapHub<ChatHub>("/ChatHub");
+app.MapHub<ReviewHub>("/review");
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();

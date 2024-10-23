@@ -26,7 +26,7 @@ namespace OnlineLearningApp.Respositories
         public DbSet<SubmissionModel> Submission { get; set; }
         public DbSet<AssignmentModel> Assignment { get; set; }
         public DbSet<StudentCourseModel> StudentCourses { get; set; }
-        public DbSet<ReviewMoel> Reviews { get; set; }
+        public DbSet<ReviewModel> Review { get; set; }
         public DbSet<CourseMaterialModel> CourseMaterials { get; set; }
         public DbSet<PaymentModel> Payment { get; set; }
         public DbSet<LectureModel> Lecture { get; set; }
@@ -35,6 +35,7 @@ namespace OnlineLearningApp.Respositories
         public DbSet<ChatBoxModel> ChatBox { get; set; }
         public DbSet<MessageModel> Message { get; set; }
         public DbSet<MessageFileModel> MessageFile { get; set; }
+
 
         public DbSet<LectureFileModel> LectureFiles { get; set; }
         public DbSet<LectureCompletionModel> LectureCompletion { get; set; }
