@@ -133,7 +133,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 TempData["warning"] = "Course code already exists!";
                 return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
             }
-            if (model.EndDate <= DateTime.Now)
+            if (model.EndDate < DateTime.Now.Date)
             {
                 TempData["warning"] = "Invalid end date!";
                 return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });

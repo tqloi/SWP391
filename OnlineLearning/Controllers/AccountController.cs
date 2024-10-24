@@ -77,9 +77,11 @@ namespace OnlineLearning.Controllers
 
                         if (existingUser == null)
                         {
+                            Random random = new Random();
                             var user = new AppUserModel
                             {
-                                UserName = email.Split('@')[0],
+                                UserName = email.Split('@')[0]
+                                         + $"{random.Next(0, 10)}{random.Next(0, 10)}{random.Next(0, 10)}{random.Next(0, 10)}",
                                 FirstName = firstNameClaim?.Value ?? "",
                                 LastName = lastNameClaim?.Value ?? "",
                                 Email = email,

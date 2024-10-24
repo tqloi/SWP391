@@ -2,5 +2,5 @@
      
     @foreach (var category in Model)
     {
-    <option value="@Url.Action("CourseList", "Course", new { category = category.CategoryID })">@category.FullName</option>
+    <option value="@category.CategoryID">@category.FullName</option>
     }

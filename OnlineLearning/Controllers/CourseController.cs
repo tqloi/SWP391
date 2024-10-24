@@ -74,7 +74,6 @@ namespace OnlineLearning.Controllers
                 Level = level
             };
             ViewBag.Keyword = keyword;
-            ViewBag.Action = "CourseList";
             return View(model);
         }
 
