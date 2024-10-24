@@ -8,6 +8,9 @@ using OnlineLearning.Models.ViewModel;
 
 using System.Security.Claims;
 using System.Drawing.Printing;
+using Firebase.Auth;
+using Microsoft.CodeAnalysis;
+using YourNamespace.Models;
 
 namespace OnlineLearning.Controllers
 {
@@ -136,8 +139,6 @@ namespace OnlineLearning.Controllers
             var totalReview = review.Count();
             var totalPages = (int)Math.Ceiling(totalReview / (double)pageSize);
 
-
-
             var model = new CourseDetailViewModel
             {
                 Course = course,
@@ -151,9 +152,47 @@ namespace OnlineLearning.Controllers
                                         : null 
             };
 
+            //bookmark
+            var bookmark = datacontext.BookMark
+                            .Where(bm => bm.CourseID == CourseID && bm.StudentID == userId)
+                            .FirstOrDefault();
+            if (bookmark == null)
+            {
+                model.IsMark = false;
+            }
+            else 
+            { 
+                model.IsMark = true; 
+            }
             return View(model);
         }
 
+        [Authorize]
+        public async Task<IActionResult> BookMark(int CourseID)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var bookmark = datacontext.BookMark
+                                .Where(bm => bm.CourseID == CourseID && bm.StudentID == userId)
+                                .FirstOrDefault();
+            if(bookmark != null)
+            {
+                datacontext.BookMark.Remove(bookmark);
+                await datacontext.SaveChangesAsync();
+                TempData["info"] = "Undo saved!";
+            }
+            else
+            {
+                bookmark = new BookMarkModel
+                {
+                    StudentID = userId,
+                    CourseID = CourseID,
+                };
+                datacontext.BookMark.Add(bookmark);
+                await datacontext.SaveChangesAsync();
+                TempData["info"] = "Saved!";
+            }
+            return RedirectToAction("CourseDetail", "Course", new { CourseID = CourseID });
+        }
 
         public IActionResult Create()
         {

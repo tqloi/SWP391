@@ -11,6 +11,7 @@
     <Compile Remove="Areas\Instructor\Models\**" />
     <Compile Remove="Areas\Instructor\Views\Payment\**" />
     <Compile Remove="Areas\Instructor\Views\Shared\Components\**" />
+    <Compile Remove="Areas\Student\Models\**" />
     <Compile Remove="VideoCall\**" />
     <Compile Remove="wwwroot\assets\**" />
     <Compile Remove="wwwroot\Assignment\**" />
@@ -19,6 +20,7 @@
     <Content Remove="Areas\Instructor\Models\**" />
     <Content Remove="Areas\Instructor\Views\Payment\**" />
     <Content Remove="Areas\Instructor\Views\Shared\Components\**" />
+    <Content Remove="Areas\Student\Models\**" />
     <Content Remove="VideoCall\**" />
     <Content Remove="wwwroot\assets\**" />
     <Content Remove="wwwroot\Assignment\**" />
@@ -27,6 +29,7 @@
     <EmbeddedResource Remove="Areas\Instructor\Models\**" />
     <EmbeddedResource Remove="Areas\Instructor\Views\Payment\**" />
     <EmbeddedResource Remove="Areas\Instructor\Views\Shared\Components\**" />
+    <EmbeddedResource Remove="Areas\Student\Models\**" />
     <EmbeddedResource Remove="VideoCall\**" />
     <EmbeddedResource Remove="wwwroot\assets\**" />
     <EmbeddedResource Remove="wwwroot\Assignment\**" />
@@ -35,6 +38,7 @@
     <None Remove="Areas\Instructor\Models\**" />
     <None Remove="Areas\Instructor\Views\Payment\**" />
     <None Remove="Areas\Instructor\Views\Shared\Components\**" />
+    <None Remove="Areas\Student\Models\**" />
     <None Remove="VideoCall\**" />
     <None Remove="wwwroot\assets\**" />
     <None Remove="wwwroot\Assignment\**" />
@@ -67,7 +71,6 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\Shared\Components\" />
     <Folder Include="Areas\Instructor\Views\Shared\Components\" />
-    <Folder Include="Areas\Student\Models\" />
 
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
 

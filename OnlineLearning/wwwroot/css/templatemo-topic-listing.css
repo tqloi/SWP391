@@ -273,12 +273,12 @@ strong {
 }
 
 .site-header .custom-icon {
-  color: var(--white-color);
+  color: var(--secondary-color);
   font-size: var(--h4-font-size);
 }
 
 .site-header .custom-icon:hover {
-  color: var(--secondary-color);
+  color: var(--primary-color);
 }
 
 

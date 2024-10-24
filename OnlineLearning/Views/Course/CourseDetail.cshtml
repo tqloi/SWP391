@@ -106,9 +106,16 @@
                     @if (@Model.Course.Status != false)
                     {
                         <div class="d-flex align-items-center mt-4">
+                            <!-- pay -->
                             <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@Model.Course.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
-
-                            <a href="#top" class="custom-icon bi-bookmark smoothscroll"></a>
+                            <!-- book mark -->
+                            <form asp-action="BookMark" asp-controller="Course" method="POST">
+                                <input type="hidden" name="CourseID" value="@Model.Course.CourseID">
+                                <button type="submit" class="bg-transparent border-0 p-0 smoothscroll">
+                                    <i class="custom-icon bi @(Model.IsMark == true ? "bi-bookmark-fill" : "bi-bookmark") smoothscroll fs-1"></i>
+                                </button>
+                            </form>
+  
                             @*  <a href="#top" class="custom-icon bi-bookmark-fill smoothscroll"></a> *@
                         </div>
                     }
@@ -116,17 +123,7 @@
                     {
                         <h5 class="text-white mt-4">This course is not available now!</h5>
                     }
-
                 }
-                @*  else
-                {
-                    <div class="d-flex align-items-center mt-4">
-                        <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-id="@Model.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
-
-                        <a href="#top" class="custom-icon bi-bookmark smoothscroll"></a>
-                        <a href="#top" class="custom-icon bi-bookmark-fill smoothscroll"></a>
-                    </div>
-                } *@
             </div>
 
             <div class="col-lg-5 col-12">
