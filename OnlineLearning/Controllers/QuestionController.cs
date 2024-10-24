@@ -11,6 +11,8 @@ using OnlineLearningApp.Respositories;
 using System.Security.Claims;
 using System.IO;
 using static System.Net.Mime.MediaTypeNames;
+using System.Linq;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace OnlineLearning.Controllers
 {
@@ -59,6 +61,7 @@ namespace OnlineLearning.Controllers
         }
 
         [Authorize(Roles = "Instructor")]
+        [HttpPost]
         public async Task<IActionResult> CreateQuestion(QuestionViewModel model)
         {
             if (model == null)
@@ -68,6 +71,7 @@ namespace OnlineLearning.Controllers
             }
             //it wont be null, pls microsoft, my ocd
             model.Test = datacontext.Test.Find(model.TestID);
+
             if (model.Test == null)
             {
                 TempData["Error"] = "Test Not Found";
@@ -110,7 +114,7 @@ namespace OnlineLearning.Controllers
                 .Where(q => q.TestID == model.TestID)
                 .Count();
 
-            model.Test.NumberOfQuestion = numberOfQuestions;
+            model.Test.NumberOfQuestion = numberOfQuestions + 1;
 
             datacontext.Test.Update(model.Test);
             datacontext.SaveChanges();
@@ -462,39 +466,57 @@ namespace OnlineLearning.Controllers
              return RedirectToAction("EditQuestionRedirector", new {TestID = model.TestID });
         }
 
-        /// <summary>
-        /// Check if the instructor have permision from a file 
-        /// !!!Reserve for the upload for multiple test, do not delete pls
-        /// </summary>
-        /// <param name="TestID"></param>
-        /// <returns></returns>
-        [Authorize(Roles = "Instructor")]
-        private async Task<bool> CheckValidTestToInstructor(int TestID)
+        [HttpPost]
+        public IActionResult DeleteQuestion(int QuestionID, int TestID)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var Test = await datacontext.Test.FindAsync(TestID);
-            if (Test == null)
+            var Question = datacontext.Question.FirstOrDefault(q => q.QuestionID == QuestionID);
+            var Test = datacontext.Test.FirstOrDefault(t => t.TestID == TestID);
+            if (Question == null || Test == null)
             {
-                return false;
+                return NotFound();
             }
-            var Course = Test.Course;
-            if (Course == null)
+            //delete image first
+            if (!string.IsNullOrEmpty(Question.ImagePath))
             {
-                var dbCourse = await datacontext.Courses.FindAsync(Test.CourseID);
-                if (dbCourse == null)
+                string ImageFullPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "QuestionImages", Question.ImagePath);
+                if (System.IO.File.Exists(ImageFullPath))
                 {
-                    return false;
-                }
-                else
-                {
-                    Course = dbCourse;
+                    System.IO.File.Delete(ImageFullPath);
                 }
             }
-            if (userId == Course.InstructorID || userId.Equals(Course.InstructorID))
-            {
-                return true;
-            }
-            return false;
+            datacontext.Question.Remove(Question);
+            datacontext.SaveChanges();
+            TempData["success"] = "Delete Successfully";
+
+            return RedirectToAction("EditQuestionRedirector",new { TestID = TestID });
         }
+        //[Authorize(Roles = "Instructor")]
+        //private async Task<bool> CheckValidTestToInstructor(int TestID)
+        //{
+        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    var Test = await datacontext.Test.FindAsync(TestID);
+        //    if (Test == null)
+        //    {
+        //        return false;
+        //    }
+        //    var Course = Test.Course;
+        //    if (Course == null)
+        //    {
+        //        var dbCourse = await datacontext.Courses.FindAsync(Test.CourseID);
+        //        if (dbCourse == null)
+        //        {
+        //            return false;
+        //        }
+        //        else
+        //        {
+        //            Course = dbCourse;
+        //        }
+        //    }
+        //    if (userId == Course.InstructorID || userId.Equals(Course.InstructorID))
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
     }
 }

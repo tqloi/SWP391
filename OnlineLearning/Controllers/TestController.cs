@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Newtonsoft.Json;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
+using QRCoder;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Security.Claims;
@@ -42,22 +44,67 @@ namespace OnlineLearning.Controllers
             return View();
         }
 
-        public IActionResult CreateTestRedirector(int TestID)
+        [Authorize(Roles = "Instructor")]
+        public IActionResult CreateTestRedirector(int CourseID)
+        {
+            var Course = datacontext.Courses.FirstOrDefault(t => t.CourseID == CourseID);
+            ViewBag.CourseID = Course.CourseID;
+            if (Course == null)
+            {
+                return NotFound();
+            }
+            return View("CreateTest");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult EditTest(int TestID)
         {
             var Test = datacontext.Test.FirstOrDefault(t => t.TestID == TestID);
+            var Course = datacontext.Courses.FirstOrDefault(c => c.CourseID == Test.CourseID);
+
             ViewBag.CourseID = Test.CourseID;
+            ViewBag.Course = Course;
             if (Test == null)
             {
                 return NotFound();
             }
             return View("EditTest", Test);
         }
-        public IActionResult EditTestRedirector(int CourseID)
-        {
 
-            return View();
-        }
         [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult EditTest(TestModel model)
+        {
+            if (model == null)
+            {
+                return NotFound();
+            }
+            var submissions = datacontext.Score
+                .Where(s => s.TestID == model.TestID)
+                .ToList();
+            foreach (var sub in submissions)
+            {
+                if (sub.NumberOfAttempt > model.NumberOfMaxAttempt)
+                {
+                    TempData["error"] = $"Cannot change Number Of Attempt Lower since " +
+                        $"there's a student with {sub.NumberOfAttempt} submission";
+                    TempData.Keep();
+                    return RedirectToAction("TestList", "Participation", new { id = model.CourseID });
+                }
+            }
+
+            ViewBag.CourseID = model.CourseID;
+            ViewBag.Course = model.Course;
+            datacontext.Update(model);
+            datacontext.SaveChanges();
+            TempData["success"] = "Edit Successfully";
+            TempData.Keep();
+            return RedirectToAction("TestList", "Participation", new { id = model.CourseID });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> CreateTest(TestModel model)
         {
             var Course = datacontext.Courses.Find(model.CourseID);
@@ -73,9 +120,25 @@ namespace OnlineLearning.Controllers
             // if (ModelState.IsValid) invalid as always
             try
             {
+                //handle null from view
+                if (model.PassingScore == null)
+                {
+                    model.PassingScore = 5.0;
+                }
+                if (model.AlowRedo == null)
+                {
+                    model.AlowRedo = "Yes";
+                }
+                if (model.NumberOfMaxAttempt == null)
+                {
+                    model.NumberOfMaxAttempt = 1;
+                }
+
                 Debug.WriteLine("ID retrieved valid");
                 var newTest = new TestModel
                 {
+                    AlowRedo = model.AlowRedo,
+                    NumberOfMaxAttempt = model.NumberOfMaxAttempt,
                     Title = model.Title,
                     Course = model.Course,
                     Description = model.Description,
@@ -83,21 +146,25 @@ namespace OnlineLearning.Controllers
                     EndTime = model.EndTime,
                     Status = model.Status,
                     CourseID = model.CourseID,
-                    NumberOfQuestion = 0
+                    NumberOfQuestion = 0,
+                    PassingScore = model.PassingScore
                 };
                 // Add the test to the context and save changes
                 datacontext.Test.Add(newTest);
                 await datacontext.SaveChangesAsync();
                 Debug.WriteLine("Test saved to database");
-
+                ViewBag.CourseID = Course.CourseID;
                 TempData["success"] = "Test created successfully!";
+                //keep it alive for 2 request 
+                TempData.Keep();
                 return RedirectToAction("CreateTestRedirector", new { courseID = model.CourseID });
             }
 
             catch (Exception)
             {
                 TempData["error"] = "Test creation failed!";
-                return View();
+                TempData.Keep();
+                return RedirectToAction("CreateTestRedirector", new { courseID = model.CourseID });
             }
         }
 
@@ -114,15 +181,18 @@ namespace OnlineLearning.Controllers
                 }
                 catch
                 {
-                    TempData["Error"] = "Course Null";
-                    return View("~/Views/Participation/TestList.cshtml");
+                    TempData["error"] = "Course Null";
+                    TempData.Keep();
+                    return RedirectToAction("TestList", "Participation", new { id = Test.CourseID });
                 }
             }
             ViewBag.Course = Test.Course;
             ViewBag.TestID = TestID;
             ViewBag.CourseID = Test.CourseID;
 
-            var list = datacontext.Question.ToList()
+            var list = datacontext.Question
+                .ToList()
+                .OrderBy(q => Guid.NewGuid())
                 .Where(q => q.TestID == TestID);
             return View(list);
         }
@@ -130,20 +200,31 @@ namespace OnlineLearning.Controllers
         //https://stackoverflow.com/questions/13621934/validateantiforgerytoken-purpose-explanation-and-example
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> DoTest(Dictionary<int, string> answers, CourseModel course, int courseID, int testID)
         {
             // Retrieve the User from the claims
             var studentID = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(studentID);
-
             course = datacontext.Courses.FirstOrDefault(c => c.CourseID == courseID);
-
             var test = datacontext.Test.FirstOrDefault(t => t.TestID == testID);
+
+            var attempts = datacontext.Score.FirstOrDefault(s => s.TestID == testID
+            && s.StudentID == studentID);
+            if (attempts != null && test.NumberOfMaxAttempt == attempts.NumberOfAttempt)
+            {
+                TempData["error"] = "You've reach your maximum attempt";
+                TempData.Keep();
+                return RedirectToAction("TestList", "Participation", new { id = test.CourseID });
+            }
+
             Dictionary<int, string> correctAnswers = new Dictionary<int, string>();
 
             int totalQuestions = datacontext.Question.ToList()
                 .Where(q => q.TestID == testID).Count();
+
             int correctAnswersCount = 0;
+
             // Iterate through the answers
             foreach (var answer in answers)
             {
@@ -175,10 +256,12 @@ namespace OnlineLearning.Controllers
                 previousResult.TestID = testID;
                 previousResult.StudentID = studentID;
                 previousResult.Test = test;
+                previousResult.NumberOfAttempt++;
 
                 datacontext.SaveChanges();
                 //TempData["correctAnswers"] = correctAnswers;
                 //TempData["answers"] = answers;
+
                 //serialize the dictionary into a JSON string before storing it in TempData
                 TempData["correctAnswers"] = JsonConvert.SerializeObject(correctAnswers);
                 TempData["answers"] = JsonConvert.SerializeObject(answers);
@@ -190,7 +273,8 @@ namespace OnlineLearning.Controllers
                 Score = score,
                 TestID = testID,
                 StudentID = studentID,
-                Test = test
+                Test = test,
+                NumberOfAttempt = 1
             };
 
             datacontext.Score.Add(result);
@@ -200,7 +284,6 @@ namespace OnlineLearning.Controllers
             //serialize the dictionary into a JSON string before storing it in TempData
             TempData["correctAnswers"] = JsonConvert.SerializeObject(correctAnswers);
             TempData["answers"] = JsonConvert.SerializeObject(answers);
-
             return RedirectToAction("TestResult", new { ScoreID = result.ScoreID, studentID = studentID });
         }
         [HttpGet]
@@ -212,7 +295,6 @@ namespace OnlineLearning.Controllers
             var course = datacontext.Courses.Find(test.CourseID);
 
             ViewBag.Course = course;
-
             //var correctAnswers = TempData["correctAnswers"] as Dictionary<int, string>;
             //var answers = TempData["answers"] as Dictionary<int, string>; 
             //Deserialize when retrieving from TempData
@@ -226,11 +308,111 @@ namespace OnlineLearning.Controllers
                 CourseName = course.Title,
                 Score = result.Score,
                 TestID = result.TestID,
-                TotalQuestions = result.Test.NumberOfQuestion
+                TotalQuestions = result.Test.NumberOfQuestion,
+                CourseID = course.CourseID,
+                NumberOfAttemptLeft = test.NumberOfMaxAttempt - result.NumberOfAttempt
             };
-
+            TempData["success"] = "Test Completed";
             return View(model);
         }
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> DeleteTest(int TestID)
+        {
+            var test = await datacontext.Test.FirstOrDefaultAsync(t => t.TestID == TestID);
+            if (test == null)
+            {
+                return NotFound();
+            }
 
+            var questions = datacontext.Question
+                .Where(q => q.TestID == TestID)
+                .ToList();
+
+            if (questions.Any())
+            {
+                var scores = datacontext.Score
+                    .Where(s => s.TestID == TestID)
+                    .ToList();
+                if (scores.Any())
+                {
+                    //currently not allow delete test if there's a submission from a student
+                    TempData["error"] = "Test already been done by students";
+                    TempData.Keep();
+                    return RedirectToAction("TestList", "Participation", new { id = test.CourseID });
+                }
+                //delete image first
+                foreach (var question in questions)
+                {
+                    if (!string.IsNullOrEmpty(question.ImagePath))
+                    {
+                        string ImageFullPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "QuestionImages", question.ImagePath);
+                        if (System.IO.File.Exists(ImageFullPath))
+                        {
+                            System.IO.File.Delete(ImageFullPath);
+                        }
+                    }
+                }
+                // Remove associated questions first
+                datacontext.Question.RemoveRange(questions);
+            }
+
+            // Delete the test after removing associated questions
+            datacontext.Test.Remove(test);
+            datacontext.SaveChanges();
+
+            // Redirect to the test list or any other appropriate action
+            TempData["success"] = "Test deletion successfully";
+            TempData.Keep();
+            return RedirectToAction("TestList", "Participation", new { id = test.CourseID });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult ClearAllQuestions(int TestID)
+        {
+            var test = datacontext.Test.FirstOrDefault(t => t.TestID == TestID);
+            var questions = datacontext.Question
+                .Where(q => q.TestID == TestID)
+                .ToList();
+            if (test == null)
+            {
+                return NotFound();
+            }
+            foreach (var question in questions)
+            {
+                if (!question.ImagePath.IsNullOrEmpty())
+                {
+                    string ImageFullPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "QuestionImages", question.ImagePath);
+                    if (System.IO.File.Exists(ImageFullPath))
+                    {
+                        System.IO.File.Delete(ImageFullPath);
+                    }
+                }
+            }
+            datacontext.Question.RemoveRange(questions);
+            datacontext.SaveChanges();
+            TempData["success"] = "Clear all questions successfully";
+            TempData.Keep();
+            return RedirectToAction("TestList", "Participation", new { id = test.TestID });
+        }
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult ClearAllSubmission(int TestID)
+        {
+            var test = datacontext.Test.FirstOrDefault(t => t.TestID == TestID);
+            if (test == null)
+            {
+                return NotFound();
+            }
+            var submissions = datacontext.Score
+                .Where(s => s.TestID == TestID)
+                .ToList();
+            datacontext.Score.RemoveRange(submissions);
+            datacontext.SaveChanges();
+            TempData["success"] = "Clear all submission successfully";
+            TempData.Keep();
+            return RedirectToAction("TestList", "Participation", new { id = TestID });
+        }
     }
 }

@@ -3,9 +3,8 @@
 @{
     ViewData["Title"] = "Test Result";
     Layout = null;
-    <partial name="_NoficationPartial" />
 }
-
+<partial name="_NoficationPartial" />
 @if (User.IsInRole("Student"))
 {
     <!DOCTYPE html>
@@ -33,6 +32,7 @@
                 <p><strong>Course:</strong> @Model.CourseName</p>
                 <p><strong>Test ID:</strong> @Model.TestID</p>
                 <p><strong>Score:</strong> @Model.Score/@Model.TotalQuestions</p>
+                <p><strong>You got: </strong> <mark>@Model.NumberOfAttemptLeft</mark> <strong>Attempts Left</strong> </p>
             </div>
 
             <!-- Score progress bar -->
@@ -87,9 +87,8 @@
                 }
             </div>
 
-            <!-- Option to go back to the dashboard or retake the test if allowed -->
             <div class="mt-5 text-center">
-                <a href="@Url.Action("Index", "Dashboard")" class="btn btn-primary">Go to Dashboard</a>
+                <a href="@Url.Action("TestList", "Participation", new { id = Model.CourseID })" class="btn btn-primary">Go back</a>
             </div>
         </div>
 

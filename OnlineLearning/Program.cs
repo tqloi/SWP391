@@ -20,6 +20,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(5); // Thời gian sống của session
     options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 //notifycation

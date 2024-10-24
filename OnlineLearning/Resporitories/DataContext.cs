@@ -28,7 +28,6 @@ namespace OnlineLearningApp.Respositories
         public DbSet<PaymentModel> Payment { get; set; }
         public DbSet<LectureModel> Lecture { get; set; }
         public DbSet<LectureFileModlel> LectureFiles { get; set; }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

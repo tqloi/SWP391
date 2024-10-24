@@ -124,10 +124,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (model.Level != "none")
                 course.Level = model.Level;
 
-            if (model.EndDate != null)
-            {
-                course.EndDate = model.EndDate;
-            }
+            course.EndDate = model.EndDate;
+
             course.Level = model.Level;
             course.LastUpdate = DateTime.Now;
 

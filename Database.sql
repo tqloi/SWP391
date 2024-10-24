@@ -151,6 +151,14 @@ CREATE TABLE Test (
     [Status] NVARCHAR(255),
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
+ALTER TABLE Test
+ADD PassingScore FLOAT;
+
+ALTER TABLE Test
+ADD AlowRedo NVARCHAR(50) CHECK(AlowRedo In ('Yes', 'No'))
+
+Alter TABLE Test
+ADD NumberOfMaxAttempt INT
 -- Score table
 CREATE TABLE Score (
     studentID NVARCHAR(450) NOT NULL,
@@ -162,7 +170,11 @@ CREATE TABLE Score (
 ALTER TABLE Score
 ADD ScoreID INT PRIMARY KEY IDENTITY(1,1)
 
-ALTER TABLE Score ALTER COLUMN Score FLOAT;
+ALTER TABLE Score 
+ALTER COLUMN Score FLOAT;
+
+ALTER TABLE Score
+ADD NumberOfAttempt INT
 
 -- Question table
 CREATE TABLE Question (
@@ -178,6 +190,7 @@ CREATE TABLE Question (
 );
 ALTER TABLE Question
 ADD ImagePath NVARCHAR(255)
+
 -- Assignment table
 CREATE TABLE Assignment (
     AssignmentID INT PRIMARY KEY IDENTITY(1,1),
@@ -231,7 +244,8 @@ CREATE TABLE Comment (
     UserID NVARCHAR(450),  -- Foreign key to Users (can be Student or Instructor)
     Content TEXT,
     [Timestamp] DATETIME,
-    ParentCmtId INT NULL,  -- Foreign key to Comment (nullable for root comments)
+    
+	 -- Foreign key to Comment (nullable for root comments)
     FOREIGN KEY (lectureID) REFERENCES Lecture(lectureID),
     FOREIGN KEY (userID) REFERENCES AspNetUsers(Id),  -- Could be Student or Instructor
     FOREIGN KEY (parentCmtId) REFERENCES Comment(commentID)

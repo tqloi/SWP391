@@ -2,9 +2,9 @@
 @{
     ViewData["Title"] = "TestList";
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
-   <partial name="_NoficationPartial" />
 }
-@model List<TestModel>
+@model TestListViewModel;
+<partial name="_NoficationPartial" />
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +17,6 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="~/css/TestList.css" />
-
 </head>
 <body>
     <h1>Test List</h1>
@@ -34,12 +33,25 @@
                     </form>
                 </div>
             </div>
-
         }
-        @if (Model != null)
+
+        @if (Model?.Tests != null && Model.Tests.Any())
         {
-            foreach (var test in Model)
+            foreach (var test in Model.Tests)
             {
+                // Skip inactive tests for students
+                if (User.IsInRole("Student") && test.Status == "Inactive")
+                {
+                    continue;
+                }
+
+                // Find the score for the current test by matching TestID
+                var score = Model.Scores.FirstOrDefault(s => s.TestID == test.TestID);
+                int? attemptsLeft = -1;
+                @if (score != null)
+                {
+                    attemptsLeft = @test.NumberOfMaxAttempt - @score.NumberOfAttempt;
+                }
                 <div class="card shadow-sm test-card">
                     <div class="card-body">
                         <h5 class="card-title">@test.Title</h5>
@@ -55,15 +67,29 @@
                         </div>
 
                         <div class="mb-4">
+                            <p><strong>Score to Pass:</strong> @test.PassingScore</p>
+                        </div>
+                        @if (User.IsInRole("Student") && attemptsLeft != -1)
+                        {
+                            <div class="mb-4">
+                                <p><strong>Your attempts left: </strong> @attemptsLeft</p>
+                            </div>
+                        }
+                        else
+                        {
+                            if (User.IsInRole("Student") && attemptsLeft == -1 || User.IsInRole("Instructor"))
+                            {
+                                <div class="mb-4">
+                                    <p><strong>Number of max attempts: </strong> @test.NumberOfMaxAttempt</p>
+                                </div>
+                            }
+                        }
+                        <div class="mb-4">
                             <p><strong>Status:</strong> @test.Status</p>
                         </div>
+
                         @if (User.IsInRole("Instructor"))
-                        {       @*
-                <div class="d-flex justify-content-between">
-                <a class="btn btn-success">Edit Question</a>
-                <a class="btn btn-success">Add Question</a>
-                </div>
-                *@
+                        {
                             <div class="d-flex justify-content-between">
                                 <form asp-controller="Question" asp-action="EditQuestionRedirector" method="post" asp-route-TestID="@test.TestID">
                                     <button type="submit" class="btn btn-success">
@@ -75,28 +101,53 @@
                                         Add Question
                                     </button>
                                 </form>
-                                <form asp-controller="Test" asp-action="EditTestRedirector" method="post" asp-route-TestID="@test.TestID">
+                                <form asp-controller="Test" asp-action="EditTest" method="get">
+                                    <input type="hidden" name="TestID" value="@test.TestID" />
                                     <button type="submit" class="btn btn-success">
                                         Edit Test
                                     </button>
                                 </form>
-                            </div>
-
-                        }
-                        @if (User.IsInRole("Student"))
-                        {   @*
-                <div class="d-flex justify-content-between">
-                <a class="btn btn-success">Do Test </a>
-                </div>
-                *@
-                            <div class="d-flex justify-content-between">
-                                <form asp-controller="Test" asp-action="DoTest" method="get">
-                                    <input type="hidden" id="TestID" name="TestID" value="@test.TestID" />
-                                    <button type="submit" class="btn btn-success">
-                                        Do Test
+                                <form asp-controller="Test" asp-action="DeleteTest" method="post" onsubmit="return confirm('Are you sure you want to delete this test?');">
+                                    <input type="hidden" name="TestID" value="@test.TestID" />
+                                    <button type="submit" class="btn btn-danger">
+                                        Delete Test
                                     </button>
                                 </form>
+                            </div>
+                        }
 
+                        @if (User.IsInRole("Student"))
+                        {
+                            <div class="d-flex justify-content-between">
+                                @if (score != null && attemptsLeft > 0)
+                                {
+                                    <p><strong>Your Score:</strong> @score.Score.ToString("F2")</p>
+                                    <form asp-controller="Test" asp-action="DoTest" method="get">
+                                        <input type="hidden" id="TestID" name="TestID" value="@test.TestID" />
+                                        <button type="submit" class="btn btn-warning">
+                                            Redo Test
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    if (attemptsLeft == -1)
+                                    {
+                                        <form asp-controller="Test" asp-action="DoTest" method="get">
+                                            <input type="hidden" id="TestID" name="TestID" value="@test.TestID" />
+                                            <button type="submit" class="btn btn-success">
+                                                Do Test
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-warning" disabled>
+                                            No Attempt Left
+                                        </button>
+
+                                    }
+                                }
                             </div>
                         }
                     </div>
@@ -107,5 +158,6 @@
         {
             <h2>No Test available, you should add some new Test</h2>
         }
+
     </section>
 </body>

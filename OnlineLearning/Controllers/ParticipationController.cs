@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
+using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
 using System.Diagnostics;
 using YourNamespace.Models;
@@ -32,11 +33,11 @@ namespace OnlineLearning.Controllers
 
             if (course == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
             //------- code ----
             ViewBag.CourseId = course.CourseID;
-            return View(course); 
+            return View(course);
         }
         public async Task<IActionResult> AssignmentList(int id)
         {
@@ -54,24 +55,40 @@ namespace OnlineLearning.Controllers
         {
             ViewBag.CourseId = id;
 
-            // Retrieve all tests that belong to the course with the specified id
             var TestList = datacontext.Test
                                       .Where(test => test.CourseID == id)
                                       .ToList();
-            return View(TestList);
+            var ScoreList = new List<ScoreModel>();
+            //find Score in each test
+            foreach (var test in TestList)
+            {
+                var score = datacontext.Score
+                     .Where(s => s.TestID == test.TestID)
+                     .FirstOrDefault();
+                if (score != null)
+                {
+                    ScoreList.Add(score);
+                }
+            }
+            var model = new TestListViewModel
+            {
+                Tests = TestList,
+                Scores = ScoreList
+            };
+            return View(model);
         }
 
 
         public async Task<IActionResult> LectureDetail(int id)
         {
             var lectureFile = await datacontext.LectureFiles
-                .Include(l => l.Lecture) 
+                .Include(l => l.Lecture)
                 .FirstOrDefaultAsync(l => l.LectureID == id);
 
             var lecture = lectureFile.Lecture;
 
-            ViewBag.CourseId = lecture.CourseID; 
-            return View(lecture); 
+            ViewBag.CourseId = lecture.CourseID;
+            return View(lecture);
         }
 
     }

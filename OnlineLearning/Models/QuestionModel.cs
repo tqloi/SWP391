@@ -38,5 +38,6 @@ namespace OnlineLearning.Models
         public string? ImagePath { get; set; }
 
         public required TestModel Test { get; set; }
+      
     }
 }

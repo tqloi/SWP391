@@ -55,6 +55,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 Debug.WriteLine("ID retrieved valid");
                 var newTest = new TestModel
                 {
+                    AlowRedo = model.AlowRedo,
                     Title = model.Title,
                     Course = course,
                     Description = model.Description,

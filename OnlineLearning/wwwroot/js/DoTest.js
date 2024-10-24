@@ -1,6 +1,82 @@
-﻿// Timer variables
-var timeLeft = 2412; // Set the time in seconds (40 minutes and 12 seconds)
+﻿var timeLeft = 2412; // Set the time in seconds (40 minutes and 12 seconds), currently not use yet?
+var currentQuestionIndex = 0;
+var numberOfChoosenQuestions = 0; // Initialize number of selected questions
 
+// Function to update the progress bar based on selected answers
+function updateProgressBar() {
+    // Calculate the progress percentage (based on how many answers are selected)
+    var selectedOptions = document.querySelectorAll('input[type="radio"]:checked');
+    var progressPercentage = (selectedOptions.length / totalQuestions) * 100;
+
+    // Update the progress bar width and text
+    var progressBar = document.querySelector('.progress-bar');
+    progressBar.style.width = progressPercentage + "%";
+    progressBar.setAttribute('aria-valuenow', progressPercentage);
+}
+
+// Function to update the number of selected questions
+function updateChosenQuestions() {
+    // Select all radio buttons that are checked
+    var selectedOptions = document.querySelectorAll('input[type="radio"]:checked');
+    numberOfChoosenQuestions = selectedOptions.length;
+
+    // Update the progress bar after each question is answered
+    updateProgressBar();
+}
+
+// Add onchange event to all radio buttons
+document.addEventListener('DOMContentLoaded', function () {
+    var radios = document.querySelectorAll('input[type="radio"]');
+    radios.forEach(function (radio) {
+        radio.addEventListener('change', updateChosenQuestions);
+    });
+
+    // Initialize the progress bar when the page loads
+    updateProgressBar();
+});
+
+// Function to hide all questions
+function hideAllQuestions() {
+    var allQuestions = document.querySelectorAll('[id^="question-"]');
+    allQuestions.forEach(function (question) {
+        question.style.display = "none"; // Hide each question
+    });
+}
+
+// Function to show a specific question by index
+function showQuestion(index) {
+    // Hide all questions first
+    hideAllQuestions();
+
+    // Show the selected question
+    var currentQuestion = document.getElementById("question-" + index);
+    if (currentQuestion) {
+        currentQuestion.style.display = "block";
+    }
+
+    // Update active button in navigation
+    document.querySelectorAll(".question-nav-buttons .btn").forEach((btn, i) => {
+        btn.classList.toggle("active", i === index);
+    });
+
+    // Update currentQuestionIndex to the selected question index
+    currentQuestionIndex = index;
+
+    // Update the progress bar
+    updateProgressBar();
+}
+
+
+// Function to show the next question
+function nextQuestion() {
+    if (currentQuestionIndex < totalQuestions - 1) {
+        currentQuestionIndex++;
+        showQuestion(currentQuestionIndex); // Show the next question
+    } else {
+        alert("You are on the last question.");
+    }
+}
+// Timer logic (unchanged from your previous code)
 function updateTimer() {
     var minutes = Math.floor(timeLeft / 60);
     var seconds = timeLeft % 60;
@@ -14,35 +90,25 @@ function updateTimer() {
         setTimeout(updateTimer, 1000); // Call updateTimer every 1 second
     } else {
         alert('Time is up!');
-        // Optionally auto-submit the form
         document.querySelector('form').submit();
     }
 }
 
-// Start the timer when the page loads
+// Initialize by showing the first question and hiding the rest
 window.onload = function () {
+    hideAllQuestions();
+    showQuestion(currentQuestionIndex);
     updateTimer();
+    noBack();
 };
 
-// Question navigation variables
-var currentQuestionIndex = 0;
-var totalQuestions = 0; // This will be initialized by Razor
-
-// Function to show a specific question by index
-function showQuestion(index) {
-    // Hide the current question
-    document.getElementById("question-" + currentQuestionIndex).style.display = "none";
-    document.querySelector(".question-nav-buttons .btn:nth-child(" + (currentQuestionIndex + 1) + ")").classList.remove("active");
-
-    // Show the new question
-    currentQuestionIndex = index;
-    document.getElementById("question-" + currentQuestionIndex).style.display = "block";
-    document.querySelector(".question-nav-buttons .btn:nth-child(" + (currentQuestionIndex + 1) + ")").classList.add("active");
+window.history.forward();
+//Disable Browser Back Button
+function noBack() {
+    window.history.forward();
 }
-
-// Function to show the next question
-function nextQuestion() {
-    if (currentQuestionIndex < totalQuestions - 1) {
-        showQuestion(currentQuestionIndex + 1);
-    }
-}
+window.onload = noBack;
+window.onpageshow = function (evt) {
+    if (evt.persisted) noBack();
+};
+window.onunload = function () { null };

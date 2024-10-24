@@ -1,8 +1,9 @@
-﻿  @{
-    ViewData["Title"] = "Create Test";
+﻿@{
+    ViewData["Title"] = "Edit Test";
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
-    await Html.PartialAsync("_NoficationPartial");
 }
+
+<partial name="_NoficationPartial" />
 @model TestModel
 <head>
     <meta charset="UTF-8">
@@ -19,9 +20,27 @@
 @if (User.IsInRole("Instructor"))
 {
     <section>
-        <h2>Test</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Edit Test</h2>
+            <div class="d-flex">
+                <form asp-action="ClearAllSubmission" asp-controller="Test" method="post" class="me-2">
+                    <input type="hidden" name="TestID" value="@Model.TestID" />
+                    <button type="submit" class="btn btn-danger"
+                            onclick="return confirm('This action will delete all student\'s submission, are you sure?')">
+                        Clear All Student's Submissions
+                    </button>
+                </form>
+                <form asp-action="ClearAllQuestion" asp-controller="Test" method="post">
+                    <input type="hidden" name="TestID" value="@Model.TestID" />
+                    <button type="submit" class="btn btn-danger"
+                            onclick="return confirm('This action will delete all questions, are you sure?')">
+                        Clear All Questions
+                    </button>
+                </form>
+            </div>
+        </div>
 
-        <form id="newTestForm" enctype="multipart/form-data" method="post" asp-controller="Test" asp-action="CreateTest" onsubmit="return validateDates()">
+        <form id="newTestForm" enctype="multipart/form-data" method="post" asp-controller="Test" asp-action="EditTest" onsubmit="return validateDates()">
             <div class="mb-3">
                 <label for="Title" class="form-label">Test Title</label>
                 <input type="text" class="form-control" name="Title" asp-for="Title" required>
@@ -38,33 +57,40 @@
                 <label for="endDate" class="form-label">End Date</label>
                 <input type="datetime-local" class="form-control" asp-for="EndTime" name="EndTime" required>
             </div>
-            <input type="hidden" class="form-control" asp-for="CourseID" value="@ViewBag.CourseID" />
-            <input type="hidden" class="form-control" asp-for="Status" value="Active" />
-            <input type="hidden" class="form-control" asp-for="Course" value="@ViewBag.Course" />
-            <button type="submit" class="btn custom-btn">Create Test</button>
+            <div class="mb-3">
+                <label for="PassingScore" class="form-label">Passing Score</label>
+                <input type="number" class="form-control" asp-for="PassingScore" name="PassingScore" placeholder="Default is 5" step="0.01">
+            </div>
+
+            <div class="mb-3">
+                <label for="AlowRedo" class="form-label">Allow Redo</label>
+                <select class="form-control" asp-for="AlowRedo" name="AlowRedo" id="allowRedo" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+
+            <div class="mb-3" id="maxAttemptDiv" style="display: none;">
+                <label for="NumberOfMaxAttempt" class="form-label">Number Of Max Attempt</label>
+                <input type="number" class="form-control" asp-for="NumberOfMaxAttempt" name="NumberOfMaxAttempt" min="1" placeholder="Default is 1">
+            </div>
+
+            <div class="mb-3">
+                <label for="Status" class="form-label">Status</label>
+                <select class="form-control" asp-for="Status" name="Status" required>
+                    <option value="Active" class="badge badge-success">Active</option>
+                    <option value="Inactive" class="badge badge-danger">Inactive</option>
+                </select>
+            </div>
+            <input type="hidden" class="form-control" asp-for="NumberOfQuestion" value="@Model.NumberOfQuestion" />
+            <input type="hidden" class="form-control" asp-for="CourseID" value="@Model.CourseID" />
+            <input type="hidden" class="form-control" asp-for="Course" value="@Model.Course" />
+            <input type="hidden" class="form-control" asp-for="TestID" value="@Model.TestID" />
+
+            <button type="submit" class="btn custom-btn">Save Changes</button>
         </form>
-
-        <script>
-            //should have be base on week that this test base on :/?
-            //all those shit didn't make sense now, there will be more to come
-            function validateDates() {
-                var startDate = new Date(document.getElementsByName('StartTime')[0].value);
-                var endDate = new Date(document.getElementsByName('EndTime')[0].value);
-
-                if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-                    alert("Please enter valid start and end dates.");
-                    return false;
-                }
-
-                if (startDate.getTime() >= endDate.getTime()) {
-                    alert("End Date must be after Start Date.");
-                    return false;
-                }
-
-                // Allow form submission
-                return true;
-            }
-        </script>
+        <!-- Link to external JS file -->
+        <script src="~/js/CreateTest.js"></script>
     </section>
 }
 else

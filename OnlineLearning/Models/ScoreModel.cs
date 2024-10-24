@@ -17,6 +17,7 @@ namespace OnlineLearning.Models
 
         [Required]
         public double Score { get; set; } // Score value
+        public int NumberOfAttempt {  get; set; }
 
         // Navigation properties
         public required AppUserModel Student { get; set; } // Represents the user
