@@ -1,22 +1,43 @@
 ﻿using AspNetCoreHero.ToastNotification;
 using AspNetCoreHero.ToastNotification.Extensions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearning.BackgroundServices;
 using OnlineLearning.Email;
+using OnlineLearning.Filter;
+using OnlineLearning.Hubs;
 using OnlineLearning.Models;
+using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+
 builder.Services.AddTransient<EmailSender>();
+builder.Services.AddHttpClient();
+//stringee
+builder.Services.AddTransient<StringeeService>();
+
+//file 
+builder.Services.AddScoped<FileService>();
+
+//chathub
+builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
+
 //connect database
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration["ConnectionStrings:ConnectedDb"]);
 });
+
+//dang ki background service
+builder.Services.AddHostedService<NotificationCleanupService>();
+
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(5); // Thời gian sống của session
     options.Cookie.HttpOnly = true;
@@ -33,17 +54,7 @@ builder.Services.AddNotyf(config =>
 );
 ///telling the application to use the specific ClientId, and the ClientSecret
 ///redirect user to the google login page for authentication
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-//})
-//    .AddCookie()
-//    .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
-//    {
-//        options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
-//        options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
-//    });
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -54,12 +65,13 @@ builder.Services.AddAuthentication(options =>
     {
         options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
         options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
+
+        // Map claim để nhận URL ảnh đại diện
+        options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
+        options.AccessDeniedPath = "/Account/Login";
+        // Lưu token nếu cần thiết
+        options.SaveTokens = true;
     });
-//builder.Services.AddAuthentication().AddGoogle(googleOptions =>
-//{
-//    googleOptions.ClientId = configuration["Authentication:Google: ClientId"];
-//    googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
-//});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -68,6 +80,9 @@ builder.Services.AddIdentity<AppUserModel, IdentityRole>()
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<CourseAccessFilter>();
+
+builder.Services.AddScoped<LectureAccessFilter>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -91,6 +106,9 @@ builder.Services.Configure<IdentityOptions>(options =>
    
 });
 
+//VnPay
+builder.Services.AddSingleton<IVnPayService, VnPayService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -111,13 +129,20 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-app.MapControllerRoute(
-    name: "Areas",
-    pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
-
 app.MapAreaControllerRoute(
-       name: "instructor",
-       areaName: "Instructor",
-       pattern: "Instructor/{controller=Home}/{action=Index}/{id?}");
+    name: "Areas",
+    areaName: "Instructor",
+    pattern: "{area:exists}/{controller=Instructor}/{action=Index}/{id?}");
+app.MapAreaControllerRoute(
+    name: "Areas",
+    areaName:"Admin",
+    pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
+app.MapAreaControllerRoute(
+    name: "Areas",
+    areaName: "Student",
+    pattern: "{area:exists}/{controller=Student}/{action=Index}/{id?}");
+
+app.MapHub<ReviewHub>("/review");
+app.MapHub<ChatHub>("/chatHub");
+
 app.Run();

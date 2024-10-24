@@ -8,6 +8,7 @@ namespace OnlineLearning.Models
         [Key]
         public int ConfirmationID { get; set; }
         public string UserID { get; set; }
+        public string FileName { get; set; }
         public string Certificatelink { get; set; }
         [ForeignKey("UserID")]
         public AppUserModel user { get; set; }

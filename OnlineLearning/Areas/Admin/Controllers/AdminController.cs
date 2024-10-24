@@ -1,4 +1,6 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics;
+using System.Security.Claims;
+using System.Web.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +11,7 @@ using OnlineLearning.Areas.Admin.Models.ViewModel;
 using OnlineLearning.Email;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
+using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
 using AuthorizeAttribute = Microsoft.AspNetCore.Authorization.AuthorizeAttribute;
 using Controller = Microsoft.AspNetCore.Mvc.Controller;
@@ -30,20 +33,27 @@ namespace OnlineLearning.Areas.Admin.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly DataContext _dataContext;
         private IConfiguration _configuration;
-        public AdminController(DataContext dataContext, UserManager<AppUserModel> userManager, SignInManager<AppUserModel> signInManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
+        private readonly FileService _fileService;
+        public AdminController(DataContext dataContext, UserManager<AppUserModel> userManager, SignInManager<AppUserModel> signInManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, FileService fileService)
         {
             _dataContext = dataContext;
             _userManager = userManager;
             _signInManager = signInManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
+            _fileService = fileService;
         }
         [Authorize]
         public async Task<IActionResult> Index()
         {
             var users = await _dataContext.Users.ToListAsync();
-
-            return View(users);
+            var payments = await _dataContext.Payment.OrderByDescending(p => p.PaymentDate).ToListAsync();
+            var listindex = new ListIndexViewModel
+            {
+                ListUser = users,
+                ListPayment = payments,
+            };
+            return View(listindex);
         }
 
         public async Task<IActionResult> AdminProfile()
@@ -103,16 +113,17 @@ namespace OnlineLearning.Areas.Admin.Controllers
                         return RedirectToAction("AdminProfile");
                     }
                 }
-               
-               
-                
+
             }
            
                 TempData["error"] = "Something is wrong!";
                 return View(model);
-            
 
         }
+
+            
+
+        
 
         [HttpGet]
         public async Task<IActionResult> AdminEdit()
@@ -156,6 +167,12 @@ namespace OnlineLearning.Areas.Admin.Controllers
                 }
                 if (!model.Email.Equals(user.Email))
                 {
+                    var existemail = await _userManager.FindByEmailAsync(model.Email);
+                    if (existemail != null)
+                    {
+                        TempData["error"] = "Email is existed!";
+                        return View(model);
+                    }
                     Random random = new Random();
                     int otp = random.Next(100000, 999999);
 
@@ -194,28 +211,19 @@ namespace OnlineLearning.Areas.Admin.Controllers
                 HttpContext.Session.Remove("message");
                 if (model.ProfileImage != null)
                 {
-
-                    string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
-                    if (!string.IsNullOrEmpty(user.ProfileImagePath) && !user.ProfileImagePath.Equals("default.jpg"))
-                    {
-                        string oldImagePath = Path.Combine(uploadPath, user.ProfileImagePath);
-                        if (System.IO.File.Exists(oldImagePath))
-                        {
-                            System.IO.File.Delete(oldImagePath);
-                        }
-                    }
-
-                    string imageName = Guid.NewGuid() + "_" + model.ProfileImage.FileName;
-                    string filePath = Path.Combine(uploadPath, imageName);
-
-                    using (var fs = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.ProfileImage.CopyToAsync(fs);
-                    }
-
-
-                    user.ProfileImagePath = imageName;
-                }
+                 try
+                 {
+                        string downloadUrl = await _fileService.UploadImage(model.ProfileImage);
+                      user.ProfileImagePath = downloadUrl;
+                      
+                 }
+                 catch (Exception ex)
+                 {
+                        ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                        TempData["error"] = "Edit failed due to file upload error!";
+                       return View(model);
+                  }
+                 }
                 else
                 {
                     user.ProfileImagePath = user.ProfileImagePath;
@@ -239,7 +247,29 @@ namespace OnlineLearning.Areas.Admin.Controllers
             return View(model);
         }
 
-        
+
+        public async Task<IActionResult> ViewNotification(int? page)
+        {
+            int pageSize = 10; // Số lượng thông báo trên mỗi trang
+            int pageNumber = (page ?? 1); // Trang hiện tại, mặc định là trang 1
+
+            var notifications = await _dataContext.Notification
+                .OrderByDescending(n => n.CreatedAt)
+                .Include(n => n.User)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            int totalRecords = await _dataContext.Notification.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.TotalPages = totalPages;
+
+            return View(notifications);
+        }
+
+
 
 
     }

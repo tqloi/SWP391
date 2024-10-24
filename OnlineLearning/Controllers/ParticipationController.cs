@@ -5,8 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using System.Diagnostics;
+
 using YourNamespace.Models;
+using System.Security.Claims;
+using Google.Api;
+
 
 namespace OnlineLearning.Controllers
 {
@@ -27,36 +32,55 @@ namespace OnlineLearning.Controllers
             _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
         }
-        public async Task<IActionResult> LectureList(int id)
+
+        [HttpGet]
+        [ServiceFilter(typeof(CourseAccessFilter))]
+        public async Task<IActionResult> CourseInfo(int CourseID)
         {
-            var course = await datacontext.Courses.FindAsync(id);
+            var course = await datacontext.Courses.FindAsync(CourseID);
 
             if (course == null)
             {
                 return NotFound();
             }
-            //------- code ----
-            ViewBag.CourseId = course.CourseID;
+
+            ViewBag.Course = course;
             return View(course);
         }
-        public async Task<IActionResult> AssignmentList(int id)
-        {
-            var course = await datacontext.Courses.FindAsync(id);
 
-            if (course == null)
+
+        [HttpGet]
+        [ServiceFilter(typeof(CourseAccessFilter))]
+        public async Task<IActionResult> AssignmentList(int CourseID)
+        {
+            var course = await datacontext.Courses.FindAsync(CourseID);
+            var assignments = await datacontext.Assignment.Where(a => a.CourseID == CourseID).ToListAsync();
+
+            if (assignments == null)
             {
                 return NotFound();
             }
-            //------- code ----
-            ViewBag.CourseId = course.CourseID;
-            return View(course);
+            HttpContext.Session.SetInt32("courseid", CourseID);
+            ViewBag.Course = course;
+            return View(assignments);
         }
-        public IActionResult TestList(int id)
+
+        public ActionResult ViewAssignmentPdf(int Id)
         {
-            ViewBag.CourseId = id;
+            var assignmentlink = datacontext.Assignment.FirstOrDefault(c => c.AssignmentID == Id);
+
+            return View(assignmentlink);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TestList(int CourseID)
+        {
+            ViewBag.CourseId = CourseID;
+            var course = await datacontext.Courses.FindAsync(CourseID);
+            ViewBag.Course = course;
 
             var TestList = datacontext.Test
-                                      .Where(test => test.CourseID == id)
+                                      .Where(test => test.CourseID == CourseID)
                                       .ToList();
             var ScoreList = new List<ScoreModel>();
             //find Score in each test
@@ -78,18 +102,31 @@ namespace OnlineLearning.Controllers
             return View(model);
         }
 
-
-        public async Task<IActionResult> LectureDetail(int id)
+        [HttpGet]
+        public async Task<IActionResult> LectureDetail(int LectureID)
         {
-            var lectureFile = await datacontext.LectureFiles
-                .Include(l => l.Lecture)
-                .FirstOrDefaultAsync(l => l.LectureID == id);
+            var lectue = await datacontext.Lecture.FindAsync(LectureID);
+            var course = await datacontext.Courses.FindAsync(lectue.CourseID);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var lecture = lectureFile.Lecture;
+            var isEnrolled = await datacontext.StudentCourses
+                                      .FirstOrDefaultAsync(sc => sc.StudentID == userId && sc.CourseID == course.CourseID);
 
-            ViewBag.CourseId = lecture.CourseID;
-            return View(lecture);
+            var isInstrucotr = await datacontext.Courses
+                                        .FirstOrDefaultAsync(c => c.InstructorID == userId && c.CourseID == course.CourseID);
+
+            if (isEnrolled != null)
+            {
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = LectureID });
+            }
+            if (isInstrucotr != null)
+            {
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = LectureID });
+            }
+            else
+            {
+                return NotFound();
+            }
         }
-
     }
 }

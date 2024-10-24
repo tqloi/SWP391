@@ -21,13 +21,24 @@ namespace OnlineLearningApp.Respositories
         public DbSet<InstructorModel> Instructors { get; set; }
         public DbSet<CourseModel> Courses { get; set; }
         public DbSet<CategoryModel> Category{ get; set; }
+		public DbSet<ScoreAssignmentModel> ScoreAssignment { get; set; }
+		public DbSet<NotificationModel> Notification { get; set; }
         public DbSet<InstructorConfirmationModel> InstructorConfirmation { get; set; }
+        public DbSet<SubmissionModel> Submission { get; set; }
+        public DbSet<AssignmentModel> Assignment { get; set; }
         public DbSet<StudentCourseModel> StudentCourses { get; set; }
-        public DbSet<ReviewMoel> Reviews { get; set; }
+        public DbSet<ReviewModel> Review { get; set; }
         public DbSet<CourseMaterialModel> CourseMaterials { get; set; }
         public DbSet<PaymentModel> Payment { get; set; }
         public DbSet<LectureModel> Lecture { get; set; }
-        public DbSet<LectureFileModlel> LectureFiles { get; set; }
+        public DbSet<RequestTranferModel> RequestTranfer { get; set; }
+        public DbSet<ChatBoxModel> ChatBox { get; set; }
+        public DbSet<MessageModel> Message { get; set; }
+        public DbSet<MessageFileModel> MessageFile { get; set; }
+        public DbSet<LectureFileModel> LectureFiles { get; set; }
+        public DbSet<LectureCompletionModel> LectureCompletion { get; set; }
+        public DbSet<ReportModel> Report { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -63,7 +74,5 @@ namespace OnlineLearningApp.Respositories
                 }
             );
         }
-
-
     }
 }

@@ -10,6 +10,8 @@ https://templatemo.com/tm-590-topic-listing
   CUSTOM PROPERTIES ( VARIABLES )             
 -----------------------------------------*/
 :root {
+  --xbox-green:                   #1DAD26; 
+  --xbox-green-dark:              #169A24;
   --white-color:                  #ffffff;
   --primary-color:                #13547a;
   --secondary-color:              #80d0c7;
@@ -45,13 +47,7 @@ https://templatemo.com/tm-590-topic-listing
   --font-weight-bold:             700;
 
 }
-/*
-html, body {
-    height: 100%;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-}
-*/
+
     body {
     background-color: #ffffff;
     font-family: var(--body-font-family);
@@ -232,7 +228,6 @@ strong {
     line-height: normal;
     transition: all 0.3s;
     padding: 10px 20px;
-   
 }
 
 .custom-btn:hover {
@@ -1228,4 +1223,68 @@ blockquote {
 .dropdown-item:active {
     background-color: #f8f9fa !important; 
     color: #212529 !important; 
+}
+/*** Spinner Start ***/
+#spinner {
+    opacity: 0;
+    color: #80d0c7;
+    visibility: hidden;
+    transition: opacity .8s ease-out, visibility 0s linear .5s;
+    z-index: 99999;
+}
+
+    #spinner.show {
+        transition: opacity .8s ease-out, visibility 0s linear .0s;
+        visibility: visible;
+        opacity: 1;
+    }
+
+.back-to-top {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    display: flex;
+    width: 45px;
+    height: 45px;
+    align-items: center;
+    justify-content: center;
+    transition: 0.5s;
+    z-index: 99;
+}
+/*** Spinner End ***/
+
+.text-xbox {
+    color: var(--xbox-green);
+}
+
+.btn-completed {
+    background-color: var(--xbox-green);
+    color: white;
+    border: none;
+}
+
+    .btn-completed:hover {
+        color: white;
+        background-color: var(--xbox-green-dark);
+    }
+
+.btn-outline-black {
+    color: var(--primary-color);
+    background-color: transparent;
+}
+
+    .btn-outline-black:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+.topics-section {
+    padding: 50px 100px 50px 100px;
+    background-color: #f7f7f7;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
 }

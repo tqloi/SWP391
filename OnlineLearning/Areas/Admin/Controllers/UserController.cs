@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+
+using System.Data;
+using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,13 +35,28 @@ namespace OnlineLearning.Areas.Admin.Controllers
         }
         public async Task<IActionResult> UserList()
         {
-            var users = await _dataContext.Users.ToListAsync();
+            var users = await _userManager.Users.ToListAsync();
+            var list = new List<UserRolesViewModel>();
+            foreach (var user in users)
+            {
+                var userrole = await _userManager.GetRolesAsync(user);
+                list.Add(new UserRolesViewModel
+                {
+                    UserId = user.Id,
+                    UserName = user.UserName,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    ProfileImagePath = user.ProfileImagePath,
+                    Email = user.Email,
+                    Address = user.Address,
+                    Roles = string.Join("", userrole)
+                });
+            }
 
-            return View(users);
+            return View(list);
         }
         public async Task<IActionResult> UserProfile(string Id)
         {
-
             var user = await _userManager.FindByIdAsync(Id);
             if (user == null)
             {
@@ -84,6 +102,13 @@ namespace OnlineLearning.Areas.Admin.Controllers
                 await _userManager.RemoveFromRoleAsync(user, "Student");
 
                 await _userManager.AddToRoleAsync(user, "Instructor");
+                var instructor = new InstructorModel
+                {
+                    InstructorID = user.Id,
+                    Description = "Toi la mot giang vien"
+                };
+                _dataContext.Add(instructor);
+                await _dataContext.SaveChangesAsync();
                 var confirmation = _dataContext.InstructorConfirmation.Include(c => c.user).FirstOrDefault(c => c.UserID == user.Id);
                 if (confirmation != null)
                 {
@@ -93,7 +118,6 @@ namespace OnlineLearning.Areas.Admin.Controllers
                 }
             }
 
-            
             return RedirectToAction("InstructorConfirm"); 
         }
         public async Task<IActionResult> Search(string search)
@@ -104,7 +128,6 @@ namespace OnlineLearning.Areas.Admin.Controllers
             list.Users = await _dataContext.Users.Where(i => i.FirstName.Contains(search) || i.LastName.Contains(search)).ToListAsync();
             return View(list);
         }
-
 
     }
 }

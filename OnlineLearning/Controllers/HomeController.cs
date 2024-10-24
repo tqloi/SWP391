@@ -9,36 +9,41 @@ using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
+using YourNamespace.Models;
 
 namespace OnlineLearning.Controllers
 {
+    
 	public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
-        private readonly DataContext datacontext;
+        private readonly DataContext _dataContext;
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         
-        public HomeController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment)
+        public HomeController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager)
         {
-            datacontext = context;
+            _dataContext = context;
             _logger = logger;
             _signInManager = signInManager;
-            _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
-		{
+        {
+            if (User.IsInRole("Admin"))
+            {
+                return RedirectToAction("Index", "Admin", new { area = "Admin" });
+            }
             var model = new ListViewModel();
-            model.Courses = await datacontext.Courses.Include(c => c.Category)
+            model.Courses = await _dataContext.Courses.Include(c => c.Category)
                 .OrderByDescending(sc => sc.CourseID).ToListAsync();
-            model.Categories = await datacontext.Category.ToListAsync();
+            model.Categories = await _dataContext.Category.ToListAsync();
            
 			return View(model);
 		}
 
+        [HttpGet]
         [Authorize]
         public IActionResult Contact()
         {
@@ -49,134 +54,41 @@ namespace OnlineLearning.Controllers
             return View();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> UserProfile()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var model = new EditUserViewModel
-            {
-                UserName = user.UserName,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                ExistingProfileImagePath = user.ProfileImagePath,
-                Address = user.Address,
-                Dob = user.Dob,
-                gender = user.Gender,
-
-            };
-
-            return View(model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Edit()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var model = new EditUserViewModel
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                UserName = user.UserName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                ExistingProfileImagePath = user.ProfileImagePath,
-                Address = user.Address,
-                Dob = user.Dob,
-                gender = user.Gender,
-            };
-
-
-            return View(model);
-        }
-
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(EditUserViewModel model)
+        [Authorize]
+        public async Task<IActionResult> Contact(ReportModel model)
         {
-            if (ModelState.IsValid)
+            if (User.IsInRole("Admin"))
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var user = await _userManager.FindByIdAsync(userId);
-
-                if (user == null)
-                {
-                    return NotFound();
-                }
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-                user.UserName = model.UserName;
-                user.Email = model.Email;
-                user.PhoneNumber = model.PhoneNumber;
-                user.Address    = model.Address;
-                user.Dob = model.Dob;
-               user.Gender = model.gender;
-                
-                if (model.ProfileImage != null)
-                {
-
-                    string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
-                    if (!string.IsNullOrEmpty(user.ProfileImagePath) && !user.ProfileImagePath.Equals("default.jpg"))
-                    {
-                        string oldImagePath = Path.Combine(uploadPath, user.ProfileImagePath);
-                        if (System.IO.File.Exists(oldImagePath))
-                        {
-                            System.IO.File.Delete(oldImagePath);
-                        }
-                    }
-
-                    string imageName = Guid.NewGuid() + "_" + model.ProfileImage.FileName;
-                    string filePath = Path.Combine(uploadPath, imageName);
-
-                    using (var fs = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.ProfileImage.CopyToAsync(fs);
-                    }
-
-
-                    user.ProfileImagePath = imageName;
-                }
-                else
-                {
-                    user.ProfileImagePath = user.ProfileImagePath;
-                }
-
-                var result = await _userManager.UpdateAsync(user);
-                if (result.Succeeded)
-                {
-
-                    TempData["success"] = "Edit successful!";
-
-                    return RedirectToAction("UserProfile");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
+                return Forbid();
             }
-            TempData["erorr"] = "Edit failed!";
-            return View(model);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            try
+            {
+                var feedback = new ReportModel
+                {
+                    UserID = userId,
+                    Subject = model.Subject,
+                    Comment = model.Comment,
+                    FeedbackDate = DateTime.Now,
+                };
+                _dataContext.Report.Add(feedback);
+                await _dataContext.SaveChangesAsync();
+
+                TempData["success"] = "Feedback has been submitted successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = "Failed to submit feedback. Please try again later.";
+                return View(model);
+            }
+
+            return View();
         }
-        
 
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
 		{
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

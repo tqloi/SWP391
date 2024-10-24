@@ -7,20 +7,20 @@ namespace OnlineLearning.Models
     public class LectureModel
     {
         [Key]
-        public int LectureID { get; set; }  
+        public int LectureID { get; set; }
 
-        [ForeignKey("Course")]  
+        [ForeignKey("Course")]
         public int CourseID { get; set; }
 
-        [Required]  
-        [StringLength(255)] 
+        [Required]
+        [StringLength(255)]
         public string Title { get; set; }
 
-        [StringLength(255)]  
+        [StringLength(255)]
         public string Description { get; set; }
 
-        [DataType(DataType.DateTime)]  
-        public DateTime UpLoadDate { get; set; } = DateTime.Now;  
+        [DataType(DataType.DateTime)]
+        public DateTime UpLoadDate { get; set; } = DateTime.Now;
 
         public CourseModel Course { get; set; }
     }

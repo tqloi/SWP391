@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearning.Areas.Admin.Models.ViewModel;
 using OnlineLearning.Models;
 using OnlineLearningApp.Respositories;
 
@@ -52,7 +53,87 @@ namespace OnlineLearning.Areas.Admin.Controllers
                 TempData["success"] = "Set Status Successful!";
                 return RedirectToAction("Index", "Course");
             }
-
+        [HttpGet]
+        public async Task<IActionResult> AddCategory()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddCategory(CategoryViewModel model) 
+        {
+            if(model == null)
+            {
+                return View(model);
+            }
+            if (!ModelState.IsValid)
+            {
+                TempData["error"] = "Something wrong!";
+            }
+            else
+            {
+                var category = new CategoryModel
+                {
+                    FullName = model.FullName,
+                    Description = model.Description
+                };
+                _dataContext.Category.Add(category);
+                await _dataContext.SaveChangesAsync();
+                TempData["success"] = "Successfully!";
+                return RedirectToAction("ViewCategory", "Course", new { area = "Admin" });
+            }
+            return View(model);
+        }
+        public IActionResult ViewCategory()
+        {
+            var categories = _dataContext.Category.ToList();
+            return View(categories);
+        }
+        [HttpGet]
+        public async Task<IActionResult> EditCategory(int id)
+        {
+            var category = await _dataContext.Category.FindAsync(id);
+            if (category == null)
+            {
+                TempData["error"] = "Something wrong";
+                return RedirectToAction("ViewCategory", "Course", new { area = "Admin" });
+            }
+            var model = new CategoryViewModel
+            {
+                FullName = category.FullName,
+                Description = category.Description
+            };
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditCategory(CategoryViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var category = new CategoryModel
+                {
+                    FullName = model.FullName,
+                    Description = model.Description
+                };
+                _dataContext.Category.Update(category);
+                await _dataContext.SaveChangesAsync();
+                TempData["success"] = "Edit successfully!";
+                return RedirectToAction("ViewCategory", "Course", new { area = "Admin" });
+            }
+            return View(model);
+        }
+        public async Task<IActionResult> RemoveCate(int id)
+        {
+            var category = await _dataContext.Category.FindAsync(id);
+            if (category == null)
+            {
+                TempData["error"] = "Something wrong";
+                return RedirectToAction("ViewCategory", "Course", new { area = "Admin" });
+            }
+            _dataContext.Category.Remove(category);
+            await _dataContext.SaveChangesAsync();
+            TempData["success"] = "Remove successfully!";
+            return RedirectToAction("ViewCategory", "Course", new { area = "Admin" });
         }
     }
+}
 

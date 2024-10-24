@@ -1,4 +1,8 @@
-﻿<!doctype html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AppUserModel> SignInManager
+@inject UserManager<AppUserModel> UserManager
+
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -23,13 +27,16 @@
     <link href="~/css/bootstrap-icons.css" rel="stylesheet">
     <link href="~/css/templatemo-topic-listing.css" rel="stylesheet">
     <link href="~/css/main.css" rel="stylesheet">
-
-
+    <link href="~/css/loader.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
 
 </head>
 
 <body id="top">
+
+    <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+        <div class="spinner-grow" role="status"></div>
+    </div>
 
     <main>
         <nav class="navbar navbar-expand-lg">
@@ -47,7 +54,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse d-flex justify-content-center align-items-center" id="navbarNav">
+                <div class="collapse d-flex justify-content-center align-items-center me-auto" id="navbarNav">
                     <ul class="navbar-nav ms-lg-5 me-lg-auto">
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")"
@@ -59,58 +66,93 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Course" && ViewContext.RouteData.Values["action"].ToString() == "MyCourse" ? "active" : "")"
-                               asp-action="MyCourse" asp-controller="Course">My Courses</a>
+                               asp-action="UserCourse" asp-controller="Course" style="white-space: nowrap;">My Courses</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Contact" ? "active" : "")"
                                asp-action="Contact" asp-controller="Home">Contact</a>
                         </li>
+                        
                         @if (!User.IsInRole("Instructor"))
                         {
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Profile" && ViewContext.RouteData.Values["action"].ToString() == "InstructorRegistration" ? "active" : "")"
-                               asp-action="InstructorRegistration" asp-controller="Profile">Teaching</a>
-                        </li>
+                                <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Student" && ViewContext.RouteData.Values["action"].ToString() == "InstructorRegistration" ? "active" : "")"
+                                   asp-action="InstructorRegistration" asp-controller="Student" asp-area="Student">Teaching</a>
+                            </li>
                         }
+                        
                     </ul>
+                </div>
 
+                <div class="d-none d-lg-flex ms-auto align-items-center">
                     <!-- Search Form -->
-                    <div class="d-none d-lg-block me-3">
-                        <form asp-action="Search" asp-controller="Course" method="GET" class="navbar-form" style="display: inline; position: relative;">
-                            <input type="text" name="keyword" placeholder="Search"
-                                   style="padding: 10px 15px; border-radius: 25px; border: 1px solid #ccc; outline: none; width: 250px;">
-                            <button type="submit"
-                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background-color: transparent; border: none; cursor: pointer;">
-                                <i class="me-2 bi bi-search" style="font-size: 1.2em;"></i>
-                            </button>
+                    @{
+                        var keyword = ViewBag.Keyword;
+                    }
+                    <div class="d-none d-lg-block me-auto">
+                        <form asp-action="CourseList" asp-controller="Course" method="GET" class="navbar-form">
+                            <div class="input-group bg-white" style="padding: 3px; padding-left: 13px; border-radius: 25px; border: 1px solid #ccc;">
+                                <input type="search" name="keyword" value="@keyword" placeholder="Search" style="border: none; outline: none;" required>
+                                <button type="submit" class="btn btn-white border-0">
+                                    <i class="bi bi-search" style="font-size: 1.2em;"></i>
+                                </button>
+                            </div>
                         </form>
                     </div>
 
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ms-3">
+                        @if (User.Identity?.IsAuthenticated ?? false)
+                        {
+                            var user = await UserManager.GetUserAsync(User);
+                            var fullName = user.FirstName + " " + user.LastName;
 
-                    <!-- Authentication Dropdown -->
-                    <div class="d-none d-lg-block">
-                        <div class="dropdown">
-                            @if (User.Identity?.IsAuthenticated ?? false)
-                            {
-                                <a href="#" class="me-5 navbar-icon d-flex justify-content-between align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="ms-2 bi bi-person"></i>
-                                    <span class="ms-4">@User.Identity.Name</span>
-                                </a>  
+                            <li class="nav-item dropdown no-arrow">
+                                <a class="dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="@user.ProfileImagePath"
+                                         class="rounded-circle"
+                                         style="width: 46px; height: 46px;"
+                                         alt="Profile Image">
+                                    <span class="d-none d-lg-inline ms-3">
+                                        @(fullName.Length > 25 ? fullName.Substring(0, 25) + "..." : fullName)
+                                    </span>
+                                </a>
+                                <!-- Dropdown - User Information -->
                                 <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-                                    <li><a class="dropdown-item" asp-action="UserProfile" asp-controller="Home">Your Profile</a></li>
+                                    <li>
+                                        <a class="dropdown-item" asp-action="Index" asp-controller="Chat" asp-area="">
+                                            <i class="fa fa-envelope fa-sm fa-fw me-2 text-gray-400"></i>Message
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-action="UserProfile" asp-controller="Profile">
+                                            <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>Your Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-action="RequestWithdraw" asp-controller="Payment">
+                                            <i class="fas fas fa-exchange-alt fa-sm fa-fw me-2 text-gray-400"></i>Request A Transfer
+                                        </a>
+                                    </li>
+                                    <li class="dropdown-divider"></li>
                                     <li>
                                         <form asp-action="Logout" asp-controller="Account" method="post">
-                                            <button type="submit" class="dropdown-item">Logout</button>
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>Logout
+                                            </button>
                                         </form>
                                     </li>
                                 </ul>
-                            }
-                            else
-                            {
-                                <a asp-action="Login" asp-controller="Account" class="navbar-icon bi-person smoothscroll"></a>
-                            }
-                        </div>
-                    </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <a asp-action="Login" asp-controller="Account" class="btn custom-btn">
+                                <i class="fas fa-user me-2"></i> Sign in
+                            </a>
+                        }
+                    </ul>
                 </div>
             </div>
         </nav>
@@ -179,6 +221,7 @@
             </div>
         </div>
     </footer>
+    </div>
 
     <!-- JAVASCRIPT FILES -->
     <script src="~/js/jquery.min.js"></script>
@@ -186,6 +229,8 @@
     <script src="~/js/jquery.sticky.js"></script>
     <script src="~/js/custom.js"></script>
     <script src="~/js/main.js"></script>
+    <script src="~/lib/aspnet/signalr/dist/browser/signalr.js"></script>
+    
     @await Component.InvokeAsync("Notyf")
     @await RenderSectionAsync("Scripts", required: false)
 

@@ -5,14 +5,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
+
 using System.Security.Claims;
+using System.Drawing.Printing;
 
 namespace OnlineLearning.Controllers
 {
     public class CourseController : Controller
     {
-
-       private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> _logger;
         private readonly DataContext datacontext;
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
@@ -26,89 +27,138 @@ namespace OnlineLearning.Controllers
             _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
         }
-        public async Task<IActionResult> CourseList()
+        public async Task<IActionResult> CourseList(string keyword = null, int? category = null, string level = null, int page = 1)
         {
-            var courses = await datacontext.Courses
-                     .Include(course => course.Instructor)
-                     .ThenInclude(instructor => instructor.AppUser)
-                     .ToListAsync();
+            var coursesQuery = datacontext.Courses
+                .Include(course => course.Instructor)
+                .ThenInclude(instructor => instructor.AppUser)
+                .AsQueryable();
 
-            return View(courses);
+            // Tìm kiếm theo keyword
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                coursesQuery = coursesQuery.Where(course =>
+                    course.Title.Contains(keyword) ||
+                    course.Instructor.AppUser.FirstName.Contains(keyword) ||
+                    course.Instructor.AppUser.LastName.Contains(keyword));
+            }
 
-        }
+            // Lọc theo category nếu có
+            if (category.HasValue)
+            {
+                coursesQuery = coursesQuery.Where(course => course.CategoryID == category.Value);
+            }
 
-        [HttpGet]
-        public async Task<IActionResult> Search(string keyword)
-        {
-            var courses = await datacontext.Courses
-                .Include(course => course.Instructor) 
-                .ThenInclude(instructor => instructor.AppUser) 
-                .Where(course => course.Title.Contains(keyword) ||
-                                 course.Instructor.AppUser.FirstName.Contains(keyword) ||
-                                 course.Instructor.AppUser.LastName.Contains(keyword))
+            // Lọc theo level nếu có
+            if (!string.IsNullOrEmpty(level))
+            {
+                coursesQuery = coursesQuery.Where(course => course.Level == level);
+            }
+
+            var totalCourses = await coursesQuery.CountAsync();
+            var pageSize = 5;
+            var courses = await coursesQuery
+                .OrderByDescending(course => course.Rating)
+                .ThenByDescending(course => course.NumberOfRate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            return View("CourseList", courses); 
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "Instructor, Student")]
-        public async Task<IActionResult> MyCourse()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var model = new ListViewModel();
-
-            if (User.IsInRole("Admin"))
+            var model = new CourseListViewModel
             {
-                return Forbid(); 
-            }
-            if (User.IsInRole("Instructor"))
-            {
-                model.Courses = await datacontext.Courses
-                    .Where(course => course.InstructorID == userId)
-                    .Include(course => course.Instructor)   
-                    .ThenInclude(instructor => instructor.AppUser)
-                    .OrderByDescending(sc => sc.CourseID)
-                    .ToListAsync();
-            }
-            if (User.IsInRole("Student"))
-            {
-                model.StudentCourses = await datacontext.StudentCourses
-                    .Where(sc => sc.StudentID == userId)
-                    .Include(sc => sc.Course)
-                    .ToListAsync();
-                model.Courses = await datacontext.StudentCourses
-                    .Where(sc => sc.StudentID == userId)
-                    .Include(sc => sc.Course)
-                    .ThenInclude(course => course.Instructor)      
-                    .ThenInclude(instructor => instructor.AppUser)
-                    .Select(sc => sc.Course)
-                    .OrderByDescending(sc => sc.CourseID)
-                    .ToListAsync();
-            }
+                CourseList = courses,
+                TotalPage = (int)Math.Ceiling(totalCourses / (double)pageSize),
+                CurrentPage = page,
+                Keyword = keyword,
+                Category = category,
+                Level = level
+            };
+            ViewBag.Keyword = keyword;
             return View(model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> CourseDetail(int id)
+        [Authorize(Roles = "Instructor, Student")]
+        public IActionResult UserCourse()
         {
-            var course = await datacontext.Courses
-                     .Include(course => course.Instructor)       
-                     .ThenInclude(instructor => instructor.AppUser)
-                     .FirstOrDefaultAsync(c => c.CourseID == id);
-
-            if (course == null)
+            if (User.IsInRole("Student"))
+            {
+                return RedirectToAction("MyCourse", "Course", new { area = "Student"});
+            }
+            if (User.IsInRole("Instructor"))
+            {
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor"});
+            }
+            else
             {
                 return NotFound();
             }
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var isEnrolled = await datacontext.StudentCourses
-                .AnyAsync(sc => sc.CourseID == id && sc.StudentID == userId);
-
-            ViewBag.IsEnrolled = isEnrolled;
-
-            return View(course);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> CourseDetail(int CourseID, int page = 1)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int pageSize = 5;
+
+            //Tìm course
+                var course = await datacontext.Courses
+                         .Include(course => course.Instructor)       
+                         .ThenInclude(instructor => instructor.AppUser)
+                         .FirstOrDefaultAsync(c => c.CourseID == CourseID);
+            if (course == null)
+                {
+                    return NotFound();
+                }
+                var isEnrolled = await datacontext.StudentCourses
+                    .AnyAsync(sc => sc.CourseID == CourseID && sc.StudentID == userId);
+                ViewBag.IsEnrolled = isEnrolled;
+                ViewBag.UserID = userId;
+
+
+            //Tìm Review của người xem
+            var yourReview = await datacontext.Review
+                         .Include(r => r.User)
+                         .Include(r => r.Course)
+                         .Where(c => c.CourseID == CourseID && c.UserID == userId)
+                         .FirstOrDefaultAsync();  
+            
+            //Hiện List Review
+            var review = await datacontext.Review
+                     .Include(r => r.User)
+                     .Include(r => r.Course)
+                     .Where(c => c.CourseID == CourseID && (userId == null || c.UserID != userId))
+                     .OrderByDescending(r => r.ReviewDate)
+                     .ToListAsync();
+            var pagedReviews = review.Skip((page - 1) * pageSize)
+                              .Take(pageSize)
+                              .ToList();
+            var totalReview = review.Count();
+            var totalPages = (int)Math.Ceiling(totalReview / (double)pageSize);
+
+
+
+            var model = new CourseDetailViewModel
+            {
+                Course = course,
+                Reviews = pagedReviews,
+                TotalPage = totalPages,
+                CurrentPage = page,
+                YourReview = yourReview,
+                //Tìm tiến độ hoàn thành của người dùng nếu có
+                StudentCourses = isEnrolled
+                                        ? await datacontext.StudentCourses.FirstOrDefaultAsync(sc => sc.CourseID == CourseID && sc.StudentID == userId)
+                                        : null 
+            };
+
+            return View(model);
+        }
+
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
     }
 }

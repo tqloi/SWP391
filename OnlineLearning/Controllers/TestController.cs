@@ -45,15 +45,18 @@ namespace OnlineLearning.Controllers
         }
 
         [Authorize(Roles = "Instructor")]
-        public IActionResult CreateTestRedirector(int CourseID)
+        public async Task<IActionResult> CreateTest(int CourseID)
         {
-            var Course = datacontext.Courses.FirstOrDefault(t => t.CourseID == CourseID);
-            ViewBag.CourseID = Course.CourseID;
-            if (Course == null)
+            ViewBag.CourseID = CourseID;
+            var course = await datacontext.Courses.FindAsync(CourseID);
+
+            if (course == null)
             {
                 return NotFound();
             }
-            return View("CreateTest");
+
+            ViewBag.Course = course;
+            return View();
         }
 
         [HttpGet]
@@ -71,6 +74,21 @@ namespace OnlineLearning.Controllers
             }
             return View("EditTest", Test);
         }
+
+        //[HttpGet]
+        //public async Task<IActionResult> CreateTest(int CourseID)
+        //{
+        //    ViewBag.CourseID = CourseID;
+        //    var course = await datacontext.Courses.FindAsync(CourseID);
+
+        //    if (course == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    ViewBag.Course = course;
+        //    return View();
+        //}
 
         [HttpPost]
         [Authorize(Roles = "Instructor")]
@@ -108,6 +126,8 @@ namespace OnlineLearning.Controllers
         public async Task<IActionResult> CreateTest(TestModel model)
         {
             var Course = datacontext.Courses.Find(model.CourseID);
+            ViewBag.Course = Course;
+
             if (Course == null)
             {
                 return NotFound();
@@ -157,7 +177,37 @@ namespace OnlineLearning.Controllers
                 TempData["success"] = "Test created successfully!";
                 //keep it alive for 2 request 
                 TempData.Keep();
-                return RedirectToAction("CreateTestRedirector", new { courseID = model.CourseID });
+                return RedirectToAction("TestList", "Participation", new { CourseID = model.CourseID });
+                //=======
+                //                if (model.StartTime < model.EndTime)
+                //                {
+                //                    Debug.WriteLine("ID retrieved valid");
+                //                    var newTest = new TestModel
+                //                    {
+                //                        Title = model.Title,
+                //                        Course = model.Course,
+                //                        Description = model.Description,
+                //                        StartTime = model.StartTime,
+                //                        EndTime = model.EndTime,
+                //                        Status = model.Status,
+                //                        CourseID = model.CourseID,
+                //                        NumberOfQuestion = 0
+                //                    };
+
+                //                    datacontext.Test.Add(newTest);
+                //                    await datacontext.SaveChangesAsync();
+                //                    Debug.WriteLine("Test saved to database");
+
+
+                //                    TempData["success"] = "Test created successfully!";
+                //                    return RedirectToAction("TestList", "Participation", new { CourseID = model.CourseID });
+                //                }
+                //                else
+                //                {
+                //                    TempData["error"] = "End Time must after start time";
+                //                    return View(model);
+                //                }
+                //>>>>>>> loii
             }
 
             catch (Exception)

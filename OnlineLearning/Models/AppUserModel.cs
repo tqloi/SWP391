@@ -11,6 +11,7 @@ namespace OnlineLearning.Models
         public string Address { get; set; }
         public DateOnly Dob { get; set; }
         public bool Gender { get; set; }
-
+        public double? WalletUser { get; set; } = 0.0;
     }
 }
+ 

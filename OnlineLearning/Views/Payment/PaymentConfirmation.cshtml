@@ -1,53 +1,46 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@model PaymentViewModel
+@model OnlineLearning.Models.ViewModel.PaymentViewModel
 
 <header class="site-header d-flex flex-column justify-content-center align-items-center">
     <div class="container">
         <div class="row align-items-center">
-
             <div class="col-lg-5 col-12">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
-
                         <li class="breadcrumb-item active" aria-current="page">Checkout page</li>
                     </ol>
                 </nav>
-
                 <h2 class="text-white">Checkout page</h2>
             </div>
         </div>
     </div>
 </header>
 
-
 <section class="section-padding section-bg" id="section_0">
     <div class="container">
         <div class="row transaction-details p-4 border rounded bg-light">
-            <div class="col-lg-6 col-12"> 
-                    <h3 class="mb-4">Transaction Details</h3>
-                    <ul class="list-unstyled">
-                        <li><strong>Customer: </strong>@Model.UserFullName</li>
-                        <li><strong>Course:</strong> @Model.CourseName</li>
-                        <li><strong>Amount:</strong> @Model.Price</li>
-                        <li><strong>Payment date:</strong> @String.Format("{0:dd/MM/yyyy}", Model.PaymentDate)</li>
-                    </ul>
-                    <div class="col-lg-12 col-12 mt-4">
+            <div class="col-lg-6 col-12">
+                <h3 class="mb-4">Transaction Details</h3>
+                <ul class="list-unstyled">
+                    <li><strong>Customer: </strong>@Model.UserFullName</li>
+                    <li><strong>Course:</strong> @Model.CourseName</li>
+                    <li><strong>Amount:</strong> @Model.Price</li>
+                    <li><strong>Payment date:</strong> @String.Format("{0:dd/MM/yyyy}", Model.PaymentDate)</li>
+                </ul>
+                <div class="col-lg-12 col-12 mt-4">
                     <button class="btn custom-btn" data-bs-toggle="modal" data-bs-target="#createCourseModal">
                         Checkout
                     </button>
                 </div>
-                </div>
-            <div class="col-lg-6 col-12 text-center">
-               @*  <h3>Scan QR Code</h3>
-                <div class="qr-code-container" style="background-color: white; padding: 20px; border-radius: 10px; display: inline-block;">
-                    <img src="~/Images/QRCode.jpg" alt="QR Code" style="width: 100%; height:auto; max-width: 400px;" class="img-fluid">
-                </div> *@
             </div>
+            <div class="col-lg-6 col-12 text-center">
+                @* QR Code section can be added here if needed *@
             </div>
         </div>
+    </div>
 </section>
 
 <div class="modal fade" id="createCourseModal" tabindex="-1" aria-labelledby="createCourseModalLabel" aria-hidden="true">
@@ -66,14 +59,14 @@
                     <li><strong>Payment date:</strong> @Model.PaymentDate</li>
                 </ul>
             </div>
-            <form asp-action="Pay" asp-controller="Payment" method="post">
-            <div class="modal-footer">
+            <form asp-action="PaymentConfirmation" asp-controller="Payment" method="post">
+                <div class="modal-footer">
                     <input type="hidden" name="UserID" value="@Model.UserID" />
                     <input type="hidden" name="CourseID" value="@Model.CourseID" />
                     <input type="hidden" name="Price" value="@Model.Price" />
                     <button type="button" class="btn custom-btn active" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn custom-btn">Confirm Checkout</button>
-            </div>
+                </div>
             </form>
         </div>
     </div>

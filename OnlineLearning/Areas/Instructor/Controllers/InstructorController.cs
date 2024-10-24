@@ -10,7 +10,9 @@ using System.Diagnostics;
 namespace OnlineLearning.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
-    [Route("Instructor")]
+
+    [Route("[controller]/[action]")]
+
     public class InstructorController : Controller
     {
 

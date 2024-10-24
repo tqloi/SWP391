@@ -1,0 +1,359 @@
+﻿@model RoleViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+       
+        .chat-online {
+            color: #34ce57;
+        }
+
+        .chat-offline {
+            color: #e4606d;
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: scroll;
+        }
+
+        .border-right {
+            border-right: 1px solid #dee2e6 !important;
+        }
+
+        .chat-message-left {
+            display: flex;
+            align-items: flex-start;
+        }
+        .chat-message-right {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .chat-message-right {
+            justify-content: flex-end;
+        }
+
+        .bg-light {
+            background-color: lightseagreen;
+        }
+        .card{
+            height: calc(100vh - 100px);
+        }
+        .khungchat{
+            height: calc(100vh - 100px);
+        }
+
+        .inputchat {
+            height: 1.18752px;
+            transform: translate(0px, 86.4px);
+        }
+    </style>
+</head>
+<body>
+
+    <main class="content">
+        <div class="container">
+            <h1 class="h3 mb-3"><input class="form-control" hidden asp-for="SendId" id="senderEmail"  disabled /></h1>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" >Message</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" asp-action="Index" asp-controller="Home" asp-area="">Home <span class="sr-only">(current)</span></a>
+      </li>
+      
+    </ul>
+  </div>
+</nav>
+            <div class="card" >
+                <div class="row g-0">
+                    <div class="col-12 col-lg-5 col-xl-3 border-right">
+                        <div class="px-4 d-none d-md-block">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <input type="text" class="form-control my-3" placeholder="Search...">
+                                </div>
+                            </div>
+                        </div>
+                        @foreach (var item in Model.ListUser)
+                        {
+                            <div class="list-group">
+                                <a asp-action="Index" asp-controller="Chat" asp-route-id="@item.Id" class="list-group-item list-group-item-action border-0">
+                       @*              <div class="badge bg-success float-right">5</div> *@
+                                    <div class="d-flex align-items-start">
+                                        <img src="@item.ProfileImagePath" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
+                                        <div class="flex-grow-1 ml-3">
+                                            @(item.FirstName.Length > 15 ? item.FirstName.Substring(0, 15) + "..." :   item.FirstName)
+                                            <div class="small"><span class="fas fa-circle chat-online"></span> Online</div>
+                                            <div>
+                                                @if (Model.IsReadmess != null)
+                                                {
+                                                    
+                                                   if(Model.IsReadmess.StartsWith(item.Id) && Model.receimess.Equals(Model.SendId))
+                                                    {
+                                                        int index = Model.IsReadmess.IndexOf(":");
+                                                        string contentAfterColon = index != -1 ? Model.IsReadmess.Substring(index + 1).Trim() : Model.IsReadmess;
+                                                      //  contentAfterColon = contentAfterColon.Substring(0, 10) + "...";
+                                                        <p>
+
+                                                            @item.LastName: @(contentAfterColon.Length > 10 ? contentAfterColon.Substring(0, 10) + "..." : contentAfterColon) 
+                                                        </p>
+                                                    }
+                                                    else if (Model.IsReadmess.StartsWith(Model.SendId) && Model.receimess.Equals(item.Id))
+                                                    {
+                                                        int index = Model.IsReadmess.IndexOf(":");
+                                                        string contentAfterColon = index != -1 ? Model.IsReadmess.Substring(index + 1).Trim() : Model.IsReadmess;
+                                                        //  contentAfterColon = contentAfterColon.Substring(0, 10) + "...";
+                                                        <p>
+
+                                                            You: @(contentAfterColon.Length > 10 ? contentAfterColon.Substring(0, 10) + "..." : contentAfterColon)
+                                                        </p>
+                                                    }
+
+                                                }                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <!-- Thêm các người dùng khác tương tự ở đây -->
+                            </div>
+                        }
+                        <!-- Add more user items here -->
+                        <hr class="d-block d-lg-none mt-1 mb-0">
+                    </div>
+                    <div class="col-12 col-lg-7 col-xl-9 khungchat">
+                        <div class="py-2 px-4 border-bottom d-none d-lg-block">
+                            <div class="d-flex align-items-center py-1">
+                                <div class="position-relative">
+                                    <img src="@Model.receiveimg" class="rounded-circle mr-1" width="40" height="40">
+                                </div>
+                                <div class="flex-grow-1 pl-3">
+                                    <strong><input class="form-control" asp-for="ReceiverId" id="receiverEmail" hidden />@Model.ReceiveName</strong>
+                                    <strong><input class="form-control" asp-for="ReceiveName" id="receivername" hidden /></strong>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary btn-lg mr-1 px-3"><i class="fas fa-phone"></i></button>
+                                    <a id="videoCallButton" class="btn btn-info btn-lg mr-1 px-3 d-none d-md-inline-block">
+                                        <i class="fas fa-video"></i>
+                                    </a>
+                                    <button class="btn btn-light border btn-lg px-3"><i class="fas fa-ellipsis-h"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="position-relative">
+                            <div class="chat-messages p-4">
+                                <ul id="messagesList">
+                                   
+                                    @if (Model.Messages != null && Model.Messages.Count > 0)
+                                     {
+                                         foreach (var msg in Model.Messages)
+                                         {
+                                             var senderName = msg.SenderId == Model.SendId ? "You" : Model.ReceiveName;
+                                            @if(senderName.Equals("You"))
+                                            {
+                                                <div class="chat-message-right pb-4">
+                                                    <div class="mr-2">
+                                                        <img src="@msg.Sender.ProfileImagePath" class="rounded-circle mr-1" width="40" height="40" >
+                                                        <div class="text-muted small text-nowrap mt-2">@msg.Timestamp.ToString("hh:mm tt")</div>
+                                                    </div>
+                                                    <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
+                                                        <div class="font-weight-bold mb-1">You</div>
+                                                        @msg.Content <br />
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="chat-message-left pb-4">
+                                                    <div>
+                                                        <img src="@Model.receiveimg" class="rounded-circle mr-1" width="40" height="40" >
+                                                        <div class="text-muted small text-nowrap mt-2">@msg.Timestamp.ToString("hh:mm tt")</div>
+                                                    </div>
+                                                    <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
+                                                        <div class="font-weight-bold mb-1">@Model.ReceiveName</div>
+                                                         @msg.Content <br />
+                                                    </div>
+                                                </div>
+                                            }
+                                        }                                
+                                    }
+                                      
+                                </ul>
+                            </div>
+                        </div>
+                        @if(Model.ReceiverId != null)
+                        {
+                            <div class="flex-grow-0 py-3 px-4 border-top inputchat">
+                                <form class="input-group">
+                                    <input class="form-control" type="text" id="chatMessage" placeholder="Type your message" required />
+                                    <button tabindex="1" type="submit" class="btn btn-primary" id="sendMessage">Send Message</button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popperjs/core@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.js"></script>
+
+    
+    <script>
+        var connectionChat = new signalR.HubConnectionBuilder().withUrl("/ChatHub").build();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById("sendMessage").disabled = false;
+
+            // Lắng nghe sự kiện MessageReceived từ SignalR
+            connectionChat.on("MessageReceived", function (user, message) {
+                var messageDiv = document.createElement("div");
+                var avatarDiv = document.createElement("div");
+                var textDiv = document.createElement("div");
+                var img = document.createElement("img");
+                var timeDiv = document.createElement("div");
+
+                var senderEmail = document.getElementById("senderEmail").value;
+
+                // Cấu trúc cho người gửi
+                if (user === senderEmail) {
+                    messageDiv.classList.add("chat-message-right", "pb-4");
+                    img.src = '@Html.Raw(Model.sendimg)';
+                    
+                    textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "mr-3");
+                }
+                // Cấu trúc cho người nhận
+                else {
+                    messageDiv.classList.add("chat-message-left", "pb-4");
+                    img.src = '@Html.Raw(Model.receiveimg)';;
+                   
+                    textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "ml-3");
+                }
+
+                img.classList.add("rounded-circle", "mr-1");
+                img.width = 40;
+                img.height = 40;
+
+                var usernameDiv = document.createElement("div");
+                usernameDiv.classList.add("font-weight-bold", "mb-1");
+                usernameDiv.textContent = user === senderEmail ? "You" : "@Model.ReceiveName";
+
+                var messageContent = document.createElement("div");
+                messageContent.textContent = message;
+
+                timeDiv.classList.add("text-muted", "small", "text-nowrap", "mt-2");
+                timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                textDiv.appendChild(usernameDiv);
+                textDiv.appendChild(messageContent);
+                messageDiv.appendChild(avatarDiv);
+                avatarDiv.appendChild(img);
+                avatarDiv.appendChild(timeDiv);
+                messageDiv.appendChild(textDiv);
+
+                document.getElementById("messagesList").appendChild(messageDiv);
+                messageDiv.scrollIntoView({ behavior: "smooth" });
+            });
+
+            document.getElementById("sendMessage").addEventListener("click", function (event) {
+                var sender = document.getElementById("senderEmail").value;
+                var message = document.getElementById("chatMessage").value;
+                var receiver = document.getElementById("receiverEmail").value;
+
+                if (receiver.length > 0) {
+                    // Nếu có người nhận, gửi tin nhắn đến người đó
+                    $.ajax({
+                        url: '/SendMessageToReceiver',
+                        type: 'GET',
+                        data: { sender: sender, receiver: receiver, message: message },
+                        success: function (response) {
+                            console.log(response);
+                        },
+                        error: function (error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }
+                
+
+                // Hiển thị tin nhắn đã gửi ngay lập tức
+                var li = document.createElement("li");
+                li.classList.add("chat-message-right", "pb-4"); 
+                var messageContainer = document.createElement("div");
+
+                // Tạo phần tử img cho hình ảnh của người gửi
+                var img = document.createElement("img");
+                img.src =  '@Html.Raw(Model.sendimg)'; // Đường dẫn đến hình ảnh
+                img.classList.add("rounded-circle", "mr-1");
+                img.width = 40;
+                img.height = 40;
+
+                // Thêm hình ảnh vào messageContainer
+                messageContainer.appendChild(img);
+
+                // Tạo phần tử chứa nội dung tin nhắn
+                var messageContent = document.createElement("div");
+                messageContent.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "mr-3");
+
+                // Tạo tên người gửi
+                var senderName = document.createElement("div");
+                senderName.classList.add("font-weight-bold", "mb-1");
+                senderName.textContent = "You"; 
+
+                // Thêm tên người gửi và nội dung tin nhắn
+                messageContent.appendChild(senderName);
+                messageContent.appendChild(document.createTextNode(message)); // Thay thế nội dung bằng biến message
+                messageContent.appendChild(document.createElement("br")); // Thêm dòng ngắt nếu cần
+
+                // Thêm cả messageContent và messageContainer vào li
+                li.appendChild(messageContainer);
+                li.appendChild(messageContent);
+
+                // Thêm li vào danh sách tin nhắn
+                document.getElementById("messagesList").appendChild(li);
+
+                // Xóa ô nhập tin nhắn
+                document.getElementById("chatMessage").value = "";
+                li.scrollIntoView({ behavior: "smooth" }); // Cuộn tới tin nhắn mới
+                event.preventDefault(); // Ngăn chặn hành vi mặc định của nút
+
+            });
+
+            // Khởi động kết nối SignalR
+            connectionChat.start().then(function () {
+                var sender = document.getElementById("senderEmail").value;
+                connectionChat.send("JoinGroup", sender);
+                document.getElementById("sendMessage").disabled = false; // Kích hoạt nút gửi tin nhắn
+            });
+        });
+    </script>
+
+    <script>
+         var callerId = '@Model.SendId'; 
+        var receiverId = '@Model.ReceiverId'; 
+
+        document.getElementById('videoCallButton').addEventListener('click', function() {
+            if (callerId && receiverId) {
+                var url = `/api/VideoCall/${callerId}/${receiverId}`;
+                window.location.href = url;
+            } else {
+                console.error('Caller ID or Receiver ID is invalid.');
+                alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            }
+        });
+    </script>
+</body>
+</html>

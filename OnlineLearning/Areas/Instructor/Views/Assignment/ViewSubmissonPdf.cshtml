@@ -1,0 +1,16 @@
+﻿@model OnlineLearning.Models.SubmissionModel
+
+@{
+    ViewBag.Title = "View PDF";
+}
+
+
+
+@if (!string.IsNullOrEmpty(Model?.SubmissionLink))
+{
+    <iframe src="~/Assignment/@Model.SubmissionLink" width="100%" height="100%" style="border: none;"></iframe>
+}
+else
+{
+    <p>No PDF available to display.</p>
+}

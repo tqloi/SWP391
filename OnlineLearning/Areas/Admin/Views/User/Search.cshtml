@@ -224,7 +224,7 @@
                                             <div class="candidate-list-details">
                                                 <div class="candidate-list-info">
                                                     <div class="candidate-list-title">
-                                                        <h5 class="mb-0"><a href="#">@item.Title</a></h5>
+                                                            <h5 class="mb-0"><a asp-area="" asp-action="CourseDetail" asp-controller="Course" asp-route-id="@item.CourseID">@item.Title</a></h5>
                                                     </div>
                                                     <div class="candidate-list-option">
                                                         <ul class="list-unstyled">
@@ -250,7 +250,7 @@
                                 }
                                 @if(Model.Users != null)
                                 {
-                                    @foreach (var item in Model.Users)
+                                    @foreach(var item in Model.Users)
                                     {
                                         <tr class="candidates-list">
                                             <td class="title">
@@ -260,7 +260,7 @@
                                                 <div class="candidate-list-details">
                                                     <div class="candidate-list-info">
                                                         <div class="candidate-list-title">
-                                                            <h5 class="mb-0"><a href="#">@item.FirstName @item.LastName</a></h5>
+                                                            <h5 class="mb-0"><a asp-area="Admin" asp-controller="User" asp-action="UserProfile" asp-route-Id="@item.Id">@item.FirstName @item.LastName</a></h5>
                                                         </div>
                                                         <div class="candidate-list-option">
                                                             <ul class="list-unstyled">

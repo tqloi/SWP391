@@ -1,0 +1,46 @@
+﻿@{
+    Layout = "~/Views/Shared/_CourseLayout.cshtml";
+
+    <partial name="_NoficationPartial" />
+}
+@model SubmissionViewModel
+
+<style>
+    .topics-section {
+        padding: 50px 100px 50px 100px;
+        background-color: #f7f7f7;
+    }
+</style>
+
+<!-- Add Lecture Modal -->
+<div class="container">
+
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="font-monospace fs-2">Edit Assignment</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form enctype="multipart/form-data" method="post" asp-area="Student" asp-controller="Assignment" asp-action="SubmitAssignment">
+                    <!-- Assignment ID -->
+                    <div class="mb-3">
+                        <input type="hidden" asp-for="AssignmentID" />
+                    </div>
+
+                    <!-- Assignment Link -->
+                    <div class="mb-3">
+                        <label asp-for="SubmissionLink" class="form-label">Upload Assignment File</label>
+                        <input asp-for="SubmissionLink" class="form-control" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary w-100">Upload Assignment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</div>

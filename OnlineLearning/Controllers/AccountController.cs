@@ -13,8 +13,14 @@ using OnlineLearning.Email;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+
+using OnlineLearningApp.Respositories;
+
 using static QRCoder.PayloadGenerator.WiFi;
 using System.Data;
+using Newtonsoft.Json;
+using Firebase.Auth;
+
 
 namespace OnlineLearning.Controllers
 {
@@ -25,15 +31,15 @@ namespace OnlineLearning.Controllers
         private RoleManager<IdentityRole> _roleManager;
         private IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
-        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, RoleManager<IdentityRole> roleManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
+        private readonly DataContext _dataContext;
+        public AccountController(SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, RoleManager<IdentityRole> roleManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, DataContext dataContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
-
+            _dataContext = dataContext;
         }
         [HttpGet]
         [Route("Account/Login")]
@@ -54,6 +60,7 @@ namespace OnlineLearning.Controllers
         public async Task<IActionResult> GoogleResponse()
         {
             var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
             if (result.Principal != null)
             {
                 var claims = result.Principal.Identities.FirstOrDefault()?.Claims;
@@ -62,6 +69,7 @@ namespace OnlineLearning.Controllers
                     var emailClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
                     var firstNameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName);
                     var lastNameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname);
+                    var pictureClaim = claims.FirstOrDefault(c => c.Type == "urn:google:picture"); 
 
                     if (emailClaim != null)
                     {
@@ -70,14 +78,16 @@ namespace OnlineLearning.Controllers
 
                         if (existingUser == null)
                         {
+                            Random random = new Random();
                             var user = new AppUserModel
                             {
-                                UserName = email.Split('@')[0],
+                                UserName = email.Split('@')[0]
+                                         + $"{random.Next(0, 10)}{random.Next(0, 10)}{random.Next(0, 10)}{random.Next(0, 10)}",
                                 FirstName = firstNameClaim?.Value ?? "",
                                 LastName = lastNameClaim?.Value ?? "",
                                 Email = email,
                                 PhoneNumber = "123456789",
-                                ProfileImagePath = "default.jpg",
+                                ProfileImagePath = pictureClaim?.Value ?? "default.jpg",
                                 Address = "", // Giá trị mặc định
                                 Dob = DateOnly.FromDateTime(DateTime.Now),
                                 Gender = true,
@@ -101,11 +111,12 @@ namespace OnlineLearning.Controllers
                             var roles = await _userManager.GetRolesAsync(existingUser);
                             HttpContext.Session.Remove("Otp");
                             HttpContext.Session.Remove("Username");
+                            await _userManager.AddClaimsAsync(existingUser, claims);
                             if (roles.Contains("Admin"))
                             {
                                 return RedirectToAction("Index", "Admin", new { area = "Admin" });
                             }
-                            TempData["success"] = "Action successful!";
+                            TempData["success"] = "Login successful!";
                             return RedirectToAction("Index", "Home");
                         }
                     }
@@ -118,6 +129,17 @@ namespace OnlineLearning.Controllers
 
         public async Task<IActionResult> Logout()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+            //notification for admin
+            var notification = new NotificationModel();
+            notification.UserId = user.Id;
+            notification.Description = $"{user.UserName} has just logged out";
+            notification.CreatedAt = DateTime.Now;
+
+            _dataContext.Notification.Add(notification);
+            await _dataContext.SaveChangesAsync();
+
             await _signInManager.SignOutAsync();
             TempData["success"] = "Logout Success!";
             return RedirectToAction("Login", "Account");
@@ -158,6 +180,7 @@ namespace OnlineLearning.Controllers
             }
             HttpContext.Session.Remove("Otp");
             HttpContext.Session.Remove("Username");
+            HttpContext.Session.SetString("UserSession", JsonConvert.SerializeObject(user));
             var roles = await _userManager.GetRolesAsync(user);
 
             var claims = new List<Claim>
@@ -165,11 +188,20 @@ namespace OnlineLearning.Controllers
                 new Claim("FirstName", user.FirstName),
                 new Claim("ProfileImagePath", user.ProfileImagePath)
             };
+            await _userManager.AddClaimsAsync(user, claims);
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-            // Redirect based on role
+            //notification for admin
+            var notification = new NotificationModel();
+            notification.UserId = user.Id;
+            notification.Description = $"{user.UserName} has just logged in";
+            notification.CreatedAt = DateTime.Now;
+
+            _dataContext.Notification.Add(notification);
+            await _dataContext.SaveChangesAsync();
+            
             if (roles.Contains("Admin"))
             {
                 return RedirectToAction("Index", "Admin", new { area = "Admin" });
@@ -177,6 +209,7 @@ namespace OnlineLearning.Controllers
             TempData["success"] = "Login successful!";
             return RedirectToAction("Index", "Home");
         }
+
         [HttpGet]
         public IActionResult Create()
         {
@@ -201,7 +234,7 @@ namespace OnlineLearning.Controllers
                     LastName = model.LastName,
                     Email = model.Email,
                     PhoneNumber = "123456789",
-                    ProfileImagePath = "default.jpg",
+                    ProfileImagePath = "/Images/default.jpg",
                     Address = "",
                     Dob = DateOnly.FromDateTime(DateTime.Now),
                     Gender = true

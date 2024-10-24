@@ -1,0 +1,26 @@
+﻿@model ReviewModel
+@{
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="card-title mb-4 text-center">Write a Review</h3>
+            <form asp-action="SummitReview" asp-controller="Review" method="post" id="reviewForm">
+                <div class="mb-3">
+                    <label for="Rating" class="form-label">Rating</label>
+                    <div class="star-rating">
+                        @for (int i = 5; i >= 1; i--)
+                        {
+                            <input type="radio" id="star@(i)" name="Rating" value="@i" required />
+                            <label for="star@(i)">★</label>
+                        }
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="comment" class="form-label">Comment</label>
+                    <textarea class="form-control" id="Comment" name="comment" rows="5" required></textarea>
+                </div>
+                <input type="hidden" id="CourseID" name="CourseID" asp-for="CourseID" />
+                <button type="submit" class="btn custom-btn w-100">Submit Review</button>
+            </form>
+        </div>
+    </div>
+}
