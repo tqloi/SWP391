@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
+using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
 using System;
 using System.Collections.Generic;
@@ -19,14 +20,16 @@ namespace OnlineLearning.Controllers
         private readonly DataContext _db;
         private readonly IHubContext<ChatHub> _basicChatHub;
         private readonly UserManager<AppUserModel> _userManager;
+        private readonly StringeeService _stringeeService;
         public ChatController(
             DataContext context,
             UserManager<AppUserModel> userManager,
-            IHubContext<ChatHub> basicChatHub)
+            IHubContext<ChatHub> basicChatHub, StringeeService stringeeService)
         {
             _db = context;
             _userManager = userManager;
             _basicChatHub = basicChatHub;
+            _stringeeService = stringeeService;
         }
         
         [Authorize]
@@ -53,8 +56,8 @@ namespace OnlineLearning.Controllers
                 model.receimess = $"{isreadmess.ReceiverId}";
                 model.IsReadmess = $"{isreadmess.SenderId}: {isreadmess.Content}";
             }
-                
-            
+
+            var token = _stringeeService.GenerateAccessToken(userId);
             if (user != null)
             {
                 var roles = await _userManager.GetRolesAsync(user);
@@ -64,7 +67,8 @@ namespace OnlineLearning.Controllers
                 model.SendName = user.FirstName + " " + user.LastName;
                 model.Messages = messages;
                 model.SendId = user.Id;
-                model.sendimg = user.ProfileImagePath;               
+                model.sendimg = user.ProfileImagePath;  
+                model.Token = token;
                if (receiver != null)
                 {
                     model.receiveimg = receiver.ProfileImagePath;
@@ -125,6 +129,7 @@ namespace OnlineLearning.Controllers
             var roles = await _userManager.GetRolesAsync(user);
             return roles;
         }
+        
 
 
     }

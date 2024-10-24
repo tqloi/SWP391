@@ -1,4 +1,5 @@
-﻿@model RoleViewModel
+﻿﻿
+@model RoleViewModel
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -120,10 +121,7 @@
                                                     }
 
                                                 }
-                                                else
-                                                {
-                                                    <p>Null</p>
-                                                }
+                                               
 
                                                 
                                             </div>
@@ -196,6 +194,32 @@
                                 </ul>
                             </div>
                         </div>
+                        <div>
+                            
+                        </div>
+                        <div id="incoming-call-notice" style="display: none;">
+                            <audio id="notification-call-sound" src="~/Sound/Messenger call sound effect __ Non copyright..mp3" preload="auto"></audio>
+                            <div class="modal fade" id="createAssignmentModal" tabindex="-1" aria-labelledby="createCourseModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="createCourseModalLabel">Incoming Call</h5>
+                                            <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>You have an incoming call!</p>
+                                            <!-- Thêm thông tin về người gọi ở đây nếu cần -->
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a id="rejectCallButton" asp-action="Index" asp-controller="Chat" asp-area="" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
+                                            <a asp-route-callerId="@Model.SendId" asp-route-receiverId="@Model.ReceiverId" asp-action="StartCall" asp-controller="VideoCall" asp-area="" class="btn btn-primary">Answer</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                        </div>
                         @if(Model.ReceiverId != null)
                         {
                         <div class="flex-grow-0 py-3 px-4 border-top inputchat">
@@ -210,13 +234,33 @@
             </div>
         </div>
     </main>
-
+    <audio id="notification-sound" src="~/Sound/075797_short-text-and-sendmp3-37438 (mp3cut.net).mp3" preload="auto"></audio>
+    <script>
+        function playNotificationSound() {
+            var audio = document.getElementById("notification-sound");
+            audio.play();
+        }
+    </script>
+    <script>
+        function playNotificationCallSound() {
+            var audio = document.getElementById("notification-call-sound");
+            audio.play();
+        }
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popperjs/core@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.js"></script>
-
+    <script src="~/js/js/code.js"></script>
+    <script src="~/js/js/lib/jquery.js"></script>
+    <script src="~/js/js/lib/socket.io-2.2.0.js"></script>
+    <script src="~/js/js/StringeeSDK-1.5.10.js"></script>
+    <script>
+        var token = '@Model.Token';
+        var callerId = '@Model.SendId';
+        var calleeId = '@Model.ReceiverId';
+    </script>
     
     <script>
         var connectionChat = new signalR.HubConnectionBuilder().withUrl("/ChatHub").build();
@@ -272,6 +316,7 @@
 
                 document.getElementById("messagesList").appendChild(messageDiv);
                 messageDiv.scrollIntoView({ behavior: "smooth" });
+                playNotificationSound();
             });
 
             document.getElementById("sendMessage").addEventListener("click", function (event) {

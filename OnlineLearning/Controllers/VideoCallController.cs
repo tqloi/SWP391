@@ -18,7 +18,7 @@ namespace OnlineLearning.Controllers
         [HttpGet("{callerId}/{receiverId}")]
         public IActionResult StartCall(string callerId, string receiverId)
         {
-             if (string.IsNullOrEmpty(callerId) || string.IsNullOrEmpty(receiverId))
+            if (string.IsNullOrEmpty(callerId) || string.IsNullOrEmpty(receiverId))
             {
                 return BadRequest("Caller ID and Receiver ID are required.");
             }
@@ -43,7 +43,7 @@ namespace OnlineLearning.Controllers
                 ReceiveId = receiverId
             };
 
-            return View(model); 
+            return View(model);
         }
     }
 }
