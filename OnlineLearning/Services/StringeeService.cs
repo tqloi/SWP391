@@ -30,19 +30,17 @@ namespace OnlineLearning.Services
                     SecurityAlgorithms.HmacSha256
                 )
             );
-
           //  header["cty"] = _stringeeOption.Cty;
 
             var payload = new JwtPayload
-    {
+        {
         { "jti", $"{apiSid}-{now}" },
         { "iss", apiSid },
         { "exp", exp },
         { "userId", userId }
-    };
+        };
 
             var jwt = new JwtSecurityToken(header, payload);
-
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenString = tokenHandler.WriteToken(jwt);
 

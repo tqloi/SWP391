@@ -12,6 +12,7 @@
         localVideo.srcObject = null;
         localVideo.srcObject = stream;
     });
+    
 
     call1.on('signalingstate', function (state) {
         console.log('signalingstate ', state);
@@ -90,7 +91,9 @@ jQuery(function(){
         callButton.hide();
         answerCallButton.show();
         rejectCallButton.show();
-        
+        var myModal = new bootstrap.Modal(document.getElementById('createAssignmentModal'));
+        myModal.show();
+        playNotificationCallSound();
     });
 
     //Event handler for buttons
@@ -120,6 +123,7 @@ jQuery(function(){
         callButton.show();
         $(this).hide();
         answerCallButton.hide();
+        $('#incoming-call-notice').hide();
         
     });
 

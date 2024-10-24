@@ -13,5 +13,7 @@
         public string receimess { get; set; }
         public string sendimg { get; set; }
         public string receiveimg { get; set; }
+        public string Token { get; set; }
+        public string sendcall { get; set; }
     }
 }

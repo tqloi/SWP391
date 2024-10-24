@@ -18,13 +18,11 @@ namespace OnlineLearning.Controllers
         [HttpGet("{callerId}/{receiverId}")]
         public IActionResult StartCall(string callerId, string receiverId)
         {
-             if (string.IsNullOrEmpty(callerId) || string.IsNullOrEmpty(receiverId))
+            if (string.IsNullOrEmpty(callerId) || string.IsNullOrEmpty(receiverId))
             {
                 return BadRequest("Caller ID and Receiver ID are required.");
             }
-
             var token = _stringeeService.GenerateAccessToken(callerId);
-
             return RedirectToAction("VideoCallView", new { token, callerId, receiverId });
         }
 
@@ -35,7 +33,7 @@ namespace OnlineLearning.Controllers
             {
                 return BadRequest("Token, Caller ID, and Receiver ID are required.");
             }
-
+            HttpContext.Session.SetString("idsend", callerId);
             var model = new VideoCallViewModel
             {
                 Token = token,
@@ -43,7 +41,7 @@ namespace OnlineLearning.Controllers
                 ReceiveId = receiverId
             };
 
-            return View(model); 
+            return View(model);
         }
     }
 }

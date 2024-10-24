@@ -43,7 +43,7 @@ namespace OnlineLearning.Controllers
             ViewBag.Course = Course;
             return View();
         }
-
+        [HttpGet]
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> CreateTest(int CourseID)
         {
@@ -108,7 +108,7 @@ namespace OnlineLearning.Controllers
                     TempData["error"] = $"Cannot change Number Of Attempt Lower since " +
                         $"there's a student with {sub.NumberOfAttempt} submission";
                     TempData.Keep();
-                    return RedirectToAction("TestList", "Participation", new { id = model.CourseID });
+                    return RedirectToAction("TestList", "Participation", new { CourseID = model.CourseID });
                 }
             }
 
@@ -118,7 +118,7 @@ namespace OnlineLearning.Controllers
             datacontext.SaveChanges();
             TempData["success"] = "Edit Successfully";
             TempData.Keep();
-            return RedirectToAction("TestList", "Participation", new { id = model.CourseID });
+            return RedirectToAction("TestList", "Participation", new { CourseID = model.CourseID });
         }
 
         [HttpPost]
@@ -177,7 +177,7 @@ namespace OnlineLearning.Controllers
                 TempData["success"] = "Test created successfully!";
                 //keep it alive for 2 request 
                 TempData.Keep();
-                return RedirectToAction("TestList", "Participation", new { CourseID = model.CourseID });
+                return RedirectToAction("CreateQuestionRedirector", "Question", new { TestID = model.TestID });
                 //=======
                 //                if (model.StartTime < model.EndTime)
                 //                {
@@ -214,7 +214,7 @@ namespace OnlineLearning.Controllers
             {
                 TempData["error"] = "Test creation failed!";
                 TempData.Keep();
-                return RedirectToAction("CreateTestRedirector", new { courseID = model.CourseID });
+                return RedirectToAction("CreateTestRedirector", new { TestID = model.TestID });
             }
         }
 
@@ -233,7 +233,7 @@ namespace OnlineLearning.Controllers
                 {
                     TempData["error"] = "Course Null";
                     TempData.Keep();
-                    return RedirectToAction("TestList", "Participation", new { id = Test.CourseID });
+                    return RedirectToAction("TestList", "Participation", new { CourseID = Test.CourseID });
                 }
             }
             ViewBag.Course = Test.Course;
@@ -265,7 +265,7 @@ namespace OnlineLearning.Controllers
             {
                 TempData["error"] = "You've reach your maximum attempt";
                 TempData.Keep();
-                return RedirectToAction("TestList", "Participation", new { id = test.CourseID });
+                return RedirectToAction("TestList", "Participation", new { CourseID = test.CourseID });
             }
 
             Dictionary<int, string> correctAnswers = new Dictionary<int, string>();
