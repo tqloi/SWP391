@@ -67,7 +67,7 @@ builder.Services.AddAuthentication(options =>
 
         // Map claim để nhận URL ảnh đại diện
         options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
-
+        options.AccessDeniedPath = "/Account/Login";
         // Lưu token nếu cần thiết
         options.SaveTokens = true;
     });

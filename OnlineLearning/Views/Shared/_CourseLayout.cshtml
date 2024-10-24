@@ -168,13 +168,13 @@
 
                     <!-- Topbar Search -->
                     <div class="d-none d-lg-block ml-auto">
-                        <form asp-action="Search" asp-controller="Course" method="GET" class="navbar-form" style="display: inline; position: relative;">
-                            <input type="text" name="keyword" placeholder="Search"
-                                   style="padding: 10px 15px; border-radius: 25px; border: 1px solid #ccc; outline: none; width: 250px;">
-                            <button type="submit"
-                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background-color: transparent; border: none; cursor: pointer;">
-                                <i class="me-2 bi bi-search" style="font-size: 1.2em;"></i>
-                            </button>
+                        <form asp-action="CourseList" asp-controller="Course" method="GET" class="navbar-form">
+                            <div class="input-group bg-white" style="padding: 3px; padding-left: 13px; border-radius: 25px; border: 1px solid #ccc;">
+                                <input type="search" name="keyword" placeholder="Search" style="border: none; outline: none;" required>
+                                <button type="submit" class="btn btn-white border-0">
+                                    <i class="bi bi-search" style="font-size: 1.2em;"></i>
+                                </button>
+                            </div>
                         </form>
                     </div>
 

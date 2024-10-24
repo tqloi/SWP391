@@ -60,6 +60,7 @@ namespace OnlineLearning.Controllers
         public async Task<IActionResult> GoogleResponse()
         {
             var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
             if (result.Principal != null)
             {
                 var claims = result.Principal.Identities.FirstOrDefault()?.Claims;

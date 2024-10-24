@@ -90,13 +90,13 @@
                         var keyword = ViewBag.Keyword;
                     }
                     <div class="d-none d-lg-block me-auto">
-                        <form asp-action="CourseList" asp-controller="Course" method="GET" class="navbar-form" style="display: inline; position: relative;">
-                            <input type="text" name="keyword" value="@keyword" placeholder="Search"
-                                   style="padding: 10px 15px; border-radius: 25px; border: 1px solid #ccc; outline: none; width: 250px;" required>
-                            <button type="submit"
-                                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background-color: transparent; border: none; cursor: pointer;">
-                                <i class="me-2 bi bi-search" style="font-size: 1.2em;"></i>
-                            </button>
+                        <form asp-action="CourseList" asp-controller="Course" method="GET" class="navbar-form">
+                            <div class="input-group bg-white" style="padding: 3px; padding-left: 13px; border-radius: 25px; border: 1px solid #ccc;">
+                                <input type="search" name="keyword" value="@keyword" placeholder="Search" style="border: none; outline: none;" required>
+                                <button type="submit" class="btn btn-white border-0">
+                                    <i class="bi bi-search" style="font-size: 1.2em;"></i>
+                                </button>
+                            </div>
                         </form>
                     </div>
 
@@ -112,7 +112,7 @@
                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <img src="@user.ProfileImagePath"
                                          class="rounded-circle"
-                                         style="width: 45px; height: 45px;"
+                                         style="width: 46px; height: 46px;"
                                          alt="Profile Image">
                                     <span class="d-none d-lg-inline ms-3">
                                         @(fullName.Length > 25 ? fullName.Substring(0, 25) + "..." : fullName)
