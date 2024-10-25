@@ -6,9 +6,7 @@ namespace OnlineLearning.Models
     public class BookmarkModel
     {
         [Key]
-        public int BookamarkID { get; set; }
-        [Column(TypeName = "money")]
-        public decimal TotalCost { get; set; }
+        public int BookmarkID { get; set; }
 
         [ForeignKey("Student")]
         [StringLength(450)]

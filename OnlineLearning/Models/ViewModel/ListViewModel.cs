@@ -12,6 +12,6 @@ namespace OnlineLearning.Models.ViewModel
         public int CurrentPage { get; set; }
         public int? Category { get; set; }
         public string Level { get; set; }
-        public string status { get; set; }
+        public string Status { get; set; }
     }
 }

@@ -23,45 +23,59 @@
 @{
     var category = Model.Category;
     var level = Model.Level;
+    var status = Model.Status;
 }
 <section class="topics-section">
     <div class="button-group d-flex justify-content-between align-items-center">
         <div>
-            <button class="btn custom-btn active me-2" onclick="togglebutton(this)">In Progress</button>
-            <button class="btn custom-btn active me-2" onclick="togglebutton(this)">Complete</button>
-            <button class="btn custom-btn active me-2" onclick="togglebutton(this)">Saved</button>
+            <select class="filter-select me-2" id="statusFilter" onchange="applyFilters()">
+                <option value="">All Status</option>
+                <option value="NotStarted">Not Started</option>
+                <option value="InProgress">In Progress</option>
+                <option value="Completed">Complete</option>
+                <option value="Certified">Certified</option>
+                <option value="Saved">Saved</option>
+            </select>
         </div>
         <div>
-             <select class="filter-select me-2" id="categoryFilter" onchange="filterByCategory()">
+            <select class="filter-select me-2" id="categoryFilter" onchange="applyFilters()">
                 <option value="">All Category</option>
                 @Html.Partial("_SideCategory")
             </select>
 
-             <select class="filter-select" id="difficultyFilter" onchange="filterByCategory()">
+            <select class="filter-select" id="difficultyFilter" onchange="applyFilters()">
                 <option value="">All Level</option>
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
             </select>
             <script>
-                            function filterByCategory() {                               
-                                var selectedCategory = document.getElementById("categoryFilter").value;
-                                var selectedLevel = document.getElementById("difficultyFilter").value;
-                                var url = '/Student/Course/MyCourse?category=' + selectedCategory + '&level=' + selectedLevel;
-                                window.location.href = url;
-                            }
-                        </script>
-                        <script>
-                            var selectedCategory = @category;
-                            document.getElementById("categoryFilter").value = selectedCategory;
-                        </script>
-                        <script>
-                            var selectedLevel = '@(level ?? "")';
-                            document.getElementById("difficultyFilter").value = selectedLevel;
-                        </script>
+                function applyFilters() {
+                    var selectedStatus = document.getElementById("statusFilter").value;
+                    var selectedCategory = document.getElementById("categoryFilter").value;
+                    var selectedLevel = document.getElementById("difficultyFilter").value;
+                    var url = '/Student/Course/MyCourse?status=' + selectedStatus+ '&category=' + selectedCategory + '&level=' + selectedLevel;
+                    window.location.href = url;
+                }
+            </script>
+            <script>
+                var selectedStatus = '@(status ?? "")';
+                document.getElementById("statusFilter").value = selectedStatus;
+            </script>
+
+            <script>
+                var selectedCategory = @category;
+                document.getElementById("categoryFilter").value = selectedCategory;
+            </script>
+            <script>
+                var selectedLevel = '@(level ?? "")';
+                document.getElementById("difficultyFilter").value = selectedLevel;
+            </script>
+            
         </div>
     </div>
-    @if (Model.StudentCourses.Any() && User.IsInRole("Student"))
+    
+    @if (Model.StudentCourses != null && Model.StudentCourses.Any() && User.IsInRole("Student"))
     {
         @foreach (var studentCourse in Model.StudentCourses)
         {
@@ -184,6 +198,64 @@
                 </div>
             </div>
         }
+    }
+    <!-- Hiển thị book mark-->
+    @if (Model.Bookmarks != null && Model.Bookmarks.Any() && User.IsInRole("Student"))
+    {
+        @foreach (var bookmark in Model.Bookmarks)
+        {
+            var course = Model.Courses.FirstOrDefault(c => c.CourseID == bookmark.CourseID);
+            <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
+                <div class="row">
+                    <div class="col-md-3">
+                        <img src="@course.CoverImagePath" class="custom-block-image img-fluid" alt="">
+                    </div>
+
+                    <div class="col-md-8 custom-block-topics-listing-info">
+                        <div>
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-2">
+                                        <span class="dot @((course.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
+                                        @course.Title
+                                    </h4>
+                                    <p class="mb-0"> Instructor: @course.Instructor?.AppUser?.FirstName @course.Instructor?.AppUser?.LastName</p>
+                                    <div class="stars justify-content-between align-content-center">
+                                        @if (@course.NumberOfRate == 0)
+                                        {
+                                            <h6 class="text-muted mt-1">No reviews yet</h6>
+                                        }
+                                        else
+                                        {
+                                            <h5>
+                                                @course.Rating.ToString("F2")
+                                                @*       <span class="star">&#9733;</span> *@
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    if (i <= @course.Rating)
+                                                    {
+                                                        <span class="star">&#9733;</span> <!-- Ngôi sao đầy -->
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="star">&#9734;</span> <!-- Ngôi sao rỗng -->
+                                                    }
+                                                }
+                                                (@course.NumberOfRate)
+                                            </h5>
+                                        }
+                                    </div>
+                                    <h4>$@course.Price</h4>
+                                </div>
+                                <span class="badge bg-music rounded-pill ms-auto">@course.NumberOfStudents</span>
+                            </div>
+                            <a asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@course.CourseID" class="btn custom-btn mt-3 mt-lg-4">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
     }
 </section>
 

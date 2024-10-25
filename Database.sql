@@ -103,7 +103,6 @@ go
 -- BookMark
 CREATE TABLE Bookmark (
     BookmarkID INT IDENTITY(1,1) PRIMARY KEY,
-    TotalCost MONEY,
     StudentID NVARCHAR(450),  
     CourseID INT,
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id), 
