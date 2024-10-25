@@ -338,7 +338,7 @@
 
 
                 <!-- Chỗ để viết review-->
-                @if (Model.YourReview == null && Model.StudentCourses?.Progress == 100)
+                @if (Model.YourReview == null && Model.StudentCourses?.CertificateStatus == "Completed")
                 {
                     
                     @await Html.PartialAsync("_ReviewForm", new ReviewModel { CourseID = Model.Course.CourseID })

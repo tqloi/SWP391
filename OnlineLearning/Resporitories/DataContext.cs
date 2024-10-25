@@ -38,6 +38,7 @@ namespace OnlineLearningApp.Respositories
         public DbSet<LectureFileModel> LectureFiles { get; set; }
         public DbSet<LectureCompletionModel> LectureCompletion { get; set; }
         public DbSet<ReportModel> Report { get; set; }
+        public DbSet<BookmarkModel> Bookmark { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

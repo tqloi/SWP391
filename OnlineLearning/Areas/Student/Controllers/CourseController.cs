@@ -34,25 +34,68 @@ namespace OnlineLearning.Areas.Student.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> MyCourse()
+        public async Task<IActionResult> MyCourse(int? category = null, string level = null, string status = null, int page = 1)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var model = new ListViewModel();
-
             if (User.IsInRole("Student"))
             {
-                model.StudentCourses = await datacontext.StudentCourses
-                    .Where(sc => sc.StudentID == userId)
-                    .Include(sc => sc.Course)
+                var studentCourseQuery =datacontext.StudentCourses
+                                .Where(sc => sc.StudentID == userId)
+                                .Include(sc => sc.Course)
+                                .AsQueryable();
+                var courseQuery =  datacontext.StudentCourses
+                                .Where(sc => sc.StudentID == userId)
+                                .Include(sc => sc.Course)
+                                .ThenInclude(course => course.Instructor)
+                                .ThenInclude(instructor => instructor.AppUser)
+                                .Select(sc => sc.Course)
+                                .OrderByDescending(sc => sc.CourseID)
+                                .AsQueryable();
+                //var saveCourseQuery = datacontext.SaveCourse
+                //                        .Where(sc => sc.StudentID == userId)
+                //                        .Include(sc => sc.Course)
+                //                        .AsQueryable();
+
+
+                // Lọc theo category nếu có
+                if (category.HasValue)
+                {
+                    studentCourseQuery = studentCourseQuery.Where(sc => sc.Course.CategoryID == category.Value);
+                    courseQuery = courseQuery.Where(c => c.CategoryID == category.Value);
+                    //saveCourseQuery    = saveCourseQuery.Where(sc => sc.Course.CategoryID == category.Value);
+                }
+
+                // Lọc theo level nếu có
+                if (!string.IsNullOrEmpty(level))
+                {
+                    studentCourseQuery = studentCourseQuery.Where(sc => sc.Course.Level == level);
+                    courseQuery = courseQuery.Where(c => c.Level == level);
+                    //saveCourseQuery    = saveCourseQuery.Where(sc => sc.Course.Level == level);
+                }
+
+                if(!string.IsNullOrEmpty(status) && status != "saved")
+                {
+                    studentCourseQuery = studentCourseQuery.Where(sc => sc.CertificateStatus == status);
+                }
+
+                var totalCourses = await studentCourseQuery.CountAsync();
+                var pageSize = 5;
+
+                var StudentCourses = await studentCourseQuery
+                    .OrderBy(course => course.EnrollmentDate)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
-                model.Courses = await datacontext.StudentCourses
-                    .Where(sc => sc.StudentID == userId)
-                    .Include(sc => sc.Course)
-                    .ThenInclude(course => course.Instructor)
-                    .ThenInclude(instructor => instructor.AppUser)
-                    .Select(sc => sc.Course)
-                    .OrderByDescending(sc => sc.CourseID)
-                    .ToListAsync();
+
+                
+                model.StudentCourses = StudentCourses;
+                model.Courses = await courseQuery.ToListAsync();
+
+                model.TotalPage = (int)Math.Ceiling(totalCourses / (double)pageSize);
+                model.CurrentPage = page;
+                model.Level = level;
+                model.Category = category;
             }
             return View(model);
         }
