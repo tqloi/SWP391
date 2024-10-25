@@ -1,45 +1,21 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-
+    Layout = "~/Views/Shared/_CourseLayout.cshtml";
+    var currentCourse = ViewBag.Course as CourseModel;
+    var courseID = currentCourse.CourseID;
     <partial name="_NoficationPartial" />
 }
 @model AssignmentViewModel
-<header class="site-header d-flex flex-column justify-content-center align-items-center">
-    <div class="container">
-        <div class="row align-items-center">
-
-            <div class="col-lg-5 col-12">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">My Courses</li>
-                    </ol>
-                </nav>
-                <h2 class="text-white">Topics Listing</h2>
-            </div>
-        </div>
-    </div>
-</header>
-<style>
-    .topics-section {
-        padding: 50px 100px 50px 100px;
-        background-color: #f7f7f7;
-    }
-</style>
 
 <!-- Add Lecture Modal -->
 <div class="container">
-
-
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <p class="font-monospace fs-2">Edit Assignment</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h4 class="">Edit assignment</h4>
+                <a asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID" class="btn-close" aria-label="Close"></a>
             </div>
             <div class="modal-body">
                 <form enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment">
-
                     <!-- Course ID -->
                     <div class="mb-3">
                         <input type="hidden" asp-for="CourseID" />
@@ -75,7 +51,7 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="btn btn-primary w-100">Update Assignment</button>
+                    <button type="submit" class="btn custom-btn w-100">Update Assignment</button>
                 </form>
             </div>
         </div>

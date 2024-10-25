@@ -4071,7 +4071,8 @@ input[type=button].btn-block, input[type=reset].btn-block, input[type=submit].bt
     margin-right: 1rem;
     font-size: 1.25rem;
     line-height: inherit;
-    white-space: nowrap
+    white-space: nowrap;
+    color: black 
 }
 
     .navbar-brand:focus, .navbar-brand:hover {

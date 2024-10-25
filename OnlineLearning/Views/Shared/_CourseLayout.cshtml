@@ -2,6 +2,12 @@
 @inject SignInManager<AppUserModel> SignInManager
 @inject UserManager<AppUserModel> UserManager
 
+@{
+    var currentCourse = ViewBag.Course as CourseModel;
+    var courseID = currentCourse.CourseID;
+    var user = await UserManager.GetUserAsync(User);
+}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,7 +19,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Tables</title>
+    <title>@currentCourse.Title</title>
 
     <!-- Custom fonts for this template -->
     <link href="~/course/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -21,6 +27,7 @@
           rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="~/Images/webLogo.png">
 
     <!-- Custom styles for this template-->
     <link href="~/css/bootstrap.min.css" rel="stylesheet">
@@ -33,12 +40,6 @@
 </head>
 
 <body id="page-top">
-
-    @{
-        var currentCourse = ViewBag.Course as CourseModel;
-        var courseID = currentCourse.CourseID;
-        var user = await UserManager.GetUserAsync(User);
-    }
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -56,7 +57,7 @@
             {
                 <!-- Nav Item - Dashboard -->
                 <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Instructor" && ViewContext.RouteData.Values["action"].ToString() == "Dashboard" ? "active" : "")">
-                    <a class="nav-link" asp-action="Dashboard" asp-controller="Instructor" asp-route-CourseID="@courseID">
+                    <a class="nav-link" asp-action="Dashboard" asp-controller="Instructor" asp-area="Instructor" asp-route-CourseID="@courseID">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
                         <nav-link>Dashboard</nav-link>
                     </a>
@@ -135,8 +136,8 @@
             <hr class="sidebar-divider d-none d-md-block">
 
             <!-- Sidebar Toggler (Sidebar) -->
-@*             <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            @*             <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div> *@
 
         </ul>
@@ -191,9 +192,9 @@
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle"  asp-action="Index" asp-controller="Chat"  id="messagesDropdown" role="button">
+                            <a class="nav-link dropdown-toggle" asp-action="Index" asp-controller="Chat" id="messagesDropdown" role="button">
                                 <i class="fas fa-envelope fa-fw"></i>
-                           @*      <span class="badge badge-danger badge-counter">7</span> *@
+                                @*      <span class="badge badge-danger badge-counter">7</span> *@
                             </a>
                         </li>
 
@@ -204,7 +205,7 @@
                                 <img class="img-profile rounded-circle"
                                      src="@user.ProfileImagePath">
                                 <span class="ml-2 d-none d-lg-inline text-gray-600 small">@user.FirstName @user.LastName</span>
-                                <i class="fas fa-caret-down ml-2"></i> 
+                                <i class="fas fa-caret-down ml-2"></i>
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow"
@@ -248,7 +249,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="Description" class="form-label">Description</label>
-                                        <textarea class="form-control" name="Description" rows="3" required></textarea>
+                                        <textarea class="form-control" name="Description" rows="3"></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label for="LectureFile" class="form-label">Upload Lecture Documents</label>
@@ -269,10 +270,59 @@
             </div>
             <!-- End of Main Content -->
             <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2020</span>
+
+            <footer class="site-footer section-padding bg-white">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-3 col-12 mb-4 pb-2">
+                            <a class="navbar-brand mb-2" href="#">
+                                <i class="bi-back"></i>
+                                <span>Topic</span>
+                            </a>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 col-6">
+                            <h6 class="site-footer-title mb-3">Resources</h6>
+                            <ul class="site-footer-links">
+                                <li class="site-footer-link-item">
+                                    <a asp-action="Index" asp-controller="Home" class="site-footer-link">Home</a>
+                                </li>
+                                <li class="site-footer-link-item">
+                                    <a asp-action="Index" asp-controller="Home" asp-fragment="section_3" class="site-footer-link">How it works</a>
+                                </li>
+                                <li class="site-footer-link-item">
+                                    <a asp-action="Index" asp-controller="Home" asp-fragment="section_4" class="site-footer-link">FAQs</a>
+                                </li>
+                                <li class="site-footer-link-item">
+                                    <a asp-action="Contact" asp-controller="Home" class="site-footer-link">Contact</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 col-6 mb-4 mb-lg-0">
+                            <h6 class="site-footer-title mb-3">Information</h6>
+                            <p class="text-white d-flex mb-1">
+                                <a href="tel:110-220-8386" class="site-footer-link">110-220-8386</a>
+                            </p>
+                            <p class="text-white d-flex">
+                                <a href="https://mail.google.com" target="_blank" class="site-footer-link">info@company.com</a>
+                            </p>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 col-12 mt-4 mt-lg-0 ms-auto">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    English
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><button class="dropdown-item" type="button">VietNam</button></li>
+                                </ul>
+                            </div>
+                            <p class="copyright-text mt-lg-5 mt-4">
+                                Copyright © 2048 Topic Listing Center. All rights reserved.
+                                <br><br>Design: <a rel="nofollow" href="https://templatemo.com" target="_blank">TemplateMo</a> Distribution: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </footer>
@@ -287,28 +337,6 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn custom-btn active" type="button" data-dismiss="modal">Cancel</button>
-                    <form asp-action="Logout" asp-controller="Account" method="post">
-                        <button type="submit" class="btn custom-btn ">Logout</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Bootstrap core JavaScript-->
     <script src="~/course/vendor/jquery/jquery.min.js"></script>

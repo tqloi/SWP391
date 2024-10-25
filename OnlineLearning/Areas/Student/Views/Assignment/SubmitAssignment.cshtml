@@ -1,26 +1,18 @@
 ﻿@{
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
-
+    var currentCourse = ViewBag.Course as CourseModel;
+    var courseID = currentCourse.CourseID;
     <partial name="_NoficationPartial" />
 }
 @model SubmissionViewModel
 
-<style>
-    .topics-section {
-        padding: 50px 100px 50px 100px;
-        background-color: #f7f7f7;
-    }
-</style>
-
 <!-- Add Lecture Modal -->
 <div class="container">
-
-
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="padding: 100px 0px 200px 0px;">
         <div class="modal-content">
             <div class="modal-header">
-                <p class="font-monospace fs-2">Edit Assignment</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h4 class="">Submission</h4>
+                <a asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID" class="btn-close" aria-label="Close"></a>
             </div>
             <div class="modal-body">
                 <form enctype="multipart/form-data" method="post" asp-area="Student" asp-controller="Assignment" asp-action="SubmitAssignment">
@@ -36,11 +28,9 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="btn btn-primary w-100">Upload Assignment</button>
+                    <button type="submit" class="btn custom-btn w-100">Submit</button>
                 </form>
             </div>
         </div>
     </div>
-
-
 </div>

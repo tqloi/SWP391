@@ -11,25 +11,24 @@ using System.Diagnostics;
 using YourNamespace.Models;
 using System.Security.Claims;
 using Google.Api;
+using Firebase.Auth;
 
 
 namespace OnlineLearning.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Instructor, Student")]
     public class ParticipationController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly DataContext datacontext;
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
-        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ParticipationController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment)
+        public ParticipationController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager)
         {
             datacontext = context;
             _logger = logger;
             _signInManager = signInManager;
-            _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
         }
 
@@ -53,6 +52,7 @@ namespace OnlineLearning.Controllers
         [ServiceFilter(typeof(CourseAccessFilter))]
         public async Task<IActionResult> AssignmentList(int CourseID)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var course = await datacontext.Courses.FindAsync(CourseID);
             var assignments = await datacontext.Assignment.Where(a => a.CourseID == CourseID).ToListAsync();
 
@@ -60,17 +60,15 @@ namespace OnlineLearning.Controllers
             {
                 return NotFound();
             }
+            bool isInstrutor = course != null && course.InstructorID == userId;
+
+            ViewBag.IsInstrutor = isInstrutor;
+
             HttpContext.Session.SetInt32("courseid", CourseID);
             ViewBag.Course = course;
             return View(assignments);
         }
 
-        public ActionResult ViewAssignmentPdf(int Id)
-        {
-            var assignmentlink = datacontext.Assignment.FirstOrDefault(c => c.AssignmentID == Id);
-
-            return View(assignmentlink);
-        }
 
         [HttpGet]
         public async Task<IActionResult> TestList(int CourseID)
@@ -109,24 +107,15 @@ namespace OnlineLearning.Controllers
             var course = await datacontext.Courses.FindAsync(lectue.CourseID);
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var isEnrolled = await datacontext.StudentCourses
-                                      .FirstOrDefaultAsync(sc => sc.StudentID == userId && sc.CourseID == course.CourseID);
-
-            var isInstrucotr = await datacontext.Courses
-                                        .FirstOrDefaultAsync(c => c.InstructorID == userId && c.CourseID == course.CourseID);
-
-            if (isEnrolled != null)
-            {
-                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = LectureID });
-            }
-            if (isInstrucotr != null)
+            if (course.InstructorID == userId)
             {
                 return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = LectureID });
             }
-            else
+            else 
             {
-                return NotFound();
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = LectureID });
             }
+
         }
     }
 }

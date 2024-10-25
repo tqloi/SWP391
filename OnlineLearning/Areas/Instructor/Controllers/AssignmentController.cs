@@ -6,6 +6,7 @@ using OnlineLearningApp.Respositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using OnlineLearning.Services;
 
 namespace OnlineLearning.Areas.Instructor.Controllers
 {
@@ -21,13 +22,15 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly DataContext _dataContext;
         private IConfiguration _configuration;
-        public AssignmentController(DataContext dataContext, UserManager<AppUserModel> userManager, SignInManager<AppUserModel> signInManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
+        private readonly FileService _fileService;
+        public AssignmentController(DataContext dataContext, UserManager<AppUserModel> userManager, SignInManager<AppUserModel> signInManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, FileService fileService)
         {
             _dataContext = dataContext;
             _userManager = userManager;
             _signInManager = signInManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
+            _fileService = fileService;
         }
         [HttpPost]
         public async Task<IActionResult> CreateAssignment(AssignmentViewModel model)
@@ -39,21 +42,26 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 assignment.CourseID = (int)courseid;
                 assignment.Title = model.Title;
                 assignment.Description = model.Description;
-                assignment.DueDate = model.DueDate;
-                if (model.AssignmentLink != null)
-                {
-                    string originalFileName = Path.GetFileName(model.AssignmentLink.FileName);
-                    string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Assignment");
-                    string fileName = Guid.NewGuid() + "_" + originalFileName;
-                    string filePath = Path.Combine(uploadPath, fileName);
 
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.AssignmentLink.CopyToAsync(fileStream);
-                    }
-                    assignment.AssignmentLink = fileName;
-                    model.ExistedAssignmentLink = fileName;
+                if (model.DueDate < DateTime.Now)
+                {
+                    return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
                 }
+                assignment.DueDate = model.DueDate;
+
+                try
+                {
+                    string downloadUrl = await _fileService.UploadLectureDocument(model.AssignmentLink);
+                    assignment.AssignmentLink = downloadUrl;
+                    model.ExistedAssignmentLink = downloadUrl;
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                    TempData["error"] = "Edit failed due to file upload error!";
+                    return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
+                }
+
                 HttpContext.Session.Remove("courseid");
                 _dataContext.Assignment.Add(assignment);
                 await _dataContext.SaveChangesAsync();
@@ -67,6 +75,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         public async Task<IActionResult> EditAssignment(int id)
         {
             var assignment = await _dataContext.Assignment.FindAsync(id);
+            var course = await _dataContext.Courses.FindAsync(assignment.CourseID);
+            ViewBag.Course = course;
             if (assignment == null)
             {
                 return RedirectToAction("Index", "Home");
@@ -92,26 +102,28 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             }
             assignment.Title = model.Title;
             assignment.Description = model.Description;
+            if (model.DueDate < DateTime.Now)
+            {
+                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
+            }
             assignment.DueDate = model.DueDate;
             assignment.CourseID = model.CourseID;
             if (model.AssignmentLink != null)
             {
-                string originalFileName = Path.GetFileName(model.AssignmentLink.FileName);
-                string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Assignment");
-                string fileName = Guid.NewGuid() + "_" + originalFileName;
-                string filePath = Path.Combine(uploadPath, fileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                try
                 {
-                    await model.AssignmentLink.CopyToAsync(fileStream);
+                    string downloadUrl = await _fileService.UploadLectureDocument(model.AssignmentLink);
+                    assignment.AssignmentLink = downloadUrl;
+                    model.ExistedAssignmentLink = downloadUrl;
                 }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                    TempData["error"] = "Edit failed due to file upload error!";
+                    return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
+                }
+            }
 
-                assignment.AssignmentLink = fileName;
-            }
-            else
-            {
-                assignment.AssignmentLink = assignment.AssignmentLink;
-            }
             _dataContext.Update(assignment);
             await _dataContext.SaveChangesAsync();
             TempData["success"] = "Edit successful!";

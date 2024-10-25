@@ -12,6 +12,7 @@ using OnlineLearning.Email;
 namespace OnlineLearning.Controllers
 {
     [Authorize]
+    [ServiceFilter(typeof(AdminRedirectFilter))]
     public class ProfileController : Controller
     {
         private readonly ILogger<HomeController> _logger;

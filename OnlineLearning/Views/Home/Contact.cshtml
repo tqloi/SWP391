@@ -22,40 +22,39 @@
     </div>
 </header>
 <section class="section-padding section-bg">
-       <div class="container">
-           <div class="row">
+    <div class="container">
+        <div class="row">
 
-               <div class="col-lg-12 col-12">
-                   <h3 class="mb-4 pb-2">We'd love to hear from you</h3>
-               </div>
+            <div class="col-lg-12 col-12">
+                <h3 class="mb-4 pb-2">We'd love to hear from you</h3>
+            </div>
 
-               <div class="col-lg-6 col-12">
-                   <form asp-action="Contact" asp-controller="Home" method="post" class="custom-form contact-form" role="form">
-                       <div class="row">
-                           <div class="col-lg-12 col-12">
+            <div class="col-lg-6 col-12">
+                <form asp-action="Contact" asp-controller="Home" method="post" class="custom-form contact-form" role="form">
+                    <div class="row">
+                        <div class="col-lg-12 col-12">
                             <div class="form-floating">
                                 <input type="text" name="Subject" id="name" class="form-control" placeholder="Subject" required="">
                                 <label for="floatingInput">Subject</label>
                             </div>
                             <div class="form-floating">
-                                <textarea class="form-control" id="message" name="Comment" placeholder="Tell me about the your problem" required=""></textarea>
+                                <textarea class="form-control" id="message" name="Comment" minlength="50" placeholder="Tell me about the your problem" required=""></textarea>
                                 <label for="floatingTextarea">Tell me about the your problem</label>
                             </div>
-                           </div>
-                           <div class="col-lg-4 col-12 ms-auto">
-                               <button type="submit" class="form-control">Submit</button>
-                           </div>
-                       </div>
-                   </form>
-               </div>
+                        </div>
+                        <div class="col-lg-4 col-12 ms-auto">
+                            <button type="submit" class="form-control">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-               <div class="col-lg-5 col-12 mx-auto mt-5 mt-lg-0">
+            <div class="col-lg-5 col-12 mx-auto mt-5 mt-lg-0">
                 <iframe class="google-map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2167.9632942739245!2d108.26069640907366!3d15.968670415325564!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314211006f1f81bb%3A0x90cab75eb25ebb52!2zVMOyYSBuaMOgIEdhbW1hIC0gxJBIIEZQVCDEkMOgIE7hurVuZw!5e1!3m2!1svi!2s!4v1729268707308!5m2!1svi!2s" width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                   <h5 class="mt-4 mb-2">Topic Listing Center</h5>
+                <h5 class="mt-2 mb-2">FPT University Da Nang</h5>
 
-                   <p>Bay St &amp;, Larkin St, San Francisco, CA 94109, United States</p>
-               </div>
-
-           </div>
-       </div>
-   </section>
+                <p>Hoa Hai, Ngu Hanh Son, Da Nang, Viet Nam</p>
+            </div>
+        </div>
+    </div>
+</section>

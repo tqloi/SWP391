@@ -1,110 +1,112 @@
 ﻿@{
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
-  
     <partial name="_NoficationPartial" />
+    var isInstructor = ViewBag.IsInstrutor;
+
 }
 @model IEnumerable<AssignmentModel>
 
-
-<style>
-    .topics-section {
-        padding: 0px 50px 0px 50px;
-        
-    }
-</style>
-<section class="topics-section">
-    <div class="button-group d-flex justify-content-between align-items-center">
-        @if (User.IsInRole("Instructor"))
+<section class="topic-section" style="padding: 10px 50px">
+    <div class="d-flex justify-content-between mb-4">
+        @if (isInstructor == true)
         {
             <div>
                 <button class="btn custom-btn active" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
-                    <i class="fas fa-plus new-icon"></i> Create new Assignment
+                    <i class="fas fa-plus new-icon me-1"></i> Add assignment
                 </button>
             </div>
         }
-        
     </div>
-    <form>
-       
-        @foreach(var item in Model){
-            <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
-                <div class="row">
+    <div class="m-4">
+        @if (Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
+                    <div class="row d-flex">
 
-                    <div class="col-md-2">
-                        <img src="~/Images/assignment.png" class="custom-block-image img-fluid ms-3" alt="">
-                    </div>
-                    <div class="col-md-9 custom-block-topics-listing-info">
-                        <div class="d-flex">
-                            <div>
-                                <h4 class="mb-2">
-                                    
-                                    <span class="dot">@item.Title</span>
-                                </h4>
-                            </div>
-                            <span class="badge bg-music rounded-pill ms-auto"></span>
+                        <div class="col-md-2 me-4">
+                            <img src="~/Images/assignment.png" class="custom-block-image img-fluid ms-3" alt="" style="object-fit: cover; height: 87%;">
                         </div>
-                        <h6></h6>
-                        <p>@item.Description</p>
-                        <div class="row progress-group d-flex justify-content-between">
-                            
-
-                                <div class="col-md-12 row align-items-end">
-                                   
-                                    <div class="col-md-4">
-                                        <i class="fas fa-flag"></i>
-                                        <h8>Ends on: @item.DueDate</h8>
-                                    </div>
+                        <div class="col-md-9 custom-block-topics-listing-info ms-4">
+                            <h4 class="dot">@item.Title</h4>
+                            <p>@item.Description</p>
+                            <div class="row progress-group d-flex justify-content-between">
+                                <div class="col-md-12 row align-items-end mb-3">
+                                    <h8> <i class="fas fa-flag me-1"></i>Ends on: @item.DueDate</h8>
                                 </div>
-                                <div class="col-md-2 d-flex justify-content-end ">
-                                <a target="_blank" asp-action="ViewAssignmentPdf" asp-controller="Participation" asp-route-id="@item.AssignmentID" class="btn custom-btn mt-3 mt-lg-4">View Detail</a>
+                                <div class="col-md-2">
+                                    <a target="_blank" href="@item.AssignmentLink"
+                                       class="btn custom-btn w-100 d-flex align-items-center justify-content-center fs-6" style="height: 50px;">
+                                        Detail
+                                    </a>
                                 </div>
-                                @if(User.IsInRole("Instructor"))
+                                @if (isInstructor)
                                 {
-                                     <div class="col-md-2">
-                                <a asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment" asp-route-id="@item.AssignmentID" class="btn custom-btn active btn-warning mt-3 mt-lg-4">Edit Assignment </a>
+                                    <div class="col-md-2">
+                                        <a asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment" asp-route-id="@item.AssignmentID"
+                                           class="btn custom-btn active btn-warning w-120 d-flex align-items-center justify-content-center fs-6" style="height: 50px;">
+                                            Edit
+                                        </a>
                                     </div>
-                                <div class="col-md-2">
-                                    <a asp-area="Instructor" asp-action="ListAssignment" asp-controller="Assignment" asp-route-id="@item.AssignmentID" class="btn custom-btn active btn-success mt-3 mt-lg-4">View List Submited</a>
-                                </div>
-                                <div class="col-md-2">
-                                    <a asp-area="Instructor" asp-action="ListScore" asp-controller="Assignment" asp-route-id="@item.AssignmentID" class="btn custom-btn mt-3 mt-lg-4">View Score</a>
-                                </div>
-                                <div class="col-md-2">
-                                    <a asp-area="Instructor" asp-action="DeleteAssignmentConfirmed" asp-controller="Assignment" asp-route-id="@item.AssignmentID" class="btn custom-btn active btn-danger mt-3 mt-lg-4">Remove Assignment</a>
-
-                                </div>
+                                    <div class="col-md-2">
+                                        <a asp-area="Instructor" asp-action="ListAssignment" asp-controller="Assignment" asp-route-id="@item.AssignmentID"
+                                           class="btn custom-btn active btn-success w-100 d-flex align-items-center justify-content-center fs-6" style="height: 50px;">
+                                            Submissions
+                                        </a>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a asp-area="Instructor" asp-action="ListScore" asp-controller="Assignment" asp-route-id="@item.AssignmentID"
+                                           class="btn custom-btn w-100 d-flex align-items-center justify-content-center fs-6" style="height: 50px;">
+                                            Scores
+                                        </a>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a asp-area="Instructor" asp-action="DeleteAssignmentConfirmed" asp-controller="Assignment" asp-route-id="@item.AssignmentID"
+                                           class="btn custom-btn active btn-danger w-100 d-flex align-items-center justify-content-center fs-6" style="height: 50px;">
+                                            Remove
+                                        </a>
+                                    </div>
                                 }
-                            @if (User.IsInRole("Student"))
-                            {
-                                <div class="col-md-3">
-                                    <a asp-area="Student" asp-controller="Assignment" asp-action="SubmitAssignment" asp-route-id="@item.AssignmentID"  class="btn custom-btn mt-3 mt-lg-4">Submit Assignment </a>
-                                </div>
-
-                            }
+                                @if (isInstructor == false)
+                                {
+                                    <div class="col-md-3">
+                                        <a asp-area="Student" asp-controller="Assignment" asp-action="SubmitAssignment" asp-route-id="@item.AssignmentID"
+                                           class="btn custom-btn w-100 d-flex align-items-center justify-content-center fs-6" style="height: 50px;">
+                                            Submit
+                                        </a>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
-                   
                 </div>
-            </div>
-            <!-- Edit Lecture Modal -->
-           
+            }
         }
-    </form>
+        else
+        {
+            <div class="d-flex align-items-center justify-content-center" style="height: 80vh;">
+                <h3>No assignments available</h3>
+            </div>
+
+        }
+    </div>
+
 </section>
 
-<!-- Add Lecture Modal -->
+<!-- Add Assignment Modal -->
 <div class="modal fade" id="createAssignmentModal" tabindex="-1" aria-labelledby="createCourseModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createCourseModalLabel">Create New Course</h5>
+                <h5 class="modal-title" id="createCourseModalLabel">Create New Assignment</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="newCourseForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Assignment" asp-action="CreateAssignment">
-                    
+
                     <div class="mb-3">
-                        <label for="Title" class="form-label">Course Title</label>
+                        <label for="Title" class="form-label">Assignment Title</label>
                         <input type="text" class="form-control" name="Title" required>
                     </div>
                     <div class="mb-3">
@@ -115,10 +117,10 @@
                         <label for="DueDate" class="form-label">Due Date</label>
                         <input type="datetime-local" id="inputdate" class="form-control" name="DueDate" required>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="AssignmentLink" class="form-label">Upload File</label>
-                        <input type="file" class="form-control" name="AssignmentLink" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple>
+                        <input type="file" class="form-control" name="AssignmentLink" accept=".pdf,.doc,.docx,.ppt,.pptx" required>
                     </div>
                     <button type="submit" class="btn custom-btn">Create Assignment</button>
                 </form>
@@ -128,16 +130,16 @@
 </div>
 
 <script type="text/javascript">
-    $(function(){
+    $(function () {
         var dtToday = new Date();
 
         var month = dtToday.getMonth() + 1;
         var day = dtToday.getDate();
         var year = dtToday.getFullYear();
-        if(month < 10)
+        if (month < 10)
             month = '0' + month.toString();
-        if(day < 10)
-         day = '0' + day.toString();
+        if (day < 10)
+            day = '0' + day.toString();
         var maxDate = year + '-' + month + '-' + day;
         $('#inputdate').attr('min', maxDate);
     });

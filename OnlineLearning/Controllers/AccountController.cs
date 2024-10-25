@@ -116,7 +116,7 @@ namespace OnlineLearning.Controllers
                             {
                                 return RedirectToAction("Index", "Admin", new { area = "Admin" });
                             }
-                            TempData["success"] = "Login successful!";
+                            TempData["success"] = "Welcome!";
                             return RedirectToAction("Index", "Home");
                         }
                     }
@@ -206,7 +206,7 @@ namespace OnlineLearning.Controllers
             {
                 return RedirectToAction("Index", "Admin", new { area = "Admin" });
             }
-            TempData["success"] = "Login successful!";
+            TempData["success"] = "Welcome!";
             return RedirectToAction("Index", "Home");
         }
 
