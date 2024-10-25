@@ -83,6 +83,7 @@ builder.Services.AddIdentity<AppUserModel, IdentityRole>()
 builder.Services.AddScoped<CourseAccessFilter>();
 builder.Services.AddScoped<LectureAccessFilter>();
 builder.Services.AddScoped<AdminRedirectFilter>();
+builder.Services.AddScoped<AssignmentAccessFilter>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {

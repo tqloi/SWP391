@@ -1,14 +1,18 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AppUserModel> SignInManager
+@inject UserManager<AppUserModel> UserManager
+@{
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
     <partial name="_NoficationPartial" />
-    var isInstructor = ViewBag.IsInstrutor;
+    var currentCourse = ViewBag.Course as CourseModel;
+    var user = await UserManager.GetUserAsync(User);
 
 }
-@model IEnumerable<AssignmentModel>
+@model AssignmentListViewModel
 
-<section class="topic-section" style="padding: 10px 50px">
+<section class="topic-section" style="padding: 10px 50px; min-height: 100vh;">
     <div class="d-flex justify-content-between mb-4">
-        @if (isInstructor == true)
+        @if (user.Id == currentCourse.InstructorID)
         {
             <div>
                 <button class="btn custom-btn active" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
@@ -16,37 +20,82 @@
                 </button>
             </div>
         }
+        else
+        {
+            <div>
+               <h3>On going assignments</h3>
+            </div>
+        }
     </div>
     <div class="m-4">
-        @if (Model.Any())
+        @if (Model.Assignments.Any())
         {
-            @foreach (var item in Model)
+            @foreach (var item in Model.Assignments)
             {
                 <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
                     <div class="row d-flex">
 
-                        <div class="col-md-2 me-4">
-                            <img src="~/Images/assignment.png" class="custom-block-image img-fluid ms-3" alt="" style="object-fit: cover; height: 87%;">
+                        <div class="col-md-2 me-3">
+                            <img src="~/Images/asm.png" class="custom-block-image img-fluid ms-3" alt="" style="width: 100%; height: auto;">
                         </div>
-                        <div class="col-md-9 custom-block-topics-listing-info ms-4">
-                            <h4 class="dot">@item.Title</h4>
-                            <p>@item.Description</p>
+                        <div class="col-md-9 custom-block-topics-listing-info">
+                            <div class="d-flex align-items-lg-center">
+                                <h4 class="mb-2 me-2">
+                                        <span class="dot">@item.Title</span>
+                                </h4>
+                                @{
+                                    string status = "Not Yet Started"; // Mặc định là "Not Yet Started"
+                                    var currentDateTime = DateTime.Now; // Lấy thời gian hiện tại
+
+                                    // Kiểm tra các điều kiện để xác định trạng thái
+                                    if (item.StartDate < currentDateTime && item.DueDate > currentDateTime)
+                                    {
+                                        status = "On Going"; // Nếu startTime nhỏ hơn hiện tại và lớn hơn dueDate
+                                    }
+                                    else if (item.DueDate < currentDateTime)
+                                    {
+                                        status = "Completed"; // Nếu lớn hơn dueDate
+                                    }
+                                }
+                                <h6>(@status) </h6>
+                            </div>
+                            <div>
+                                <div class="text-dark" ><h7>Open:</h7> @item.StartDate</div>
+                                <div class="@(item.DueDate < DateTime.Now ? "text-danger" : "text-dark")"><h7>Due:</h7> @item.DueDate</div>
+                            </div>
                             <div class="row progress-group d-flex justify-content-between">
-                                <div class="col-md-12 row align-items-end mb-3">
-                                    <h8> <i class="fas fa-flag me-1"></i>Ends on: @item.DueDate</h8>
+                                <div class="col-md-12 row align-items-end mb-2 mt-2">
+                                    @if (user.Id != currentCourse.InstructorID)
+                                    {
+                                        var score = Model.ScoreAssignments.FirstOrDefault(p => p.AssignmentID == item.AssignmentID && p.StudentID == user.Id);
+
+                                        <h6 class="me-1">
+                                            Grade:
+                                            @if (score == null)
+                                            {
+                                                <span class="text-muted">Not yet graded</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="@(score.Score >= 5 ? "text-xbox" : "text-danger")">
+                                                    @score.Score
+                                                </span>
+                                            }
+                                        </h6>
+                                    }
                                 </div>
                                 <div class="col-md-2">
                                     <a target="_blank" href="@item.AssignmentLink"
                                        class="btn custom-btn w-100 d-flex align-items-center justify-content-center fs-6" style="height: 50px;">
-                                        Detail
+                                        Dowload
                                     </a>
                                 </div>
-                                @if (isInstructor)
+                                @if (user.Id == currentCourse.InstructorID)
                                 {
                                     <div class="col-md-2">
-                                        <a asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment" asp-route-id="@item.AssignmentID"
-                                           class="btn custom-btn active btn-warning w-120 d-flex align-items-center justify-content-center fs-6" style="height: 50px;">
-                                            Edit
+                                        <a asp-area="Instructor" asp-action="ListScore" asp-controller="Assignment" asp-route-id="@item.AssignmentID"
+                                           class="btn custom-btn active btn-info w-100 d-flex align-items-center justify-content-center fs-6" style="height: 50px;">
+                                            Grades
                                         </a>
                                     </div>
                                     <div class="col-md-2">
@@ -56,9 +105,9 @@
                                         </a>
                                     </div>
                                     <div class="col-md-2">
-                                        <a asp-area="Instructor" asp-action="ListScore" asp-controller="Assignment" asp-route-id="@item.AssignmentID"
-                                           class="btn custom-btn w-100 d-flex align-items-center justify-content-center fs-6" style="height: 50px;">
-                                            Scores
+                                        <a asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment" asp-route-id="@item.AssignmentID"
+                                           class="btn custom-btn active btn-warning w-120 d-flex align-items-center justify-content-center fs-6" style="height: 50px;">
+                                            Edit
                                         </a>
                                     </div>
                                     <div class="col-md-2">
@@ -68,12 +117,13 @@
                                         </a>
                                     </div>
                                 }
-                                @if (isInstructor == false)
+                                else
                                 {
-                                    <div class="col-md-3">
+                                    var submission = Model.Submissions.FirstOrDefault(p => p.AssignmentID == item.AssignmentID && p.StudentID == user.Id);
+                                    <div class="col-md-3 me-auto">
                                         <a asp-area="Student" asp-controller="Assignment" asp-action="SubmitAssignment" asp-route-id="@item.AssignmentID"
                                            class="btn custom-btn w-100 d-flex align-items-center justify-content-center fs-6" style="height: 50px;">
-                                            Submit
+                                            @(submission == null ? "Submit" : "Re-Submit")
                                         </a>
                                     </div>
                                 }
@@ -110,12 +160,12 @@
                         <input type="text" class="form-control" name="Title" required>
                     </div>
                     <div class="mb-3">
-                        <label for="Description" class="form-label">Description</label>
-                        <textarea class="form-control" name="Description" rows="3" required></textarea>
+                        <label for="DueDate" class="form-label">Start Date</label>
+                        <input type="datetime-local" id="inputdate" class="form-control" name="StartDate" required>
                     </div>
                     <div class="mb-3">
                         <label for="DueDate" class="form-label">Due Date</label>
-                        <input type="datetime-local" id="inputdate" class="form-control" name="DueDate" required>
+                        <input type="datetime-local" id="inputdate2" class="form-control" name="DueDate" required>
                     </div>
 
                     <div class="mb-3">

@@ -12,7 +12,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="">Submission</h4>
-                <a asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID" class="btn-close" aria-label="Close"></a>
+                <a asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID">  <i class="bi bi-arrow-left"></i> Back</a>
             </div>
             <div class="modal-body">
                 <form enctype="multipart/form-data" method="post" asp-area="Student" asp-controller="Assignment" asp-action="SubmitAssignment">
@@ -24,7 +24,7 @@
                     <!-- Assignment Link -->
                     <div class="mb-3">
                         <label asp-for="SubmissionLink" class="form-label">Upload Assignment File</label>
-                        <input asp-for="SubmissionLink" class="form-control" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx">
+                        <input asp-for="SubmissionLink" class="form-control" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" required>
                     </div>
 
                     <!-- Submit Button -->

@@ -55,18 +55,24 @@ namespace OnlineLearning.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var course = await datacontext.Courses.FindAsync(CourseID);
             var assignments = await datacontext.Assignment.Where(a => a.CourseID == CourseID).ToListAsync();
+            var submissions = await datacontext.Submission.ToListAsync();
+            var scores = await datacontext.ScoreAssignment.ToListAsync();
 
             if (assignments == null)
             {
                 return NotFound();
             }
-            bool isInstrutor = course != null && course.InstructorID == userId;
 
-            ViewBag.IsInstrutor = isInstrutor;
+            var model = new AssignmentListViewModel
+            {
+                Assignments = assignments,
+                Submissions = submissions,
+                ScoreAssignments = scores
+            };
 
             HttpContext.Session.SetInt32("courseid", CourseID);
             ViewBag.Course = course;
-            return View(assignments);
+            return View(model);
         }
 
 

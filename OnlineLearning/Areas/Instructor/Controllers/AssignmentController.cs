@@ -41,12 +41,13 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 var assignment = new AssignmentModel();
                 assignment.CourseID = (int)courseid;
                 assignment.Title = model.Title;
-                assignment.Description = model.Description;
 
-                if (model.DueDate < DateTime.Now)
+                if (model.DueDate < DateTime.Now || model.DueDate < model.StartDate)
                 {
+                    TempData["error"] = "Invalid date!";
                     return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
                 }
+                assignment.StartDate = model.StartDate;
                 assignment.DueDate = model.DueDate;
 
                 try
@@ -85,7 +86,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             model.AssignmentID = id;
             model.CourseID = assignment.CourseID;
             model.Title = assignment.Title;
-            model.Description = assignment.Description;
+            model.StartDate = assignment.StartDate;
             model.DueDate = assignment.DueDate;
             model.ExistedAssignmentLink = assignment.AssignmentLink;
             return View(model);
@@ -101,11 +102,12 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 return RedirectToAction("UserProfile", "Home");
             }
             assignment.Title = model.Title;
-            assignment.Description = model.Description;
-            if (model.DueDate < DateTime.Now)
+            if (model.DueDate < DateTime.Now || model.DueDate < model.StartDate)
             {
+                TempData["error"] = "Invalid date!";
                 return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
             }
+            assignment.StartDate = model.StartDate;
             assignment.DueDate = model.DueDate;
             assignment.CourseID = model.CourseID;
             if (model.AssignmentLink != null)
@@ -163,6 +165,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 		{
 			var listScore = await _dataContext.ScoreAssignment.Include(i => i.Student).Where(s => s.AssignmentID == id).ToListAsync();
             var assignment = await _dataContext.Assignment.FindAsync(id);
+            var course = await _dataContext.Courses.FirstOrDefaultAsync(c => c.CourseID == assignment.CourseID);
+            ViewBag.Course = course;
             if (listScore.Count == 0)
 			{
                 TempData["error"] = "No students have been graded yet.";
@@ -170,12 +174,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             }
 			return View(listScore);
 		}
-		public ActionResult ViewSubmissonPdf(int Id)
-        {
-            var submission = _dataContext.Submission.FirstOrDefault(c => c.SubmissionID == Id);
 
-            return View(submission);
-        }
         [HttpPost]
         public async Task<IActionResult> Score(ScoreAssignmentViewModel model)
         {

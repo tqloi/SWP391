@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearning.Filter;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearning.Services;
@@ -12,7 +13,7 @@ using OnlineLearningApp.Respositories;
 namespace OnlineLearning.Areas.Student.Controllers
 {
     [Area("Student")]
-    [Authorize(Roles ="Student")]
+    [Authorize]
     [Route("Student/[controller]/[action]")]
     public class AssignmentController : Controller
     {
@@ -38,17 +39,24 @@ namespace OnlineLearning.Areas.Student.Controllers
         }
         
         [HttpGet]
+        [ServiceFilter(typeof(AssignmentAccessFilter))]
         public async Task<IActionResult> SubmitAssignment(int id)
         {
             var assignment = await _dataContext.Assignment.FindAsync(id);
+            var course = _dataContext.Courses.FirstOrDefault(c => c.CourseID == assignment.CourseID);
+            ViewBag.Course = course;
             if (assignment == null)
             {
                 return RedirectToAction("Index", "Home", new {Areas=""});
             }
+            if(assignment.DueDate < DateTime.Now)
+                {
+                    TempData["warning"] = "Overdue";
+                    return RedirectToAction("AssignmentList", "Participation", new { CourseID = course.CourseID });
+                }
             var model = new SubmissionViewModel();
             model.AssignmentID = id;
-           var course = _dataContext.Courses.FirstOrDefault(c => c.CourseID == assignment.CourseID);
-            ViewBag.Course= course;
+
             return View(model);
         }
         [HttpPost]
@@ -66,6 +74,9 @@ namespace OnlineLearning.Areas.Student.Controllers
                 return NotFound();
             }
             var assignment = await _dataContext.Assignment.FirstOrDefaultAsync(a => a.AssignmentID == model.AssignmentID);
+            var existedSubmition = await _dataContext.Submission.FirstOrDefaultAsync(p => p.AssignmentID == assignment.AssignmentID && p.StudentID == userId);
+            var course = _dataContext.Courses.FirstOrDefault(c => c.CourseID == assignment.CourseID);
+            ViewBag.Course = course;
             if (assignment == null) 
             { 
                 return NotFound();
@@ -77,12 +88,11 @@ namespace OnlineLearning.Areas.Student.Controllers
             }
             else
             {
-
                 string filesubmit = "";
                 if (model.SubmissionLink != null)
                 {
                     string filename = model.SubmissionLink.FileName;
-                    var submit = new SubmissionModel();
+                    var submit = new SubmissionModel();          
                     try
                     {
                         string downloadUrl = await _fileService.UploadAssignment(model.SubmissionLink);
@@ -92,10 +102,14 @@ namespace OnlineLearning.Areas.Student.Controllers
                         submit.SubmissionDate = DateTime.Now;
                         submit.FileName = filename;
 
+                        if(existedSubmition != null)
+                        {
+                            _dataContext.Submission.Remove(existedSubmition);
+                        }
+
                         TempData["success"] = "Submit successful!";
                         _dataContext.Submission.Add(submit);
                         await _dataContext.SaveChangesAsync();
-
                     }
                     catch (Exception ex)
                     {
@@ -110,8 +124,7 @@ namespace OnlineLearning.Areas.Student.Controllers
                     TempData["error"] = "Student did not submit file pdf";
                     return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
                 }
-            }
-            
+            }        
             return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
         }
     }

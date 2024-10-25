@@ -265,10 +265,12 @@ CREATE TABLE Assignment (
     Title NVARCHAR(255),
 	AssignmentLink NVARCHAR(MAX),
     [Description] TEXT,
+	StartDate DATETIME,
     DueDate DATETIME,
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
 alter table Assignment add AssignmentLink  NVARCHAR(MAX);
+alter table Assignment add StartDate DATETIME;
 go  
 
 CREATE TABLE ScoreAssignment (
@@ -288,6 +290,7 @@ CREATE TABLE Submission (
     AssignmentID INT,  -- Foreign key to Assignment
     StudentID NVARCHAR(450),  -- Foreign key to Student (userID from Users)
     SubmissionLink NVARCHAR(MAX),  -- Link to the file
+	[FileName] varchar(250),
     SubmissionDate DATETIME,
     FOREIGN KEY (assignmentID) REFERENCES Assignment(assignmentID),
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id)  -- References Users table
@@ -484,6 +487,9 @@ ALTER COLUMN FilePath NVARCHAR(MAX);
 
 ALTER TABLE MessageFile 
 ALTER COLUMN FilePath NVARCHAR(MAX);
+
+ALTER TABLE Submission 
+ALTER COLUMN SubmissionLink NVARCHAR(MAX);
 
 Alter table Question
 Add ImagePath NVARCHAR(MAX);

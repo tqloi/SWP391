@@ -12,7 +12,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="">Edit assignment</h4>
-                <a asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID" class="btn-close" aria-label="Close"></a>
+                <a asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID">  <i class="bi bi-arrow-left"></i> Back </a>
             </div>
             <div class="modal-body">
                 <form enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment">
@@ -34,8 +34,8 @@
 
                     <!-- Description -->
                     <div class="mb-3">
-                        <label asp-for="Description" class="form-label">Description</label>
-                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter description"></textarea>
+                        <label asp-for="StartDate" class="form-label">Start Date</label>
+                        <input asp-for="StartDate" class="form-control" type="datetime-local">
                     </div>
 
                     <!-- Due Date -->
