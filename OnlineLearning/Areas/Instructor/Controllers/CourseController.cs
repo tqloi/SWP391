@@ -228,17 +228,46 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MyCourse()
+        public async Task<IActionResult> MyCourse(int? category = null, string level = null, int page = 1)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var model = new ListViewModel();
 
-                model.Courses = await datacontext.Courses
+            var coursesQuery = datacontext.Courses
                     .Where(course => course.InstructorID == userId)
                     .Include(course => course.Instructor)
                     .ThenInclude(instructor => instructor.AppUser)
                     .OrderByDescending(sc => sc.CourseID)
-                    .ToListAsync();
+                    .AsQueryable();
+
+            // Lọc theo category nếu có
+            if (category.HasValue)
+            {
+                coursesQuery = coursesQuery.Where(course => course.CategoryID == category.Value);
+            }
+
+            // Lọc theo level nếu có
+            if (!string.IsNullOrEmpty(level))
+            {
+                coursesQuery = coursesQuery.Where(course => course.Level == level);
+            }
+
+            var totalCourses = await coursesQuery.CountAsync();
+            var pageSize = 5;
+            var courses = await coursesQuery
+                .OrderByDescending(course => course.Rating)
+                .ThenByDescending(course => course.NumberOfRate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var model = new CourseListViewModel
+            {
+                CourseList = courses,
+                TotalPage = (int)Math.Ceiling(totalCourses / (double)pageSize),
+                CurrentPage = page,
+                Category = category,
+                Level = level
+            };
 
             return View(model);
         }
