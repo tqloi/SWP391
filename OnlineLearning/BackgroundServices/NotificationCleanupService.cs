@@ -1,4 +1,4 @@
-﻿ // Đảm bảo sử dụng đúng namespace cho DataContext của bạn
+﻿
 using OnlineLearningApp.Respositories;
 namespace OnlineLearning.BackgroundServices
 {
@@ -40,7 +40,7 @@ namespace OnlineLearning.BackgroundServices
 
                 // Lấy các thông báo đã quá 7 ngày
                 var oldNotifications = dataContext.Notification
-                    .Where(n => n.CreatedAt < DateTime.Now.AddDays(-7));
+                    .Where(n => n.CreatedAt < DateTime.Now.AddDays(-5));
 
                 if (oldNotifications.Any())
                 {

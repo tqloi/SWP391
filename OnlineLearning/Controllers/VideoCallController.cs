@@ -22,6 +22,7 @@ namespace OnlineLearning.Controllers
             {
                 return BadRequest("Caller ID and Receiver ID are required.");
             }
+            
             var token = _stringeeService.GenerateAccessToken(callerId);
             return RedirectToAction("VideoCallView", new { token, callerId, receiverId });
         }

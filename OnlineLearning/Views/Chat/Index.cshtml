@@ -1,4 +1,4 @@
-﻿﻿
+﻿﻿﻿
 @model RoleViewModel
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-       
+
         .chat-online {
             color: #34ce57;
         }
@@ -31,6 +31,7 @@
             display: flex;
             align-items: flex-start;
         }
+
         .chat-message-right {
             display: flex;
             align-items: flex-start;
@@ -43,10 +44,12 @@
         .bg-light {
             background-color: lightseagreen;
         }
-        .card{
+
+        .card {
             height: calc(100vh - 100px);
         }
-        .khungchat{
+
+        .khungchat {
             height: calc(100vh - 100px);
         }
 
@@ -60,22 +63,22 @@
 
     <main class="content">
         <div class="container">
-            <h1 class="h3 mb-3"><input class="form-control" hidden asp-for="SendId" id="senderEmail"  disabled /></h1>
+            <h1 class="h3 mb-3"><input class="form-control" hidden asp-for="SendId" id="senderEmail" disabled /></h1>
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" >Message</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" asp-action="Index" asp-controller="Home" asp-area="">Home <span class="sr-only">(current)</span></a>
-      </li>
-      
-    </ul>
-  </div>
-</nav>
-            <div class="card" >
+                <a class="navbar-brand">Message</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item active">
+                            <a class="nav-link" asp-action="Index" asp-controller="Home" asp-area="">Home <span class="sr-only">(current)</span></a>
+                        </li>
+
+                    </ul>
+                </div>
+            </nav>
+            <div class="card">
                 <div class="row g-0">
                     <div class="col-12 col-lg-5 col-xl-3 border-right">
                         <div class="px-4 d-none d-md-block">
@@ -89,24 +92,24 @@
                         {
                             <div class="list-group">
                                 <a asp-action="Index" asp-controller="Chat" asp-route-id="@item.Id" class="list-group-item list-group-item-action border-0">
-                       @*              <div class="badge bg-success float-right">5</div> *@
+                                    @*              <div class="badge bg-success float-right">5</div> *@
                                     <div class="d-flex align-items-start">
                                         <img src="@item.ProfileImagePath" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
                                         <div class="flex-grow-1 ml-3">
-                                            @(item.FirstName.Length > 15 ? item.FirstName.Substring(0, 15) + "..." :   item.FirstName)
+                                            @(item.FirstName.Length > 15 ? item.FirstName.Substring(0, 15) + "..." : item.FirstName)
                                             <div class="small"><span class="fas fa-circle chat-online"></span> Online</div>
                                             <div>
                                                 @if (Model.IsReadmess != null)
                                                 {
-                                                    
-                                                   if(Model.IsReadmess.StartsWith(item.Id) && Model.receimess.Equals(Model.SendId))
+
+                                                    if (Model.IsReadmess.StartsWith(item.Id) && Model.receimess.Equals(Model.SendId))
                                                     {
                                                         int index = Model.IsReadmess.IndexOf(":");
                                                         string contentAfterColon = index != -1 ? Model.IsReadmess.Substring(index + 1).Trim() : Model.IsReadmess;
-                                                      //  contentAfterColon = contentAfterColon.Substring(0, 10) + "...";
+                                                        //  contentAfterColon = contentAfterColon.Substring(0, 10) + "...";
                                                         <p>
 
-                                                            @item.LastName: @(contentAfterColon.Length > 10 ? contentAfterColon.Substring(0, 10) + "..." : contentAfterColon) 
+                                                            @item.LastName: @(contentAfterColon.Length > 10 ? contentAfterColon.Substring(0, 10) + "..." : contentAfterColon)
                                                         </p>
                                                     }
                                                     else if (Model.IsReadmess.StartsWith(Model.SendId) && Model.receimess.Equals(item.Id))
@@ -121,9 +124,9 @@
                                                     }
 
 
-                                                }                                                
+                                                }
 
-                                                
+
 
                                             </div>
                                         </div>
@@ -157,18 +160,18 @@
                         <div class="position-relative">
                             <div class="chat-messages p-4">
                                 <ul id="messagesList">
-                                   
+
                                     @if (Model.Messages != null && Model.Messages.Count > 0)
-                                     {
-                                         foreach (var msg in Model.Messages)
-                                         {
-                                             var senderName = msg.SenderId == Model.SendId ? "You" : Model.ReceiveName;
-                                            @if(senderName.Equals("You"))
+                                    {
+                                        foreach (var msg in Model.Messages)
+                                        {
+                                            var senderName = msg.SenderId == Model.SendId ? "You" : Model.ReceiveName;
+                                            @if (senderName.Equals("You"))
                                             {
                                                 <div class="chat-message-right pb-4">
                                                     <div class="mr-2">
-                                                        <img src="@msg.Sender.ProfileImagePath" class="rounded-circle mr-1" width="40" height="40" >
-                                                        <div class="text-muted small text-nowrap mt-2">@msg.Timestamp.ToString("hh:mm tt")</div>
+                                                        <img src="@msg.Sender.ProfileImagePath" class="rounded-circle mr-1" width="40" height="40">
+                                                        <div class="text-muted small text-nowrap mt-2">@msg.Timestamp.ToString("hh:mm tt").Replace("SA", "AM").Replace("CH", "PM")</div>
                                                     </div>
                                                     <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
                                                         <div class="font-weight-bold mb-1">You</div>
@@ -180,18 +183,18 @@
                                             {
                                                 <div class="chat-message-left pb-4">
                                                     <div>
-                                                        <img src="@Model.receiveimg" class="rounded-circle mr-1" width="40" height="40" >
-                                                        <div class="text-muted small text-nowrap mt-2">@msg.Timestamp.ToString("hh:mm tt")</div>
+                                                        <img src="@Model.receiveimg" class="rounded-circle mr-1" width="40" height="40">
+                                                        <div class="text-muted small text-nowrap mt-2">@msg.Timestamp.ToString("hh:mm tt").Replace("SA", "AM").Replace("CH", "PM")</div>
                                                     </div>
                                                     <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3">
                                                         <div class="font-weight-bold mb-1">@Model.ReceiveName</div>
-                                                         @msg.Content <br />
+                                                        @msg.Content <br />
                                                     </div>
                                                 </div>
                                             }
-                                        }                                
+                                        }
                                     }
-                                      
+
                                 </ul>
                             </div>
                         </div>
@@ -204,27 +207,28 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="createCourseModalLabel">Incoming Call</h5>
-                                            <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <p>You have an incoming call!</p>
                                             <!-- Thêm thông tin về người gọi ở đây nếu cần -->
                                         </div>
                                         <div class="modal-footer">
+                                            <div id="callerIdDisplay"></div>
                                             <a id="rejectCallButton" asp-action="Index" asp-controller="Chat" asp-area="" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
-                                            <a asp-route-callerId="@Model.SendId" asp-route-receiverId="@Model.sendcall" asp-action="StartCall" asp-controller="VideoCall" asp-area="" class="btn btn-primary">Answer</a>
+                                            <a asp-route-callerId="@Model.SendId" asp-route-receiverId="@Model.ReceiverId" asp-action="StartCall" asp-controller="VideoCall" asp-area="" class="btn btn-primary">Answer</a>
+                                             
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            
+
                         </div>
-                        @if(Model.ReceiverId != null)
+                        @if (Model.ReceiverId != null)
                         {
                             <div class="flex-grow-0 py-3 px-4 border-top inputchat">
                                 <form class="input-group">
-                                    <input class="form-control" type="text" id="chatMessage" placeholder="Type your message" required />
+                                    <input class="form-control" type="text" min="1" id="chatMessage" placeholder="Type your message" required />
                                     <button tabindex="1" type="submit" class="btn btn-primary" id="sendMessage">Send Message</button>
                                 </form>
                             </div>
@@ -234,6 +238,20 @@
             </div>
         </div>
     </main>
+    <script>
+    $(document).ready(function() {
+        // Lấy giá trị callerId từ data-caller-id
+        var callerIdFromView = $('#myElement').data('caller-id');
+        
+
+        // Bạn có thể sử dụng callerIdFromView cho bất kỳ mục đích nào ở đây
+        // Ví dụ: hiển thị callerId trong một phần tử khác
+        $('#callerIdDisplay').text(callerIdFromView);
+    });
+</script>
+
+
+
     <audio id="notification-sound" src="~/Sound/075797_short-text-and-sendmp3-37438 (mp3cut.net).mp3" preload="auto"></audio>
     <script>
         function playNotificationSound() {
@@ -261,7 +279,7 @@
         var callerId = '@Model.SendId';
         var calleeId = '@Model.ReceiverId';
     </script>
-    
+
     <script>
         var connectionChat = new signalR.HubConnectionBuilder().withUrl("/ChatHub").build();
 
@@ -282,14 +300,14 @@
                 if (user === senderEmail) {
                     messageDiv.classList.add("chat-message-right", "pb-4");
                     img.src = '@Html.Raw(Model.sendimg)';
-                    
+
                     textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "mr-3");
                 }
                 // Cấu trúc cho người nhận
                 else {
                     messageDiv.classList.add("chat-message-left", "pb-4");
                     img.src = '@Html.Raw(Model.receiveimg)';;
-                   
+
                     textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "ml-3");
                 }
 
@@ -302,7 +320,7 @@
                 usernameDiv.textContent = user === senderEmail ? "You" : "@Model.ReceiveName";
 
                 var messageContent = document.createElement("div");
-                messageContent.textContent = message;
+                messageContent.textContent =  message;
 
                 timeDiv.classList.add("text-muted", "small", "text-nowrap", "mt-2");
                 timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -324,7 +342,7 @@
                 var message = document.getElementById("chatMessage").value;
                 var receiver = document.getElementById("receiverEmail").value;
 
-                if (receiver.length > 0) {
+                if (receiver.length > 0 && message.length > 0) {
                     // Nếu có người nhận, gửi tin nhắn đến người đó
                     $.ajax({
                         url: '/SendMessageToReceiver',
@@ -338,22 +356,31 @@
                         }
                     });
                 }
-                
 
+                if(message.length > 0){
                 // Hiển thị tin nhắn đã gửi ngay lập tức
                 var li = document.createElement("li");
-                li.classList.add("chat-message-right", "pb-4"); 
+                li.classList.add("chat-message-right", "pb-4");
                 var messageContainer = document.createElement("div");
 
                 // Tạo phần tử img cho hình ảnh của người gửi
                 var img = document.createElement("img");
-                img.src =  '@Html.Raw(Model.sendimg)'; // Đường dẫn đến hình ảnh
+                img.src = '@Html.Raw(Model.sendimg)'; // Đường dẫn đến hình ảnh
                 img.classList.add("rounded-circle", "mr-1");
                 img.width = 40;
                 img.height = 40;
 
                 // Thêm hình ảnh vào messageContainer
                 messageContainer.appendChild(img);
+
+                var now = new Date();
+                 var options = { hour: '2-digit', minute: '2-digit', hour12: true };
+                var timeStamp = document.createElement("div");
+                timeStamp.classList.add("text-muted", "small", "text-nowrap", "mt-2");
+                timeStamp.textContent = now.toLocaleTimeString([], options); // Định dạng thời gian theo yêu cầu
+
+                // Thêm thời gian vào messageContainer
+             messageContainer.appendChild(timeStamp);
 
                 // Tạo phần tử chứa nội dung tin nhắn
                 var messageContent = document.createElement("div");
@@ -362,7 +389,7 @@
                 // Tạo tên người gửi
                 var senderName = document.createElement("div");
                 senderName.classList.add("font-weight-bold", "mb-1");
-                senderName.textContent = "You"; 
+                senderName.textContent = "You";
 
                 // Thêm tên người gửi và nội dung tin nhắn
                 messageContent.appendChild(senderName);
@@ -380,7 +407,7 @@
                 document.getElementById("chatMessage").value = "";
                 li.scrollIntoView({ behavior: "smooth" }); // Cuộn tới tin nhắn mới
                 event.preventDefault(); // Ngăn chặn hành vi mặc định của nút
-
+                }
             });
 
             // Khởi động kết nối SignalR
@@ -393,10 +420,10 @@
     </script>
 
     <script>
-         var callerId = '@Model.SendId'; 
-        var receiverId = '@Model.ReceiverId'; 
+        var callerId = '@Model.SendId';
+        var receiverId = '@Model.ReceiverId';
 
-        document.getElementById('videoCallButton').addEventListener('click', function() {
+        document.getElementById('videoCallButton').addEventListener('click', function () {
             if (callerId && receiverId) {
                 var url = `/api/VideoCall/${callerId}/${receiverId}`;
                 window.location.href = url;

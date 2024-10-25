@@ -43,8 +43,8 @@ namespace OnlineLearning.Controllers
             var receiver = await _userManager.FindByIdAsync(id);
             var messages = await _db.Message
         .Where(m => (m.SenderId == user.Id && m.ReceiverId == id) ||
-                     (m.SenderId == id && m.ReceiverId == user.Id))
-        .OrderBy(m => m.Timestamp)
+                     (m.SenderId == id && m.ReceiverId == user.Id)).OrderBy(m => m.Timestamp)
+        
         .ToListAsync();
             var isreadmess = await _db.Message.Where(m => (m.ReceiverId.Equals(userId) && m.SenderId.Equals(id)) || (m.SenderId.Equals(userId) && m.ReceiverId.Equals(id))).OrderByDescending(t => t.Timestamp).Select(m => new {m.Content, m.SenderId, m.ReceiverId}).FirstOrDefaultAsync();
             if(isreadmess == null)
@@ -94,7 +94,7 @@ namespace OnlineLearning.Controllers
         {
             var userId = _db.Users.FirstOrDefault(u => u.Id.Equals(receiver))?.Id;
              
-            if (!string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(message))
             {
                 var messageModel = new MessageModel
                 {

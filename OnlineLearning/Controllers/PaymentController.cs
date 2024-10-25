@@ -279,9 +279,25 @@ namespace OnlineLearning.Controllers
 
 
         }
-        public IActionResult ListRequest()
+        public async Task<IActionResult> ListRequest()
         {
-            return View();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var listpayment = await datacontext.Payment.Where(p => p.StudentID == userId).ToListAsync();
+            var listrequest = await datacontext.RequestTranfer.Where(p => p.UserID == userId).ToListAsync();
+            var history = new HistoryPaymentViewModel();
+            if (listpayment.Any())
+            {
+
+                history.Payments = listpayment;
+                history.Requests = listrequest;
+                
+            }
+            else
+            {
+                history.Requests = listrequest;
+            }
+            
+            return View(history);
         }
 
     }
