@@ -177,7 +177,7 @@ namespace OnlineLearning.Controllers
                 TempData["success"] = "Test created successfully!";
                 //keep it alive for 2 request 
                 TempData.Keep();
-                return RedirectToAction("CreateQuestionRedirector", "Question", new { TestID = model.TestID });
+                return RedirectToAction("CreateQuestionRedirector", "Question", new { TestID = newTest.TestID });
                 //=======
                 //                if (model.StartTime < model.EndTime)
                 //                {
@@ -214,7 +214,7 @@ namespace OnlineLearning.Controllers
             {
                 TempData["error"] = "Test creation failed!";
                 TempData.Keep();
-                return RedirectToAction("CreateTestRedirector", new { TestID = model.TestID });
+                return RedirectToAction("CreateTestRedirector", new { CourseID = Course.CourseID });
             }
         }
 
@@ -370,6 +370,7 @@ namespace OnlineLearning.Controllers
         public async Task<IActionResult> DeleteTest(int TestID)
         {
             var test = await datacontext.Test.FirstOrDefaultAsync(t => t.TestID == TestID);
+
             if (test == null)
             {
                 return NotFound();
@@ -389,7 +390,7 @@ namespace OnlineLearning.Controllers
                     //currently not allow delete test if there's a submission from a student
                     TempData["error"] = "Test already been done by students";
                     TempData.Keep();
-                    return RedirectToAction("TestList", "Participation", new { id = test.CourseID });
+                    return RedirectToAction("TestList", "Participation", new { CourseID = test.CourseID });
                 }
                 //delete image first
                 foreach (var question in questions)
@@ -414,7 +415,7 @@ namespace OnlineLearning.Controllers
             // Redirect to the test list or any other appropriate action
             TempData["success"] = "Test deletion successfully";
             TempData.Keep();
-            return RedirectToAction("TestList", "Participation", new { id = test.CourseID });
+            return RedirectToAction("TestList", "Participation", new { CourseID = test.CourseID });
         }
 
         [HttpPost]
