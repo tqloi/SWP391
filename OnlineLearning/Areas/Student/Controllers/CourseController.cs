@@ -89,7 +89,7 @@ namespace OnlineLearning.Areas.Student.Controllers
                     studentCourseQuery = studentCourseQuery.Where(sc => sc.CertificateStatus == status);
                 }
 
-                var pageSize = 5;
+                var pageSize = 2;
 
                 //Tìm mây bookmark nếu như bấm Saved
                 if (status == "Saved")
