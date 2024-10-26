@@ -177,7 +177,7 @@ namespace OnlineLearning.Areas.Admin.Controllers
             var list = new ListSearchViewModel();
 
             list.Courses = await _dataContext.Courses.Where(u => u.Title.Contains(search)).ToListAsync();
-            list.Users = await _dataContext.Users.Where(i => i.FirstName.Contains(search) || i.LastName.Contains(search)).ToListAsync();
+            list.Users = await _dataContext.Users.Where(i => i.FirstName.Contains(search) || i.LastName.Contains(search) || search.Equals(i.FirstName + " " + i.LastName)).ToListAsync();
             return View(list);
         }
 
