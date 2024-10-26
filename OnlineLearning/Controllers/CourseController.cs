@@ -14,6 +14,7 @@ using YourNamespace.Models;
 
 namespace OnlineLearning.Controllers
 {
+    [ServiceFilter(typeof(AdminRedirectFilter))]
     public class CourseController : Controller
     {
         private readonly ILogger<HomeController> _logger;

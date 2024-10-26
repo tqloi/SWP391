@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Admin\Views\Shared\Components\**" />
     <Compile Remove="Areas\Instructor\Data\**" />
     <Compile Remove="Areas\Instructor\Models\**" />
     <Compile Remove="Areas\Instructor\Views\Payment\**" />
@@ -16,6 +17,7 @@
     <Compile Remove="wwwroot\assets\**" />
     <Compile Remove="wwwroot\Assignment\**" />
     <Compile Remove="wwwroot\Images\NewFolder\**" />
+    <Content Remove="Areas\Admin\Views\Shared\Components\**" />
     <Content Remove="Areas\Instructor\Data\**" />
     <Content Remove="Areas\Instructor\Models\**" />
     <Content Remove="Areas\Instructor\Views\Payment\**" />
@@ -25,6 +27,7 @@
     <Content Remove="wwwroot\assets\**" />
     <Content Remove="wwwroot\Assignment\**" />
     <Content Remove="wwwroot\Images\NewFolder\**" />
+    <EmbeddedResource Remove="Areas\Admin\Views\Shared\Components\**" />
     <EmbeddedResource Remove="Areas\Instructor\Data\**" />
     <EmbeddedResource Remove="Areas\Instructor\Models\**" />
     <EmbeddedResource Remove="Areas\Instructor\Views\Payment\**" />
@@ -34,6 +37,7 @@
     <EmbeddedResource Remove="wwwroot\assets\**" />
     <EmbeddedResource Remove="wwwroot\Assignment\**" />
     <EmbeddedResource Remove="wwwroot\Images\NewFolder\**" />
+    <None Remove="Areas\Admin\Views\Shared\Components\**" />
     <None Remove="Areas\Instructor\Data\**" />
     <None Remove="Areas\Instructor\Models\**" />
     <None Remove="Areas\Instructor\Views\Payment\**" />
@@ -69,11 +73,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Views\Shared\Components\" />
     <Folder Include="Areas\Instructor\Views\Shared\Components\" />
-
-    <Folder Include="Areas\Student\Models\" />
-    <Folder Include="wwwroot\Assignment\" />
 
 
 

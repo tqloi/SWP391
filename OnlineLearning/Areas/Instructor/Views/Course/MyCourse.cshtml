@@ -1,6 +1,6 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    @model ListViewModel
+    @model CourseListViewModel
     <partial name="_NoficationPartial" />
 }
 
@@ -21,7 +21,12 @@
     </div>
 </header>
 
-<section class="topics-section">
+@{
+    var category = Model.Category;
+    var level = Model.Level;
+}
+
+<section class="topics-section" style="min-height:100vh">
     <div class="button-group d-flex justify-content-between align-items-center">
             <div>
                 <button class="btn custom-btn active" data-bs-toggle="modal" data-bs-target="#createCourseModal">
@@ -29,22 +34,38 @@
                 </button>
             </div>
         <div>
-            <select class="filter-select me-2" id="categoryFilter">
+            <select class="filter-select me-2" id="categoryFilter" onchange="filterByCategory()">
                 <option value="">All Category</option>
                 @Html.Partial("_SideCategory")
             </select>
-
-            <select class="filter-select" id="difficultyFilter">
+            <select class="filter-select" id="difficultyFilter" onchange="filterByCategory()">
                 <option value="">All Level</option>
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
             </select>
+            <script>
+                function filterByCategory() {
+                    var selectedCategory = document.getElementById("categoryFilter").value;
+                    var selectedLevel = document.getElementById("difficultyFilter").value;
+                    var url = '/Instructor/Course/MyCourse?category=' + selectedCategory + '&level=' + selectedLevel;
+                    window.location.href = url;
+                }
+            </script>
+            <script>
+                var selectedCategory = @category;
+                document.getElementById("categoryFilter").value = selectedCategory;
+            </script>
+            <script>
+                var selectedLevel = '@(level ?? "")';
+                document.getElementById("difficultyFilter").value = selectedLevel;
+            </script>
         </div>
     </div>
-    @foreach (var course in Model.Courses)
+        @if (Model.CourseList.Any())
+                {
+    @foreach (var course in Model.CourseList)
     {
-
         <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
             <div class="row">
 
@@ -104,61 +125,61 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="updateCourseForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Course" asp-action="Update">
-                            <input type="hidden" name="CourseID" value="@course.CourseID"> <!-- Ẩn ID khóa học -->
-                            <!-- Hiển thị ảnh bìa hiện tại -->
-                            <div class="mb-3">
-                                <label for="CoverImage" class="form-label">Cover Image</label>
-                                <img id="currentCoverImage" src="@course.CoverImagePath" alt="Current Cover Image" class="img-fluid mb-3" style="max-width: 100%; height: auto;">
-                                <input type="file" class="form-control" name="CoverImage" accept="image/*">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="CourseCode" class="form-label">Course Code</label>
-                                <input type="text" class="form-control" name="CourseCode" value="@course.CourseCode">
-                            </div>
-                            <div class="mb-3">
-                                <label for="Title" class="form-label">Course Title</label>
-                                <input type="text" class="form-control" name="Title" value="@course.Title">
-                            </div>
-                            <div class="mb-3">
-                                <label for="Description" class="form-label">Description</label>
-                                <textarea class="form-control" name="Description" rows="3" minlength="50" required>@course.Description</textarea>
-                                <div class="invalid-feedback">
-                                    Description must be at least 50 characters long.
+                            <form id="updateCourseForm" class="course-form" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Course" asp-action="Update">
+                                <input type="hidden" name="CourseID" value="@course.CourseID"> <!-- Ẩn ID khóa học -->
+                                <!-- Hiển thị ảnh bìa hiện tại -->
+                                <div class="mb-3">
+                                    <label for="CoverImage" class="form-label">Cover Image</label>
+                                    <img id="currentCoverImage" src="@course.CoverImagePath" alt="Current Cover Image" class="img-fluid mb-3" style="max-width: 100%; height: auto;">
+                                    <input type="file" class="form-control" name="CoverImage" accept="image/*">
                                 </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="courseCategory" class="form-label">Category</label>
-                                <select class="form-select" id="categoryForm" name="CategoryId">
-                                    @Html.Partial("_SideCategory")
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="Level" class="form-label">Level</label>
-                                <select class="form-select" id="levelForm" name="Level">
-                                    <option value="beginner">Beginner</option>
-                                    <option value="intermediate">Intermediate</option>
-                                    <option value="advanced">Advanced</option>
-                                </select>
-                                <script>
-                                    var selectedCategory = @course.CategoryID;
-                                    var selectedLevel = '@(course.Level ?? "")';
-                                    document.getElementById("categoryForm").value = selectedCategory;
-                                    document.getElementById("levelForm").value = selectedLevel;
-                                </script>
-                            </div>
-                            <div class="mb-3">
-                                <label for="EndDate" class="form-label">End Date</label>
-                                <input type="date" class="form-control" name="EndDate"
-                                       value="@((course.EndDate.HasValue) ? course.EndDate.Value.ToString("yyyy-MM-dd") : string.Empty)">
-                            </div>
-                            <div class="mb-3">
-                                <label for="Price" class="form-label">Price</label>
-                                <input type="number" class="form-control" name="Price" value="@course.Price" step="0.01" min="0">
-                            </div>
-                            <button type="submit" class="btn custom-btn">Update Course</button>
-                        </form>
+
+                                <div class="mb-3">
+                                    <label for="CourseCode" class="form-label">Course Code</label>
+                                    <input type="text" class="form-control" name="CourseCode" value="@course.CourseCode">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="Title" class="form-label">Course Title</label>
+                                    <input type="text" class="form-control" name="Title" value="@course.Title">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="Description" class="form-label">Description</label>
+                                    <textarea class="form-control" name="Description" rows="3" minlength="50" required>@course.Description</textarea>
+                                    <div class="invalid-feedback">
+                                        Description must be at least 50 characters long.
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="courseCategory" class="form-label">Category</label>
+                                    <select class="form-select" id="categoryForm" name="CategoryId">
+                                        @Html.Partial("_SideCategory")
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="Level" class="form-label">Level</label>
+                                    <select class="form-select" id="levelForm" name="Level">
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                    <script>
+                                        var selectedCategory = @course.CategoryID;
+                                        var selectedLevel = '@(course.Level ?? "")';
+                                        document.getElementById("categoryForm").value = selectedCategory;
+                                        document.getElementById("levelForm").value = selectedLevel;
+                                    </script>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="EndDate" class="form-label">End Date</label>
+                                    <input type="date" class="form-control inputdate" name="EndDate"
+                                           value="@((course.EndDate.HasValue) ? course.EndDate.Value.ToString("yyyy-MM-dd") : string.Empty)">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="Price" class="form-label">Price</label>
+                                    <input type="number" class="form-control" name="Price" value="@course.Price" step="0.01" min="0">
+                                </div>
+                                <button type="submit" class="btn custom-btn submit-btn">Update Course</button>
+                            </form>
                     </div>
                 </div>
             </div>
@@ -207,6 +228,62 @@
             </div>
         </div>
     }
+        @if (Model.TotalPage > 1)
+        {
+            <nav aria-label="Review pagination">
+                <ul class="pagination justify-content-center">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("MyCourse", "Course", new { area = "Instructor", category = category, Level = level, page = Model.CurrentPage - 1 })">Prev</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                    }
+
+                    @{
+                        int startPage = Math.Max(1, Model.CurrentPage - 2);
+                        int endPage = Math.Min(Model.TotalPage, startPage + 4);
+
+                        if (endPage - startPage < 4)
+                        {
+                            startPage = Math.Max(1, endPage - 4);
+                        }
+                    }
+
+                    @for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("MyCourse", "Course", new { area = "Instructor", category = category, Level = level, page = i })">@i</a>
+                        </li>
+                    }
+
+                    @if (Model.CurrentPage < Model.TotalPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("MyCourse", "Course", new { area = "Instructor", category = category, Level = level, page = Model.CurrentPage + 1 })">Next</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="col-lg-12 col-12 text-center">
+            <h6 class="text-secondary" style="padding: 60px;">No course available</h6>
+        </div>
+    }
     <!-- Create course Modal -->
     <div class="modal fade" id="createCourseModal" tabindex="-1" aria-labelledby="createCourseModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -216,7 +293,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="newCourseForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Course" asp-action="Create">
+                    <form id="newCourseForm" class="course-form" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Course" asp-action="Create">
                         <div class="mb-3">
                             <label for="CourseCode" class="form-label">Course Code</label>
                             <input type="text" class="form-control" name="CourseCode" required>
@@ -252,7 +329,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="endDate" class="form-label">End Date</label>
-                            <input type="date" class="form-control" name="EndDate" required>
+                            <input type="date" class="form-control inputdate" name="EndDate" required>
                         </div>
                         <div class="mb-3">
                             <label for="coursePrice" class="form-label">Price</label>
@@ -262,13 +339,12 @@
                             <label for="coursematerials" class="form-label">upload course materials</label>
                             <input type="file" class="form-control" name="coursematerials" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple>
                         </div>
-                        <button type="submit" class="btn custom-btn">Add new course</button>
+                        <button type="submit" class="btn custom-btn submit-btn">Add new course</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
 </section>
 
 <section class="section-padding section-bg">
@@ -338,7 +414,38 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </section>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const forms = document.querySelectorAll('.course-form');
+
+        forms.forEach(form => {
+            const endDateInput = form.querySelector('.inputdate');
+            const submitButton = form.querySelector('.submit-btn');
+
+            function validateDates() {
+                const endDate = new Date(endDateInput.value);
+                const currentDate = new Date();
+
+                // Reset custom error message
+                endDateInput.setCustomValidity('');
+                submitButton.disabled = false;
+
+                if (endDate < currentDate) {
+                    // Set custom validity message
+                    endDateInput.setCustomValidity('End Date cannot be in the past.');
+                    submitButton.type = 'button';
+                } else {
+                    submitButton.type = 'submit';
+                }
+
+                // Kiểm tra lại tính hợp lệ để hiển thị lỗi nếu có
+                endDateInput.reportValidity();
+            }
+
+            endDateInput.addEventListener('change', validateDates); // Đăng ký sự kiện cho endDateInput
+        });
+    });
+</script>

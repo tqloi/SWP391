@@ -13,8 +13,8 @@ using YourNamespace.Models;
 
 namespace OnlineLearning.Controllers
 {
-    
-	public class HomeController : Controller
+    [ServiceFilter(typeof(AdminRedirectFilter))]
+    public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
         private readonly DataContext _dataContext;
@@ -31,10 +31,6 @@ namespace OnlineLearning.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("Admin"))
-            {
-                return RedirectToAction("Index", "Admin", new { area = "Admin" });
-            }
             var model = new ListViewModel();
             model.Courses = await _dataContext.Courses.Include(c => c.Category)
                 .OrderByDescending(sc => sc.CourseID).ToListAsync();
@@ -47,10 +43,11 @@ namespace OnlineLearning.Controllers
         [Authorize]
         public IActionResult Contact()
         {
-            if (User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
+            return View();
+        }
+
+        public IActionResult ErrorPage()
+        {
             return View();
         }
 
@@ -58,11 +55,6 @@ namespace OnlineLearning.Controllers
         [Authorize]
         public async Task<IActionResult> Contact(ReportModel model)
         {
-            if (User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             try

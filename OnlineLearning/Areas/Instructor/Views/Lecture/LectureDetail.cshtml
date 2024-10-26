@@ -1,13 +1,10 @@
 ﻿﻿@{
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
     <partial name="_NoficationPartial" />
+    var lecture = ViewBag.Lecture;
 }
 
 @model List<LectureFileModel>
-
-@{
-    var lecture = ViewBag.Lecture;
-}
 
 <div class="container-fluid">
 
@@ -79,7 +76,9 @@
                             hasDocuments = true;
                             <div class="position-relative mb-1">
                                 <i class="@iconClass me-2 ms-2"></i>
-                                <a href="@file.FilePath" class="btn-link" target="_blank"> @file.FileName</a>
+                                <a href="@file.FilePath" class="btn-link" target="_blank">
+                                    @(file.FileName.Length > 80 ? file.FileName.Substring(0, 80) + "..." : file.FileName)
+                                </a>
                             </div>
                         }
                     }
@@ -95,12 +94,12 @@
             <div class="d-flex justify-content-between mt-3 mb-5">
                 <form asp-action="GoPrevious" asp-controller="Lecture" asp-area="Instructor" method="get" class="d-flex">
                     <input type="hidden" name="LectureID" value="@lecture.LectureID">
-                    <button type="submit" class="btn btn btn-outline-black"><i class="fas fa-chevron-left mr-2"></i>Previous</button>
+                    <button type="submit" class="btn btn-outline-black"><i class="fas fa-chevron-left mr-2"></i>Previous</button>
                 </form>
 
                 <form asp-action="GoNext" asp-controller="Lecture" asp-area="Instructor" method="get" class="d-flex">
                     <input type="hidden" name="LectureID" value="@lecture.LectureID">
-                    <button type="submit" class="btn btn btn-outline-black">Next <i class="fas fa-chevron-right ml-1"></i></button>
+                    <button type="submit" class="btn btn-outline-black">Next <i class="fas fa-chevron-right ml-1"></i></button>
                 </form>
             </div>
         </div>
@@ -147,15 +146,15 @@
                         <label for="Description" class="form-label">Description</label>
                         <textarea class="form-control" name="Description" rows="3" required></textarea>
                     </div>
-                    <div class="mb-3">
+@*                     <div class="mb-3">
                         <label for="LectureFile" class="form-label">Upload Lecture Documents</label>
                         <input type="file" class="form-control" name="LectureFile" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple>
                     </div>
                     <div class="mb-3">
                         <label for="VideoFile" class="form-label">Upload Lecture Video</label>
                         <input type="file" class="form-control" name="VideoFile" accept=".mp4,.mov,.avi">
-                    </div>
-                    <button type="submit" class="custom-btn">Add Lecture</button>
+                    </div> *@
+                    <button type="submit" class="custom-btn">Update Lecture</button>
                 </form>
             </div>
         </div>
@@ -167,14 +166,17 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteLectureModalLabel">Delete Lecture</h5>
+                <h5 class="modal-title" id="deleteCourseModalLabel">Delete Lecture</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="deleteLectureForm" method="post" asp-controller="Lecture" asp-action="Delete">
-                    <input type="hidden" name="LectureID">
-                    <p>Are you sure you want to delete this lecture?</p>
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                <p>Are you sure you want to delete this Lecture?</p>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteCourseForm" method="post" asp-area="Instructor" asp-controller="Lecture" asp-action="Delete">
+                    <input type="hidden" name="LectureID" value="@lecture.LectureID">
+                    <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn custom-btn">Delete</button>
                 </form>
             </div>
         </div>

@@ -7,7 +7,7 @@ namespace OnlineLearning.Models.ViewModel
         public List<CourseModel>? Courses { get; set; } 
         public List<StudentCourseModel>? StudentCourses { get; set; }
         public List<CategoryModel> Categories { get; set; }
-        public List<BookmarkModel>? Bookmarks { get; set; }
+        public List<BookMarkModel>? Bookmarks { get; set; }
         public List<ReviewModel>? Reviews { get; set; }
         public int TotalPage { get; set; }
         public int CurrentPage { get; set; }

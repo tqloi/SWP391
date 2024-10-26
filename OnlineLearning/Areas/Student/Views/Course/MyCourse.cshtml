@@ -72,7 +72,7 @@
         </div>
     </div>
     
-    @if (Model.StudentCourses != null && Model.StudentCourses.Any() && User.IsInRole("Student"))
+    @if (Model.StudentCourses != null && Model.StudentCourses.Any())
     {
         @foreach (var studentCourse in Model.StudentCourses)
         {
@@ -114,16 +114,17 @@
                                         </div>
                                     </div>
                                 }
-                                <div class="col-md-3 row d-flex justify-content-between">
-                                    <div class="col-5">
-                                        <a asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@course.CourseID" class="btn custom-btn mt-auto mt-lg-4">Go to course</a>
-                                    </div>
-                                    @if (studentCourse.CertificateStatus == "Completed" && Model.Reviews.FirstOrDefault(r => r.CourseID == studentCourse.CourseID) == null)
+                                else
+                                {
+                                    if (Model.Reviews.FirstOrDefault(r => r.CourseID == studentCourse.CourseID) == null)
                                     {
-                                        <div class="col-5">
-                                            <a class="btn custom-btn active mt-auto mt-lg-4" data-bs-toggle="modal" data-bs-target="#leaveReview">Leave review</a>
+                                        <div class="col-md-3 ms-auto">
+                                            <a class="btn custom-btn mt-auto active" data-bs-toggle="modal" data-bs-target="#leaveReview">Leave review</a>
                                         </div>
                                     }
+                                }
+                                <div class="col-md-3 d-flex justify-content-end">
+                                        <a asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@course.CourseID" class="btn custom-btn mt-auto">Go to course</a>
                                 </div>
                             </div>
                         </div>
@@ -242,9 +243,8 @@
         }
     }
 
-
     <!-- Hiển thị book mark-->
-    @if (Model.Bookmarks != null && Model.Bookmarks.Any() && User.IsInRole("Student"))
+    @if (Model.Bookmarks != null && Model.Bookmarks.Any())
     {
         @foreach (var bookmark in Model.Bookmarks)
         {
@@ -299,7 +299,14 @@
                 </div>
             </div>
         }
+    }    
+@*     else
+    {
+        <div class="col-lg-12 col-12 text-center">
+            <h6 class="text-secondary" style="padding: 60px;">no course available</h6>
+        </div>
     }
+ *@
         <!--Phân trang-->
     @if (Model.TotalPage > 1)
     {

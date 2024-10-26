@@ -45,7 +45,7 @@ namespace OnlineLearning.Areas.Student.Controllers
                                 .Include(sc => sc.Course)
                                 .AsQueryable();
                 var courseQuery = (status == "Saved")
-                                        ? datacontext.Bookmark
+                                        ? datacontext.BookMark
                                             .Where(sc => sc.StudentID == userId)
                                             .Include(sc => sc.Course)
                                             .ThenInclude(course => course.Instructor)
@@ -61,7 +61,7 @@ namespace OnlineLearning.Areas.Student.Controllers
                                             .Select(sc => sc.Course)
                                             .OrderByDescending(sc => sc.CourseID)
                                             .AsQueryable();
-                var saveCourseQuery = datacontext.Bookmark
+                var saveCourseQuery = datacontext.BookMark
                                         .Where(sc => sc.StudentID == userId)
                                         .Include(sc => sc.Course)
                                         .OrderByDescending(sc => sc.CourseID)

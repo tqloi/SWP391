@@ -1,55 +1,24 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-
+    Layout = "~/Views/Shared/_CourseLayout.cshtml";
+    var currentCourse = ViewBag.Course as CourseModel;
+    var courseID = currentCourse.CourseID;
     <partial name="_NoficationPartial" />
 }
 @model AssignmentViewModel
-<header class="site-header d-flex flex-column justify-content-center align-items-center">
-    <div class="container">
-        <div class="row align-items-center">
-
-            <div class="col-lg-5 col-12">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">My Courses</li>
-                    </ol>
-                </nav>
-                <h2 class="text-white">Topics Listing</h2>
-            </div>
-        </div>
-    </div>
-</header>
-<style>
-    .topics-section {
-        padding: 50px 100px 50px 100px;
-        background-color: #f7f7f7;
-    }
-</style>
 
 <!-- Add Lecture Modal -->
 <div class="container">
-
-
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <p class="font-monospace fs-2">Edit Assignment</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h4 class="">Edit assignment</h4>
+                <a asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID">  <i class="bi bi-arrow-left"></i> Back </a>
             </div>
             <div class="modal-body">
                 <form enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment">
-
                     <!-- Course ID -->
-                    <div class="mb-3">
                         <input type="hidden" asp-for="CourseID" />
-                    </div>
-
-                    <!-- Assignment ID -->
-                    <div class="mb-3">
                         <input type="hidden" asp-for="AssignmentID" />
-                    </div>
-
                     <!-- Title -->
                     <div class="mb-3">
                         <label asp-for="Title" class="form-label">Title</label>
@@ -58,28 +27,65 @@
 
                     <!-- Description -->
                     <div class="mb-3">
-                        <label asp-for="Description" class="form-label">Description</label>
-                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter description"></textarea>
+                        <label asp-for="StartDate" class="form-label">Start Date</label>
+                        <input asp-for="StartDate" id="inputdate" class="form-control" type="datetime-local">
                     </div>
 
                     <!-- Due Date -->
                     <div class="mb-3">
                         <label asp-for="DueDate" class="form-label">Due Date</label>
-                        <input asp-for="DueDate" class="form-control" type="datetime-local">
+                        <input asp-for="DueDate" id="inputdate2" class="form-control" type="datetime-local">
+                        <span id="error-message" class="text-danger mt-1" style="display: none;"></span>
                     </div>
 
                     <!-- Assignment Link -->
                     <div class="mb-3">
-                        <label asp-for="AssignmentLink" class="form-label">Upload Assignment File</label>
+                        <label asp-for="AssignmentLink" class="form-label">Change Assignment File</label>
                         <input asp-for="AssignmentLink" class="form-control" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx">
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="btn btn-primary w-100">Update Assignment</button>
+                    <button type="submit" id="submit-btn" class="btn custom-btn w-100">Confirm</button>
                 </form>
             </div>
         </div>
     </div>
-
-
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const startDateInput = document.getElementById('inputdate');
+        const dueDateInput = document.getElementById('inputdate2');
+        const submitButton = document.getElementById('submit-btn');
+
+            function validateDates() {
+            const startDate = new Date(startDateInput.value);
+            const dueDate = new Date(dueDateInput.value);
+            const currentDate = new Date();
+
+                // Reset custom error messages
+            startDateInput.setCustomValidity('');
+            dueDateInput.setCustomValidity('');
+            submitButton.disabled = false;
+
+            if (dueDate < currentDate) {
+                // Set custom validity message for due date in the past
+                dueDateInput.setCustomValidity('Due Date cannot be in the past.');
+                submitButton.type = 'button';
+            } else if (dueDate < startDate) {
+                // Set custom validity message for due date before start date
+                dueDateInput.setCustomValidity('Due Date cannot be earlier than Start Date.');
+                submitButton.type = 'button';
+            } else {
+                submitButton.type = 'submit'; // Reset to submit if dates are valid
+            }
+
+                // Display custom validation messages if any
+            startDateInput.reportValidity();
+            dueDateInput.reportValidity();
+        }
+
+            startDateInput.addEventListener('change', validateDates);
+            dueDateInput.addEventListener('change', validateDates);
+        });
+</script>

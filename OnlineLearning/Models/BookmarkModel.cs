@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineLearning.Models
 {
-    public class BookmarkModel
+    public class BookMarkModel
     {
         [Key]
         public int BookmarkID { get; set; }
