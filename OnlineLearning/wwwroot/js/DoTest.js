@@ -23,6 +23,14 @@ function updateChosenQuestions() {
     // Update the progress bar after each question is answered
     updateProgressBar();
 }
+//make sure at lease one question is checked
+document.querySelector("form").addEventListener("submit", function (event) {
+    const answers = document.querySelectorAll("input[type='radio']:checked");
+    if (answers.length === 0) {
+        event.preventDefault();
+        alert("Please select at least one answer before submitting.");
+    }
+});
 
 // Add onchange event to all radio buttons
 document.addEventListener('DOMContentLoaded', function () {

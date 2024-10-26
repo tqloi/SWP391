@@ -40,7 +40,8 @@
                     <div>
                         <select class="filter-select me-2" id="categoryFilter" onchange="filterByCategory()">
                             <option value="">All Category</option>
-                            @Html.Partial("_SideCategory")
+                        @*     @Html.Partial("_SideCategory") *@
+                            <partial name="_SideCategory" />
                         </select>
                         <select class="filter-select" id="difficultyFilter" onchange="filterByCategory()">
                             <option value="">All Level</option>

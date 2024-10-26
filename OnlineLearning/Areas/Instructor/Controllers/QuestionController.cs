@@ -13,10 +13,13 @@ using System.IO;
 using static System.Net.Mime.MediaTypeNames;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using OnlineLearning.Controllers;
 
-namespace OnlineLearning.Controllers
+namespace OnlineLearning.Areas.Instructor.Controllers
 {
     [Authorize]
+    [Area("Instructor")]
+    [Route("Instructor/[controller]/[action]")]
     public class QuestionController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -38,6 +41,7 @@ namespace OnlineLearning.Controllers
         }
 
         [Authorize(Roles = "Instructor")]
+        [Area("Instructor")]
         public IActionResult CreateQuestionRedirector(int TestID)
         {
             ViewBag.TestID = TestID;
@@ -50,6 +54,7 @@ namespace OnlineLearning.Controllers
         }
 
         [Authorize(Roles = "Instructor")]
+        [Area("Instructor")]
         public IActionResult EditQuestionRedirector(int TestID)
         {
             ViewBag.TestID = TestID;
@@ -92,7 +97,7 @@ namespace OnlineLearning.Controllers
                 Test = model.Test,
                 QuestionID = model.QuestionID,
                 Question = model.QuestionText,
-                
+
                 //  ImagePath=model.ImagePath, null for now
             };
             if (model.QuestionImage != null)
@@ -113,7 +118,7 @@ namespace OnlineLearning.Controllers
             }
             model.Test.NumberOfQuestion += 1;
             datacontext.Question.Add(newQuestion);
-
+            datacontext.SaveChanges();
             var numberOfQuestions = datacontext.Question.ToList()
                 .Where(q => q.TestID == model.TestID)
                 .Count();
@@ -171,7 +176,7 @@ namespace OnlineLearning.Controllers
             List<QuestionModel> questions = new List<QuestionModel>();
             var test = await datacontext.Test.FindAsync(TestID);
             // Use EPPlus to read the Excel file
-            using (var package = new OfficeOpenXml.ExcelPackage(ExcelFile.OpenReadStream()))
+            using (var package = new ExcelPackage(ExcelFile.OpenReadStream()))
             {
                 var worksheet = package.Workbook.Worksheets[0]; // Assuming the first sheet
 
@@ -194,7 +199,6 @@ namespace OnlineLearning.Controllers
                         string.IsNullOrEmpty(answerC) || string.IsNullOrEmpty(answerD) ||
                         string.IsNullOrEmpty(correctAnswer))
                     {
-                        TempData["Error"] = $"Row {row} contains invalid data. Ensure all columns are filled.";
                         break;
                     }
 
@@ -237,12 +241,12 @@ namespace OnlineLearning.Controllers
 
             // Save all the questions to the database
             datacontext.Question.AddRange(questions);
-
+            await datacontext.SaveChangesAsync();
             var numberOfQuestions = datacontext.Question.ToList()
                 .Where(q => q.TestID == TestID)
                 .Count();
 
-             test.NumberOfQuestion = numberOfQuestions;
+            test.NumberOfQuestion = numberOfQuestions;
 
             datacontext.Test.Update(test);
             await datacontext.SaveChangesAsync();
@@ -374,14 +378,14 @@ namespace OnlineLearning.Controllers
             }
 
             // Retrieve the test and set up ViewBag for Test and CourseID
-            var test = datacontext.Test.Find(TestID);   
+            var test = datacontext.Test.Find(TestID);
 
             var numberOfQuestions = datacontext.Question.ToList()
                 .Where(q => q.TestID == TestID)
                 .Count();
             test.NumberOfQuestion = numberOfQuestions;
             ViewBag.CourseID = test.CourseID;
-           // ViewBag.TestID = TestID;
+            // ViewBag.TestID = TestID;
 
             //not sure if necessary
             ViewBag.QuestionID = QuestionID;
@@ -406,7 +410,7 @@ namespace OnlineLearning.Controllers
             var course = datacontext.Courses.Find(test.CourseID);
             ViewBag.Course = course;
             // Return the view with the pre-filled model
-            return View(questionViewModel); 
+            return View(questionViewModel);
         }
 
         // POST: Update the question
@@ -469,7 +473,7 @@ namespace OnlineLearning.Controllers
                 TempData["Error"] = "Question not found.";
             }
 
-             return RedirectToAction("EditQuestionRedirector", new {TestID = model.TestID });
+            return RedirectToAction("EditQuestionRedirector", new { model.TestID });
         }
 
         [HttpPost]
@@ -494,8 +498,9 @@ namespace OnlineLearning.Controllers
             datacontext.SaveChanges();
             TempData["success"] = "Delete Successfully";
 
-            return RedirectToAction("EditQuestionRedirector",new { TestID = TestID });
+            return RedirectToAction("EditQuestionRedirector", new { TestID });
         }
+
         //[Authorize(Roles = "Instructor")]
         //private async Task<bool> CheckValidTestToInstructor(int TestID)
         //{

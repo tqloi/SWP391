@@ -14,14 +14,14 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2>Edit Test</h2>
             <div class="d-flex">
-                <form asp-action="ClearAllSubmission" asp-controller="Test" method="post" class="me-2">
+                <form asp-action="ClearAllSubmission" asp-area="Instructor" asp-controller="Test" method="post" class="me-2">
                     <input type="hidden" name="TestID" value="@Model.TestID" />
                     <button type="submit" class="btn btn-danger"
                             onclick="return confirm('This action will delete all student\'s submission, are you sure?')">
                         Clear All Student's Submissions
                     </button>
                 </form>
-                <form asp-action="ClearAllQuestion" asp-controller="Test" method="post">
+                    <form asp-action="ClearAllQuestions" asp-area="Instructor" asp-controller="Test" method="post">
                     <input type="hidden" name="TestID" value="@Model.TestID" />
                     <button type="submit" class="btn btn-danger"
                             onclick="return confirm('This action will delete all questions, are you sure?')">

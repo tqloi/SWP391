@@ -81,23 +81,23 @@
                         @if (User.IsInRole("Instructor"))
                         {
                             <div class="d-flex justify-content-between">
-                                <form asp-controller="Question" asp-action="EditQuestionRedirector" method="post" asp-route-TestID="@test.TestID">
+                                <form asp-controller="Question" asp-action="EditQuestionRedirector" asp-area="Instructor" method="post" asp-route-TestID="@test.TestID">
                                     <button type="submit" class="btn btn-success">
                                         Edit Question
                                     </button>
                                 </form>
-                                <form asp-controller="Question" asp-action="CreateQuestionRedirector" method="post" asp-route-TestID="@test.TestID">
+                                <form asp-controller="Question" asp-action="CreateQuestionRedirector" asp-area="Instructor" method="post" asp-route-TestID="@test.TestID">
                                     <button type="submit" class="btn btn-success">
                                         Add Question
                                     </button>
                                 </form>
-                                <form asp-controller="Test" asp-action="EditTest" method="get">
+                                <form asp-controller="Test"  asp-action="EditTest" asp-area="Instructor" method="get">
                                     <input type="hidden" name="TestID" value="@test.TestID" />
                                     <button type="submit" class="btn btn-success">
                                         Edit Test
                                     </button>
                                 </form>
-                                <form asp-controller="Test" asp-action="DeleteTest" method="post" onsubmit="return confirm('Are you sure you want to delete this test?');">
+                                <form asp-controller="Test" asp-action="DeleteTest" asp-area="Instructor" method="post" onsubmit="return confirm('Are you sure you want to delete this test?');">
                                     <input type="hidden" name="TestID" value="@test.TestID" />
                                     <button type="submit" class="btn btn-danger">
                                         Delete Test
@@ -108,22 +108,23 @@
 
                         @if (User.IsInRole("Student"))
                         {
-                            <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center justify-content-between">
                                 @if (score != null && attemptsLeft > 0)
                                 {
-                                    <p><strong>Your Score:</strong> @score.Score.ToString("F2")</p>
-                                    <form asp-controller="Test" asp-action="DoTest" method="get">
+                                    <p><strong>Your Score:</strong> @score.Score</p>
+                                    <form asp-controller="Test" asp-action="DoTest" asp-area="Student" method="get">
                                         <input type="hidden" id="TestID" name="TestID" value="@test.TestID" />
+                                        
                                         <button type="submit" class="btn btn-warning">
                                             Redo Test
-                                        </button>
+                                        </button> 
                                     </form>
                                 }
                                 else
                                 {
                                     if (attemptsLeft == -1)
                                     {
-                                        <form asp-controller="Test" asp-action="DoTest" method="get">
+                                        <form asp-controller="Test" asp-action="DoTest" asp-area="Student" method="get">
                                             <input type="hidden" id="TestID" name="TestID" value="@test.TestID" />
                                             <button type="submit" class="btn btn-success">
                                                 Do Test
@@ -132,10 +133,15 @@
                                     }
                                     else
                                     {
-                                        <button class="btn btn-warning" disabled>
-                                            No Attempt Left
-                                        </button>
-
+                                    <div class="d-flex align-items-center">
+                                        @if (score != null)
+                                        {
+                                            <p><strong>Your Score:</strong> @score.Score.ToString("F2")</p>
+                                        }
+                                        <div>
+                                            <button class="btn btn-warning" disabled>No Attempt Left</button>
+                                        </div>
+                                    </div>
                                     }
                                 }
                             </div>
