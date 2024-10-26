@@ -34,7 +34,7 @@ namespace OnlineLearning.Areas.Student.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> MyCourse(int? category = null, string level = null, string status = null, int page = 1)
+        public async Task<IActionResult> MyCourse(int? category = null, string level = null, string status = "In Progress", int page = 1)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var model = new ListViewModel();
@@ -66,14 +66,14 @@ namespace OnlineLearning.Areas.Student.Controllers
                                         .Include(sc => sc.Course)
                                         .OrderByDescending(sc => sc.CourseID)
                                         .AsQueryable();
-
+                
 
                 // Lọc theo category nếu có
                 if (category.HasValue)
                 {
                     studentCourseQuery = studentCourseQuery.Where(sc => sc.Course.CategoryID == category.Value);
                     courseQuery = courseQuery.Where(c => c.CategoryID == category.Value);
-                    saveCourseQuery = saveCourseQuery.Where(sc => sc.Course.CategoryID == category.Value);
+                    saveCourseQuery = saveCourseQuery.Where(sc => sc.Course.CategoryID == category.Value);     
                 }
 
                 // Lọc theo level nếu có
@@ -89,7 +89,7 @@ namespace OnlineLearning.Areas.Student.Controllers
                     studentCourseQuery = studentCourseQuery.Where(sc => sc.CertificateStatus == status);
                 }
 
-                var pageSize = 2;
+                var pageSize = 5;
 
                 //Tìm mây bookmark nếu như bấm Saved
                 if (status == "Saved")
@@ -119,7 +119,11 @@ namespace OnlineLearning.Areas.Student.Controllers
                     model.StudentCourses = StudentCourses;
                     model.TotalPage = (int)Math.Ceiling(totalCourses / (double)pageSize);
                 }
+
                 model.Courses = await courseQuery.ToListAsync();
+                model.Reviews = await datacontext.Review
+                                            .Where(r => r.UserID == userId)
+                                            .ToListAsync();
                 model.CurrentPage = page;
                 model.Level = level;
                 model.Category = category;
