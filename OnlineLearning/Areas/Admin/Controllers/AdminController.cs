@@ -88,14 +88,13 @@ namespace OnlineLearning.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            return View(new ChangePasswordViewModel { Username = user.UserName});
+            return View(new ChangePasswordViewModel {Username = user.UserName});
 
         }
         [HttpPost]
         public async Task<IActionResult> Changepass(ChangePasswordViewModel model)
         {
-            if (ModelState.IsValid)
-            {
+            if (ModelState.IsValid) {
                 var user = await _userManager.FindByNameAsync(model.Username);
                 
                 if(!await _userManager.CheckPasswordAsync(user, model.OldPassword))
@@ -103,20 +102,16 @@ namespace OnlineLearning.Areas.Admin.Controllers
                     TempData["error"] = "Invalid Old Password!";
                     return View(model);
                 }
-                if(await _userManager.CheckPasswordAsync(user, model.NewPassword))
+                var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                if (result.Succeeded)
                 {
-                    var result = await _userManager.RemovePasswordAsync(user);
-                    if (result.Succeeded)
-                    {
-                        await _userManager.AddPasswordAsync(user, model.NewPassword);
-                        TempData["success"] = "Change Password Successful!";
-                        return RedirectToAction("AdminProfile");
-                    }
-                }
+                 TempData["success"] = "Password changed successfully!";
+                return RedirectToAction("AdminProfile");
+                  }
+
 
             }
-           
-                TempData["error"] = "Something is wrong!";
+            TempData["error"] = "Something is wrong!";
                 return View(model);
 
         }

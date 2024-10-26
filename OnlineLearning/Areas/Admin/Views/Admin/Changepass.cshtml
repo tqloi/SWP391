@@ -26,6 +26,7 @@
                             <div class="card-body">
                                 <div class="mb-3 row">
                                     <label class="col-sm-3 col-form-label">UserName</label>
+                                    
                                     <div class="col-sm-9">
                                         <input readonly asp-for="Username" class="form-control" value="@Model.Username" />
                                         <span asp-validation-for="Username" class="text-danger"></span>
@@ -66,10 +67,7 @@
 </body>
 
 <script>
-<<<<<<< HEAD
-=======
-    // Kiểm tra mật khẩu khi người dùng nhập
->>>>>>> 1d96a4a2ca6b7c2de42dc2d7161832f4c0275029
+
     function validatePassword() {
         var password = document.getElementById('password').value;
         var error = document.getElementById('passwordError');
@@ -82,12 +80,9 @@
         }
     }
 
-<<<<<<< HEAD
+
      function validateConfirmPassword() {
-=======
-    // Kiểm tra mật khẩu xác nhận khi người dùng nhập
-    function validateConfirmPassword() {
->>>>>>> 1d96a4a2ca6b7c2de42dc2d7161832f4c0275029
+
         var password = document.getElementById('password').value;
         var confirmPassword = document.getElementById('confirmPassword').value;
         var error = document.getElementById('confirmPasswordError');

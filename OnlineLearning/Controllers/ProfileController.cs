@@ -209,5 +209,41 @@ namespace OnlineLearning.Controllers
 
             return View(model);
         }
+        public async Task<IActionResult> Changepass()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(new ChangePasswordViewModel { Username = user.UserName });
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> Changepass(ChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByNameAsync(model.Username);
+
+                if (!await _userManager.CheckPasswordAsync(user, model.OldPassword))
+                {
+                    TempData["error"] = "Invalid Old Password!";
+                    return View(model);
+                }
+
+                var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    TempData["success"] = "Change Password Successfully!";
+                    return RedirectToAction("UserProfile", "Profile");
+                }
+            }
+
+            TempData["error"] = "Something is wrong!";
+            return View(model);
+
+        }
     }
 }
