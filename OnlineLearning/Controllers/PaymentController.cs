@@ -282,22 +282,30 @@ namespace OnlineLearning.Controllers
         public async Task<IActionResult> ListRequest()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var listpayment = await datacontext.Payment.Where(p => p.StudentID == userId).ToListAsync();
-            var listrequest = await datacontext.RequestTranfer.Where(p => p.UserID == userId).ToListAsync();
-            var history = new HistoryPaymentViewModel();
-            if (listpayment.Any())
+            var user = await _userManager.FindByIdAsync(userId);
+            var listrequest = await datacontext.RequestTranfer.Where(r => r.UserID.Equals(user.Id)).Select(u => new HistoryPaymentViewModel
             {
-
-                history.Payments = listpayment;
-                history.Requests = listrequest;
-                
-            }
-            else
+                Id = u.TranferID,
+                FullName = u.FullName,
+                Type = "Request",
+                Description = $"Bank: {u.BankName} " + "\n" +
+                 $"Account: {u.AccountNumber}",
+                Amount = u.MoneyNumber,
+                Date = u.CreateAt,
+                Status = u.Status
+            }).ToListAsync();
+            var listpayment = await datacontext.Payment.Where(r => r.Student.Id.Equals(user.Id)).Select(u => new HistoryPaymentViewModel
             {
-                history.Requests = listrequest;
-            }
-            
-            return View(history);
+                Id = u.PaymentID,
+                FullName = u.Student.FirstName + " " + u.Student.LastName,
+                Type = "Payment",
+                Description = $"Payment for {u.Course.Title}",
+                Amount = (double)u.Amount,
+                Date = u.PaymentDate,
+                Status = u.Status
+            }).ToListAsync();
+            var combine = listpayment.Concat(listrequest).OrderByDescending(l => l.Date).ToList();
+            return View(combine);
         }
 
     }

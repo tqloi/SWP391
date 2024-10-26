@@ -39,7 +39,14 @@ namespace OnlineLearning.Controllers
             var model = new RoleViewModel();
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
-            var list = await _db.Users.Where(u => !u.Id.Equals(user.Id)).ToListAsync();
+            var list = await _db.Users
+    .Where(u => u.Id != user.Id &&
+        _db.Message.Any(m =>
+            (m.SenderId == user.Id && m.ReceiverId == u.Id) ||
+            (m.SenderId == u.Id && m.ReceiverId == user.Id)
+        )
+    )
+    .ToListAsync();
             var receiver = await _userManager.FindByIdAsync(id);
             var messages = await _db.Message
         .Where(m => (m.SenderId == user.Id && m.ReceiverId == id) ||
@@ -132,6 +139,29 @@ namespace OnlineLearning.Controllers
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
             return roles;
+        }
+        [HttpPost]
+        public async Task<IActionResult> SearchUserMess(string Name)
+        {
+            if (string.IsNullOrEmpty(Name))
+            {
+                return RedirectToAction("Index");
+            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user =  await _userManager.FindByIdAsync(userId);
+            var list = _db.Users.Where(u => !u.Id.Equals(user.Id) &&
+                (
+                    u.UserName.ToLower().Contains(Name.ToLower()) ||
+                    u.FirstName.ToLower().Contains(Name.ToLower()) ||
+                    u.LastName.ToLower().Contains(Name.ToLower()) ||
+                    
+                   Name.ToLower().Equals(u.FirstName.ToLower()+" " + u.LastName.ToLower()))
+            ).ToList();
+            var roleview = new RoleViewModel
+            {
+                ListUser = list
+            };
+            return View(roleview);
         }
         
 
