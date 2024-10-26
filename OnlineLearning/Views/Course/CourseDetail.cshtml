@@ -109,6 +109,7 @@
                             <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@Model.Course.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
                             <!-- book mark -->
                             <form asp-action="BookMark" asp-controller="Course" method="POST">
+                                <input type="hidden" name="returnUrl" value="@Url.Action("CourseDetail", "Course", new { CourseID = Model.Course.CourseID })">
                                 <input type="hidden" name="CourseID" value="@Model.Course.CourseID">
                                 <button type="submit" class="bg-transparent border-0 p-0 smoothscroll">
                                     <i class="custom-icon bi @(Model.IsMark == true ? "bi-bookmark-fill" : "bi-bookmark") smoothscroll fs-1"></i>
