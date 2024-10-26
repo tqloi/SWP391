@@ -43,16 +43,21 @@ namespace OnlineLearning.Controllers
         }
         [HttpGet]
         [Route("Account/Login")]
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl = null)
         {
-            return View();
+            var loginVM = new LoginViewModel
+            {
+                ReturnUrl = returnUrl ?? Url.Action("Index", "Home")
+            };
+            return View(loginVM);
         }
 
-        public async Task LoginGoogle()
+        public async Task LoginGoogle(string returnUrl = null)
         {
             await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties
             {
-                RedirectUri = Url.Action("GoogleResponse")
+                RedirectUri = Url.Action("GoogleResponse"),
+                Items = { { "returnUrl", returnUrl } }
             });
 
         }
@@ -69,7 +74,9 @@ namespace OnlineLearning.Controllers
                     var emailClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
                     var firstNameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName);
                     var lastNameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname);
-                    var pictureClaim = claims.FirstOrDefault(c => c.Type == "urn:google:picture"); 
+                    var pictureClaim = claims.FirstOrDefault(c => c.Type == "urn:google:picture");
+
+                    var returnUrl = result.Properties.Items["returnUrl"] ?? Url.Action("Index", "Home");
 
                     if (emailClaim != null)
                     {
@@ -101,7 +108,7 @@ namespace OnlineLearning.Controllers
                                 await _userManager.AddToRoleAsync(user, "Student");
                                 await _signInManager.SignInAsync(user, isPersistent: false);
                                 TempData["success"] = "Action successful!";
-                                return RedirectToAction("Index", "Home");
+                                return Redirect(returnUrl);
                             }
                         }
                         else
@@ -117,7 +124,7 @@ namespace OnlineLearning.Controllers
                                 return RedirectToAction("Index", "Admin", new { area = "Admin" });
                             }
                             TempData["success"] = "Welcome!";
-                            return RedirectToAction("Index", "Home");
+                            return Redirect(returnUrl);
                         }
                     }
                 }
@@ -152,15 +159,10 @@ namespace OnlineLearning.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginVM)
         {
-            if (!ModelState.IsValid)
-            {
-                TempData["error"] = "Login failed!";
-                return View(loginVM);
-            }
             var user = await _userManager.FindByNameAsync(loginVM.Username);
             if (user == null)
             {
-                TempData["error"] = "Login failed!";
+                TempData["error"] = "Username deesn't exist!";
                 return View(loginVM);
             }
             var checkVerify = await _userManager.IsEmailConfirmedAsync(user);
@@ -173,8 +175,8 @@ namespace OnlineLearning.Controllers
             var result = await _signInManager.PasswordSignInAsync(loginVM.Username, loginVM.Password, loginVM.RememberMe, false);
             if (!result.Succeeded)
             {
-                TempData["error"] = "Username or Password is wrong!";
-                ModelState.AddModelError("", "Username or Password are incorrect!");
+                TempData["error"] = "Password is incorrect!";
+                ModelState.AddModelError("", "Password is incorrect!");
                 return View(loginVM);
 
             }
@@ -207,6 +209,11 @@ namespace OnlineLearning.Controllers
                 return RedirectToAction("Index", "Admin", new { area = "Admin" });
             }
             TempData["success"] = "Welcome!";
+            if (!string.IsNullOrEmpty(loginVM.ReturnUrl) && Url.IsLocalUrl(loginVM.ReturnUrl))
+            {
+                return Redirect(loginVM.ReturnUrl);
+            }
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -215,82 +222,88 @@ namespace OnlineLearning.Controllers
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Create(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            var usernameexist = await _userManager.FindByNameAsync(model.Username);
+
+            if (usernameexist != null)
             {
-                var emailexist = await _userManager.FindByEmailAsync(model.Email);
-                if (emailexist != null)
-                {
-                    TempData["error"] = "Emaiil existed!";
-                    return View(model);
-                }
-                var user = new AppUserModel
-
-                {
-                    UserName = model.Username,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email,
-                    PhoneNumber = "123456789",
-                    ProfileImagePath = "/Images/default.jpg",
-                    Address = "",
-                    Dob = DateOnly.FromDateTime(DateTime.Now),
-                    Gender = true
-                };
-
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    //set role
-                    var roleResult = await _userManager.AddToRoleAsync(user, "Student");
-                    if (!roleResult.Succeeded)
-                    {
-                        foreach (var error in roleResult.Errors)
-                        {
-                            ModelState.AddModelError("", error.Description);
-                        }
-                        return View(model); // Trả về form với các lỗi
-                    }
-
-                    //// Tạo token xác nhận email
-                    //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-                    //// Tạo đường dẫn xác nhận email
-                    //var confirmationLink = Url.Action("ConfirmEmail", "Account",
-                    //    new { userId = user.Id, token = token }, Request.Scheme);
-
-                    //var message = $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.";
-
-                    //// Gửi email xác nhận
-                    //var emailSender = new EmailSender(_configuration);
-                    //await emailSender.SendEmailAsync(user.Email, "Confirm your email", message);
-
-                    //TempData["success"] = "Registration successful! Please check your email to confirm your account.";
-                    //return RedirectToAction("Login", "Account");
-                    Random random = new Random();
-                    int otp = random.Next(100000, 999999);
-
-                    var emailSender = new EmailSender(_configuration);
-                    await emailSender.SendEmailAsync(user.Email, "Your OTP Code", $"Your OTP code is {otp}.");
-
-                    HttpContext.Session.SetInt32("otp", otp);
-                    HttpContext.Session.SetString("userId", user.Id);
-
-                    return RedirectToAction("EnterOtp");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-
+                TempData["error"] = "Usernae existed!";
+                return View(model);
             }
-            TempData["error"] = "Failed!";
+
+            var emailexist = await _userManager.FindByEmailAsync(model.Email);
+            if (emailexist != null)
+            {
+                TempData["error"] = "Emaiil existed!";
+                return View(model);
+            }
+            var user = new AppUserModel
+
+            {
+                UserName = model.Username,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Email = model.Email,
+                PhoneNumber = "123456789",
+                ProfileImagePath = "/Images/default.jpg",
+                Address = "",
+                Dob = DateOnly.FromDateTime(DateTime.Now),
+                Gender = true
+            };
+
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                //set role
+                var roleResult = await _userManager.AddToRoleAsync(user, "Student");
+                if (!roleResult.Succeeded)
+                {
+                    foreach (var error in roleResult.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View(model); // Trả về form với các lỗi
+                }
+
+                //// Tạo token xác nhận email
+                //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                //// Tạo đường dẫn xác nhận email
+                //var confirmationLink = Url.Action("ConfirmEmail", "Account",
+                //    new { userId = user.Id, token = token }, Request.Scheme);
+
+                //var message = $"Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.";
+
+                //// Gửi email xác nhận
+                //var emailSender = new EmailSender(_configuration);
+                //await emailSender.SendEmailAsync(user.Email, "Confirm your email", message);
+
+                //TempData["success"] = "Registration successful! Please check your email to confirm your account.";
+                //return RedirectToAction("Login", "Account");
+                Random random = new Random();
+                int otp = random.Next(100000, 999999);
+
+                var emailSender = new EmailSender(_configuration);
+                await emailSender.SendEmailAsync(user.Email, "Your OTP Code", $"Your OTP code is {otp}.");
+
+                HttpContext.Session.SetInt32("otp", otp);
+                HttpContext.Session.SetString("userId", user.Id);
+
+                return RedirectToAction("EnterOtp");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
             return View(model);
         }
+
         [HttpGet]
         public IActionResult OTP_ChangeEmail()
         {

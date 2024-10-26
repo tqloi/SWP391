@@ -264,13 +264,13 @@ CREATE TABLE Assignment (
     CourseID INT,  -- Foreign key to Courses
     Title NVARCHAR(255),
 	AssignmentLink NVARCHAR(MAX),
-    [Description] TEXT,
 	StartDate DATETIME,
     DueDate DATETIME,
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
 alter table Assignment add AssignmentLink  NVARCHAR(MAX);
 alter table Assignment add StartDate DATETIME;
+alter table Assignment drop column [description] ;
 go  
 
 CREATE TABLE ScoreAssignment (

@@ -17,15 +17,8 @@
             <div class="modal-body">
                 <form enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment">
                     <!-- Course ID -->
-                    <div class="mb-3">
                         <input type="hidden" asp-for="CourseID" />
-                    </div>
-
-                    <!-- Assignment ID -->
-                    <div class="mb-3">
                         <input type="hidden" asp-for="AssignmentID" />
-                    </div>
-
                     <!-- Title -->
                     <div class="mb-3">
                         <label asp-for="Title" class="form-label">Title</label>
@@ -51,7 +44,7 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="btn custom-btn w-100">Update Assignment</button>
+                    <button type="submit" class="btn custom-btn w-100">Confirm</button>
                 </form>
             </div>
         </div>
