@@ -19,7 +19,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>@currentCourse.Title</title>
+    <title>Learn0n | @currentCourse.Title</title>
 
     <!-- Custom fonts for this template -->
     <link href="~/course/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -50,13 +50,13 @@
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand text-dark mr-auto" asp-action="Index" asp-controller="Home">
                 <i class="bi-back"></i>
-                <span>Topic</span>
+                <span>LearnOn</span>
             </a>
 
             @if (currentCourse.InstructorID.Equals(user.Id))
             {
                 <!-- Nav Item - Dashboard -->
-                <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Instructor" && ViewContext.RouteData.Values["action"].ToString() == "Dashboard" ? "active" : "")">
+                <li title="Dashboard" class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Instructor" && ViewContext.RouteData.Values["action"].ToString() == "Dashboard" ? "active" : "")">
                     <a class="nav-link" asp-action="Dashboard" asp-controller="Instructor" asp-area="Instructor" asp-route-CourseID="@courseID">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
                         <nav-link>Dashboard</nav-link>
@@ -65,15 +65,15 @@
             }
 
             <!-- Nav Item - Course Info -->
-            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "CourseInfo" ? "active" : "")">
+            <li title="Course Info" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "CourseInfo" ? "active" : "")">
                 <a class="nav-link" asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@courseID">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <i class="bi bi-info-circle"></i>
                     <nav-link>Course Info</nav-link>
                 </a>
             </li>
 
             <!-- Nav Item - Material -->
-            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "MaterialList" ? "active" : "")">
+            <li title="Materials" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "MaterialList" ? "active" : "")">
                 <a class="nav-link" asp-action="MaterialList" asp-controller="Participation" asp-route-CourseID="@courseID">
                     <i class="fas fa-file-alt"></i>
                     <nav-link> Materials</nav-link>
@@ -81,7 +81,7 @@
             </li>
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Lecture" && ViewContext.RouteData.Values["action"].ToString() == "LectureDetail" ? "active" : "")">
+            <li title="Lectures" class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Lecture" && ViewContext.RouteData.Values["action"].ToString() == "LectureDetail" ? "active" : "")">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#lectureList"
                    aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-book-open"></i>
@@ -104,28 +104,28 @@
                 </div>
             </li>
 
-            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "Grades" ? "active" : "")">
+            <li title="Grades" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "Grades" ? "active" : "")">
                 <a class="nav-link" asp-action="GradeList" asp-controller="Participation" asp-route-CourseID="@courseID">
-                    <i class="fas fa-clipboard-list"></i>
+                    <i class="fas fa-clipboard"></i>
                     <nav-link>Grades</nav-link>
                 </a>
             </li>
 
-            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "TestList" ? "active" : "")">
+            <li title="Tests" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "TestList" ? "active" : "")">
                 <a class="nav-link" asp-action="TestList" asp-controller="Participation" asp-route-CourseID="@courseID">
                     <i class="fas fa-clipboard-list"></i>
                     <nav-link>Tests</nav-link>
                 </a>
             </li>
 
-            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "AssignmentList" ? "active" : "")">
+            <li title="Assignments" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "AssignmentList" ? "active" : "")">
                 <a class="nav-link" asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID">
                     <i class="fas fa-tasks"></i>
                     <nav-link>Assignments</nav-link>
                 </a>
             </li>
 
-            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "AssignmentList" ? "active" : "")">
+            <li title="Live stream" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "AssignmentList" ? "active" : "")">
                 <a class="nav-link" asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID">
                     <i class="bi bi-broadcast"></i>
                     <nav-link>Live stream</nav-link>
@@ -136,9 +136,9 @@
             <hr class="sidebar-divider d-none d-md-block">
 
             <!-- Sidebar Toggler (Sidebar) -->
-            @*             <div class="text-center d-none d-md-inline">
-            <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div> *@
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
 
         </ul>
         <!-- End of Sidebar -->
@@ -170,7 +170,7 @@
                     <!-- Topbar Search -->
                     <div class="d-none d-lg-block ml-auto">
                         <form asp-action="CourseList" asp-controller="Course" method="GET" class="navbar-form">
-                            <div class="input-group bg-white" style="padding: 3px; padding-left: 13px; border-radius: 25px; border: 1px solid #ccc;">
+                            <div class="input-group bg-white flex-nowrap" style="padding: 3px; padding-left: 13px; border-radius: 25px; border: 1px solid #ccc;">
                                 <input type="search" name="keyword" placeholder="Search" style="border: none; outline: none;" required>
                                 <button type="submit" class="btn btn-white border-0">
                                     <i class="bi bi-search" style="font-size: 1.2em;"></i>
@@ -230,7 +230,7 @@
                 </nav>
 
                 <div style="min-height: 100vh">
-                @RenderBody()
+                    @RenderBody()
                 </div>
 
                 <!-- Add Lecture Modal -->
@@ -278,7 +278,7 @@
                         <div class="col-lg-3 col-12 mb-4 pb-2">
                             <a class="navbar-brand mb-2" href="#">
                                 <i class="bi-back"></i>
-                                <span>Topic</span>
+                                <span>Learn0n</span>
                             </a>
                         </div>
 
@@ -315,8 +315,8 @@
                                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     English
                                 </button>
-@*                                 <ul class="dropdown-menu">
-                                    <li><button class="dropdown-item" type="button">VietNam</button></li>
+                                @*                                 <ul class="dropdown-menu">
+                                <li><button class="dropdown-item" type="button">VietNam</button></li>
                                 </ul> *@
                             </div>
                         </div>

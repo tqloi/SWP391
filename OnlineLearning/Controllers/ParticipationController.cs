@@ -50,7 +50,7 @@ namespace OnlineLearning.Controllers
 
         [HttpGet]
         [ServiceFilter(typeof(CourseAccessFilter))]
-        public async Task<IActionResult> AssignmentList(int CourseID)
+        public async Task<IActionResult> AssignmentList(int CourseID, int page = 1)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var course = await datacontext.Courses.FindAsync(CourseID);
@@ -63,11 +63,18 @@ namespace OnlineLearning.Controllers
                 return NotFound();
             }
 
+            //page
+            int pageSize = 5;
+            var totalAssignments = assignments.Count();
+            assignments = assignments.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
             var model = new AssignmentListViewModel
             {
                 Assignments = assignments,
                 Submissions = submissions,
-                ScoreAssignments = scores
+                ScoreAssignments = scores,
+                CurrentPage = page,
+                TotalPage = (int)Math.Ceiling(totalAssignments / (double)pageSize)
             };
 
             HttpContext.Session.SetInt32("courseid", CourseID);

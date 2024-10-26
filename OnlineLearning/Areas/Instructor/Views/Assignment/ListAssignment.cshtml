@@ -1,10 +1,15 @@
 ﻿@{
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
     <partial name="_NoficationPartial" />
-    var currentCourse = ViewBag.Course as CourseModel;
-    var courseID = currentCourse.CourseID;
+    var assignmentID = ViewBag.AssignmentID;
+
 }
-@model IEnumerable<SubmissionModel>
+@model AssignmentListViewModel
+
+@{
+    var currentPage = Model.CurrentPage;
+    var totalPage = Model.TotalPage;
+}
 
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 <div class="container my-4">
@@ -17,35 +22,53 @@
                         <thead>
                             <tr class="d flex align-items-center">
                                 <th>Student</th>
-                                <th>Created</th>
-                                <th>File Name</th>
+                                <th>Submit Date</th>
+                                <th class="ps-4">Submissions</th>
+                                <th>Scores</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model)
+                            @foreach (var item in Model.Submissions)
                             {
                                 <tr>
                                     <td>
                                         <img src="@item.User.ProfileImagePath" alt="" class="profile-image rounded-circle" style=" width: 50px; height: 50px;">
                                         <a asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@item.User.Id" class="user-link">@item.User.FirstName @item.User.LastName</a>
-                                        <span class="user-subhead">@item.User.Email</span>
+                                        <div class="user-subhead">@item.User.Email</div>
                                     </td>
-                                    <td>@item.SubmissionDate.ToString()</td>
                                     <td>
-                                        <a href="@item.SubmissionLink" class="btn btn-link" target="_blank">@item.FileName</a>
+                                        <span class="@(item.Assignment.DueDate > item.SubmissionDate ? "text-xbox" : "text-danger")">
+                                            @item.SubmissionDate.ToString("dd/MM/yyyy HH:mm")
+                                        </span>
                                     </td>
-                                    <td style="width: 20%;">
-                                        <a href="@item.SubmissionLink" class="table-link" target="_blank">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
-                                            </span>
+                                    <td>
+                                        <a href="@item.SubmissionLink" class="btn btn-link" target="_blank">
+                                        @(item.FileName.Length > 60 ? item.FileName.Substring(0, 60) + "..." : item.FileName)
                                         </a>
-                                        <a data-bs-toggle="modal" data-bs-target="#createAssignmentModal_@item.User.Id" class="table-link">
+                                    </td>
+                                    <td>
+                                        @{
+                                            var score = Model.ScoreAssignments.FirstOrDefault(p => p.AssignmentID == item.AssignmentID && p.StudentID == item.User.Id);
+                                        }
+                                        <div class="d-flex align-items-center">
+                                            @if (score == null)
+                                            {
+                                                <span class="text-muted">Not yet graded</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="@(score.Score >= 5 ? "text-xbox" : "text-danger") fs-5 ms-3">
+                                                    @score.Score
+                                                </span>
+                                            }
+                                        </div>
+                                      </td>
+                                    <td>
+                                        <a data-bs-toggle="modal" data-bs-target="#createAssignmentModal_@item.User.Id" class="table-link me-1 ms-auto">
                                             <span class="fa-stack">
                                                 <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                                <i class="fas fa-pen fa-stack-1x fa-inverse"></i>
                                             </span>
                                         </a>
                                     </td>
@@ -77,22 +100,62 @@
                         </tbody>
                     </table>
                 </div>
-                <ul class="pagination pull-right">
-                    <li><a href="#"><i class="fa fa-chevron-left"></i></a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#"><i class="fa fa-chevron-right"></i></a></li>
-                </ul>
+                @if (totalPage > 1)
+                {
+                    <nav aria-label="Review pagination">
+                        <ul class="pagination justify-content-center">
+                            @if (currentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("ListAssignment", "Assignment", new { area = "Instructor" ,id = assignmentID, page = currentPage - 1 })">Prev</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="page-item disabled">
+                                    <span class="page-link">Previous</span>
+                                </li>
+                            }
+
+                            @{
+                                int startPage = Math.Max(1, currentPage - 2);
+                                int endPage = Math.Min(totalPage, startPage + 4);
+
+                                if (endPage - startPage < 4)
+                                {
+                                    startPage = Math.Max(1, endPage - 4);
+                                }
+                            }
+
+                            @for (int i = startPage; i <= endPage; i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("ListAssignment", "Assignment", new { area = "Instructor",id = assignmentID, page = i })">@i</a>
+                                </li>
+                            }
+
+                            @if (currentPage < totalPage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("ListAssignment", "Assignment", new { area = "Instructor", id = assignmentID, page = currentPage + 1 })">Next</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="page-item disabled">
+                                    <span class="page-link">Next</span>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    /* USER LIST TABLE */
+/*     /* USER LIST TABLE */
     .user-list tbody td > img {
         position: relative;
         max-width: 50px;
@@ -111,44 +174,11 @@
         font-style: italic;
     }
 
-    .table-hover > tbody > tr:hover > td,
-    .table-hover > tbody > tr:hover > th {
-        background-color: #eee;
-    }
-
-    .table thead > tr > th {
-        border-bottom: 1px solid #C2C2C2;
-        padding-bottom: 0;
-    }
-
     .table tbody > tr > td {
         font-size: 0.875em;
         background: #f5f5f5;
         border-top: 10px solid #fff;
         vertical-align: middle;
         padding: 12px 8px;
-    }
-
-    .table tbody > tr > td:first-child,
-    .table thead > tr > th:first-child {
-        padding-left: 20px;
-    }
-
-    .table a.table-link {
-        margin: 0 5px;
-        font-size: 1.125em;
-    }
-
-    .table a.table-link:hover {
-        text-decoration: none;
-        color: #2aa493;
-    }
-
-    .table a.table-link.danger {
-        color: #fe635f;
-    }
-
-    .table a.table-link.danger:hover {
-        color: #dd504c;
     }
 </style>

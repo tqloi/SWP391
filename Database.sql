@@ -292,7 +292,7 @@ CREATE TABLE Submission (
     SubmissionLink NVARCHAR(MAX),  -- Link to the file
 	[FileName] varchar(250),
     SubmissionDate DATETIME,
-    FOREIGN KEY (assignmentID) REFERENCES Assignment(assignmentID),
+    FOREIGN KEY (assignmentID) REFERENCES Assignment(assignmentID) ON DELETE CASCADE,
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id)  -- References Users table
 );
 alter table Submission add FileName nvarchar(250)

@@ -81,10 +81,12 @@
                                     iconClass = "fas fa-file"; 
                                     break;
                             }
-                            hasDocuments = true; 
+                            hasDocuments = true;
                             <div class="position-relative mb-2">
                                 <i class="@iconClass me-2 ms-2"></i>
-                                <a href="@file.FilePath" class="btn-link" target="_blank">@file.FileName</a>
+                                <a href="@file.FilePath" class="btn-link" target="_blank">
+                                    @(file.FileName.Length > 80 ? file.FileName.Substring(0, 80) + "..." : file.FileName)
+                                </a>
                             </div>
                         }
                     }

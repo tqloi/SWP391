@@ -44,11 +44,6 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 TempData["warning"] = "Course code already exists!";
                 return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
             }
-            if (model.EndDate <= DateTime.Now)
-            {
-                TempData["warning"] = "Invalid end date!";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
-            }
 
             var course = new CourseModel
             {
@@ -121,7 +116,6 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(CourseViewModel model)
         {
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var course = await datacontext.Courses.FindAsync(model.CourseID);
 
@@ -131,11 +125,6 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (existingCourse != null)
             {
                 TempData["warning"] = "Course code already exists!";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
-            }
-            if (model.EndDate < DateTime.Now.Date)
-            {
-                TempData["warning"] = "Invalid end date!";
                 return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
             }
 

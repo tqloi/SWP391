@@ -19,23 +19,27 @@ namespace OnlineLearning.Areas.Instructor.Controllers
     {
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly DataContext _dataContext;
-        private IConfiguration _configuration;
         private readonly FileService _fileService;
-        public AssignmentController(DataContext dataContext, UserManager<AppUserModel> userManager, SignInManager<AppUserModel> signInManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, FileService fileService)
+        public AssignmentController(DataContext dataContext, UserManager<AppUserModel> userManager, SignInManager<AppUserModel> signInManager, FileService fileService)
         {
             _dataContext = dataContext;
             _userManager = userManager;
             _signInManager = signInManager;
-            _webHostEnvironment = webHostEnvironment;
-            _configuration = configuration;
             _fileService = fileService;
         }
         [HttpPost]
         public async Task<IActionResult> CreateAssignment(AssignmentViewModel model)
         {
             var courseid = HttpContext.Session.GetInt32("courseid");
+
+            var existingAsm = await _dataContext.Assignment.FirstOrDefaultAsync(c => c.Title == model.Title);
+
+            if (existingAsm != null)
+            {
+                TempData["warning"] = $"Assignment with title {model.Title} is already exist";
+                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = existingAsm.CourseID });
+            }
             if (ModelState.IsValid)
             {
                 var assignment = new AssignmentModel();
@@ -99,14 +103,18 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             if (assignment == null)
             {
-                return RedirectToAction("UserProfile", "Home");
+                return RedirectToAction("Index", "Home");
             }
-            assignment.Title = model.Title;
-            if (model.DueDate < DateTime.Now || model.DueDate < model.StartDate)
+
+            var existingAsm = await _dataContext.Assignment.FirstOrDefaultAsync(c => c.Title == model.Title);
+
+            if (existingAsm != null)
             {
-                TempData["error"] = "Invalid date!";
+                TempData["warning"] = $"Assignment with title {model.Title} is already exist";
                 return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
             }
+
+            assignment.Title = model.Title;
             assignment.StartDate = model.StartDate;
             assignment.DueDate = model.DueDate;
             assignment.CourseID = model.CourseID;
@@ -140,26 +148,40 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 TempData["error"] = "Assignment not found!";
                 return RedirectToAction("CourseList", "Course");
             }
-
-            
+     
             _dataContext.Assignment.Remove(assignment);
             await _dataContext.SaveChangesAsync();
             TempData["success"] = "Remove Assignment successful!";
             return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
         }
-        public async Task<IActionResult> ListAssignment(int id)
-        {
-            
+        public async Task<IActionResult> ListAssignment(int id, int page = 1)
+        {          
             var submissions = await _dataContext.Submission.Where(s => s.AssignmentID == id).Include(s => s.User).ToListAsync();
+            var listScore = await _dataContext.ScoreAssignment.Include(i => i.Student).Where(s => s.AssignmentID == id).ToListAsync();
             var assignment = await _dataContext.Assignment.FindAsync(id);
 			var course = await _dataContext.Courses.FirstOrDefaultAsync(c => c.CourseID == assignment.CourseID);
 			ViewBag.Course = course;
+
 			if (submissions.Count == 0)
             {
-                TempData["error"] = "No students have submitted their assignments yet.";
+                TempData["info"] = "No students have submitted their assignments yet.";
                 return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
             }
-            return View(submissions);
+            //page
+            int pageSize = 20;
+            var totalSubmissions = submissions.Count();
+            submissions = submissions.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            var model = new AssignmentListViewModel
+            {
+                Submissions = submissions,
+                ScoreAssignments = listScore,
+                CurrentPage = page,
+                TotalPage = (int)Math.Ceiling(totalSubmissions / (double)pageSize)
+            };
+            ViewBag.AssignmentID = assignment.AssignmentID;
+
+            return View(model);
         }
 		public async Task<IActionResult> ListScore(int id)
 		{
@@ -169,7 +191,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             ViewBag.Course = course;
             if (listScore.Count == 0)
 			{
-                TempData["error"] = "No students have been graded yet.";
+                TempData["info"] = "No students have been graded yet.";
                 return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
             }
 			return View(listScore);
@@ -186,7 +208,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             var student = await _userManager.FindByIdAsync(model.StudentID);
             
 			var existScore = await _dataContext.ScoreAssignment
-		.FirstOrDefaultAsync(s => s.AssignmentID == model.AssignmentID && s.StudentID == model.StudentID);
+		                    .FirstOrDefaultAsync(s => s.AssignmentID == model.AssignmentID && s.StudentID == model.StudentID);
 
 			if (existScore != null)
 			{
@@ -202,14 +224,12 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 					AssignmentID = model.AssignmentID,
 					StudentID = model.StudentID,
 					Score = model.Score
-
 				};
                  _dataContext.ScoreAssignment.Add(score);
             await _dataContext.SaveChangesAsync();
             TempData["success"] = "Successfully!";
 
-			}
-			
+			}		
             
             return RedirectToAction("ListAssignment", new {id = assignment.AssignmentID});
         }

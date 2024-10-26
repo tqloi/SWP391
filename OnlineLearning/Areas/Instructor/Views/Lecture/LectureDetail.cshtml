@@ -76,7 +76,9 @@
                             hasDocuments = true;
                             <div class="position-relative mb-1">
                                 <i class="@iconClass me-2 ms-2"></i>
-                                <a href="@file.FilePath" class="btn-link" target="_blank"> @file.FileName</a>
+                                <a href="@file.FilePath" class="btn-link" target="_blank">
+                                    @(file.FileName.Length > 80 ? file.FileName.Substring(0, 80) + "..." : file.FileName)
+                                </a>
                             </div>
                         }
                     }
@@ -164,7 +166,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteCourseModalLabel">Delete Course</h5>
+                <h5 class="modal-title" id="deleteCourseModalLabel">Delete Lecture</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

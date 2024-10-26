@@ -28,27 +28,60 @@
                     <!-- Description -->
                     <div class="mb-3">
                         <label asp-for="StartDate" class="form-label">Start Date</label>
-                        <input asp-for="StartDate" class="form-control" type="datetime-local">
+                        <input asp-for="StartDate" id="inputdate" class="form-control" type="datetime-local">
                     </div>
 
                     <!-- Due Date -->
                     <div class="mb-3">
                         <label asp-for="DueDate" class="form-label">Due Date</label>
-                        <input asp-for="DueDate" class="form-control" type="datetime-local">
+                        <input asp-for="DueDate" id="inputdate2" class="form-control" type="datetime-local">
+                        <span id="error-message" class="text-danger mt-1" style="display: none;"></span>
                     </div>
 
                     <!-- Assignment Link -->
                     <div class="mb-3">
-                        <label asp-for="AssignmentLink" class="form-label">Upload Assignment File</label>
+                        <label asp-for="AssignmentLink" class="form-label">Change Assignment File</label>
                         <input asp-for="AssignmentLink" class="form-control" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx">
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="btn custom-btn w-100">Confirm</button>
+                    <button type="submit" id="submit-btn" class="btn custom-btn w-100">Confirm</button>
                 </form>
             </div>
         </div>
     </div>
-
-
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const startDateInput = document.getElementById('inputdate');
+        const dueDateInput = document.getElementById('inputdate2');
+        const submitButton = document.getElementById('submit-btn');
+        const errorMessage = document.getElementById('error-message');
+
+        function validateDates() {
+            const startDate = new Date(startDateInput.value);
+            const dueDate = new Date(dueDateInput.value);
+            const currentDate = new Date();
+
+            // Reset error message
+            errorMessage.style.display = 'none';
+            submitButton.disabled = false;
+
+            if (dueDate < currentDate) {
+                errorMessage.textContent = 'Due Date cannot be in the past.';
+                errorMessage.style.display = 'block';
+                submitButton.type = 'button'; // Change to button
+            } else if (dueDate < startDate) {
+                errorMessage.textContent = 'Due Date cannot be earlier than Start Date.';
+                errorMessage.style.display = 'block';
+                submitButton.type = 'button'; // Change to button
+            } else {
+                submitButton.type = 'submit'; // Reset to submit
+            }
+        }
+
+        startDateInput.addEventListener('change', validateDates);
+        dueDateInput.addEventListener('change', validateDates);
+    });
+</script>
