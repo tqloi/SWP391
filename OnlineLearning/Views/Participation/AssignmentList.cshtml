@@ -236,6 +236,7 @@
             </div>
             <div class="modal-body">
                 <form id="newCourseForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Assignment" asp-action="CreateAssignment">
+                    <input type="hidden" class="form-control" name="CourseID" value="@currentCourse.CourseID">
                     <div class="mb-3">
                         <label for="Title" class="form-label">Assignment Title</label>
                         <input type="text" class="form-control" name="Title" required>
@@ -265,31 +266,35 @@
         const startDateInput = document.getElementById('inputdate');
         const dueDateInput = document.getElementById('inputdate2');
         const submitButton = document.getElementById('submit-btn');
-        const errorMessage = document.getElementById('error-message');
 
-        function validateDates() {
+            function validateDates() {
             const startDate = new Date(startDateInput.value);
             const dueDate = new Date(dueDateInput.value);
             const currentDate = new Date();
 
-            // Reset error message
-            errorMessage.style.display = 'none';
+                // Reset custom error messages
+            startDateInput.setCustomValidity('');
+            dueDateInput.setCustomValidity('');
             submitButton.disabled = false;
 
             if (dueDate < currentDate) {
-                errorMessage.textContent = 'Due Date cannot be in the past.';
-                errorMessage.style.display = 'block';
-                submitButton.type = 'button'; // Change to button
+                // Set custom validity message for due date in the past
+                dueDateInput.setCustomValidity('Due Date cannot be in the past.');
+                submitButton.type = 'button';
             } else if (dueDate < startDate) {
-                errorMessage.textContent = 'Due Date cannot be earlier than Start Date.';
-                errorMessage.style.display = 'block';
-                submitButton.type = 'button'; // Change to button
+
+                dueDateInput.setCustomValidity('Due Date cannot be earlier than Start Date.');
+                submitButton.type = 'button';
             } else {
-                submitButton.type = 'submit'; // Reset to submit
+                submitButton.type = 'submit';
             }
+
+                // Display custom validation messages if any
+            startDateInput.reportValidity();
+            dueDateInput.reportValidity();
         }
 
-        startDateInput.addEventListener('change', validateDates);
-        dueDateInput.addEventListener('change', validateDates);
-    });
+            startDateInput.addEventListener('change', validateDates);
+            dueDateInput.addEventListener('change', validateDates);
+        });
 </script>

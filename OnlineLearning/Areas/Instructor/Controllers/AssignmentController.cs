@@ -31,8 +31,6 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAssignment(AssignmentViewModel model)
         {
-            var courseid = HttpContext.Session.GetInt32("courseid");
-
             var existingAsm = await _dataContext.Assignment.FirstOrDefaultAsync(c => c.Title == model.Title);
 
             if (existingAsm != null)
@@ -43,14 +41,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (ModelState.IsValid)
             {
                 var assignment = new AssignmentModel();
-                assignment.CourseID = (int)courseid;
+                assignment.CourseID = model.CourseID;
                 assignment.Title = model.Title;
-
-                if (model.DueDate < DateTime.Now || model.DueDate < model.StartDate)
-                {
-                    TempData["error"] = "Invalid date!";
-                    return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
-                }
                 assignment.StartDate = model.StartDate;
                 assignment.DueDate = model.DueDate;
 
@@ -67,7 +59,9 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
                 }
 
-                HttpContext.Session.Remove("courseid");
+                var course = await _dataContext.Courses.FindAsync(assignment.CourseID);
+                course.LastUpdate = DateTime.Now;
+
                 _dataContext.Assignment.Add(assignment);
                 await _dataContext.SaveChangesAsync();
                 TempData["success"] = "Create Assignment successfully!";
@@ -133,6 +127,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
                 }
             }
+            var course = await _dataContext.Courses.FindAsync(assignment.CourseID);
+            course.LastUpdate = DateTime.Now;
 
             _dataContext.Update(assignment);
             await _dataContext.SaveChangesAsync();
