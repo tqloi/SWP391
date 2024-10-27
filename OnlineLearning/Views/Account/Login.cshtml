@@ -12,7 +12,7 @@
         <input asp-for="Password" class="form-control" placeholder="Password" required/>
         <div class="remember-me-container">
             <label> <input asp-for="RememberMe" class="form-check-input" /> @Html.DisplayNameFor(a => a.RememberMe) </label>
-            <a asp-action="VerifyEmail" asp-asp-controller="Account">Forgot Password</a>
+            <a asp-action="VerifyEmail" asp-controller="Account">Forgot Password</a>
         </div>
         <button type="submit" value="Sign Up">Sign In</button>
         <div class="separator">
@@ -24,7 +24,7 @@
         <div class="separator">
             <span>
                 Don't have an account?
-                <a asp-action="create" asp-asp-controller="account">Sign Up</a>
+                <a asp-action="Create" asp-controller="Account">Sign Up</a>
             </span>
         </div>
     </form>

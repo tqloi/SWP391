@@ -223,27 +223,37 @@ namespace OnlineLearning.Controllers
         [HttpPost]
         public async Task<IActionResult> Changepass(ChangePasswordViewModel model)
         {
-            if (ModelState.IsValid)
+            var user = await _userManager.FindByNameAsync(model.Username);
+
+            IdentityResult result;
+
+            if (user.PasswordHash == null)
             {
-                var user = await _userManager.FindByNameAsync(model.Username);
-
-                if (!await _userManager.CheckPasswordAsync(user, model.OldPassword))
-                {
-                    TempData["error"] = "Invalid Old Password!";
-                    return View(model);
-                }
-
-                var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                result = await _userManager.AddPasswordAsync(user, model.NewPassword);
                 if (result.Succeeded)
                 {
                     TempData["success"] = "Change Password Successfully!";
                     return RedirectToAction("UserProfile", "Profile");
                 }
             }
+            else
+            {
 
-            TempData["error"] = "Something is wrong!";
+                if (!await _userManager.CheckPasswordAsync(user, model.OldPassword == null ? "" : model.OldPassword))
+                {
+                    TempData["error"] = "Invalid Old Password!";
+                    return View(model);
+                }
+
+                result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    TempData["success"] = "Change Password Successfully!";
+                    return RedirectToAction("UserProfile", "Profile");
+                }       
+            }
+            TempData["error"] = "Something went wrong!";
             return View(model);
-
         }
     }
 }

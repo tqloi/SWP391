@@ -6,44 +6,61 @@
 
 
 <partial name="_NoficationPartial" />
-<section class="profile-section">
-    <div class="container emp-profile">
+
+<section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
+    <div class="container">
         <div class="row">
-            <div class="col-md-4">
-                <div class="profile-img">
-                    <img src="@Model.ExistingProfileImagePath" alt="Profile Image" />
+        </div>
+    </div>
+</section>
+
+
+<section class="featured-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-3 col-12 mb-4 mb-lg-0 d-flex justify-content-end">
+                <div class="custom-block shadow-lg rounded-circle" style="width: 250px; height: 250px; margin-top: -30px;">
+                    <div class="profile-img">
+                        <img src="@Model.ExistingProfileImagePath" alt="Profile Image" style="margin-top: -30px; margin-left: -30px">
+                    </div>
                 </div>
             </div>
-            <div class="col-md-8">
-                <h5>@Model.UserName</h5>
-                <p>Full Name: @Model.FirstName @Model.LastName</p>
-                <p>Email: @Model.Email</p>
-                <p>Phone: @Model.PhoneNumber</p>
-                <p>Address: @Model.Address</p>
-                <p>Date of birth: @Model.Dob</p>
-                <p>Cash: @Model.WalletUser.ToString("N0") VND</p>
-                <p>
-                    Gender:@if (@Model.gender == true)
-                    {
-                        @:Male
-                    }
-
-                    else
-
-                    {
-                        @:Female
-                    }
-                </p>
+            <div class="col-lg-9 col-12">
+            </div>
+            <div class="container emp-profile" style="height: 100%; margin-top: -120px">
                 <div class="row">
-                    <div class="col-md-4">
-                        <a asp-action="Edit" asp-controller="Profile" class="btn custom-btn">Edit Profile</a>
+                    <div class="col-md-3">
                     </div>
-                    <div class="col-md-4">
-                        <a asp-action="Changepass" asp-controller="Profile" class="btn custom-btn">Change Password</a>
+                    <div class="col-md-5">
+                        <h3 class="mt-2 mb-4">@Model.FirstName @Model.LastName</h3>
+                        <p>Username: @Model.UserName</p>
+                        <p>Email: @Model.Email</p>
+                        <p>Phone: @Model.PhoneNumber</p>
+                        <p>Address: @Model.Address</p>
+                        <p>Date of birth: @Model.Dob</p>
+                        <p>Cash: @Model.WalletUser.ToString("N0") VND</p>
+                        <p>
+                            Gender
+                            @if (@Model.gender == true)
+                            {
+                                @:Male
+                            }
+
+                            else
+
+                            {
+                                @:Female
+                            }
+                        </p>
+                    </div>
+                    <div class="col-md-4 row d-flex align-items-center">
+                        <div class="col-md-8">
+
+                            <a asp-action="Edit" asp-controller="Profile" class="btn custom-btn w-100 mb-3">Edit Profile</a>
+                            <a asp-action="Changepass" asp-controller="Profile" class="btn custom-btn w-100 mb-3">Change Password</a>
+                        </div>
                     </div>
                 </div>
-                
-               
             </div>
         </div>
     </div>

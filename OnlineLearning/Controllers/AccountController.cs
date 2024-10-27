@@ -203,7 +203,7 @@ namespace OnlineLearning.Controllers
 
             _dataContext.Notification.Add(notification);
             await _dataContext.SaveChangesAsync();
-            
+
             if (roles.Contains("Admin"))
             {
                 return RedirectToAction("Index", "Admin", new { area = "Admin" });
@@ -457,5 +457,13 @@ namespace OnlineLearning.Controllers
             }
 
         }
+
+
+        public IActionResult AccessDenied()
+        {
+         return View();
+        }
+
     }
 }
+
