@@ -15,8 +15,8 @@ using YourNamespace.Models;
 namespace OnlineLearning.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
-    [Authorize(Roles = "Instructor")]
     [Route("Instructor/[controller]/[action]")]
+    [Authorize(Roles = "Instructor")]
     public class LectureController : Controller
     {
         private readonly DataContext _dataContext;
