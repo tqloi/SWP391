@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OnlineLearning.Controllers;
 using OnlineLearning.Models;
+using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
 using System.Diagnostics;
 
@@ -17,16 +18,12 @@ namespace OnlineLearning.Areas.Instructor.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly DataContext datacontext;
-        private UserManager<AppUserModel> _userManager;
-        private SignInManager<AppUserModel> _signInManager;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        public TestController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment)
+        private readonly FileService _fileService;
+        public TestController(ILogger<HomeController> logger, DataContext context, FileService fileService)
         {
             datacontext = context;
             _logger = logger;
-            _signInManager = signInManager;
-            _webHostEnvironment = webHostEnvironment;
-            _userManager = userManager;
+            _fileService = fileService;
         }
         //currently not in use yet
         public IActionResult Index(int CourseID)
@@ -190,35 +187,41 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 var scores = datacontext.Score
                     .Where(s => s.TestID == TestID)
                     .ToList();
+
                 if (scores.Any())
                 {
-                    //currently not allow delete test if there's a submission from a student
-                    TempData["error"] = "Test already been done by students";
+                    // Currently, not allowing deletion if students have submissions
+                    TempData["error"] = "Test has already been completed by students.";
                     TempData.Keep();
                     return RedirectToAction("TestList", "Participation", new { CourseID = test.CourseID });
                 }
-                //delete image first
+
+                // Delete associated images first
                 foreach (var question in questions)
                 {
                     if (!string.IsNullOrEmpty(question.ImagePath))
                     {
-                        string ImageFullPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "QuestionImages", question.ImagePath);
-                        if (System.IO.File.Exists(ImageFullPath))
+                        try
                         {
-                            System.IO.File.Delete(ImageFullPath);
+                            await _fileService.DeleteFile(question.ImagePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(ex.Message);
                         }
                     }
                 }
-                // Remove associated questions first
+
+                // Remove questions associated with the test
                 datacontext.Question.RemoveRange(questions);
             }
 
-            // Delete the test after removing associated questions
+            // Delete the test
             datacontext.Test.Remove(test);
-            datacontext.SaveChanges();
+            await datacontext.SaveChangesAsync();
 
-            // Redirect to the test list or any other appropriate action
-            TempData["success"] = "Test deletion successfully";
+            // Redirect to the test list
+            TempData["success"] = "Test deleted successfully.";
             TempData.Keep();
             return RedirectToAction("TestList", "Participation", new { CourseID = test.CourseID });
         }
@@ -226,7 +229,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         [HttpPost]
         [Area("Instructor")]
         [Authorize(Roles = "Instructor")]
-        public IActionResult ClearAllQuestions(int TestID)
+        public async Task<IActionResult> ClearAllQuestions(int TestID)
         {
             var test = datacontext.Test.FirstOrDefault(t => t.TestID == TestID);
             var questions = datacontext.Question
@@ -238,12 +241,15 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             }
             foreach (var question in questions)
             {
-                if (!question.ImagePath.IsNullOrEmpty())
+                if (!string.IsNullOrEmpty(question.ImagePath))
                 {
-                    string ImageFullPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "QuestionImages", question.ImagePath);
-                    if (System.IO.File.Exists(ImageFullPath))
+                    try
                     {
-                        System.IO.File.Delete(ImageFullPath);
+                        await _fileService.DeleteFile(question.ImagePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
                     }
                 }
             }
@@ -252,8 +258,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             TempData["success"] = "Clear all questions successfully";
             TempData.Keep();
             var Course = datacontext.Courses.FirstOrDefault(c => c.CourseID == test.CourseID);
-           // ViewBag.CourseID = test.CourseID;
-           ViewBag.Course = Course;    
+            // ViewBag.CourseID = test.CourseID;
+            ViewBag.Course = Course;
             return RedirectToAction("TestList", "Participation", new { CourseID = test.CourseID });
         }
         [HttpPost]
@@ -275,7 +281,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             TempData.Keep();
             var Course = datacontext.Courses.FirstOrDefault(c => c.CourseID == test.CourseID);
             // ViewBag.CourseID = test.CourseID;
-            ViewBag.Course = Course;    
+            ViewBag.Course = Course;
             return RedirectToAction("TestList", "Participation", new { CourseID = test.CourseID });
         }
     }

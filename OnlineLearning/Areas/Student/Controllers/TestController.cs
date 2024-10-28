@@ -67,7 +67,13 @@ namespace OnlineLearning.Areas.Student.Controllers
                 .ToList()
                 .OrderBy(q => Guid.NewGuid())
                 .Where(q => q.TestID == TestID);
-            return View(list);
+            var timeLeft = (Test.EndTime - DateTime.Now).TotalSeconds;
+            var model = new DoTestViewModel
+            {
+                Questions = list,
+                TimeLeft = timeLeft
+            };
+            return View(model);
         }
 
         //https://stackoverflow.com/questions/13621934/validateantiforgerytoken-purpose-explanation-and-example
