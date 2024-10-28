@@ -35,8 +35,7 @@ namespace OnlineLearning.Controllers
         [Authorize]
         public async Task<IActionResult> Index(string id)
         {
-           
-            var model = new RoleViewModel();
+           var model = new RoleViewModel();
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
             var list = await _db.Users
@@ -87,7 +86,9 @@ namespace OnlineLearning.Controllers
                     model.ReceiveName = "Please choose someone to get message";
                 }
             }
-            
+            var videocall = await _db.VideoCallInfo.FirstOrDefaultAsync(v => v.ReceiveID.Equals(user.Id) || v.SendID.Equals(user.Id));
+            _db.VideoCallInfo.Remove(videocall);
+            await _db.SaveChangesAsync();
             
 
 
@@ -163,7 +164,18 @@ namespace OnlineLearning.Controllers
             };
             return View(roleview);
         }
-        
+        public async Task<IActionResult> AnswerCallAsync()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+            var callerId = user.Id;
+            var receiver = await _db.VideoCallInfo.FirstOrDefaultAsync(r => r.ReceiveID.Equals(callerId));
+            var receiverId = receiver.SendID;
+
+            var token = _stringeeService.GenerateAccessToken(callerId);
+            return RedirectToAction("VideoCallView","VideoCall", new { token, callerId, receiverId });
+        }
+
 
 
     }

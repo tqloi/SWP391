@@ -233,7 +233,8 @@ namespace OnlineLearning.Controllers
             {
                 UserID = user.Id,
                 Status = "In processing",
-                CreateAtTime = DateTime.Now
+                CreateAtTime = DateTime.Now,
+                CurrentMoney = (double) user.WalletUser
             };
             return View(request);
         }
@@ -287,9 +288,9 @@ namespace OnlineLearning.Controllers
             {
                 Id = u.TranferID,
                 FullName = u.FullName,
-                Type = "Request",
-                Description = $"Bank: {u.BankName} " + "\n" +
-                 $"Account: {u.AccountNumber}",
+                Type = "Withdraw",
+                Description = $"Bank: {u.BankName} - " +
+                $" \n Account: {u.AccountNumber}",
                 Amount = u.MoneyNumber,
                 Date = u.CreateAt,
                 Status = u.Status

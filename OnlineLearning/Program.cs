@@ -144,5 +144,4 @@ app.MapAreaControllerRoute(
 
 app.MapHub<ReviewHub>("/review");
 app.MapHub<ChatHub>("/chatHub");
-
 app.Run();

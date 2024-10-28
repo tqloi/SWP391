@@ -232,7 +232,7 @@
                                         <div class="modal-footer">
                                             <div id="callerIdDisplay"></div>
                                             <a id="rejectCallButton" asp-action="Index" asp-controller="Chat" asp-area="" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
-                                            <a asp-route-callerId="@Model.SendId" asp-route-receiverId="@Model.ReceiverId" asp-action="StartCall" asp-controller="VideoCall" asp-area="" class="btn btn-primary">Answer</a>
+                                            <a asp-action="AnswerCall" asp-controller="Chat" asp-area="" class="btn btn-primary">Answer</a>
                                              
                                         </div>
                                     </div>
