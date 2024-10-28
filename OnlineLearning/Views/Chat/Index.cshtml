@@ -88,10 +88,41 @@
         .flex-shrink-1:hover .dropdown-content {
             display: block;
         }
+        /*** Spinner Start ***/
+        #spinner {
+            opacity: 0;
+            color: #80d0c7;
+            visibility: hidden;
+            transition: opacity .8s ease-out, visibility 0s linear .5s;
+            z-index: 99999;
+        }
 
+            #spinner.show {
+                transition: opacity .8s ease-out, visibility 0s linear .0s;
+                visibility: visible;
+                opacity: 1;
+            }
+
+        .back-to-top {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            display: flex;
+            width: 45px;
+            height: 45px;
+            align-items: center;
+            justify-content: center;
+            transition: 0.5s;
+            z-index: 99;
+        }
+        /*** Spinner End ***/
     </style>
 </head>
 <body>
+    <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+        <div class="spinner-grow" role="status"></div>
+    </div>
+
     <main class="content">
         <div class="container">
             <input class="form-control" hidden asp-for="SendId" id="senderEmail" disabled />
@@ -141,14 +172,12 @@
                                             <div>
                                                 @if (Model.IsReadmess != null)
                                                 {
-
                                                     if (Model.IsReadmess.StartsWith(item.Id) && Model.receimess.Equals(Model.SendId))
                                                     {
                                                         int index = Model.IsReadmess.IndexOf(":");
                                                         string contentAfterColon = index != -1 ? Model.IsReadmess.Substring(index + 1).Trim() : Model.IsReadmess;
                                                         //  contentAfterColon = contentAfterColon.Substring(0, 10) + "...";
                                                         <p>
-
                                                             @item.LastName: @(contentAfterColon.Length > 10 ? contentAfterColon.Substring(0, 10) + "..." : contentAfterColon)
                                                         </p>
                                                     }
@@ -158,14 +187,10 @@
                                                         string contentAfterColon = index != -1 ? Model.IsReadmess.Substring(index + 1).Trim() : Model.IsReadmess;
                                                         //  contentAfterColon = contentAfterColon.Substring(0, 10) + "...";
                                                         <p>
-
                                                             You: @(contentAfterColon.Length > 10 ? contentAfterColon.Substring(0, 10) + "..." : contentAfterColon)
                                                         </p>
                                                     }
-
-
                                                 }
-
                                             </div>
                                         </div>
                                     </div>
@@ -198,31 +223,40 @@
                             </div>
                         </div>
                         <div class="position-relative">
-                            <div class="chat-messages pt-3">
+                            <div id="chatContainer" class="chat-messages pt-3" style="height: 497px; overflow-y: auto;">
                                 <ul id="messagesList">
                                     @{
-                                        string lastSenderName = string.Empty; // Biến để lưu tên người gửi trước đó
+                                        string lastSenderName = string.Empty;
+                                        DateTime lastSend = new DateTime(2000, 1, 1);
                                     }
                                     @if (Model.Messages != null && Model.Messages.Count > 0)
                                     {
                                         foreach (var msg in Model.Messages)
                                         {
                                             var senderName = msg.SenderId == Model.SendId ? "You" : Model.ReceiveName;
-
+                                            var displayDate = msg.Timestamp.Date == DateTime.Today
+                                            ? msg.Timestamp.ToString("hh:mm tt").Replace("SA", "AM").Replace("CH", "PM")
+                                            : msg.Timestamp.ToString("dd/MM/yyyy hh:mm tt").Replace("SA", "AM").Replace("CH", "PM");
+                                            if ((msg.Timestamp - lastSend).TotalHours >= 1)
+                                            {
+                                                <li class="d-flex justify-content-center p-3">
+                                                    @displayDate
+                                                </li>
+                                            }
                                             if (senderName.Equals("You"))
                                             {
-                                                <div class="chat-message-right pb-1 mr-2">
+                                                <li class="chat-message-right pb-1 mr-2">
                                                     <div class="flex-shrink-1 bg-info text-white py-2 px-3 ml-3">
                                                         @msg.Content <br />
                                                         <div class="dropdown-content">
-                                                            @msg.Timestamp.ToString("hh:mm tt").Replace("SA", "AM").Replace("CH", "PM")
+                                                            @displayDate
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </li>
                                             }
                                             else
                                             {
-                                                <div class="chat-message-left pb-1" style="margin-left: -15px;">
+                                                <li class="chat-message-left pb-1" style="margin-left: -15px;">
                                                     @if (lastSenderName != senderName)
                                                     {
                                                         <img src="@Model.receiveimg" class="rounded-circle mr-1" width="40" height="40">
@@ -232,18 +266,31 @@
                                                         <div class="rounded-circle mr-1" style="width: 40px; height: 40px;"></div> <!-- Khu vực trống cho ảnh đại diện -->
                                                     }
 
-                                                    <div class="flex-shrink-1 bg-light py-2 px-3 ml-2">
+                                                    <div class="flex-shrink-1 py-2 px-3 ml-2">
                                                         @msg.Content <br />
                                                         <div class="dropdown-content text-white">
-                                                            @msg.Timestamp.ToString("hh:mm tt").Replace("SA", "AM").Replace("CH", "PM")
+                                                            @displayDate
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </li>
                                             }
                                             lastSenderName = senderName;
+                                            lastSend = msg.Timestamp;
                                         }
                                     }
                                 </ul>
+                                <script>
+                                    function scrollToBottom() {
+                                        const messagesList = document.getElementById("messagesList");
+                                        const chatContainer = document.getElementById("chatContainer");
+
+                                        // Đặt scrollTop bằng chiều cao tổng cộng của danh sách tin nhắn
+                                        chatContainer.scrollTop = messagesList.scrollHeight;
+                                    }
+
+                                    // Gọi hàm này khi trang được load
+                                    window.onload = scrollToBottom;
+                                </script>
                             </div>
                         </div>
 
@@ -271,10 +318,10 @@
                         </div>
                         @if (Model.ReceiverId != null)
                         {
-                            <div class="flex-grow-0 py-3 px-4 border-top inputchat">
+                            <div class="flex-grow-0 py-3 px-4 border-top ">
                                 <form class="input-group">
                                     <input class="form-control" type="text" min="1" id="chatMessage" placeholder="Type your message" required />
-                                    <button tabindex="1" type="submit" class="btn btn-info" id="sendMessage">Send Message</button>
+                                    <button tabindex="1" type="submit" class="btn btn-info" id="sendMessage">Send</button>
                                 </form>
                             </div>
                         }
@@ -331,6 +378,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("sendMessage").disabled = false;
 
+            var count = 1;
             // Lắng nghe sự kiện MessageReceived từ SignalR
             connectionChat.on("MessageReceived", function (user, message) {
                 var messageDiv = document.createElement("div");
@@ -343,32 +391,50 @@
 
                 // Cấu trúc cho người gửi
                 if (user === senderEmail) {
-                    messageDiv.classList.add("chat-message-right", "pb-4");
+                    messageDiv.classList.add("chat-message-right", "pb-1");
                     img.src = '@Html.Raw(Model.sendimg)';
 
-                    textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "mr-3");
+                    textDiv.classList.add("flex-shrink-1","bg-info", "rounded", "py-2", "px-3", "ml-3");
+                    textDiv.style.borderRadius = "20px";
                 }
                 // Cấu trúc cho người nhận
                 else {
-                    messageDiv.classList.add("chat-message-left", "pb-4");
+                    messageDiv.classList.add("chat-message-left", "pb-1");
+                    messageDiv.style.marginLeft = "-15px";
                     img.src = '@Html.Raw(Model.receiveimg)';;
 
-                    textDiv.classList.add("flex-shrink-1", "bg-light", "rounded", "py-2", "px-3", "ml-3");
+                    textDiv.classList.add("flex-shrink-1","pt-1", "pb-2", "px-3", "ml-2");
+                    textDiv.style.borderRadius = "20px";
                 }
-
+  
                 img.classList.add("rounded-circle", "mr-1");
                 img.width = 40;
                 img.height = 40;
 
                 var usernameDiv = document.createElement("div");
                 usernameDiv.classList.add("font-weight-bold", "mb-1");
-                usernameDiv.textContent = user === senderEmail ? "You" : "@Model.ReceiveName";
+                // usernameDiv.textContent = user === senderEmail ? "You" : "@Model.ReceiveName";
 
                 var messageContent = document.createElement("div");
                 messageContent.textContent = message;
 
-                timeDiv.classList.add("text-muted", "small", "text-nowrap", "mt-2");
-                timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                messageContent.innerHTML = `
+                                ${message} <br />
+                                <div class="dropdown-content text-white">
+                                    ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                </div>
+                            `;
+
+                if (count > 0) {
+                    var displayDate = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                    var timeLi = document.createElement("li"); // Tạo một thẻ li mới cho thời gian
+                    timeLi.classList.add("d-flex", "justify-content-center", "p-3"); // Thêm lớp CSS
+                    timeLi.innerHTML = displayDate; // Thêm thời gian vào li
+
+                    document.getElementById("messagesList").appendChild(timeLi);
+                    count--;
+                }
+
 
                 textDiv.appendChild(usernameDiv);
                 textDiv.appendChild(messageContent);
@@ -419,6 +485,16 @@
                         </div>
                     `;
 
+                    if (count > 0) {
+                        var displayDate = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                        var timeLi = document.createElement("li"); // Tạo một thẻ li mới cho thời gian
+                        timeLi.classList.add("d-flex", "justify-content-center", "p-3"); // Thêm lớp CSS
+                        timeLi.innerHTML = displayDate; // Thêm thời gian vào li
+
+                        document.getElementById("messagesList").appendChild(timeLi);
+                        count--;
+                    }
+
                     // Thêm messageContainer vào li
                     li.appendChild(messageContainer);
 
@@ -460,5 +536,6 @@
             }
         });
     </script>
+    <script src="~/js/custom.js"></script>
 </body>
 </html>
