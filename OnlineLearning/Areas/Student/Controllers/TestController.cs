@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
@@ -8,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Newtonsoft.Json;
 using OnlineLearning.Controllers;
+using OnlineLearning.Hubs;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
@@ -27,8 +29,10 @@ namespace OnlineLearning.Areas.Student.Controllers
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public TestController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment)
+        private readonly IHubContext<TestHub> _hubContext;
+        public TestController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, IHubContext<TestHub> hubContext)
         {
+            _hubContext = hubContext;
             datacontext = context;
             _logger = logger;
             _signInManager = signInManager;
@@ -186,6 +190,23 @@ namespace OnlineLearning.Areas.Student.Controllers
             };
             TempData["success"] = "Test Completed";
             return View(model);
+        }
+        public async Task<IActionResult> StartTest(int testId)
+        {
+            var test = datacontext.Test.FirstOrDefault(t => t.TestID == testId);
+            _logger.LogInformation("StartTest method called for testId: {testId}", testId);
+
+            try
+            {
+                await _hubContext.Clients.All.SendAsync("TestStarted", testId);
+                _logger.LogInformation("TestStarted event successfully sent for testId: {testId}", testId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send TestStarted event for testId: {testId}", testId);
+            }
+
+            return RedirectToAction("TestList", "Participation", new {CourseID = test.CourseID});
         }
     }
 }

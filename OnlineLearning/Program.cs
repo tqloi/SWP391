@@ -108,6 +108,8 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 //VnPay
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
+//services for test scheduler
+builder.Services.AddScoped<TestSchedulerService>();
 
 var app = builder.Build();
 
@@ -144,5 +146,6 @@ app.MapAreaControllerRoute(
 
 app.MapHub<ReviewHub>("/review");
 app.MapHub<ChatHub>("/chatHub");
+app.MapHub<TestHub>("/testHub");
 
 app.Run();
