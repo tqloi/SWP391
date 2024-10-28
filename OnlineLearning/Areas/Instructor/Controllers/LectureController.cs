@@ -35,13 +35,20 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             var course = await _dataContext.Courses.FindAsync(model.CourseID);
             ViewBag.Course = course;
 
+            var existLecture = await _dataContext.Lecture.FindAsync(model.Title);
+            if(existLecture != null)
+            {
+                TempData["warning"] = $"Lecture with title {model.Title} is already exist";
+                return RedirectToAction("LectureDetail", "Lecture", new {CourseID = model.CourseID});
+            }
+
             try
             {
                 var lecture = new LectureModel
                 {
                     CourseID = model.CourseID,
                     Title = model.Title,
-                    Description = model.Description,
+                    Description = model.Description == null ? "" : model.Description,
                     UpLoadDate = DateTime.Now,
                 };
 
@@ -179,6 +186,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             int temp = lecture.CourseID;
             _dataContext.Lecture.Remove(lecture);
             await _dataContext.SaveChangesAsync();
+            TempData["success"] = "Lecture Deleted";
             return Redirect($"/Participation/CourseInfo?CourseID={temp}");
         }
     }

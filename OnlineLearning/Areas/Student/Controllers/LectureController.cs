@@ -77,26 +77,26 @@ namespace OnlineLearning.Areas.Student.Controllers
                 _dataContext.LectureCompletion.Add(completion);
                 await _dataContext.SaveChangesAsync();
             }
-            //var studentCourse = _dataContext.StudentCourses.
-            //    Where(sc => sc.CourseID == lecture.CourseID && sc.StudentID == userId).FirstOrDefault();
+            var studentCourse = _dataContext.StudentCourses.
+                Where(sc => sc.CourseID == lecture.CourseID && sc.StudentID == userId).FirstOrDefault();
 
 
-            //var completedLecturesCount = await _dataContext.LectureCompletion
-            //    .CountAsync(c => c.UserID == userId &&
-            //     _dataContext.Lecture.Where(l => l.CourseID == lecture.CourseID)
-            //    .Select(l => l.LectureID)
-            //    .Contains(c.LectureID));
+            var completedLecturesCount = await _dataContext.LectureCompletion
+                .CountAsync(c => c.UserID == userId &&
+                 _dataContext.Lecture.Where(l => l.CourseID == lecture.CourseID)
+                .Select(l => l.LectureID)
+                .Contains(c.LectureID));
 
-            //var totalLecturesCount = await _dataContext.Lecture
-            //    .CountAsync(l => l.CourseID == lecture.CourseID);
+            var totalLecturesCount = await _dataContext.Lecture
+                .CountAsync(l => l.CourseID == lecture.CourseID);
 
-            //if (totalLecturesCount > 0)
-            //    {
-            //        studentCourse.Progress = (decimal)completedLecturesCount / totalLecturesCount * 100;
-            //    }
-            //    _dataContext.StudentCourses.Update(studentCourse);
+            if (totalLecturesCount > 0)
+                {
+                    studentCourse.Progress = (decimal)completedLecturesCount / totalLecturesCount * 100;
+                }
+                _dataContext.StudentCourses.Update(studentCourse);
             
-            //await _dataContext.SaveChangesAsync();
+            await _dataContext.SaveChangesAsync();
             return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = LectureID});
         }
 

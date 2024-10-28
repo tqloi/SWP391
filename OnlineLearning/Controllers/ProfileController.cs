@@ -11,7 +11,7 @@ using OnlineLearning.Email;
 
 namespace OnlineLearning.Controllers
 {
-    [Authorize]
+
     [ServiceFilter(typeof(AdminRedirectFilter))]
     public class ProfileController : Controller
     {
@@ -34,6 +34,7 @@ namespace OnlineLearning.Controllers
         }
    
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> UserProfile()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -62,6 +63,7 @@ namespace OnlineLearning.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Edit()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -89,6 +91,7 @@ namespace OnlineLearning.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditUserViewModel model)
         {
@@ -185,6 +188,12 @@ namespace OnlineLearning.Controllers
         [HttpGet]
         public async Task<IActionResult> ViewUserProfile(string id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == id)
+            {
+                return RedirectToAction("UserProfile", "Profile");
+            }
+
             var user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
@@ -209,6 +218,9 @@ namespace OnlineLearning.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Changepass()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -220,7 +232,9 @@ namespace OnlineLearning.Controllers
             return View(new ChangePasswordViewModel { Username = user.UserName });
 
         }
+
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Changepass(ChangePasswordViewModel model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);

@@ -18,7 +18,7 @@ using System.Web.Helpers;
 namespace OnlineLearning.Controllers
 {
 
-    [Authorize(Roles = "Student, Instructor" )]
+    [Authorize(Roles = "Student")]
     public class PaymentController : Controller
     {
         private readonly ILogger<HomeController> _logger;
