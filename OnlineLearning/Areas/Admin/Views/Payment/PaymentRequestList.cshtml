@@ -261,13 +261,36 @@
                                                 <span class="candidate-list-time order-1 text-warning">@item.Status.ToString()</span>
                                             </td>
                                         }
-                                       
-                                        <td>
-                                            <ul class="list-unstyled mb-0 d-flex justify-content-end">
-                                                <li><a asp-area="Admin" asp-action="PaymentConfirm" asp-controller="Payment" asp-route-id="@item.TranferID" class="text-info" data-toggle="tooltip" title="" data-original-title="Edit"><i class="fas fa-pencil-alt"></i></a></li>
-                                            </ul>
-                                        </td>
+                                        @if (!item.Status.Equals("Success"))
+                                        {
+                                            <td>
+                                                <ul class="list-unstyled mb-0 d-flex justify-content-end">
+                                                    <li><a data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" class="text-info" data-toggle="tooltip" title="" data-original-title="Edit"><i class="fas fa-pencil-alt"></i></a></li>
+                                                </ul>
+                                            </td>
+                                        }
+                                        
                                     </tr>
+                                    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteLectureModalLabel">Request Withdraw</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Are you sure you want to confirm this request?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <form method="post" asp-area="Admin" asp-action="PaymentConfirm" asp-controller="Payment">
+                                                        <input type="hidden" name="id" value="@item.TranferID">
+                                                        <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn custom-btn btn-success">Confirm</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
                             </tbody>
                         </table>
@@ -282,6 +305,7 @@
                                 <li class="page-item"> <a class="page-link" href="#">Next</a> </li>
                             </ul>
                         </div>
+                       
                     </div>
                 </div>
             </div>

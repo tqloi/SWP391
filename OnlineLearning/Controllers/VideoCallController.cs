@@ -39,27 +39,7 @@ namespace OnlineLearning.Controllers
             return RedirectToAction("VideoCallView", new { token, callerId, receiverId });
         }
 
-        // Truoc khi call thi call api nay va cai thang nhan set lai callerId
-        // Flow: La truoc khi goi ham startCall -> thi ham nay goi truoc
-
-        [HttpGet("/before-call/{receiverId}")]
-        public IActionResult BeforeStartCall(string token, string callerId, string receiverId)
-        {
-            // Kiểm tra token và ID
-            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(callerId) || string.IsNullOrEmpty(receiverId))
-            {
-                return BadRequest("Token, Caller ID, and Receiver ID are required.");
-            }
-            HttpContext.Session.SetString("idsend", callerId);
-            var model = new VideoCallViewModel
-            {
-                Token = token,
-                SendId = callerId,
-                ReceiveId = receiverId
-            };
-
-            return View(model);
-        }
+       
        
         public IActionResult VideoCallView(string token, string callerId, string receiverId)
         {

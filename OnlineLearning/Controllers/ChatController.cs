@@ -86,10 +86,8 @@ namespace OnlineLearning.Controllers
                     model.ReceiveName = "Please choose someone to get message";
                 }
             }
-            var videocall = await _db.VideoCallInfo.FirstOrDefaultAsync(v => v.ReceiveID.Equals(user.Id) || v.SendID.Equals(user.Id));
-            _db.VideoCallInfo.Remove(videocall);
-            await _db.SaveChangesAsync();
             
+
 
 
             return View(model);
