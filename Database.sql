@@ -201,7 +201,12 @@ CREATE TABLE Test (
     [Status] NVARCHAR(255),
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
-<<<<<<< HEAD
+ALTER TABLE Test
+ADD TestTime TIME(0);
+
+ALTER TABLE Test
+DROP COLUMN TestTime;
+
 ALTER TABLE Test
 ADD PassingScore FLOAT;
 

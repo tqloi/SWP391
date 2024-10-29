@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using OnlineLearning.Controllers;
 using OnlineLearning.Models;
+using OnlineLearning.Models.ViewModel;
 using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
 using System.Diagnostics;
@@ -54,51 +56,57 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         [HttpPost]
         [Area("Instructor")]
         [Authorize(Roles = "Instructor")]
-        public async Task<IActionResult> CreateTest(TestModel model)
+        public async Task<IActionResult> CreateTest(CreateTestViewModel model)
         {
+
             var Course = datacontext.Courses.Find(model.CourseID);
             ViewBag.Course = Course;
-
+            TimeSpan testTime;
             if (Course == null)
             {
                 return NotFound();
             }
-            //fucku viewbag shit
-            if (model.Course == null)
-            {
-                model.Course = Course;
-            }
-            // if (ModelState.IsValid) invalid as always
             try
             {
-                //handle null from view
-                if (model.PassingScore == null)
-                {
-                    model.PassingScore = 5.0;
-                }
-                if (model.AlowRedo == null)
-                {
-                    model.AlowRedo = "Yes";
-                }
-                if (model.NumberOfMaxAttempt == null)
-                {
-                    model.NumberOfMaxAttempt = 1;
-                }
+                // Creates a TimeSpan from hours and minutes
+                testTime = new TimeSpan(model.TestHours, model.TestMinutes, 0);
+            }
+            catch
+            {
+                throw new Exception("Cannot create test time");
+            }
+            try
+            {
+                model.PassingScore ??= 5.0;
+                model.AlowRedo ??= "Yes";
+                model.NumberOfMaxAttempt ??= 1;
 
+                if (testTime.Equals(TimeSpan.Zero))
+                {
+                    testTime = TimeSpan.FromMinutes(60);
+                }
+                else
+                {
+                    if ((model.EndTime - model.StartTime) < testTime)
+                    {
+                        model.EndTime = model.StartTime.Add(testTime);
+                    }
+                }
                 Debug.WriteLine("ID retrieved valid");
                 var newTest = new TestModel
                 {
                     AlowRedo = model.AlowRedo,
                     NumberOfMaxAttempt = model.NumberOfMaxAttempt,
                     Title = model.Title,
-                    Course = model.Course,
+                    Course = Course,
                     Description = model.Description,
                     StartTime = model.StartTime,
                     EndTime = model.EndTime,
                     Status = model.Status,
                     CourseID = model.CourseID,
                     NumberOfQuestion = 0,
-                    PassingScore = model.PassingScore
+                    PassingScore = model.PassingScore,
+                    TestTime = testTime,
                 };
                 // Add the test to the context and save changes
                 datacontext.Test.Add(newTest);
@@ -127,23 +135,62 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             var Course = datacontext.Courses.FirstOrDefault(c => c.CourseID == Test.CourseID);
 
             ViewBag.CourseID = Test.CourseID;
+            ViewBag.TestID = TestID;
             ViewBag.Course = Course;
             if (Test == null)
             {
                 return NotFound();
             }
-            return View("EditTest", Test);
+            var hours = Test.TestTime.GetValueOrDefault(TimeSpan.Zero).Hours;
+            var minutes = Test.TestTime.GetValueOrDefault(TimeSpan.Zero).Minutes;
+            var model = new EditTestViewModel
+            {
+                AlowRedo = Test.AlowRedo,
+                Course = Course,
+                TestID = TestID,
+                CourseID = Test.CourseID,
+                Description = Test.Description,
+                Status = Test.Status,
+                Title = Test.Title,
+                EndTime = Test.EndTime,
+                NumberOfMaxAttempt = Test.NumberOfMaxAttempt,
+                NumberOfQuestion = Test.NumberOfQuestion,
+                PassingScore = Test.PassingScore,
+                StartTime = Test.StartTime,
+                TestHours = hours,
+                TestMinutes = minutes
+            };
+            return View(model);
         }
 
         [HttpPost]
         [Area("Instructor")]
         [Authorize(Roles = "Instructor")]
-        public IActionResult EditTest(TestModel model)
+        public IActionResult EditTest(EditTestViewModel model)
         {
+                // Creates a TimeSpan from hours and minutes
+                TimeSpan testTime = new TimeSpan(model.TestHours, model.TestMinutes, 0);
             if (model == null)
             {
                 return NotFound();
             }
+            model.PassingScore ??= 5.0;
+            model.AlowRedo ??= "Yes";
+            model.NumberOfMaxAttempt ??= 1;
+
+            if (testTime.Equals(TimeSpan.Zero))
+            {
+               testTime = TimeSpan.FromMinutes(60);
+            }
+            else
+            {
+
+                if ((model.EndTime - model.StartTime) < testTime)
+                {
+                    model.EndTime = model.StartTime.Add(testTime);
+                }
+            }
+
             var submissions = datacontext.Score
                 .Where(s => s.TestID == model.TestID)
                 .ToList();
@@ -157,10 +204,25 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     return RedirectToAction("TestList", "Participation", new { CourseID = model.CourseID });
                 }
             }
-
+            var Test = new TestModel
+            {
+                AlowRedo = model.AlowRedo,
+                Course = model.Course,
+                CourseID = model.CourseID,
+                Description = model.Description,
+                Status = model.Status,
+                Title = model.Title,
+                EndTime = model.EndTime,
+                NumberOfMaxAttempt = model.NumberOfMaxAttempt,
+                NumberOfQuestion = model.NumberOfQuestion,
+                PassingScore = model.PassingScore,
+                StartTime = model.StartTime,
+                TestID = model.TestID,
+                TestTime = testTime
+            };
             ViewBag.CourseID = model.CourseID;
             ViewBag.Course = model.Course;
-            datacontext.Update(model);
+            datacontext.Test.Update(Test);
             datacontext.SaveChanges();
             TempData["success"] = "Edit Successfully";
             TempData.Keep();

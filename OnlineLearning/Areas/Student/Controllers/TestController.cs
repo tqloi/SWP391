@@ -67,11 +67,14 @@ namespace OnlineLearning.Areas.Student.Controllers
                 .ToList()
                 .OrderBy(q => Guid.NewGuid())
                 .Where(q => q.TestID == TestID);
-            var timeLeft = (Test.EndTime - DateTime.Now).TotalSeconds;
+
+            var timeLeft = Test.TestTime.GetValueOrDefault(TimeSpan.Zero);
+           // var timeLeftString = timeLeft.GetValueOrDefault(TimeSpan.Zero).TotalHours.ToString();
+            var formatedTime = $"{(int)timeLeft.TotalHours:D2}:{timeLeft.Minutes:D2}:{timeLeft.Seconds:D2}";
             var model = new DoTestViewModel
             {
                 Questions = list,
-                TimeLeft = timeLeft
+                TimeLeft = formatedTime,
             };
             return View(model);
         }

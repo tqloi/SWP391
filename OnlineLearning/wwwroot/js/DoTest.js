@@ -1,6 +1,6 @@
-﻿// timeLeft = 0; // Set the time in seconds (40 minutes and 12 seconds)
+﻿// Initialize the current question index and number of chosen questions
 var currentQuestionIndex = 0;
-var numberOfChoosenQuestions = 0; // Initialize number of selected questions
+var numberOfChoosenQuestions = 0;
 
 // Function to update the progress bar based on selected answers
 function updateProgressBar() {
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     updateProgressBar();
     showQuestion(currentQuestionIndex); // Show the first question
-    updateTimer(); // Start the timer
+    startTimer(); // Start the timer
     noBack(); // Disable back button
 });
 
@@ -60,6 +60,7 @@ function showQuestion(index) {
     currentQuestionIndex = index;
     updateProgressBar();
 }
+
 // Function to ensure at least one question is checked before opening the modal
 function openConfirmModal() {
     const selectedAnswers = document.querySelectorAll("input[type='radio']:checked");
@@ -102,22 +103,31 @@ function nextQuestion() {
 }
 
 // Timer function with countdown
-function updateTimer() {
-    var minutes = Math.floor(timeLeft / 60);
-    var seconds = Math.floor(timeLeft % 60); // Use Math.floor to ensure whole seconds
+function startTimer() {
+    // Parse timeLeftString (e.g., "01:32:00") into total seconds
+    var [hours, minutes, seconds] = timeLeftString.split(':').map(Number);
+    var timeLeft = hours * 3600 + minutes * 60 + seconds;
 
-    // Update the timer display with formatted time
-    document.querySelector('.timer').textContent = `Time left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    function updateTimer() {
+        // Convert total seconds back to HH:MM:SS format
+        var displayHours = Math.floor(timeLeft / 3600);
+        var displayMinutes = Math.floor((timeLeft % 3600) / 60);
+        var displaySeconds = timeLeft % 60;
 
-    if (timeLeft > 0) {
-        timeLeft--;
-        setTimeout(updateTimer, 1000); // Call updateTimer every 1 second
-    } else {
-        alert('Time is up!');
-        document.querySelector('form').submit();
+        // Update the timer display with formatted time
+        document.querySelector('.timer').textContent = `Time left: ${displayHours.toString().padStart(2, '0')}:${displayMinutes.toString().padStart(2, '0')}:${displaySeconds.toString().padStart(2, '0')}`;
+
+        if (timeLeft > 0) {
+            timeLeft--;
+            setTimeout(updateTimer, 1000); // Call updateTimer every 1 second
+        } else {
+            alert('Time is up!');
+            document.querySelector('form').submit();
+        }
     }
-}
 
+    updateTimer(); // Initialize the timer display and start countdown
+}
 
 // Function to disable the back button
 function noBack() {

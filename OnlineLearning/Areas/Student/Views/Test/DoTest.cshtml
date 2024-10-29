@@ -23,9 +23,10 @@
 
     <!-- Initialize totalQuestions for the JavaScript code -->
     <script>
-        var totalQuestions = @Model.Questions.Count();
-        var timeLeft = @Model.TimeLeft;
+        window.totalQuestions = @Model.Questions.Count();
+        window.timeLeftString = '@Model.TimeLeft';
     </script>
+
 </head>
 @if (User.IsInRole("Student"))
 {
@@ -142,4 +143,5 @@ else
 
 <!-- Include JavaScript for question navigation and timer -->
 <!--bust the cache by appending a query string to js file URL in the HTML.-->
-<script src="~/js/DoTest.js?v=@DateTime.Now.Ticks"></script>
+ <script src="~/js/DoTest.js?v=@DateTime.Now.Ticks"></script>
+@* <script src="~/js/DoTest.js"></script> *@
