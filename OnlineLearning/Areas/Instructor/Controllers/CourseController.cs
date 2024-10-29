@@ -14,8 +14,9 @@ using System.Security.Claims;
 namespace OnlineLearning.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
-    [Authorize(Roles = "Instructor")]
     [Route("Instructor/[controller]/[action]")]
+
+    [Authorize(Roles = "Instructor")]
     public class CourseController : Controller
     {
         private readonly DataContext datacontext;

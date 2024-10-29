@@ -37,6 +37,11 @@ namespace OnlineLearning.Controllers
         {
            var model = new RoleViewModel();
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //khong cho nhan tin voi myself
+            if (userId == id)
+            {
+                return Redirect($"/Chat");
+            }
             var user = await _userManager.FindByIdAsync(userId);
             var list = await _db.Users
     .Where(u => u.Id != user.Id &&

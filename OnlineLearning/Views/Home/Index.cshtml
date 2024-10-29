@@ -37,18 +37,23 @@
 
             <div class="col-lg-4 col-12 mb-4 mb-lg-0">
                 <div class="custom-block bg-white shadow-lg">
-                    <a asp-action="CourseList" asp-controller="Course">
+                    @{
+                        Random random = new Random();
+                        int randomIndex = random.Next(Model.Courses.Count());
+                        var randomCourse = Model.Courses.ElementAt(randomIndex);
+                    }
+                    <a asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@randomCourse.CourseID">
                         <div class="d-flex">
                             <div>
-                                <h5 class="mb-2">Web Design</h5>
-
-                                <p class="mb-0">When you search for free CSS templates, you will notice that TemplateMo is one of the best websites.</p>
+                                <h5 class="mb-2">@randomCourse.Title</h5>
+ 
+                                <p class="mb-0">@randomCourse.Description.</p>
                             </div>
 
-                            <span class="badge bg-design rounded-pill ms-auto">14</span>
+                            <span class="badge bg-design rounded-pill ms-auto">@randomCourse.NumberOfStudents</span>
                         </div>
 
-                        <img src="~/Images/topics/undraw_Remote_design_team_re_urdx.png" class="custom-block-image img-fluid" alt="">
+                        <img src="@randomCourse.CoverImagePath" class="custom-block-image img-fluid" alt="">
                     </a>
                 </div>
             </div>
@@ -57,17 +62,21 @@
                 <div class="custom-block custom-block-overlay">
                     <div class="d-flex flex-column h-100">
                         <img src="images/businesswoman-using-tablet-analysis.jpg" class="custom-block-image img-fluid" alt="">
-
+                        @{
+                            int index = random.Next(Model.Categories.Count);
+                            var randomCategory = Model.Categories[index];
+                        }
                         <div class="custom-block-overlay-text d-flex">
+
                             <div>
-                                <h5 class="text-white mb-2">Finance</h5>
+                                <h5 class="text-white mb-2">@randomCategory.FullName</h5>
 
-                                <p class="text-white">Topic Listing Template includes homepage, listing page, detail page, and contact page. You can feel free to edit and adapt for your CMS requirements.</p>
+                                <p class="text-white">@randomCategory.Description.</p>
 
-                                <a asp-action="CourseList" asp-controller="Course" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
+                                <a asp-action="CourseList" asp-controller="Course" asp-route-category="@randomCategory.CategoryID" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
                             </div>
 
-                            <span class="badge bg-finance rounded-pill ms-auto">25</span>
+                            <span class="badge bg-graphic rounded-pill ms-auto">25</span>
                         </div>
 
                         <div class="social-share d-flex">
@@ -125,11 +134,18 @@
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="all-tab-pane" role="tabpanel" aria-labelledby="programming-tab" tabindex="0">
                         <div class="row">
-                            @for (int i = 0; i < Model.Courses.Count() && i < 6; i++)
+                            @{
+                                int displayedCourses = 0;
+                            }
+                            @foreach (var item in Model.Courses)
                             {
-                                var item = Model.Courses.ElementAt(i);
+                                if (displayedCourses >= 6)
+                                {
+                                    break;
+                                }
                                 if (item.Status == true)
                                 {
+                                    displayedCourses++;
                                     <div class="col-lg-4 col-md-6 col-12 mb-4 mb-lg-0">
                                         <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
                                             <a asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@item.CourseID">
@@ -137,9 +153,11 @@
                                                     <div>
                                                         <h5 class="mb-2 limited-text">
                                                             <span class="dot @((item.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
-                                                            @item.Title
+                                                            @(item.Title.Length > 19 ? item.Title.Substring(0, 19) + "..." : item.Title)
                                                         </h5>
-                                                        <p class="mb-0 limited-text">@item.Description</p>
+                                                        <p class="mb-0 limited-text">
+                                                            @(item.Description.Length > 29 ? item.Description.Substring(0, 29) + "..." : item.Description)
+                                                        </p>
                                                     </div>
                                                     <span class="badge bg-music rounded-pill ms-auto">@item.NumberOfStudents</span>
                                                 </div>
@@ -158,7 +176,7 @@
                             <div class="row">
                                 <dic class=" mb-4">
                                     <div class="col-lg-12 col-12 text-center">
-                                        <h5 class="mb-4"> @category.Description</h5>
+                                        <h5 class="mb-4 text-muted"> @category.Description</h5>
                                     </div>
                                 </dic>
                                 @foreach (var item in Model.Courses)
@@ -172,10 +190,11 @@
                                                         <div>
                                                             <h5 class="mb-2 limited-text">
                                                                 <span class="dot @((item.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
-                                                                @item.Title
+                                                                @(item.Title.Length > 19 ? item.Title.Substring(0, 19) + "..." : item.Title)
                                                             </h5>
-
-                                                            <p class="mb-0 limited-text">@item.Description</p>
+                                                            <p class="mb-0 limited-text">
+                                                                @(item.Description.Length > 29 ? item.Description.Substring(0, 29) + "..." : item.Description)
+                                                            </p>
                                                         </div>
                                                         <span class="badge bg-music rounded-pill ms-auto">@item.NumberOfStudents</span>
                                                     </div>
@@ -218,7 +237,7 @@
                         <li>
                             <h4 class="text-white mb-3">Search your favourite topic</h4>
 
-                            <p class="text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis, cumque magnam? Sequi, cupiditate quibusdam alias illum sed esse ad dignissimos libero sunt, quisquam numquam aliquam? Voluptas, accusamus omnis?</p>
+                            <p class="text-white">Explore a vast array of courses and resources tailored to your learning interests. Use our powerful search feature to easily find topics, lessons, and materials that resonate with you.</p>
 
                             <div class="icon-holder">
                                 <i class="bi-search"></i>
@@ -228,7 +247,7 @@
                         <li>
                             <h4 class="text-white mb-3">Bookmark &amp; Keep it for yourself</h4>
 
-                            <p class="text-white">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint animi necessitatibus aperiam repudiandae nam omnis est vel quo, nihil repellat quia velit error modi earum similique odit labore. Doloremque, repudiandae?</p>
+                            <p class="text-white">Never lose track of valuable learning resources again! With our bookmarking feature, you can save your favorite courses, articles, and videos, ensuring you have quick access whenever you need them.</p>
 
                             <div class="icon-holder">
                                 <i class="bi-bookmark"></i>
@@ -238,7 +257,7 @@
                         <li>
                             <h4 class="text-white mb-3">Read &amp; Enjoy</h4>
 
-                            <p class="text-white">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Animi vero quisquam, rem assumenda similique voluptas distinctio, iste est hic eveniet debitis ut ducimus beatae id? Quam culpa deleniti officiis autem?</p>
+                            <p class="text-white">Immerse yourself in the knowledge you've gathered! Take the time to read through saved materials, engage with diverse topics, and enhance your learning journey at your own pace.</p>
 
                             <div class="icon-holder">
                                 <i class="bi-book"></i>

@@ -84,6 +84,7 @@ namespace OnlineLearning.Controllers
 
 
         [HttpGet]
+        [ServiceFilter(typeof(CourseAccessFilter))]
         public async Task<IActionResult> TestList(int CourseID)
         {
             ViewBag.CourseId = CourseID;
