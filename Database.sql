@@ -264,11 +264,13 @@ CREATE TABLE Assignment (
     CourseID INT,  -- Foreign key to Courses
     Title NVARCHAR(255),
 	AssignmentLink NVARCHAR(MAX),
-    [Description] TEXT,
+	StartDate DATETIME,
     DueDate DATETIME,
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
 alter table Assignment add AssignmentLink  NVARCHAR(MAX);
+alter table Assignment add StartDate DATETIME;
+alter table Assignment drop column [description] ;
 go  
 
 CREATE TABLE ScoreAssignment (
@@ -288,8 +290,9 @@ CREATE TABLE Submission (
     AssignmentID INT,  -- Foreign key to Assignment
     StudentID NVARCHAR(450),  -- Foreign key to Student (userID from Users)
     SubmissionLink NVARCHAR(MAX),  -- Link to the file
+	[FileName] varchar(250),
     SubmissionDate DATETIME,
-    FOREIGN KEY (assignmentID) REFERENCES Assignment(assignmentID),
+    FOREIGN KEY (assignmentID) REFERENCES Assignment(assignmentID) ON DELETE CASCADE,
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id)  -- References Users table
 );
 alter table Submission add FileName nvarchar(250)
@@ -398,34 +401,33 @@ INSERT INTO Courses
     (Title, CourseCode, [Description], CoverImagePath, InstructorID, NumberOfStudents, Price, CategoryID, [Level], [Status], CreateDate, LastUpdate, EndDate, NumberOfRate) 
 VALUES
     -- Programming Category
-    ('Python for Beginners', 'CS101', 'Learn Python programming from scratch.', '/Images/cover/python.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 100.00, 1, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
-    ('Java Advanced Techniques', 'CS102', 'Explore advanced Java programming concepts.', '/Images/cover/java.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 120.00, 1, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
-    ('C# for Beginners', 'CS103', 'Introduction to C# programming.', '/Images/cover/csharp.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 90.00, 1, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
-    ('Full-Stack Development with Node.js', 'CS104', 'Learn full-stack development using Node.js.', '/Images/cover/nodejs.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 150.00, 1, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
-    ('Introduction to Algorithms', 'CS105', 'Learn about algorithms and data structures.', '/Images/cover/algorithms.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 110.00, 1, 'Advanced', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
+    ('Python for Beginners', 'CS101', 'Learn Python programming from scratch.', '/Images/cover/python.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 100.00, 1, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
+    ('Java Advanced Techniques', 'CS102', 'Explore advanced Java programming concepts.', '/Images/cover/java.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 120.00, 1, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
+    ('C# for Beginners', 'CS103', 'Introduction to C# programming.', '/Images/cover/csharp.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 90.00, 1, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
+    ('Full-Stack Development with Node.js', 'CS104', 'Learn full-stack development using Node.js.', '/Images/cover/nodejs.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 150.00, 1, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
+    ('Introduction to Algorithms', 'CS105', 'Learn about algorithms and data structures.', '/Images/cover/algorithms.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 110.00, 1, 'Advanced', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
 
     -- Data Science Category
-    ('Data Analysis with R', 'DS101', 'Learn data analysis using R programming.', '/Images/cover/data_analysis.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 130.00, 2, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
-    ('Machine Learning A-Z', 'DS102', 'Master machine learning algorithms and techniques.', '/Images/cover/machine_learning.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 200.00, 2, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
-    ('Data Science for Everyone', 'DS103', 'Introduction to data science concepts.', '/Images/cover/data_science.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 100.00, 2, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
-    ('Deep Learning with TensorFlow', 'DS104', 'Explore deep learning with TensorFlow.', '/Images/cover/deep_learning.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 150.00, 2, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
-    ('Statistics for Data Science', 'DS105', 'Learn statistics for data science applications.', '/Images/cover/statistics.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 120.00, 2, 'Intermediate', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
+    ('Data Analysis with R', 'DS101', 'Learn data analysis using R programming.', '/Images/cover/data_analysis.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 130.00, 2, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
+    ('Machine Learning A-Z', 'DS102', 'Master machine learning algorithms and techniques.', '/Images/cover/machine_learning.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 200.00, 2, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
+    ('Data Science for Everyone', 'DS103', 'Introduction to data science concepts.', '/Images/cover/data_science.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 100.00, 2, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
+    ('Deep Learning with TensorFlow', 'DS104', 'Explore deep learning with TensorFlow.', '/Images/cover/deep_learning.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 150.00, 2, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
+    ('Statistics for Data Science', 'DS105', 'Learn statistics for data science applications.', '/Images/cover/statistics.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 120.00, 2, 'Intermediate', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
 
     -- Web Development Category
-    ('HTML & CSS for Beginners', 'WD101', 'Learn the basics of web development with HTML & CSS.', '/Images/cover/html_css.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 80.00, 3, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
-    ('JavaScript Essentials', 'WD102', 'Get started with JavaScript for web development.', '/Images/cover/javascript.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 100.00, 3, 'Beginner', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
-    ('React for Beginners', 'WD103', 'Build user interfaces with React.', '/Images/cover/react.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 150.00, 3, 'Intermediate', 1, '2024-09-10', '2024-09-22', NULL, 0),
-    ('Node.js for Beginners', 'WD104', 'Learn how to build web applications using Node.js.', '/Images/cover/nodejs_web.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 120.00, 3, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
-    ('Advanced CSS Techniques', 'WD105', 'Explore advanced techniques in CSS for modern web design.', '/Images/cover/advanced_css.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 130.00, 3, 'Advanced', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
+    ('HTML & CSS for Beginners', 'WD101', 'Learn the basics of web development with HTML & CSS.', '/Images/cover/html_css.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 80.00, 3, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
+    ('JavaScript Essentials', 'WD102', 'Get started with JavaScript for web development.', '/Images/cover/javascript.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 100.00, 3, 'Beginner', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
+    ('React for Beginners', 'WD103', 'Build user interfaces with React.', '/Images/cover/react.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 150.00, 3, 'Intermediate', 1, '2024-09-10', '2024-09-22', NULL, 0),
+    ('Node.js for Beginners', 'WD104', 'Learn how to build web applications using Node.js.', '/Images/cover/nodejs_web.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 120.00, 3, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
+    ('Advanced CSS Techniques', 'WD105', 'Explore advanced techniques in CSS for modern web design.', '/Images/cover/advanced_css.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 130.00, 3, 'Advanced', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
 
     -- Design Category
-    ('Graphic Design Basics', 'D101', 'Learn the principles of graphic design.', '/Images/cover/graphic_design.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 90.00, 4, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
-    ('UI/UX Design Fundamentals', 'D102', 'Get started with UI/UX design principles.', '/Images/cover/uiux_design.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 100.00, 4, 'Intermediate', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
-    ('Adobe Photoshop for Beginners', 'D103', 'Learn the basics of Adobe Photoshop.', '/Images/cover/photoshop.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 120.00, 4, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
-    ('Illustration for Designers', 'D104', 'Master illustration techniques for graphic design.', '/Images/cover/illustration.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 130.00, 4, 'Advanced', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
-    ('Motion Graphics Basics', 'D105', 'Introduction to motion graphics using After Effects.', '/Images/cover/motion_graphics.jpg', '12532e37-5568-439b-884f-8cbda4b4e763', 0, 150.00, 4, 'Advanced', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0);
+    ('Graphic Design Basics', 'D101', 'Learn the principles of graphic design.', '/Images/cover/graphic_design.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 90.00, 4, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
+    ('UI/UX Design Fundamentals', 'D102', 'Get started with UI/UX design principles.', '/Images/cover/uiux_design.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 100.00, 4, 'Intermediate', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
+    ('Adobe Photoshop for Beginners', 'D103', 'Learn the basics of Adobe Photoshop.', '/Images/cover/photoshop.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 120.00, 4, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
+    ('Illustration for Designers', 'D104', 'Master illustration techniques for graphic design.', '/Images/cover/illustration.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 130.00, 4, 'Advanced', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
+    ('Motion Graphics Basics', 'D105', 'Introduction to motion graphics using After Effects.', '/Images/cover/motion_graphics.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 150.00, 4, 'Advanced', 1,'2024-09-15', '2024-09-23', '2024-12-20', 0);
 
-	
 	-- sua id instructor
 Insert into Instructors(InstructorID, Description)
 values
@@ -484,6 +486,9 @@ ALTER COLUMN FilePath NVARCHAR(MAX);
 
 ALTER TABLE MessageFile 
 ALTER COLUMN FilePath NVARCHAR(MAX);
+
+ALTER TABLE Submission 
+ALTER COLUMN SubmissionLink NVARCHAR(MAX);
 
 Alter table Question
 Add ImagePath NVARCHAR(MAX);

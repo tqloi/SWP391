@@ -272,12 +272,12 @@ strong {
   color: var(--white-color);
 }
 
-.site-header .custom-icon {
+.custom-icon {
   color: var(--secondary-color);
   font-size: var(--h4-font-size);
 }
 
-.site-header .custom-icon:hover {
+.custom-icon:hover {
   color: var(--primary-color);
 }
 
@@ -1208,10 +1208,10 @@ blockquote {
 }
 
 .limited-text {
-    line-height: 1.5em; 
-    height: 3.0em;
-    overflow: hidden; 
-    text-overflow: ellipsis; 
+    line-height: 1.5em;
+    height: 1.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;

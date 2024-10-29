@@ -6,6 +6,7 @@ using OnlineLearningApp.Respositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using OnlineLearning.Services;
 
 namespace OnlineLearning.Areas.Instructor.Controllers
 {
@@ -18,43 +19,49 @@ namespace OnlineLearning.Areas.Instructor.Controllers
     {
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly DataContext _dataContext;
-        private IConfiguration _configuration;
-        public AssignmentController(DataContext dataContext, UserManager<AppUserModel> userManager, SignInManager<AppUserModel> signInManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
+        private readonly FileService _fileService;
+        public AssignmentController(DataContext dataContext, UserManager<AppUserModel> userManager, SignInManager<AppUserModel> signInManager, FileService fileService)
         {
             _dataContext = dataContext;
             _userManager = userManager;
             _signInManager = signInManager;
-            _webHostEnvironment = webHostEnvironment;
-            _configuration = configuration;
+            _fileService = fileService;
         }
         [HttpPost]
         public async Task<IActionResult> CreateAssignment(AssignmentViewModel model)
         {
-            var courseid = HttpContext.Session.GetInt32("courseid");
+            var existingAsm = await _dataContext.Assignment.FirstOrDefaultAsync(c => c.Title == model.Title);
+
+            if (existingAsm != null)
+            {
+                TempData["warning"] = $"Assignment with title {model.Title} is already exist";
+                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = existingAsm.CourseID });
+            }
             if (ModelState.IsValid)
             {
                 var assignment = new AssignmentModel();
-                assignment.CourseID = (int)courseid;
+                assignment.CourseID = model.CourseID;
                 assignment.Title = model.Title;
-                assignment.Description = model.Description;
+                assignment.StartDate = model.StartDate;
                 assignment.DueDate = model.DueDate;
-                if (model.AssignmentLink != null)
-                {
-                    string originalFileName = Path.GetFileName(model.AssignmentLink.FileName);
-                    string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Assignment");
-                    string fileName = Guid.NewGuid() + "_" + originalFileName;
-                    string filePath = Path.Combine(uploadPath, fileName);
 
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.AssignmentLink.CopyToAsync(fileStream);
-                    }
-                    assignment.AssignmentLink = fileName;
-                    model.ExistedAssignmentLink = fileName;
+                try
+                {
+                    string downloadUrl = await _fileService.UploadLectureDocument(model.AssignmentLink);
+                    assignment.AssignmentLink = downloadUrl;
+                    model.ExistedAssignmentLink = downloadUrl;
                 }
-                HttpContext.Session.Remove("courseid");
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                    TempData["error"] = "Edit failed due to file upload error!";
+                    return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
+                }
+
+                var course = await _dataContext.Courses.FindAsync(assignment.CourseID);
+                course.LastUpdate = DateTime.Now;
+
                 _dataContext.Assignment.Add(assignment);
                 await _dataContext.SaveChangesAsync();
                 TempData["success"] = "Create Assignment successfully!";
@@ -67,6 +74,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         public async Task<IActionResult> EditAssignment(int id)
         {
             var assignment = await _dataContext.Assignment.FindAsync(id);
+            var course = await _dataContext.Courses.FindAsync(assignment.CourseID);
+            ViewBag.Course = course;
             if (assignment == null)
             {
                 return RedirectToAction("Index", "Home");
@@ -75,7 +84,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             model.AssignmentID = id;
             model.CourseID = assignment.CourseID;
             model.Title = assignment.Title;
-            model.Description = assignment.Description;
+            model.StartDate = assignment.StartDate;
             model.DueDate = assignment.DueDate;
             model.ExistedAssignmentLink = assignment.AssignmentLink;
             return View(model);
@@ -88,30 +97,39 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             if (assignment == null)
             {
-                return RedirectToAction("UserProfile", "Home");
+                return RedirectToAction("Index", "Home");
             }
+
+            var existingAsm = await _dataContext.Assignment.FirstOrDefaultAsync(c => c.Title == model.Title);
+
+            if (existingAsm != null)
+            {
+                TempData["warning"] = $"Assignment with title {model.Title} is already exist";
+                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
+            }
+
             assignment.Title = model.Title;
-            assignment.Description = model.Description;
+            assignment.StartDate = model.StartDate;
             assignment.DueDate = model.DueDate;
             assignment.CourseID = model.CourseID;
             if (model.AssignmentLink != null)
             {
-                string originalFileName = Path.GetFileName(model.AssignmentLink.FileName);
-                string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Assignment");
-                string fileName = Guid.NewGuid() + "_" + originalFileName;
-                string filePath = Path.Combine(uploadPath, fileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                try
                 {
-                    await model.AssignmentLink.CopyToAsync(fileStream);
+                    string downloadUrl = await _fileService.UploadLectureDocument(model.AssignmentLink);
+                    assignment.AssignmentLink = downloadUrl;
+                    model.ExistedAssignmentLink = downloadUrl;
                 }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                    TempData["error"] = "Edit failed due to file upload error!";
+                    return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
+                }
+            }
+            var course = await _dataContext.Courses.FindAsync(assignment.CourseID);
+            course.LastUpdate = DateTime.Now;
 
-                assignment.AssignmentLink = fileName;
-            }
-            else
-            {
-                assignment.AssignmentLink = assignment.AssignmentLink;
-            }
             _dataContext.Update(assignment);
             await _dataContext.SaveChangesAsync();
             TempData["success"] = "Edit successful!";
@@ -126,44 +144,55 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 TempData["error"] = "Assignment not found!";
                 return RedirectToAction("CourseList", "Course");
             }
-
-            
+     
             _dataContext.Assignment.Remove(assignment);
             await _dataContext.SaveChangesAsync();
             TempData["success"] = "Remove Assignment successful!";
             return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
         }
-        public async Task<IActionResult> ListAssignment(int id)
-        {
-            
+        public async Task<IActionResult> ListAssignment(int id, int page = 1)
+        {          
             var submissions = await _dataContext.Submission.Where(s => s.AssignmentID == id).Include(s => s.User).ToListAsync();
+            var listScore = await _dataContext.ScoreAssignment.Include(i => i.Student).Where(s => s.AssignmentID == id).ToListAsync();
             var assignment = await _dataContext.Assignment.FindAsync(id);
 			var course = await _dataContext.Courses.FirstOrDefaultAsync(c => c.CourseID == assignment.CourseID);
 			ViewBag.Course = course;
+
 			if (submissions.Count == 0)
             {
-                TempData["error"] = "No students have submitted their assignments yet.";
+                TempData["info"] = "No students have submitted their assignments yet.";
                 return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
             }
-            return View(submissions);
+            //page
+            int pageSize = 20;
+            var totalSubmissions = submissions.Count();
+            submissions = submissions.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            var model = new AssignmentListViewModel
+            {
+                Submissions = submissions,
+                ScoreAssignments = listScore,
+                CurrentPage = page,
+                TotalPage = (int)Math.Ceiling(totalSubmissions / (double)pageSize)
+            };
+            ViewBag.AssignmentID = assignment.AssignmentID;
+
+            return View(model);
         }
 		public async Task<IActionResult> ListScore(int id)
 		{
 			var listScore = await _dataContext.ScoreAssignment.Include(i => i.Student).Where(s => s.AssignmentID == id).ToListAsync();
             var assignment = await _dataContext.Assignment.FindAsync(id);
+            var course = await _dataContext.Courses.FirstOrDefaultAsync(c => c.CourseID == assignment.CourseID);
+            ViewBag.Course = course;
             if (listScore.Count == 0)
 			{
-                TempData["error"] = "No students have been graded yet.";
+                TempData["info"] = "No students have been graded yet.";
                 return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
             }
 			return View(listScore);
 		}
-		public ActionResult ViewSubmissonPdf(int Id)
-        {
-            var submission = _dataContext.Submission.FirstOrDefault(c => c.SubmissionID == Id);
 
-            return View(submission);
-        }
         [HttpPost]
         public async Task<IActionResult> Score(ScoreAssignmentViewModel model)
         {
@@ -175,7 +204,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             var student = await _userManager.FindByIdAsync(model.StudentID);
             
 			var existScore = await _dataContext.ScoreAssignment
-		.FirstOrDefaultAsync(s => s.AssignmentID == model.AssignmentID && s.StudentID == model.StudentID);
+		                    .FirstOrDefaultAsync(s => s.AssignmentID == model.AssignmentID && s.StudentID == model.StudentID);
 
 			if (existScore != null)
 			{
@@ -191,14 +220,12 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 					AssignmentID = model.AssignmentID,
 					StudentID = model.StudentID,
 					Score = model.Score
-
 				};
                  _dataContext.ScoreAssignment.Add(score);
             await _dataContext.SaveChangesAsync();
             TempData["success"] = "Successfully!";
 
-			}
-			
+			}		
             
             return RedirectToAction("ListAssignment", new {id = assignment.AssignmentID});
         }

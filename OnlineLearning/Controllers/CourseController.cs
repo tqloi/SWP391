@@ -14,6 +14,7 @@ using YourNamespace.Models;
 
 namespace OnlineLearning.Controllers
 {
+    [ServiceFilter(typeof(AdminRedirectFilter))]
     public class CourseController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -168,7 +169,7 @@ namespace OnlineLearning.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> BookMark(int CourseID)
+        public async Task<IActionResult> BookMark(int CourseID, string returnUrl = null)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var bookmark = datacontext.BookMark
@@ -191,7 +192,7 @@ namespace OnlineLearning.Controllers
                 await datacontext.SaveChangesAsync();
                 TempData["info"] = "Saved!";
             }
-            return RedirectToAction("CourseDetail", "Course", new { CourseID = CourseID });
+            return Redirect(returnUrl);
         }
 
         public IActionResult Create()

@@ -3,28 +3,29 @@
     ViewData["Title"] = "Login";
     Layout = "~/Views/Shared/login_layout.cshtml";
 }
-    <div class="container">
-        <form class="login-form" asp-action="login" asp-controller="account" method="post">
-            <a asp-action="Index" asp-controller="Home"><i class="fas fa-home"></i></a>
-            <h1>Login</h1>
-            <input asp-for="Username" class="form-control" placeholder="Username" />
-            <input asp-for="Password" class="form-control" placeholder="Password" />
-            <div class="remember-me-container">
-                <label> <input asp-for="RememberMe" class="form-check-input" /> @Html.DisplayNameFor(a => a.RememberMe) </label>
-                <a asp-action="VerifyEmail" asp-asp-controller="Account">Forgot Password</a>
-            </div>
-            <button type="submit" value="Sign Up">Sign In</button>
-            <div class="separator">
-                <span>Or</span>
-            </div>
-            <div class="social-login">
-                <a asp-action="LoginGoogle" asp-controller="Account"><i class="fab fa-google"></i> Continue with Google</a>
-            </div>
-            <div class="separator">
-                <span>
-                    Don't have an account?
-                    <a asp-action="create" asp-asp-controller="account">Sign Up</a>
-                </span>
-            </div>
-        </form>
-    </div>
+<div class="container">
+    <form class="login-form" asp-action="login" asp-controller="account" method="post">
+        <a asp-action="Index" asp-controller="Home"><i class="fas fa-home"></i></a>
+        <h1>Login</h1>
+        <input type="hidden" asp-for="ReturnUrl" value="@Model.ReturnUrl" />
+        <input asp-for="Username" class="form-control" placeholder="Username" required/>
+        <input asp-for="Password" class="form-control" placeholder="Password" required/>
+        <div class="remember-me-container">
+            <label> <input asp-for="RememberMe" class="form-check-input" /> @Html.DisplayNameFor(a => a.RememberMe) </label>
+            <a asp-action="VerifyEmail" asp-asp-controller="Account">Forgot Password</a>
+        </div>
+        <button type="submit" value="Sign Up">Sign In</button>
+        <div class="separator">
+            <span>Or</span>
+        </div>
+        <div class="social-login">
+            <a asp-action="LoginGoogle" asp-controller="Account" asp-route-returnUrl="@Model.ReturnUrl"><i class="fab fa-google"></i> Continue with Google</a>
+        </div>
+        <div class="separator">
+            <span>
+                Don't have an account?
+                <a asp-action="create" asp-asp-controller="account">Sign Up</a>
+            </span>
+        </div>
+    </form>
+</div>

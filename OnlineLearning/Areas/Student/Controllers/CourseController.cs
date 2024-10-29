@@ -34,25 +34,101 @@ namespace OnlineLearning.Areas.Student.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> MyCourse()
+        public async Task<IActionResult> MyCourse(int? category = null, string level = null, string status = "In Progress", int page = 1)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var model = new ListViewModel();
-
             if (User.IsInRole("Student"))
             {
-                model.StudentCourses = await datacontext.StudentCourses
-                    .Where(sc => sc.StudentID == userId)
-                    .Include(sc => sc.Course)
-                    .ToListAsync();
-                model.Courses = await datacontext.StudentCourses
-                    .Where(sc => sc.StudentID == userId)
-                    .Include(sc => sc.Course)
-                    .ThenInclude(course => course.Instructor)
-                    .ThenInclude(instructor => instructor.AppUser)
-                    .Select(sc => sc.Course)
-                    .OrderByDescending(sc => sc.CourseID)
-                    .ToListAsync();
+                var studentCourseQuery =datacontext.StudentCourses
+                                .Where(sc => sc.StudentID == userId)
+                                .Include(sc => sc.Course)
+                                .AsQueryable();
+                var courseQuery = (status == "Saved")
+                                        ? datacontext.BookMark
+                                            .Where(sc => sc.StudentID == userId)
+                                            .Include(sc => sc.Course)
+                                            .ThenInclude(course => course.Instructor)
+                                            .ThenInclude(instructor => instructor.AppUser)
+                                            .Select(sc => sc.Course)
+                                            .OrderByDescending(sc => sc.CourseID)
+                                            .AsQueryable()
+                                        : datacontext.StudentCourses
+                                            .Where(sc => sc.StudentID == userId)
+                                            .Include(sc => sc.Course)
+                                            .ThenInclude(course => course.Instructor)
+                                            .ThenInclude(instructor => instructor.AppUser)
+                                            .Select(sc => sc.Course)
+                                            .OrderByDescending(sc => sc.CourseID)
+                                            .AsQueryable();
+                var saveCourseQuery = datacontext.BookMark
+                                        .Where(sc => sc.StudentID == userId)
+                                        .Include(sc => sc.Course)
+                                        .OrderByDescending(sc => sc.CourseID)
+                                        .AsQueryable();
+                
+
+                // Lọc theo category nếu có
+                if (category.HasValue)
+                {
+                    studentCourseQuery = studentCourseQuery.Where(sc => sc.Course.CategoryID == category.Value);
+                    courseQuery = courseQuery.Where(c => c.CategoryID == category.Value);
+                    saveCourseQuery = saveCourseQuery.Where(sc => sc.Course.CategoryID == category.Value);     
+                }
+
+                // Lọc theo level nếu có
+                if (!string.IsNullOrEmpty(level))
+                {
+                    studentCourseQuery = studentCourseQuery.Where(sc => sc.Course.Level == level);
+                    courseQuery = courseQuery.Where(c => c.Level == level);
+                    saveCourseQuery = saveCourseQuery.Where(sc => sc.Course.Level == level);
+                }
+
+                if(!string.IsNullOrEmpty(status) && status != "Saved")
+                {
+                    studentCourseQuery = studentCourseQuery.Where(sc => sc.CertificateStatus == status);
+                }
+
+                var pageSize = 5;
+
+                //Tìm mây bookmark nếu như bấm Saved
+                if (status == "Saved")
+                {
+                    var totalBookmark = await saveCourseQuery.CountAsync();
+                    var bookmark = await saveCourseQuery
+                                            .Skip((page - 1) * pageSize)
+                                            .Take(pageSize)
+                                            .ToListAsync();
+
+                    model.Bookmarks = bookmark;
+                    model.TotalPage = (int)Math.Ceiling(totalBookmark / (double)pageSize);
+                }
+                    
+                else
+                {
+
+                    var totalCourses = await studentCourseQuery.CountAsync();
+
+                    var StudentCourses = await studentCourseQuery
+                        .OrderBy(course => course.EnrollmentDate)
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+
+
+                    model.StudentCourses = StudentCourses;
+                    model.TotalPage = (int)Math.Ceiling(totalCourses / (double)pageSize);
+                }
+
+                model.Courses = await courseQuery.ToListAsync();
+                model.Reviews = await datacontext.Review
+                                            .Where(r => r.UserID == userId)
+                                            .ToListAsync();
+                model.CurrentPage = page;
+                model.Level = level;
+                model.Category = category;
+                model.Status = status;
+                
             }
             return View(model);
         }

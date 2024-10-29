@@ -21,13 +21,11 @@ namespace OnlineLearning.Areas.Instructor.Controllers
     {
         private readonly DataContext _dataContext;
         private UserManager<AppUserModel> _userManager;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly FileService _fileService;
 
-        public LectureController(DataContext context, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, FileService fileService)
+        public LectureController(DataContext context, UserManager<AppUserModel> userManager, FileService fileService)
         {
             _dataContext = context;
-            _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
             _fileService = fileService;
         }
@@ -172,6 +170,16 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 TempData["info"] = "This is the first lecture in the course.";
                 return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lectureID });
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int LectureID)
+        {
+            var lecture = await _dataContext.Lecture.FindAsync(LectureID);
+            int temp = lecture.CourseID;
+            _dataContext.Lecture.Remove(lecture);
+            await _dataContext.SaveChangesAsync();
+            return Redirect($"/Participation/CourseInfo?CourseID={temp}");
         }
     }
 }
