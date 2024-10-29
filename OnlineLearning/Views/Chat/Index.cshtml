@@ -9,7 +9,7 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="~/Images/webLogo.png">
     <style>
@@ -68,21 +68,22 @@
             position: relative; 
             border-radius: 20px;
             background-color: #F0F0F0;
+            max-width: 500px;
         }
 
         .dropdown-content {
             display: none;
-            padding: 5 10px;
+            padding: 5px 10px;
             position: absolute;
-            top: 17%;
+            top: 40px;
             left: -72px;
             white-space: nowrap;
             background-color: #2d2e2e;
             width: auto; 
             box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-            z-index: 1;
+            z-index: 1000;
             border-radius: 5px;
-            font-size: 12px
+            font-size: 11px
         }
 
         .flex-shrink-1:hover .dropdown-content {
@@ -218,7 +219,7 @@
                                     <a id="videoCallButton" class="btn btn-info btn-lg mr-1 px-3 d-none d-md-inline-block ms-auto">
                                         <i class="fas fa-video"></i>
                                     </a>
-                                    <button class="btn btn-light border btn-lg px-3"><i class="fas fa-ellipsis-h ms-auto"></i></button>
+                                    <button class="btn btn-light border btn-lg px-3"><i class="fas fa-ellipsis-h ms-auto "></i></button>
                                 </div>
                             </div>
                         </div>
@@ -236,7 +237,7 @@
                                             var senderName = msg.SenderId == Model.SendId ? "You" : Model.ReceiveName;
                                             var displayDate = msg.Timestamp.Date == DateTime.Today
                                             ? msg.Timestamp.ToString("hh:mm tt").Replace("SA", "AM").Replace("CH", "PM")
-                                            : msg.Timestamp.ToString("dd/MM/yyyy hh:mm tt").Replace("SA", "AM").Replace("CH", "PM");
+                                            : msg.Timestamp.ToString("hh:mm tt dd/MM/yyyy").Replace("SA", "AM").Replace("CH", "PM");
                                             if ((msg.Timestamp - lastSend).TotalHours >= 1)
                                             {
                                                 <li class="d-flex justify-content-center p-3">
@@ -304,13 +305,11 @@
                                         </div>
                                         <div class="modal-body">
                                             <p>You have an incoming call!</p>
-                                            <!-- Thêm thông tin về người gọi ở đây nếu cần -->
                                         </div>
                                         <div class="modal-footer">
                                             <div id="callerIdDisplay"></div>
                                             <a id="rejectCallButton" asp-action="Index" asp-controller="Chat" asp-area="" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
                                             <a asp-route-callerId="@Model.SendId" asp-route-receiverId="@Model.ReceiverId" asp-action="StartCall" asp-controller="VideoCall" asp-area="" class="btn btn-primary">Answer</a>
-
                                         </div>
                                     </div>
                                 </div>
@@ -318,10 +317,10 @@
                         </div>
                         @if (Model.ReceiverId != null)
                         {
-                            <div class="flex-grow-0 py-3 px-4 border-top ">
-                                <form class="input-group">
-                                    <input class="form-control" type="text" min="1" id="chatMessage" placeholder="Type your message" required />
-                                    <button tabindex="1" type="submit" class="btn btn-info" id="sendMessage">Send</button>
+                            <div class="flex-grow-0 px-4 border-top">
+                                <form class="input-group" style="margin-top: 14px">
+                                    <input class="form-control" type="text" min="1" id="chatMessage" placeholder="Type your message" style="border-radius: 20px" required />
+                                    <button tabindex="1" type="submit" class="btn btn-info ml-2" style="border-radius: 20px" id="sendMessage"><i class="mr-2 bi bi-send-fill"></i> Send</button>
                                 </form>
                             </div>
                         }
