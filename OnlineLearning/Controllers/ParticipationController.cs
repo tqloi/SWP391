@@ -128,5 +128,30 @@ namespace OnlineLearning.Controllers
                 return NotFound();
             }
         }
+            [HttpGet]
+            public async Task<IActionResult> MaterialList(int CourseID)
+            {
+               
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                var isEnrolled = await datacontext.StudentCourses
+                                          .FirstOrDefaultAsync(sc => sc.StudentID == userId && sc.CourseID == CourseID);
+
+                var isInstrucotr = await datacontext.Courses
+                                            .FirstOrDefaultAsync(c => c.InstructorID == userId && c.CourseID == CourseID);
+
+            if (User.IsInRole("Student"))
+            {
+                return RedirectToAction("MaterialList", "Material", new { area = "Student", CourseID = CourseID });
+            }
+            if (User.IsInRole("Instructor"))
+            {
+                return RedirectToAction("MaterialList", "Material", new { area = "Instructor", CourseID = CourseID });
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
     }
 }

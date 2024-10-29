@@ -1,0 +1,54 @@
+﻿﻿@{
+    Layout = "~/Views/Shared/_CourseLayout.cshtml";
+    <partial name="_NoficationPartial" />
+}
+@model List<CourseMaterialModel>
+@{
+    var courseID = ViewBag.Course;
+}
+<div class="container-fluid">
+    
+
+        <div class="card shadow row">
+            <div class="m-3">
+                <h4>Material</h4>
+            </div>
+            @if(Model != null && Model.Any()){
+            @foreach (var mateial in Model)
+            {
+                    
+                        string iconClass = "";
+
+                        switch (mateial.fileExtension.ToLower())
+                        {
+                            case ".pdf":
+                                iconClass = "fas fa-file-pdf text-danger";
+                                break;
+                            case ".pptx":
+                                iconClass = "fas fa-file-powerpoint text-warning";
+                                break;
+                            case ".docx":
+                                iconClass = "fas fa-file-word text-primary";
+                                break;
+                            case ".xlsx":
+                                iconClass = "fas fa-file-excel text-success";
+                                break;
+                            default:
+                                iconClass = "fas fa-file";
+                                break;
+                        }
+                        <div class="position-relative mb-2">
+                            <i class="@iconClass me-2 ms-2"></i>
+                    <a href="@mateial.MaterialsLink" class="btn-link" target="_blank">@mateial.FIleName</a>
+                        </div>
+                    
+                }
+            }
+                else{
+            <div class="position-relative m-1 d-flex justify-content-center align-items-center" style="height: 200px;">
+                <p class="text-center text-muted">No material yet.</p>
+            </div>
+                }
+                
+        </div>
+</div>
