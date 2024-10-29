@@ -38,6 +38,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
 
         [HttpGet]
+        [ServiceFilter(typeof(CourseAccessFilter))]
         public async Task<IActionResult> MaterialList(int courseID)
         {
 

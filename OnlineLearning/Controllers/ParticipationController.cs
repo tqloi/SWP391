@@ -17,6 +17,7 @@ using Firebase.Auth;
 namespace OnlineLearning.Controllers
 {
     [Authorize(Roles = "Instructor, Student")]
+    [ServiceFilter(typeof(CourseAccessFilter))]
     public class ParticipationController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -33,7 +34,6 @@ namespace OnlineLearning.Controllers
         }
 
         [HttpGet]
-        [ServiceFilter(typeof(CourseAccessFilter))]
         public async Task<IActionResult> CourseInfo(int CourseID)
         {
             var course = await datacontext.Courses.FindAsync(CourseID);
@@ -49,7 +49,6 @@ namespace OnlineLearning.Controllers
 
 
         [HttpGet]
-        [ServiceFilter(typeof(CourseAccessFilter))]
         public async Task<IActionResult> AssignmentList(int CourseID, int page = 1)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -84,7 +83,6 @@ namespace OnlineLearning.Controllers
 
 
         [HttpGet]
-        [ServiceFilter(typeof(CourseAccessFilter))]
         public async Task<IActionResult> TestList(int CourseID)
         {
             ViewBag.CourseId = CourseID;
@@ -131,29 +129,20 @@ namespace OnlineLearning.Controllers
             }
 
         }
-            [HttpGet]
-            public async Task<IActionResult> MaterialList(int CourseID)
-            {
-               
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        [HttpGet]
+        public async Task<IActionResult> MaterialList(int CourseID)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var course = await datacontext.Courses.FindAsync(CourseID);
 
-                var isEnrolled = await datacontext.StudentCourses
-                                          .FirstOrDefaultAsync(sc => sc.StudentID == userId && sc.CourseID == CourseID);
 
-                var isInstrucotr = await datacontext.Courses
-                                            .FirstOrDefaultAsync(c => c.InstructorID == userId && c.CourseID == CourseID);
-
-            if (User.IsInRole("Student"))
-            {
-                return RedirectToAction("MaterialList", "Material", new { area = "Student", CourseID = CourseID });
-            }
-            if (User.IsInRole("Instructor"))
+            if (course.InstructorID == userId)
             {
                 return RedirectToAction("MaterialList", "Material", new { area = "Instructor", CourseID = CourseID });
             }
             else
             {
-                return NotFound();
+                return RedirectToAction("MaterialList", "Material", new { area = "Student", CourseID = CourseID });
             }
         }
     }
