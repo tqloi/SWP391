@@ -35,13 +35,20 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             var course = await _dataContext.Courses.FindAsync(model.CourseID);
             ViewBag.Course = course;
 
+            var existLecture = await _dataContext.Lecture.FirstOrDefaultAsync(c => c.Title == model.Title);
+            if (existLecture != null)
+            {
+                TempData["warning"] = $"Lecture with title {model.Title} is already exist";
+                return Redirect(Request.Headers["Referer"].ToString());
+            }
+
             try
             {
                 var lecture = new LectureModel
                 {
                     CourseID = model.CourseID,
                     Title = model.Title,
-                    Description = model.Description,
+                    Description = model.Description == null ? "" : model.Description,
                     UpLoadDate = DateTime.Now,
                 };
 
@@ -116,7 +123,9 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             var lecture = await _dataContext.Lecture.FindAsync(LectureID);
             var course = await _dataContext.Courses.FindAsync(lecture.CourseID);
             var lectureFiles = await _dataContext.LectureFiles.Where(lf => lf.LectureID == LectureID).ToListAsync();
+            var previousUrl = Request.Headers["Referer"].ToString();
 
+            ViewBag.PreviousUrl = previousUrl;
             ViewBag.Course = course;
             ViewBag.Lecture = lecture;
 
@@ -173,13 +182,14 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int LectureID)
+        public async Task<IActionResult> Delete(int LectureID, int? Test = null, string PreviousUrl = null)
         {
             var lecture = await _dataContext.Lecture.FindAsync(LectureID);
-            int temp = lecture.CourseID;
+            int CourseID = lecture.CourseID;
             _dataContext.Lecture.Remove(lecture);
             await _dataContext.SaveChangesAsync();
-            return Redirect($"/Participation/CourseInfo?CourseID={temp}");
+            TempData["success"] = "Lecture Deleted";
+            return RedirectToAction("CourseInfo", "Participation", new { CourseID = CourseID });
         }
     }
 }

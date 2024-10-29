@@ -35,9 +35,13 @@ namespace OnlineLearning.Controllers
         [Authorize]
         public async Task<IActionResult> Index(string id)
         {
-           
-            var model = new RoleViewModel();
+           var model = new RoleViewModel();
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //khong cho nhan tin voi myself
+            if (userId == id)
+            {
+                return Redirect($"/Chat");
+            }
             var user = await _userManager.FindByIdAsync(userId);
             var list = await _db.Users
     .Where(u => u.Id != user.Id &&
@@ -88,7 +92,7 @@ namespace OnlineLearning.Controllers
                 }
             }
             
-            
+
 
 
             return View(model);
@@ -163,7 +167,18 @@ namespace OnlineLearning.Controllers
             };
             return View(roleview);
         }
-        
+        public async Task<IActionResult> AnswerCallAsync()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+            var callerId = user.Id;
+            var receiver = await _db.VideoCallInfo.FirstOrDefaultAsync(r => r.ReceiveID.Equals(callerId));
+            var receiverId = receiver.SendID;
+
+            var token = _stringeeService.GenerateAccessToken(callerId);
+            return RedirectToAction("VideoCallView","VideoCall", new { token, callerId, receiverId });
+        }
+
 
 
     }

@@ -39,7 +39,7 @@ namespace OnlineLearningApp.Respositories
         public DbSet<LectureCompletionModel> LectureCompletion { get; set; }
         public DbSet<ReportModel> Report { get; set; }
         public DbSet<BookMarkModel> BookMark { get; set; }
-
+        public DbSet<VideoCallModel> VideoCallInfo { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

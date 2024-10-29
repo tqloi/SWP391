@@ -370,9 +370,17 @@ CREATE TABLE Report (
 	[Subject] NVARCHAR(50), 
     Comment NVARCHAR(MAX), 
     FeedbackDate DATETIME DEFAULT GETDATE(),  
-    FOREIGN KEY (UserID) REFERENCES AspNetUsers(id) ON DELETE CASCADE
+    FOREIGN KEY (UserID) REFERENCES AspNetUsers(id) 
 );
 go
+
+CREATE TABLE VideoCall (
+    VideoCallId INT PRIMARY KEY IDENTITY(1,1),
+    SendID NVARCHAR(450) NOT NULL,
+    ReceiveID NVARCHAR(450) NOT NULL,
+    FOREIGN KEY (SendID) REFERENCES AspNetUsers(id),
+    FOREIGN KEY (ReceiveID) REFERENCES AspNetUsers(id)
+);
 
 CREATE TRIGGER trg_DeleteChildComments
 ON Comment

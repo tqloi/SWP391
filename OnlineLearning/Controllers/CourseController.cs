@@ -43,8 +43,7 @@ namespace OnlineLearning.Controllers
             {
                 coursesQuery = coursesQuery.Where(course =>
                     course.Title.Contains(keyword) ||
-                    course.Instructor.AppUser.FirstName.Contains(keyword) ||
-                    course.Instructor.AppUser.LastName.Contains(keyword));
+                     (course.Instructor.AppUser.FirstName + " " + course.Instructor.AppUser.LastName).Contains(keyword) || (course.Instructor.AppUser.LastName + " " + course.Instructor.AppUser.FirstName).Contains(keyword));
             }
 
             // Lọc theo category nếu có
@@ -168,7 +167,7 @@ namespace OnlineLearning.Controllers
             return View(model);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> BookMark(int CourseID, string returnUrl = null)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -194,11 +193,5 @@ namespace OnlineLearning.Controllers
             }
             return Redirect(returnUrl);
         }
-
-        public IActionResult Create()
-        {
-            return View();
-        }
-
     }
 }

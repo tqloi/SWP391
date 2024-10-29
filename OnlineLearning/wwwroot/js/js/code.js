@@ -64,12 +64,10 @@ jQuery(function(){
     client.on('disconnect', function(res){
         console.log('+++ disconnected');
     });
-    var global;
+    
     //MAKE CALL
-    callButton.on('click', function(){
+    callButton.on('click', function () {
         currentCall = new StringeeCall(client, callerId, calleeId, true);
-        global = callerId;
-        $('#myElement').data('caller-id', callerId);
         settingCallEvent(currentCall, localVideo, remoteVideo, callButton, answerCallButton, endCallButton, rejectCallButton);
 
         currentCall.makeCall(function(res){
@@ -81,13 +79,13 @@ jQuery(function(){
         });
         
     });
-
+    
     //RECEIVE CALL
-    client.on('incomingcall', function(incomingcall){
-        $('#incoming-call-notice').show();
+    client.on('incomingcall', function (incomingcall) {
+         $('#incoming-call-notice').show();
         currentCall = incomingcall;
         settingCallEvent(currentCall, localVideo, remoteVideo, callButton, answerCallButton, endCallButton, rejectCallButton);
-
+        
         callButton.hide();
         answerCallButton.show();
         rejectCallButton.show();

@@ -2,6 +2,7 @@
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
     <partial name="_NoficationPartial" />
     var lecture = ViewBag.Lecture;
+    var Url = 0;
 }
 
 @model List<LectureFileModel>
@@ -48,6 +49,7 @@
                     <h5>Documents</h5>
                     @{
                         bool hasDocuments = false;
+                        Url = 1;
                     }
                     @foreach (var file in Model)
                     {
@@ -175,6 +177,8 @@
             <div class="modal-footer">
                 <form id="deleteCourseForm" method="post" asp-area="Instructor" asp-controller="Lecture" asp-action="Delete">
                     <input type="hidden" name="LectureID" value="@lecture.LectureID">
+                    <input type="hidden" name="PreviousUrl" value="@ViewBag.PreviousUrl">
+                    <input type="hidden" name="Test" value="@Url">
                     <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn custom-btn">Delete</button>
                 </form>

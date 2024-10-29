@@ -134,11 +134,18 @@
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="all-tab-pane" role="tabpanel" aria-labelledby="programming-tab" tabindex="0">
                         <div class="row">
-                            @for (int i = 0; i < Model.Courses.Count() && i < 6; i++)
+                            @{
+                                int displayedCourses = 0;
+                            }
+                            @foreach (var item in Model.Courses)
                             {
-                                var item = Model.Courses.ElementAt(i);
+                                if (displayedCourses >= 6)
+                                {
+                                    break;
+                                }
                                 if (item.Status == true)
                                 {
+                                    displayedCourses++;
                                     <div class="col-lg-4 col-md-6 col-12 mb-4 mb-lg-0">
                                         <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
                                             <a asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@item.CourseID">
@@ -146,9 +153,11 @@
                                                     <div>
                                                         <h5 class="mb-2 limited-text">
                                                             <span class="dot @((item.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
-                                                            @item.Title
+                                                            @(item.Title.Length > 19 ? item.Title.Substring(0, 19) + "..." : item.Title)
                                                         </h5>
-                                                        <p class="mb-0 limited-text">@item.Description</p>
+                                                        <p class="mb-0 limited-text">
+                                                            @(item.Description.Length > 29 ? item.Description.Substring(0, 29) + "..." : item.Description)
+                                                        </p>
                                                     </div>
                                                     <span class="badge bg-music rounded-pill ms-auto">@item.NumberOfStudents</span>
                                                 </div>
@@ -181,10 +190,11 @@
                                                         <div>
                                                             <h5 class="mb-2 limited-text">
                                                                 <span class="dot @((item.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
-                                                                @item.Title
+                                                                @(item.Title.Length > 19 ? item.Title.Substring(0, 19) + "..." : item.Title)
                                                             </h5>
-
-                                                            <p class="mb-0 limited-text">@item.Description</p>
+                                                            <p class="mb-0 limited-text">
+                                                                @(item.Description.Length > 29 ? item.Description.Substring(0, 29) + "..." : item.Description)
+                                                            </p>
                                                         </div>
                                                         <span class="badge bg-music rounded-pill ms-auto">@item.NumberOfStudents</span>
                                                     </div>

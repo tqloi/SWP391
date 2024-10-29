@@ -31,7 +31,7 @@ public class CourseAccessFilter : IAsyncActionFilter
         // new action la lectureDdetail
         if (context.ActionDescriptor.RouteValues["action"] == "LectureDetail")
         {
-            var lectureId = (int)context.ActionArguments["lectureId"];
+            var lectureId = (int)context.ActionArguments["LectureID"];
             var lecture = await _context.Lecture.FindAsync(lectureId);
 
             if (lecture == null)

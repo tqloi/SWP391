@@ -433,7 +433,7 @@ namespace OnlineLearning.Controllers
                     {
                         result = await _userManager.AddPasswordAsync(user, model.NewPassword);
                         TempData["success"] = "Changed successful!";
-                        return RedirectToAction("Login", "Account");
+                        return RedirectToAction("UserProfile", "Profile");
                     }
                     else
                     {
