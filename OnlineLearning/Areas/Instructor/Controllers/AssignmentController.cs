@@ -179,19 +179,6 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             return View(model);
         }
-		public async Task<IActionResult> ListScore(int id)
-		{
-			var listScore = await _dataContext.ScoreAssignment.Include(i => i.Student).Where(s => s.AssignmentID == id).ToListAsync();
-            var assignment = await _dataContext.Assignment.FindAsync(id);
-            var course = await _dataContext.Courses.FirstOrDefaultAsync(c => c.CourseID == assignment.CourseID);
-            ViewBag.Course = course;
-            if (listScore.Count == 0)
-			{
-                TempData["info"] = "No students have been graded yet.";
-                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
-            }
-			return View(listScore);
-		}
 
         [HttpPost]
         public async Task<IActionResult> Score(ScoreAssignmentViewModel model)
