@@ -100,13 +100,13 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var existingAsm = await _dataContext.Assignment.FirstOrDefaultAsync(c => c.Title == model.Title);
+            //var existingAsm = await _dataContext.Assignment.FirstOrDefaultAsync(c => c.Title == model.Title);
 
-            if (existingAsm != null)
-            {
-                TempData["warning"] = $"Assignment with title {model.Title} is already exist";
-                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
-            }
+            //if (existingAsm != null)
+            //{
+            //    TempData["warning"] = $"Assignment with title {model.Title} is already exist";
+            //    return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
+            //}
 
             assignment.Title = model.Title;
             assignment.StartDate = model.StartDate;
