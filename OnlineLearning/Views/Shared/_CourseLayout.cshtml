@@ -63,6 +63,8 @@
                     </a>
                 </li>
             }
+            else
+            {
 
             <!-- Nav Item - Course Info -->
             <li title="Course Info" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "CourseInfo" ? "active" : "")">
@@ -71,6 +73,7 @@
                     <nav-link>Course Info</nav-link>
                 </a>
             </li>
+            }
 
             <!-- Nav Item - Material -->
             <li title="Materials" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "MaterialList" ? "active" : "")">
@@ -104,12 +107,15 @@
                 </div>
             </li>
 
-            <li title="Grades" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "Grades" ? "active" : "")">
-                <a class="nav-link" asp-action="GradeList" asp-controller="Participation" asp-route-CourseID="@courseID">
-                    <i class="fas fa-clipboard"></i>
-                    <nav-link>Grades</nav-link>
-                </a>
-            </li>
+            @if (!currentCourse.InstructorID.Equals(user.Id))
+            {
+                <li title="Grades" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "Grades" ? "active" : "")">
+                    <a class="nav-link" asp-action="GradeList" asp-controller="Student" asp-area="Student" asp-route-CourseID="@courseID">
+                        <i class="fas fa-clipboard"></i>
+                        <nav-link>Grades</nav-link>
+                    </a>
+                </li>
+            }
 
             <li title="Tests" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "TestList" ? "active" : "")">
                 <a class="nav-link" asp-action="TestList" asp-controller="Participation" asp-route-CourseID="@courseID">

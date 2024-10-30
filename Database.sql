@@ -332,14 +332,17 @@ CREATE TABLE Comment (
     CommentID INT PRIMARY KEY IDENTITY(1,1),
     LectureID INT NULL,  -- Foreign key to Lecture (nullable for course-level comments)
     UserID NVARCHAR(450),  -- Foreign key to Users (can be Student or Instructor)
-    Content TEXT,
+    Content NVARCHAR(MAX),
     [Timestamp] DATETIME,
-    
+    ParentCmtId INT NULL,
 	 -- Foreign key to Comment (nullable for root comments)
     FOREIGN KEY (lectureID) REFERENCES Lecture(lectureID),
     FOREIGN KEY (userID) REFERENCES AspNetUsers(Id),  -- Could be Student or Instructor
     FOREIGN KEY (parentCmtId) REFERENCES Comment(commentID)
 );
+ALTER TABLE Comment
+Alter column ParentCmtId INT NULL;
+go
 
 -- comment file
 CREATE TABLE CommentFile (
@@ -374,7 +377,7 @@ CREATE TABLE Report (
 );
 go
 
-CREATE TABLE VideoCall (
+CREATE TABLE VideoCallInfo (
     VideoCallId INT PRIMARY KEY IDENTITY(1,1),
     SendID NVARCHAR(450) NOT NULL,
     ReceiveID NVARCHAR(450) NOT NULL,

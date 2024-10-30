@@ -7,6 +7,7 @@
 
 @{
     var lecture = ViewBag.Lecture;
+    var lectureID = lecture.LectureID;
     var completion = ViewBag.Completion;
 }
 
@@ -37,7 +38,7 @@
 
     <div class="row">
 
-        <div class="col-xl-8 col-lg-7">
+        <div class="col-xl-7 col-lg-7">
 
             <div class="card shadow mb-4">
                 @foreach (var file in Model)
@@ -127,20 +128,38 @@
         </div>
 
         <!-- Donut Chart -->
-        <div class="col-xl-4 col-lg-5">
+        <div class="col-xl-5 col-lg-5">
             <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Disscusion</h6>
+                    <h6 class="m-0 font-weight-bold text-info">Disscusion</h6>
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
-                    <div class="chart-pie pt-4">
-                        <canvas id="myPieChart"></canvas>
+                    <div style="height: 450px; margin: -20px;margin-bottom: 35px; overflow-y: auto;">
+                        @await Component.InvokeAsync("Comment", new { lectureId = lectureID })
+                        <div class="border-top p-2 bg-white w-100" style="position: absolute; bottom: 0px; z-index: 1;">
+                            <form asp-action="Create" asp-controller="Comment" method="post" class="input-group mt-auto d-flex align-items-end">
+                                <input type="hidden" name="LectureID" value="@lecture.LectureID" />
+
+                                <label for="file-upload" class="btn btn-info mr-2 mt-auto active m-0 d-flex align-items-center" style="border-radius: 20px; height: 40px;"><i class="bi bi-plus-lg"></i></label>
+                                <input type="file" id="file-upload" class="d-none" name="File" accept=".mp4,.mov,.avi">
+
+                                <textarea id="Content" type="text" name="Content" class="form-control" placeholder="Write your comment" rows="1" style="border-radius: 20px; resize: none;" required></textarea>
+
+                                <button type="submit" class="btn btn-info ml-2 mt-auto" style="border-radius: 20px; height: 40px;"><i class="bi bi-send-fill"></i></button>
+                            </form>
+                        </div>
+                        <script>
+                            const textarea = document.getElementById('Content');
+
+                            // Tự động điều chỉnh chiều cao của textarea khi nhập liệu
+                            textarea.addEventListener('input', () => {
+                                textarea.style.height = 'auto'; // Đặt lại chiều cao trước khi tính toán
+                                textarea.style.height = `${textarea.scrollHeight}px`; // Đặt chiều cao dựa trên nội dung
+                            });
+                        </script>
                     </div>
-                    <hr>
-                    Styling for the donut chart can be found in the
-                    <code>/js/demo/chart-pie-demo.js</code> file.
                 </div>
             </div>
         </div>
