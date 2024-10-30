@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
-using System.Web.Mvc;
 using OnlineLearning.Models;
 
 public class ChatHub : Hub

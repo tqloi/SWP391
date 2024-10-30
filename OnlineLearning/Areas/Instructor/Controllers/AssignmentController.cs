@@ -100,40 +100,42 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //var existingAsm = await _dataContext.Assignment.FirstOrDefaultAsync(c => c.Title == model.Title);
+            var existingAsm = await _dataContext.Assignment.FirstOrDefaultAsync(c => c.Title == model.Title);
 
-            //if (existingAsm != null)
-            //{
-            //    TempData["warning"] = $"Assignment with title {model.Title} is already exist";
-            //    return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
-            //}
-
-            assignment.Title = model.Title;
-            assignment.StartDate = model.StartDate;
-            assignment.DueDate = model.DueDate;
-            assignment.CourseID = model.CourseID;
-            if (model.AssignmentLink != null)
+            if (existingAsm != null)
             {
-                try
-                {
-                    string downloadUrl = await _fileService.UploadLectureDocument(model.AssignmentLink);
-                    assignment.AssignmentLink = downloadUrl;
-                    model.ExistedAssignmentLink = downloadUrl;
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Error uploading file: " + ex.Message);
-                    TempData["error"] = "Edit failed due to file upload error!";
-                    return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
-                }
+                TempData["warning"] = $"Assignment with title {model.Title} is already exist";
+                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
             }
-            var course = await _dataContext.Courses.FindAsync(assignment.CourseID);
-            course.LastUpdate = DateTime.Now;
+            else
+            {
+                assignment.Title = model.Title;
+                assignment.StartDate = model.StartDate;
+                assignment.DueDate = model.DueDate;
+                assignment.CourseID = model.CourseID;
+                if (model.AssignmentLink != null)
+                {
+                    try
+                    {
+                        string downloadUrl = await _fileService.UploadLectureDocument(model.AssignmentLink);
+                        assignment.AssignmentLink = downloadUrl;
+                        model.ExistedAssignmentLink = downloadUrl;
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                        TempData["error"] = "Edit failed due to file upload error!";
+                        return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
+                    }
+                }
+                var course = await _dataContext.Courses.FindAsync(assignment.CourseID);
+                course.LastUpdate = DateTime.Now;
 
-            _dataContext.Update(assignment);
-            await _dataContext.SaveChangesAsync();
-            TempData["success"] = "Edit successful!";
-            return RedirectToAction("AssignmentList", "Participation", new {Areas = "", CourseID = assignment.CourseID });
+                _dataContext.Update(assignment);
+                await _dataContext.SaveChangesAsync();
+                TempData["success"] = "Edit successful!";
+                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
+            }
         }
         
         public async Task<IActionResult> DeleteAssignmentConfirmed(int id)
