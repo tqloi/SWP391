@@ -1,6 +1,6 @@
 ﻿@{
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
-  
+
     <partial name="_NoficationPartial" />
 }
 @model IEnumerable<AssignmentModel>
@@ -9,7 +9,6 @@
 <style>
     .topics-section {
         padding: 0px 50px 0px 50px;
-        
     }
 </style>
 <section class="topics-section">
@@ -22,11 +21,30 @@
                 </button>
             </div>
         }
-        
+
     </div>
+    @if (User.IsInRole("Instructor"))
+    {
+        <div class="col-md-3">
+            <form asp-action="CreateLiveStream" asp-antiforgery="true" asp-controller="LiveStream" method="post">
+                <h2>Create LiveStream</h2>
+                <label for="Title" id="Title">Enter title</label>
+                <input type="text" id="Title" name="Title" />
+                <button class="btn btn-success" type="submit" onclick="return confirm('You sure lil bro?')">Create</button>
+            </form>
+        </div>
+    }
+    @if (User.IsInRole("Student"))
+    {
+        <h3> Livestream frame</h3>
+        <iframe src="https://embed.api.video/live/li5gJBQfrXd10gKdAYyKZGW6"
+                width="500" height="500" frameborder="0" scrolling="no" allowfullscreen="true">
+        </iframe>
+    }
     <form>
-       
-        @foreach(var item in Model){
+
+        @foreach (var item in Model)
+        {
             <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
                 <div class="row">
 
@@ -37,7 +55,7 @@
                         <div class="d-flex">
                             <div>
                                 <h4 class="mb-2">
-                                    
+
                                     <span class="dot">@item.Title</span>
                                 </h4>
                             </div>
@@ -46,23 +64,23 @@
                         <h6></h6>
                         <p>@item.Description</p>
                         <div class="row progress-group d-flex justify-content-between">
-                            
 
-                                <div class="col-md-12 row align-items-end">
-                                   
-                                    <div class="col-md-4">
-                                        <i class="fas fa-flag"></i>
-                                        <h8>Ends on: @item.DueDate</h8>
-                                    </div>
+
+                            <div class="col-md-12 row align-items-end">
+
+                                <div class="col-md-4">
+                                    <i class="fas fa-flag"></i>
+                                    <h8>Ends on: @item.DueDate</h8>
                                 </div>
-                                <div class="col-md-2 d-flex justify-content-end ">
+                            </div>
+                            <div class="col-md-2 d-flex justify-content-end ">
                                 <a target="_blank" asp-action="ViewAssignmentPdf" asp-controller="Participation" asp-route-id="@item.AssignmentID" class="btn custom-btn mt-3 mt-lg-4">View Detail</a>
+                            </div>
+                            @if (User.IsInRole("Instructor"))
+                            {
+                                <div class="col-md-2">
+                                    <a asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment" asp-route-id="@item.AssignmentID" class="btn custom-btn active btn-warning mt-3 mt-lg-4">Edit Assignment </a>
                                 </div>
-                                @if(User.IsInRole("Instructor"))
-                                {
-                                     <div class="col-md-2">
-                                <a asp-area="Instructor" asp-controller="Assignment" asp-action="EditAssignment" asp-route-id="@item.AssignmentID" class="btn custom-btn active btn-warning mt-3 mt-lg-4">Edit Assignment </a>
-                                    </div>
                                 <div class="col-md-2">
                                     <a asp-area="Instructor" asp-action="ListAssignment" asp-controller="Assignment" asp-route-id="@item.AssignmentID" class="btn custom-btn active btn-success mt-3 mt-lg-4">View List Submited</a>
                                 </div>
@@ -73,21 +91,20 @@
                                     <a asp-area="Instructor" asp-action="DeleteAssignmentConfirmed" asp-controller="Assignment" asp-route-id="@item.AssignmentID" class="btn custom-btn active btn-danger mt-3 mt-lg-4">Remove Assignment</a>
 
                                 </div>
-                                }
+                            }
                             @if (User.IsInRole("Student"))
                             {
                                 <div class="col-md-3">
-                                    <a asp-area="Student" asp-controller="Assignment" asp-action="SubmitAssignment" asp-route-id="@item.AssignmentID"  class="btn custom-btn mt-3 mt-lg-4">Submit Assignment </a>
+                                    <a asp-area="Student" asp-controller="Assignment" asp-action="SubmitAssignment" asp-route-id="@item.AssignmentID" class="btn custom-btn mt-3 mt-lg-4">Submit Assignment </a>
                                 </div>
 
                             }
                         </div>
                     </div>
-                   
+
                 </div>
             </div>
             <!-- Edit Lecture Modal -->
-           
         }
     </form>
 </section>
@@ -102,7 +119,7 @@
             </div>
             <div class="modal-body">
                 <form id="newCourseForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Assignment" asp-action="CreateAssignment">
-                    
+
                     <div class="mb-3">
                         <label for="Title" class="form-label">Course Title</label>
                         <input type="text" class="form-control" name="Title" required>
@@ -115,7 +132,7 @@
                         <label for="DueDate" class="form-label">Due Date</label>
                         <input type="datetime-local" id="inputdate" class="form-control" name="DueDate" required>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="AssignmentLink" class="form-label">Upload File</label>
                         <input type="file" class="form-control" name="AssignmentLink" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple>
@@ -128,16 +145,16 @@
 </div>
 
 <script type="text/javascript">
-    $(function(){
+    $(function () {
         var dtToday = new Date();
 
         var month = dtToday.getMonth() + 1;
         var day = dtToday.getDate();
         var year = dtToday.getFullYear();
-        if(month < 10)
+        if (month < 10)
             month = '0' + month.toString();
-        if(day < 10)
-         day = '0' + day.toString();
+        if (day < 10)
+            day = '0' + day.toString();
         var maxDate = year + '-' + month + '-' + day;
         $('#inputdate').attr('min', maxDate);
     });

@@ -14,6 +14,7 @@ namespace OnlineLearningApp.Respositories
         { 
 
         }
+        public DbSet<LivestreamRecordModel> LivestreamRecord { get; set; }
         public DbSet<ScoreModel> Score { get; set; }
         public DbSet<QuestionModel> Question { get; set; }
         public DbSet<TestModel> Test {  get; set; }

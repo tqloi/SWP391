@@ -377,6 +377,26 @@ CREATE TABLE Report (
 );
 go
 
+CREATE TABLE LivestreamRecord 
+(
+	LivestreamRecordID INT PRIMARY KEY IDENTITY(1,1),
+	UserID NVARCHAR(450),
+	CreateDate DATETIME,
+	UpdateDate DATETIME
+	FOREIGN KEY (UserID) REFERENCES AspNetUsers(id) ON DELETE CASCADE
+);
+go
+ALTER TABLE LivestreamRecord
+ADD StreamKey NVARCHAR(255);
+Go
+ALTER TABLE LivestreamRecord
+ADD LivestreamId NVARCHAR(255);
+Go
+ALTER TABLE LivestreamRecord
+ADD Title NVARCHAR(255);
+Go
+Drop Table LivestreamRecord
+Go
 CREATE TRIGGER trg_DeleteChildComments
 ON Comment
 INSTEAD OF DELETE
