@@ -11,29 +11,25 @@
     var totalPage = Model.TotalPage;
 }
 
-<section class="topic-section" style="padding: 10px 50px; min-height: 100vh;">
-    <div class="d-flex justify-content-between mb-4">
-        @if (user.Id == currentCourse.InstructorID)
-        {
-            <div>
-                <button class="btn custom-btn active" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
-                    <i class="fas fa-plus new-icon me-1"></i> Add assignment
-                </button>
-            </div>
-        }
-        else
-        {
-            <div>
-               <h3>On going assignments</h3>
-            </div>
-        }
-    </div>
+<div class="container-fluid">
+    <div class="card shadow row m-3 mb-5">
+        <div class="d-flex justify-content-between align-items-center m-3">
+            <h4 class="mb-0">Assignments</h4>
+            @if (user.Id == currentCourse.InstructorID)
+            {
+                <div>
+                    <button class="btn custom-btn active me-4" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
+                        <i class="fas fa-plus new-icon me-1"></i> Add assignment
+                    </button>
+                </div>
+            }
+        </div>
     <div class="m-4">
         @if (Model.Assignments.Any())
         {
             @foreach (var item in Model.Assignments)
             {
-                <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
+                <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5" style="width: 1140px">
                     <div class="row d-flex">
                         <div class="col-md-2 me-3">
                             <img src="~/Images/asm.png" class="custom-block-image img-fluid ms-3" alt="" style="width: 100%; height: auto;">
@@ -217,13 +213,13 @@
         else
         {
             <div class="d-flex align-items-center justify-content-center" style="height: 60vh;">
-                <h4 class="text-muted">No assignments available</h4>
+                <h5 class="text-muted">No assignments available</h5>
             </div>
 
         }
     </div>
-
-</section>
+    </div>
+</div>
 
 <!-- Add Assignment Modal -->
 <div class="modal fade" id="createAssignmentModal" tabindex="-1" aria-labelledby="createCourseModalLabel" aria-hidden="true">

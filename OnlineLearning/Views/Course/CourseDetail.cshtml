@@ -87,9 +87,8 @@
                         </div>
                         <a class="me-3" href="#comments"><h7 class="text-white-50">(@Model.Course.NumberOfRate rates)</h7></a>
                     }
-                    <h7 class="text-white">@Model.Course.NumberOfStudents students</h7>
-                </div>
-                <h4 class="text-white">$@Model.Course.Price</h4>
+                    <h7 class="text-white">@Model.Course.NumberOfStudents students</h7>                </div>
+                <h4 class="text-white">@Model.Course.Price.ToString("N0") VNĐ</h4>
                 <h7 class="text-white">Create by: <a class="text-white-50" asp-area="" asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@Model.Course.InstructorID"> @Model.Course.Instructor?.AppUser?.FirstName @Model.Course.Instructor?.AppUser?.LastName</a></h7>
                 <h7 class="text-white d-flex mt-2 me-2">
                     Last Update: @Model.Course.LastUpdate.ToString("dd/MM/yyyy")

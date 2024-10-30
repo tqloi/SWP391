@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using OnlineLearning.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using OnlineLearning.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace OnlineLearning.Areas.Student.Controllers
 {
@@ -68,6 +69,14 @@ namespace OnlineLearning.Areas.Student.Controllers
             }
             TempData["error"] = "An error occurred while processing the payment. Please try again.";
             return View(model);
+        }
+
+        [ServiceFilter(typeof(CourseAccessFilter))]
+        public async Task<IActionResult> GradeList(int CourseID)
+        {
+            var course = await datacontext.Courses.FindAsync(CourseID);
+            ViewBag.Course = course;
+            return View();
         }
     }
 }

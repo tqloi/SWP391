@@ -9,10 +9,10 @@
 <div class="container-fluid">
     
 
-        <div class="card shadow row">
+        <div class="card shadow row m-3">
         <div class="d-flex justify-content-between align-items-center m-3">
             <h4 class="mb-0">Material</h4>
-            <a class="btn custom-btn active me-3" data-bs-toggle="modal" data-bs-target="#addMaterialModal">Add Material</a>
+            <a class="btn custom-btn active me-4" data-bs-toggle="modal" data-bs-target="#addMaterialModal">Add Material</a>
         </div>
             @if(Model != null && Model.Any()){
             @foreach (var material in Model)
@@ -39,12 +39,12 @@
                                 break;
                         }
                 <div class="card mb-3 p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center">
-                            <i class="@iconClass me-2"></i>
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center px-4">
+                            <i class="@iconClass me-3 fs-3"></i>
                             <a href="@material.MaterialsLink" class="btn-link" target="_blank">@material.FIleName</a>
                         </div>
-                        <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteMaterialModal">Delete</a>
+                        <a class="btn btn-danger me-3" data-bs-toggle="modal" data-bs-target="#deleteMaterialModal">Delete</a>
                     </div>
                 </div>
     
@@ -71,11 +71,13 @@
                 </div>
                 }
             }
-                else{
-            <div class="position-relative m-1 d-flex justify-content-center align-items-center" style="height: 200px;">
-                <p class="text-center text-muted">No material yet.</p>
+        else
+        {
+            <div class="d-flex align-items-center justify-content-center m-4" style="height: 60vh;">
+                <h5 class="text-muted">No assignments available</h5>
             </div>
-                }
+
+        }
                 
         </div>
 </div>
