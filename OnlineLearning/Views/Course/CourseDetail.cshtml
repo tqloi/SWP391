@@ -92,7 +92,7 @@
                 <h4 class="text-white">$@Model.Course.Price</h4>
                 <h7 class="text-white">Create by: <a class="text-white-50" asp-area="" asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@Model.Course.InstructorID"> @Model.Course.Instructor?.AppUser?.FirstName @Model.Course.Instructor?.AppUser?.LastName</a></h7>
                 <h7 class="text-white d-flex mt-2 me-2">
-                    Last Update: @Model.Course.LastUpdate
+                    Last Update: @Model.Course.LastUpdate.ToString("dd/MM/yyyy")
                 </h7>
                 @if (ViewBag.IsEnrolled || ViewBag.UserID == Model.Course.InstructorID)
                 {
@@ -102,26 +102,27 @@
                 }
                 else
                 {
-                    @if (@Model.Course.Status != false)
+                    if (!User.IsInRole("Instructor"))
                     {
-                        <div class="d-flex align-items-center mt-4">
-                            <!-- pay -->
-                            <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@Model.Course.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
-                            <!-- book mark -->
-                            <form asp-action="BookMark" asp-controller="Course" method="POST">
-                                <input type="hidden" name="returnUrl" value="@Url.Action("CourseDetail", "Course", new { CourseID = Model.Course.CourseID })">
-                                <input type="hidden" name="CourseID" value="@Model.Course.CourseID">
-                                <button type="submit" class="bg-transparent border-0 p-0 smoothscroll">
-                                    <i class="custom-icon bi @(Model.IsMark == true ? "bi-bookmark-fill" : "bi-bookmark") smoothscroll fs-1"></i>
-                                </button>
-                            </form>
-  
-                            @*  <a href="#top" class="custom-icon bi-bookmark-fill smoothscroll"></a> *@
-                        </div>
-                    }
-                    else
-                    {
-                        <h5 class="text-white mt-4">This course is not available now!</h5>
+                        if (@Model.Course.Status != false)
+                        {
+                            <div class="d-flex align-items-center mt-4">
+                                <!-- pay -->
+                                <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@Model.Course.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
+                                <!-- book mark -->
+                                <form asp-action="BookMark" asp-controller="Course" method="POST">
+                                    <input type="hidden" name="returnUrl" value="@Url.Action("CourseDetail", "Course", new { CourseID = Model.Course.CourseID })">
+                                    <input type="hidden" name="CourseID" value="@Model.Course.CourseID">
+                                    <button type="submit" class="bg-transparent border-0 p-0 smoothscroll">
+                                        <i class="custom-icon bi @(Model.IsMark == true ? "bi-bookmark-fill" : "bi-bookmark") smoothscroll fs-1"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                        else
+                        {
+                            <h5 class="text-white mt-4">This course is not available now!</h5>
+                        }
                     }
                 }
             </div>

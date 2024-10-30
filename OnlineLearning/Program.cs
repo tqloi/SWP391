@@ -113,9 +113,14 @@ builder.Services.AddSingleton<IVnPayService, VnPayService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-	app.UseExceptionHandler("/Home/Error");
+    app.UseDeveloperExceptionPage(); // Chỉ hiển thị trang lỗi chi tiết khi ở môi trường phát triển
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error"); // Sử dụng trang lỗi tổng quát trong môi trường sản xuất
+    app.UseHsts();
 }
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -143,6 +148,8 @@ app.MapAreaControllerRoute(
     areaName: "Student",
     pattern: "{area:exists}/{controller=Student}/{action=Index}/{id?}");
 
-
 app.MapHub<ChatHub>("/chatHub");
+//404
+app.UseStatusCodePagesWithReExecute("/Home/Error404");
+
 app.Run();

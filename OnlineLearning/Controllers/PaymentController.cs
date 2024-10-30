@@ -18,7 +18,7 @@ using System.Web.Helpers;
 namespace OnlineLearning.Controllers
 {
 
-    [Authorize(Roles = "Student, Instructor" )]
+    [Authorize(Roles = "Student,Instructor")]
     public class PaymentController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -40,6 +40,7 @@ namespace OnlineLearning.Controllers
             _vnPayservice = vnPayservice;
         }
         [HttpGet]
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> PaymentConfirmation(int CourseID)
         {
             var course = await datacontext.Courses
@@ -67,7 +68,8 @@ namespace OnlineLearning.Controllers
         }
 
         [HttpPost]
-            public async Task<IActionResult> PaymentConfirmation(PaymentViewModel model)
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> PaymentConfirmation(PaymentViewModel model)
             {
             var user = await _userManager.FindByIdAsync(model.UserID);
             
@@ -137,6 +139,7 @@ namespace OnlineLearning.Controllers
             }
 
         [Authorize]
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> PaymentRollBack()
         {
             var response = _vnPayservice.PaymentExecute(Request.Query);
@@ -213,17 +216,14 @@ namespace OnlineLearning.Controllers
             }
             return RedirectToAction("CourseDetail", "Course", new { CourseID = studentCourse.CourseID });
 
-
-
             
             }
              public IActionResult ErrorPayment()
             {
                 return View();
              }
+
         [HttpGet]
-        [Authorize]
-        
         public async Task<IActionResult> RequestWithdraw()
         {
 
@@ -238,6 +238,7 @@ namespace OnlineLearning.Controllers
             };
             return View(request);
         }
+
         [HttpPost]
         public async Task<IActionResult> RequestWithdraw(RequestTransferViewModel model)
         {
@@ -280,6 +281,7 @@ namespace OnlineLearning.Controllers
 
 
         }
+
         public async Task<IActionResult> ListRequest()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -310,6 +312,5 @@ namespace OnlineLearning.Controllers
         }
 
     }
-
-    }
+}
 

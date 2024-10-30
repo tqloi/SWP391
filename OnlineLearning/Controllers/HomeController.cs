@@ -46,7 +46,7 @@ namespace OnlineLearning.Controllers
             return View();
         }
 
-        public IActionResult ErrorPage()
+        public IActionResult Error404()
         {
             return View();
         }
