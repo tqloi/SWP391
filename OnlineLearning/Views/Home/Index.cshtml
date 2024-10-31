@@ -1,8 +1,10 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    Random random = new Random();
 }
 <partial name="_NoficationPartial" />
 @model ListViewModel
+
 
 <section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
     <div class="container">
@@ -37,11 +39,11 @@
 
             <div class="col-lg-4 col-12 mb-4 mb-lg-0">
                 <div class="custom-block bg-white shadow-lg">
-                    @{
-                        Random random = new Random();
+                    @if (Model.Courses != null && Model.Courses.Any())
+                    {            
                         int randomIndex = random.Next(Model.Courses.Count());
                         var randomCourse = Model.Courses.ElementAt(randomIndex);
-                    }
+                    
                     <a asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@randomCourse.CourseID">
                         <div class="d-flex">
                             <div>
@@ -55,6 +57,7 @@
 
                         <img src="@randomCourse.CoverImagePath" class="custom-block-image img-fluid" alt="">
                     </a>
+                    }
                 </div>
             </div>
 

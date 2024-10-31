@@ -37,6 +37,11 @@ namespace OnlineLearning.Controllers
         public async Task<IActionResult> CourseInfo(int CourseID)
         {
             var course = await datacontext.Courses.FindAsync(CourseID);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (course.InstructorID == userId)
+            {
+                return RedirectToAction("Dashboard", "Instructor", new { area = "Instructor", CourseID = CourseID });
+            }
 
             if (course == null)
             {

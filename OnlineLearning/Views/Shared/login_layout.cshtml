@@ -9,9 +9,29 @@
     <link rel="icon" type="image/png" href="~/Images/webLogo.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
 </head>
-<body>
+<body id="top">
+
+    <div class="loading-overlay" id="loading" style="display: none;">
+        <div class="loading">Loading...</div>
+    </div>
+
+
     <partial name="_NoficationPartial" />
+
     @RenderBody()
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const forms = document.querySelectorAll('form');
+
+            forms.forEach(form => {
+                form.addEventListener('submit', function () {
+                    document.getElementById('loading').style.display = 'block';
+                });
+            });
+        });
+    </script>
     @await Component.InvokeAsync("Notyf")
     @await RenderSectionAsync("Scripts", required: false)
 

@@ -74,7 +74,7 @@
         else
         {
             <div class="d-flex align-items-center justify-content-center m-4" style="height: 60vh;">
-                <h5 class="text-muted">No assignments available</h5>
+                <h5 class="text-muted">No materials available</h5>
             </div>
 
         }
@@ -86,14 +86,14 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addLectureModalLabel">Update Lecture</h5>
+                <h5 class="modal-title" id="addLectureModalLabel">Update Course</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="addLectureForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Material" asp-action="AddMaterial">
                     <input type="hidden" class="form-control" name="CourseID" value="@course.CourseID">
                     <div class="mb-3">
-                        <label for="LectureFile" class="form-label">Upload Lecture Documents</label>
+                        <label for="LectureFile" class="form-label">Upload Course Material</label>
                         <input type="file" class="form-control" name="CourseMaterial" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple>
                     </div>
                     

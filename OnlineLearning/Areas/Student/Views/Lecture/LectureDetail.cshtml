@@ -28,7 +28,7 @@
                 </form>
             </li>
             <li>
-                <a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#reportCourseModal">Report Lecture<i class="far fa-flag ms-2"></i></a>
+                <a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#reportLectureModal">Report Lecture<i class="far fa-flag ms-2"></i></a>
             </li>
         </ul>
     </h1>
@@ -136,29 +136,20 @@
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
-                    <div style="height: 450px; margin: -20px;margin-bottom: 35px; overflow-y: auto;">
+                    <div style="height: 400px; margin: -20px -20px 35px -10px; overflow-y: auto">
                         @await Component.InvokeAsync("Comment", new { lectureId = lectureID })
-                        <div class="border-top p-2 bg-white w-100" style="position: absolute; bottom: 0px; z-index: 1;">
-                            <form asp-action="Create" asp-controller="Comment" method="post" class="input-group mt-auto d-flex align-items-end">
-                                <input type="hidden" name="LectureID" value="@lecture.LectureID" />
+                    </div>
+                    <div class="border-top p-2 bg-white w-100" style="position: absolute; bottom: 0px; z-index: 1; margin-left: -20px">
+                        <form asp-action="Create" asp-controller="Comment" method="post" class="input-group mt-auto d-flex align-items-end">
+                            <input type="hidden" name="LectureID" value="@lecture.LectureID" />
 
-                                <label for="file-upload" class="btn btn-info mr-2 mt-auto active m-0 d-flex align-items-center" style="border-radius: 20px; height: 40px;"><i class="bi bi-plus-lg"></i></label>
-                                <input type="file" id="file-upload" class="d-none" name="File" accept=".mp4,.mov,.avi">
+                            <label for="file-upload" class="btn btn-info mr-2 mt-auto active m-0 d-flex align-items-center" style="border-radius: 20px; height: 40px;"><i class="bi bi-plus-lg"></i></label>
+                            <input type="file" id="file-upload" class="d-none" name="CommentFile" accept=".pdf,.doc,.docx,.ppt,.pptx, image/*" multiple>
 
-                                <textarea id="Content" type="text" name="Content" class="form-control" placeholder="Write your comment" rows="1" style="border-radius: 20px; resize: none;" required></textarea>
+                            <textarea id="Content" type="text" name="Content" class="form-control Comment-Content" placeholder="Write your comment" rows="1" style="border-radius: 20px; resize: none;" required></textarea>
 
-                                <button type="submit" class="btn btn-info ml-2 mt-auto" style="border-radius: 20px; height: 40px;"><i class="bi bi-send-fill"></i></button>
-                            </form>
-                        </div>
-                        <script>
-                            const textarea = document.getElementById('Content');
-
-                            // Tự động điều chỉnh chiều cao của textarea khi nhập liệu
-                            textarea.addEventListener('input', () => {
-                                textarea.style.height = 'auto'; // Đặt lại chiều cao trước khi tính toán
-                                textarea.style.height = `${textarea.scrollHeight}px`; // Đặt chiều cao dựa trên nội dung
-                            });
-                        </script>
+                            <button type="submit" class="btn btn-info ml-2 mt-auto" style="border-radius: 20px; height: 40px;"><i class="bi bi-send-fill"></i></button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -168,7 +159,7 @@
 </div>
 <!-- /.container-fluid -->
 <!-- Report Modal Form -->
-<div class="modal fade" id="reportCourseModal" tabindex="-1" aria-labelledby="reportCourseModalLabel" aria-hidden="true">
+<div class="modal fade" id="reportLectureModal" tabindex="-1" aria-labelledby="reportCourseModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -213,6 +204,7 @@
                             radioButton.addEventListener('change', function() {
                                 if (radioButton.value !== 'Other') {
                                     document.getElementById('otherReasonText').readOnly = true;
+                                    document.getElementById('otherReasonText').value = ''; 
                                 }
                             });
                         });
