@@ -208,6 +208,12 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 TempData["error"] = "Course not found!";
                 return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
             }
+            if (course.Status == false && course.IsBaned == true) 
+            {
+                TempData["warning"] = "Cannot enable because the course violates the terms!";
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            }
+
             if (course.Status == false)
             {
                 var lectures = await datacontext.Lecture.Where(l => l.CourseID == CourseId).ToArrayAsync();

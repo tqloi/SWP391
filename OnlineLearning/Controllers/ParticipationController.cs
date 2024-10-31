@@ -68,6 +68,32 @@ namespace OnlineLearning.Controllers
             var lectures = await datacontext.Lecture.Where(x => x.CourseID == CourseID) .ToListAsync();
             var completion = await datacontext.LectureCompletion.ToListAsync();
 
+            var assignments = await datacontext.Assignment.Where(x => x.CourseID == CourseID).ToListAsync();
+            var assignmentIds = assignments.Select(a => a.AssignmentID).ToList();
+            var scoreAssignments = await datacontext.ScoreAssignment
+                                   .Where(x => assignmentIds.Contains(x.AssignmentID) && x.StudentID == userId)
+                                   .ToListAsync();
+            double averageAssignmentScore = scoreAssignments.Any()
+                                          ? scoreAssignments.Average(x => x.Score)
+                                          : 0;
+
+            var tests = await datacontext.Test.Where(x => x.CourseID == CourseID).ToListAsync();
+            var testIDs = tests.Select(a => a.TestID).ToList();
+            var scoreTests = await datacontext.Score
+                                   .Where(x => testIDs.Contains(x.TestID) && x.StudentID == userId)
+                                   .ToListAsync();
+            double averageTestScore = scoreTests.Any()
+                                    ? scoreTests.Average(x => x.Score)
+                                    : 0; 
+
+            double overallAverageScore = (averageAssignmentScore + averageTestScore) / 2;
+
+            bool isPass = false;
+            if(studentCourse.Progress == 100 && overallAverageScore > 5)
+            {
+                isPass = true;
+            }
+
             var model = new CourseInfoViewModel
             {
                 Lectures = lectures,
