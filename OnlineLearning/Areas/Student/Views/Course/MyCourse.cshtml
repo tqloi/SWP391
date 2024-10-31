@@ -222,6 +222,7 @@
                                             radioButton.addEventListener('change', function () {
                                                 if (radioButton.value !== 'Other') {
                                                     document.getElementById('otherReasonText-@course.CourseID').readOnly = true;
+                                                    document.getElementById('otherReasonText-@course.CourseID').value = '';
                                                 }
                                             });
                                         });

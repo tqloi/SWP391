@@ -16,6 +16,7 @@ namespace OnlineLearning.Filter
             _context = context;
             _userManager = userManager;
         }
+
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
 
@@ -23,6 +24,13 @@ namespace OnlineLearning.Filter
             if (user == null)
             {
                 context.Result = new RedirectToActionResult("Login", "Account", null);
+                return;
+            }
+
+            if (!context.ActionArguments.ContainsKey("LectureID") || context.ActionArguments["LectureID"] == null)
+            {
+                // Chuyển hướng đến trang 404 nếu không tìm thấy CourseID
+                context.Result = new NotFoundResult();
                 return;
             }
 

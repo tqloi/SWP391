@@ -213,7 +213,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 var lectures = await datacontext.Lecture.Where(l => l.CourseID == CourseId).ToArrayAsync();
                 var tests = await datacontext.Test.Where(t => t.CourseID == CourseId).ToArrayAsync();
                 var assignments = await datacontext.Assignment.Where(a => a.CourseID == CourseId).ToArrayAsync();
-                if (!lectures.Any() || !tests.Any() || !assignments.Any())
+                var courseMaterials = await datacontext.CourseMaterials.Where(a => a.CourseID == CourseId).ToArrayAsync();
+                if (!lectures.Any() || !tests.Any() || !assignments.Any() || courseMaterials.Any()) 
                 {
                     TempData["warning"] = "Please add more course content";
                     return RedirectToAction("CourseInfo", "Participation", new { CourseID = CourseId });

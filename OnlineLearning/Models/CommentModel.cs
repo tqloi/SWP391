@@ -15,7 +15,7 @@ namespace OnlineLearning.Models
         [StringLength(450)]
         public string UserID { get; set; }  // Foreign key to Users table
 
-        [Column(TypeName = "text")]
+        [Column(TypeName = "nvarchar(max)")]
         public string Content { get; set; }
         public DateTime Timestamp { get; set; }
 

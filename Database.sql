@@ -201,7 +201,7 @@ CREATE TABLE Test (
     [Status] NVARCHAR(255),
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
-<<<<<<< HEAD
+
 ALTER TABLE Test
 ADD PassingScore FLOAT;
 
@@ -336,9 +336,9 @@ CREATE TABLE Comment (
     [Timestamp] DATETIME,
     ParentCmtId INT NULL,
 	 -- Foreign key to Comment (nullable for root comments)
-    FOREIGN KEY (lectureID) REFERENCES Lecture(lectureID),
+    FOREIGN KEY (lectureID) REFERENCES Lecture(lectureID) ON DELETE CASCADE,
     FOREIGN KEY (userID) REFERENCES AspNetUsers(Id),  -- Could be Student or Instructor
-    FOREIGN KEY (parentCmtId) REFERENCES Comment(commentID)
+    FOREIGN KEY (parentCmtId) REFERENCES Comment(commentID) 
 );
 ALTER TABLE Comment
 Alter column ParentCmtId INT NULL;
@@ -384,6 +384,7 @@ CREATE TABLE VideoCallInfo (
     FOREIGN KEY (SendID) REFERENCES AspNetUsers(id),
     FOREIGN KEY (ReceiveID) REFERENCES AspNetUsers(id)
 );
+go
 
 CREATE TRIGGER trg_DeleteChildComments
 ON Comment

@@ -29,6 +29,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(CourseAccessFilter))]
         public IActionResult Dashboard(int CourseID)
         {
             var course =  _dataContext.Courses.Find(CourseID);

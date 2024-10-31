@@ -31,7 +31,7 @@ namespace OnlineLearning.Resporitories.Components
             var commentFiles = await _dataContext.CommentFile.ToListAsync();
 
             var model = new ListCommentViewModel 
-            {
+            {       
                 Comments = comments,
                 CommentFiles = commentFiles,
                 LectureID = LectureID

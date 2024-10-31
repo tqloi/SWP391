@@ -30,13 +30,12 @@
             border-radius: 10px;
             padding: 10px;
             margin-top: 5px;
-            margin-right: 10px
         }
 
         .comment .comment-timestamp {
             font-size: 12px;
             color: #666;
-            margin-right: 15px
+            margin-right: 50px
         }
 
     .reply-link {
@@ -64,18 +63,42 @@ else
             ? comment.Timestamp.ToString("hh:mm tt").Replace("sa", "am").Replace("ch", "pm")
             : comment.Timestamp.ToString("hh:mm tt dd/MM/yyyy").Replace("sa", "am").Replace("ch", "pm");
 
-            <div class="comment">
+            <div class="comment" id="@comment.CommentID">
                 <!-- Avatar -->
                 <img src="@comment.User.ProfileImagePath" class="profile-pic" alt="User Avatar">
 
                 <!-- Comment content -->
                 <div class="content-container">
                     <div class="d-flex justify-content-between">
-                        <span class="fw-bold" style="font-size: 15px;">@comment.User.FirstName @comment.User.LastName</span>
+                        <span class="fw-bold" style="font-size: 15px;">
+                            @comment.User.FirstName @comment.User.LastName @(User.Identity.Name == comment.User.UserName ? "(me)" : "")
+                            </span>
                         <span class="comment-timestamp">@displaydate</span>
                     </div>
-                    <div class="content">
-                        @comment.Content
+                    <div class="d-flex align-items-center">
+                        <div class="content w-100">@comment.Content</div>
+                        <div>
+                            <button class="btn ml-auto" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                @if (User.Identity.Name == comment.User.UserName)
+                                {
+                                    <li class="mb-2">
+                                        <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editComment-@comment.CommentID">Edit</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteComment-@comment.CommentID">Delete</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#reportComment-@comment.CommentID">Report<i class="far fa-flag ms-2"></i></a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
                     </div>
                     <div>
                         <a href="javascript:void(0);" onclick="toggleReplyForm(@commentID)" class="reply-link">Reply</a>
@@ -98,7 +121,6 @@ else
                                 </button>
                             </form>
                         </div>
-
                         <script>
                             document.addEventListener('DOMContentLoaded', () => {
                                 // Lấy tất cả các textarea có class 'Content'
@@ -114,6 +136,85 @@ else
                                 });
                         </script>
                         @await Component.InvokeAsync("Comment", new { lectureId = LectureID, ParentCommentID = commentID })
+                    </div>
+                </div>
+            </div>
+            <!-- Modal Edit Comment -->
+            <div class="modal fade" id="editComment-@comment.CommentID" tabindex="-1" aria-labelledby="editCmtLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editCmtLabel">Edit Comment</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form asp-action="Update" asp-controller="Comment" method="post">
+                                <input type="hidden" name="CommentID" value="@comment.CommentID" />
+                                <div class="mb-3">
+                                    <label for="editContent" class="form-label">Content</label>
+                                    <textarea id="editContent" name="Content" class="form-control" rows="3" required>@comment.Content</textarea>
+                                </div>
+                                <button type="submit" class="btn custom-btn">Save changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal Delete Comment -->
+            <div class="modal fade" id="deleteComment-@comment.CommentID" tabindex="-1" aria-labelledby="deleteCmtLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteCmtLabel">Delete Comment</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Your comment will be permanently deleted. </p>
+                        </div>
+                        <div class="modal-footer">
+                            <form asp-action="Delete" asp-controller="Comment" method="post">
+                                <input type="hidden" name="CommentID" value="@comment.CommentID" />
+                                <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn custom-btn">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal Report Comment -->
+            <div class="modal fade" id="reportComment-@comment.CommentID" tabindex="-1" aria-labelledby="reportCommentModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reportCommentModalLabel">Report Comment</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="reportCommentForm-@comment.CommentID" method="post" asp-controller="Report" asp-action="ReportComment">
+                                <input type="hidden" name="CommentID" value="@comment.CommentID">
+                                <p>Please select the reason for reporting this comment:</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="CommentReason" id="commentReason1-@comment.CommentID" value="Inappropriate content" required>
+                                    <label class="form-check-label" for="commentReason1-@comment.CommentID">Inappropriate content</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="CommentReason" id="commentReason2-@comment.CommentID" value="Offensive language" required>
+                                    <label class="form-check-label" for="commentReason2-@comment.CommentID">Offensive language</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="CommentReason" id="commentReason8-@comment.CommentID" value="Copyright violation" required>
+                                    <label class="form-check-label" for="commentReason8-@comment.CommentID">Copyright violation</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="CommentReason" id="commentReason4-@comment.CommentID" value="Misleading information" required>
+                                    <label class="form-check-label" for="commentReason4-@comment.CommentID">Misleading information</label>
+                                </div>
+                                <div class="mt-3 text-end">
+                                    <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn custom-btn">Submit Report</button>
+                                </div>               
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

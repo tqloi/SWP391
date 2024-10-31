@@ -67,7 +67,7 @@ namespace OnlineLearning.Controllers
                 {
                     UserID = userId,
                     Subject = "LECTURE REPORT",
-                    Comment = $"Course [{course.Title}] : Lecture [{lecture.Title}] : {Reason}",
+                    Comment = $"Course [{course.Title}] / Lecture [{lecture.Title}] : {Reason}",
                     FeedbackDate = DateTime.Now,
                 };
                 _dataContext.Report.Add(feedback);
@@ -82,6 +82,38 @@ namespace OnlineLearning.Controllers
             }
 
             return RedirectToAction("LectureDetail", "Lecture", new { area = "Student", LectureID = LectureID });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReportComment(int CommentID, string CommentReason)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var comment = await _dataContext.Comment.FindAsync(CommentID);
+            var lecture = await _dataContext.Lecture.FindAsync(comment.LectureID);
+            var course = await _dataContext.Courses.FindAsync(lecture.CourseID);
+            var owner = await _userManager.FindByIdAsync(comment.UserID);
+
+            try
+            {
+                var feedback = new ReportModel
+                {
+                    UserID = userId,
+                    Subject = "COMMENT REPORT",
+                    Comment = $"Course [{course.Title}] / Lecture [{lecture.Title}] / User [{owner.UserName}] 's comment : {CommentReason}",
+                    FeedbackDate = DateTime.Now,
+                };
+                _dataContext.Report.Add(feedback);
+                await _dataContext.SaveChangesAsync();
+
+                TempData["success"] = "Feedback has been submitted successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = "Failed to submit feedback. Please try again later.";
+                return RedirectToAction("MyCourse", "Course", new { area = "Student" });
+            }
+
+            return RedirectToAction("LectureDetail", "Participation", new {LectureID = comment.LectureID });
         }
     }
 }
