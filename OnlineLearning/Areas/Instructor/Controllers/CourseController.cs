@@ -111,7 +111,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             TempData["success"] = "Course created successfully!";
             //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-            return RedirectToAction("CourseInfo", "Participation", new { CourseID = newCourseId });
+            return RedirectToAction("Dashboard", "Instructor", new { area = "Instructor", CourseID = newCourseId });
         }
 
         [HttpPost]
@@ -214,10 +214,10 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 var tests = await datacontext.Test.Where(t => t.CourseID == CourseId).ToArrayAsync();
                 var assignments = await datacontext.Assignment.Where(a => a.CourseID == CourseId).ToArrayAsync();
                 var courseMaterials = await datacontext.CourseMaterials.Where(a => a.CourseID == CourseId).ToArrayAsync();
-                if (!lectures.Any() || !tests.Any() || !assignments.Any() || courseMaterials.Any()) 
+                if (!lectures.Any() || !tests.Any() || !assignments.Any() || !courseMaterials.Any()) 
                 {
                     TempData["warning"] = "Please add more course content";
-                    return RedirectToAction("CourseInfo", "Participation", new { CourseID = CourseId });
+                    return RedirectToAction("Dashboard", "Instructor", new { area = "Instructor", CourseID = CourseId });
                 }
             }
 

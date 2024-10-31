@@ -62,6 +62,7 @@ CREATE TABLE Courses (
     CategoryID INT,
     [Level] NVARCHAR(50) CHECK (level IN ('Beginner', 'Intermediate', 'Advanced')),
     [Status] BIT NOT NULL DEFAULT 1, -- true: active, false: inactive
+	IsBan BIT NOT NULL DEFAULT 1,
 	CreateDate DATE,
 	LastUpdate DATE,
 	EndDate DATE,
@@ -71,7 +72,8 @@ CREATE TABLE Courses (
     FOREIGN KEY (instructorID) REFERENCES Instructors(InstructorID) ON DELETE SET NULL  -- Foreign key to Instructor (userID from User)
 );
 alter table Courses
-ADD Rating FLOAT NULL;
+ADD IsBan BIT NOT NULL DEFAULT 0;
+
 alter table Courses
 Alter column Price DECIMAL(10,1);
 go
