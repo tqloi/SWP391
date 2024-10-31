@@ -48,8 +48,37 @@ namespace OnlineLearning.Controllers
                 return NotFound();
             }
 
+            var totalCourses = await datacontext.Courses
+                               .Where(c => c.InstructorID == course.InstructorID)
+                               .CountAsync();
+            var totalStudents = await datacontext.StudentCourses
+                               .Where(sc => sc.Course.InstructorID == course.InstructorID)
+                               .Select(sc => sc.StudentID)
+                               .Distinct()
+                               .CountAsync();
+            var studentCourse = await datacontext.StudentCourses
+                               .Where(x => x.CourseID == CourseID && x.StudentID == userId)
+                               .Include(x => x.Course) 
+                               .ThenInclude(x => x.Category)
+                               .Include(x => x.Course)
+                               .ThenInclude(x => x.Instructor)
+                               .ThenInclude(x => x.AppUser)
+                               .FirstOrDefaultAsync(); 
+
+            var lectures = await datacontext.Lecture.Where(x => x.CourseID == CourseID) .ToListAsync();
+            var completion = await datacontext.LectureCompletion.ToListAsync();
+
+            var model = new CourseInfoViewModel
+            {
+                Lectures = lectures,
+                Completion = completion,
+                StudentCourse = studentCourse,
+                TotalCourse = totalCourses,
+                TotalStudent = totalStudents
+            };
+
             ViewBag.Course = course;
-            return View(course);
+            return View(model);
         }
 
 

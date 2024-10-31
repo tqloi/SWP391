@@ -201,22 +201,43 @@ namespace OnlineLearning.Controllers
                 return NotFound();
             }
 
-            var model = new InstructorProfileViewModel
+            bool isInstructor = await _userManager.IsInRoleAsync(user, "Instructor");
+            bool isStudent = await _userManager.IsInRoleAsync(user, "Student");
+
+            if (isInstructor)
             {
-                UserId = user.Id,
-                UserName = user.UserName,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                ExistingProfileImagePath = user.ProfileImagePath,
-                Address = user.Address,
-                Dob = user.Dob,
-                gender = user.Gender,
-
-            };
-
-            return View(model);
+                var totalCourses = await datacontext.Courses
+                      .Where(c => c.InstructorID == id)
+                      .CountAsync();
+                var totalStudents = await datacontext.StudentCourses
+                                   .Where(sc => sc.Course.InstructorID == id)
+                                   .Select(sc => sc.StudentID)
+                                   .Distinct()
+                                   .CountAsync();
+                var instructor = await datacontext.Instructors.FindAsync(id);
+                var model = new InstructorProfileViewModel
+                {
+                    User = user,
+                    Instructor = instructor,
+                    TotalCourse = totalCourses,
+                    TotalStudent = totalStudents,
+                    Role = "INSTRUCTOR"
+                };
+                return View(model);
+            }
+            else if (isStudent)
+            {
+                var model = new InstructorProfileViewModel
+                {
+                    User = user,
+                    Role = "STUDENT"
+                };
+                return View(model);
+            }
+            else 
+            { 
+                return NotFound(); 
+            }
         }
 
         [HttpGet]

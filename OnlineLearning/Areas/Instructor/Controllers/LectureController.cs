@@ -29,6 +29,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             _userManager = userManager;
             _fileService = fileService;
         }
+
+        // CRUD LECTURE
         [HttpPost]
         public async Task<IActionResult> Create(LectureViewModel model)
         {
@@ -112,7 +114,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             {
                 TempData["success"] = "Added Failed!";
                 //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-                return RedirectToAction("CourseInfo", "Participation", new { CourseID = model.CourseID });
+                return RedirectToAction("Dashboard", "Instructor", new { area = "Instructor", CourseID = model.CourseID });
             }
         }
 
@@ -176,6 +178,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             _dataContext.Comment.Remove(comment);
         }
 
+        // LECTUREFILE
         [HttpPost]
         public async Task<IActionResult> UploadLectureFile(IFormFileCollection LectureFile, int LectureID)
         {
@@ -265,6 +268,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = LectureID });
         }
 
+        // LECTURE VIEW
         [HttpPost]
         public async Task<IActionResult> DeleteLectureFile(int LectureFileID, int LectureID)
         {

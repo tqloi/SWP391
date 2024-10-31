@@ -1,164 +1,181 @@
-﻿@{
+﻿@model CourseInfoViewModel
+@{
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
     <partial name="_NoficationPartial" />
+
+    var studentCourse = Model.StudentCourse;
+    var lectures = Model.Lectures;
+    var completions = Model.Completion;
 }
 
-@{
-    var currentCourse = ViewBag.Course as CourseModel;
-    var courseID = currentCourse.CourseID;
-}
+<style>
+    .list-unstyled .icon {
+        width: 40px;
+    }
+
+    .list-unstyled .label {
+        width: 200px;
+        text-align: left;
+    }
+
+    .list-unstyled .text {
+        width: 100%;
+        text-align: left;
+    }
+
+    .list-unstyled .btn-icon-split {
+        display: flex; /* Để các phần tử bên trong nằm ngang */
+        align-items: center; /* Căn giữa theo chiều dọc */
+    }
+
+    .list-unstyled .text-white-50 {
+        color: rgba(255, 255, 255, 0.5); /* Màu chữ nửa trong suốt */
+    }
+
+    .avatar {
+        width: 175px; 
+        height: 175px;
+        object-fit: cover; 
+    }
+</style>
 
 <div class="container-fluid">
 
-    <h1 class="h3 mb-4 text-gray-800">Buttons</h1>
+    <h1 class="h3 mb-4 text-gray-800">Welcome to @studentCourse.Course.Title</h1>
     <div class="row">
         <div class="col-lg-7">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Circle Buttons</h6>
+                    <h6 class="m-0 font-weight-bold text-info">Course Infomation</h6>
                 </div>
                 <div class="card-body">
                     <p>
-                        Use Font Awesome Icons (included with this theme package) along with the circle
-                        buttons as shown in the examples below!
+                        @studentCourse.Course.Description
                     </p>
-                    <div class="mb-2">
-                        <code>.btn-circle</code>
+                    <div class="row d-flex align-items-center">
+                        <div class="col-md-4 d-flex justify-content-center">
+                            <img src="@studentCourse.Course.CoverImagePath" alt="Avatar" class="avatar rounded-2">
+                        </div>
+                        <div class="col-md-8">
+                            <ul class="list-unstyled">
+                                <li>
+                                    <strong>Instructor</strong> @studentCourse.Course.Instructor.AppUser.FirstName @studentCourse.Course.Instructor.AppUser.LastName
+                                </li>
+                                <li>
+                                    <strong>Created on</strong> @studentCourse.Course.CreateDate.ToShortDateString()
+                                </li>
+                                <li>
+                                    <strong>Last Update:</strong> @studentCourse.Course.LastUpdate.ToShortDateString()
+                                </li>
+                                <li>
+                                    <strong>Number of Students:</strong> @studentCourse.Course.NumberOfStudents
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                    <a href="#" class="btn btn-primary btn-circle">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="#" class="btn btn-success btn-circle">
-                        <i class="fas fa-check"></i>
-                    </a>
-                    <a href="#" class="btn btn-info btn-circle">
-                        <i class="fas fa-info-circle"></i>
-                    </a>
-                    <a href="#" class="btn btn-warning btn-circle">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </a>
-                    <a href="#" class="btn btn-danger btn-circle">
-                        <i class="fas fa-trash"></i>
-                    </a>
-                    <div class="mt-4 mb-2">
-                        <code>.btn-circle .btn-sm</code>
-                    </div>
-                    <a href="#" class="btn btn-primary btn-circle btn-sm">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="#" class="btn btn-success btn-circle btn-sm">
-                        <i class="fas fa-check"></i>
-                    </a>
-                    <a href="#" class="btn btn-info btn-circle btn-sm">
-                        <i class="fas fa-info-circle"></i>
-                    </a>
-                    <a href="#" class="btn btn-warning btn-circle btn-sm">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </a>
-                    <a href="#" class="btn btn-danger btn-circle btn-sm">
-                        <i class="fas fa-trash"></i>
-                    </a>
-                    <div class="mt-4 mb-2">
-                        <code>.btn-circle .btn-lg</code>
-                    </div>
-                    <a href="#" class="btn btn-primary btn-circle btn-lg">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="#" class="btn btn-success btn-circle btn-lg">
-                        <i class="fas fa-check"></i>
-                    </a>
-                    <a href="#" class="btn btn-info btn-circle btn-lg">
-                        <i class="fas fa-info-circle"></i>
-                    </a>
-                    <a href="#" class="btn btn-warning btn-circle btn-lg">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </a>
-                    <a href="#" class="btn btn-danger btn-circle btn-lg">
-                        <i class="fas fa-trash"></i>
-                    </a>
+                    <div class="my-4"></div>
+                    <ul class="list-unstyled">
+                        <li>
+                            <div class="btn btn-success btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-star"></i> <!-- Icon cho level -->
+                                </span>
+                                <span class="label icon text-white-50 mr-auto">Level</span>
+                                <span class="text">@studentCourse.Course.Level</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="btn btn-info btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-th-list"></i> <!-- Icon cho category -->
+                                </span>
+                                <span class="label icon text-white-50 mr-auto">Category</span>
+                                <span class="text">@studentCourse.Course.Category.FullName</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="btn btn-primary btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-video"></i> <!-- Icon cho total lectures -->
+                                </span>
+                                <span class="label icon text-white-50 mr-auto">Lectures</span>
+                                <span class="text">@lectures.Count()</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="btn btn-warning btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-video"></i> <!-- Icon cho total lectures -->
+                                </span>
+                                <span class="label icon text-white-50 mr-auto">Assigments</span>
+                                <span class="text">N/A</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="btn btn-danger btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-video"></i> <!-- Icon cho total lectures -->
+                                </span>
+                                <span class="label icon text-white-50 mr-auto">Tests</span>
+                                <span class="text">N/A</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="btn btn-secondary btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-chart-line"></i> <!-- Icon cho progress -->
+                                </span>
+                                <span class="label icon text-white-50 mr-auto">Progress</span>
+                                <span class="text">@studentCourse.Progress%</span> <!-- Bạn có thể tính toán phần trăm tiến độ -->
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Brand Buttons</h6>
+                    <h6 class="m-0 font-weight-bold text-info">Instructor</h6>
                 </div>
-                <div class="card-body">
-                    <p>
-                        Google and Facebook buttons are available featuring each company's respective
-                        brand color. They are used on the user login and registration pages.
-                    </p>
-                    <a href="#" class="btn btn-primary btn-icon-split">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-flag"></i>
-                        </span>
-                        <span class="text">Split Button Primary</span>
-                    </a>
-                    <div class="my-2"></div>
-                    <a href="#" class="btn btn-success btn-icon-split">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-check"></i>
-                        </span>
-                        <span class="text">Split Button Success</span>
-                    </a>
-                    <div class="my-2"></div>
-                    <a href="#" class="btn btn-info btn-icon-split">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-info-circle"></i>
-                        </span>
-                        <span class="text">Split Button Info</span>
-                    </a>
-                    <div class="my-2"></div>
-                    <a href="#" class="btn btn-warning btn-icon-split">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </span>
-                        <span class="text">Split Button Warning</span>
-                    </a>
-                    <div class="my-2"></div>
-                    <a href="#" class="btn btn-danger btn-icon-split">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-trash"></i>
-                        </span>
-                        <span class="text">Split Button Danger</span>
-                    </a>
-                    <div class="my-2"></div>
-                    <a href="#" class="btn btn-secondary btn-icon-split">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                        <span class="text">Split Button Secondary</span>
-                    </a>
-                    <div class="my-2"></div>
-                    <a href="#" class="btn btn-light btn-icon-split">
-                        <span class="icon text-gray-600">
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                        <span class="text">Split Button Light</span>
-                    </a>
-                    <div class="mb-4"></div>
-                    <p>Also works with small and large button classes!</p>
-                    <a href="#" class="btn btn-primary btn-icon-split btn-sm">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-flag"></i>
-                        </span>
-                        <span class="text">Split Button Small</span>
-                    </a>
-                    <div class="my-2"></div>
-                    <a href="#" class="btn btn-primary btn-icon-split btn-lg">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-flag"></i>
-                        </span>
-                        <span class="text">Split Button Large</span>
-                    </a>
-                    <a href="#" class="btn btn-google btn-block">
-                        <i class="fab fa-google fa-fw"></i>
-                        .btn-google
-                    </a>
-                    <a href="#" class="btn btn-facebook btn-block">
-                        <i class="fab fa-facebook-f fa-fw"></i> .btn-facebook
-                    </a>
-
+                <div class="card-body">                 
+                    <div class="row d-flex align-items-start">
+                        <div class="col-md-4 d-flex justify-content-center py-2">
+                            <img src="@studentCourse.Course.Instructor.AppUser.ProfileImagePath" alt="Avatar" class="avatar rounded-circle ml-4">
+                        </div>
+                        <div class="col-md-8">
+                            <ul style="list-style-type: none;">
+                                <li class="my-2"></li>
+                                <li>
+                                    <strong>Name:</strong> @studentCourse.Course.Instructor.AppUser.FirstName @studentCourse.Course.Instructor.AppUser.LastName
+                                </li>
+                                <li class="my-2"></li>
+                                <li>
+                                    <strong>Email:</strong> @studentCourse.Course.Instructor.AppUser.Email
+                                </li>
+                                <li class="my-2"></li>
+                                <li>
+                                    <strong>Description:</strong> @studentCourse.Course.Instructor.Description
+                                </li>
+                                <li class="my-2"></li>
+                                <li>
+                                    <strong>Number of course:</strong> @Model.TotalCourse
+                                </li>
+                                <li class="my-2"></li>
+                                <li>
+                                    <strong>Number of student:</strong> @Model.TotalStudent
+                                </li>
+                                <li class="my-3"></li>
+                                <li>
+                                    <a asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@studentCourse.Course.Instructor.AppUser.Id" class="btn btn-info btn-icon-split">
+                                        <span class="icon text-white-50">
+                                            <i class="bi bi-person-fill"></i>
+                                        </span>
+                                        <span class="text">View Profile</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -168,22 +185,36 @@
 
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Split Buttons with Icon</h6>
+                    <h6 class="m-0 font-weight-bold text-info">Lectures</h6>
                 </div>
                 <div class="card-body">
                     <p>
-                        Works with any button colors, just use the <code>.btn-icon-split</code> class and
-                        the markup in the examples below. The examples below also use the
-                        <code>.text-white-50</code> helper class on the icons for additional styling,
-                        but it is not required.
+                        To receive the certificate
+                        you must complete all the lectures
+                        and have an average score of 5 or above.
                     </p>
-                    <a href="#" class="btn btn-primary btn-icon-split btn-lg">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-flag"></i>
-                        </span>
-                        <span class="text">Split Button Large</span>
-                    </a>
-                    @Html.Partial("_SideLecture", courseID)
+                    @{
+                        int index = 1; 
+                    }
+                    @foreach (var lecture in lectures)
+                    {
+                        var completion = completions.FirstOrDefault(p => p.LectureID == lecture.LectureID && p.UserID == studentCourse.StudentID);
+                        var lectureTitle = lecture.Title.Length > 35 ? lecture.Title.Substring(0, 35) + "..." : lecture.Title;
+
+                        <a asp-action="LectureDetail" asp-controller="Lecture" asp-area="Student" asp-route-LectureID="@lecture.LectureID" class="btn btn-light btn-icon-split w-100 d-flex justify-content-between">
+                            <div>
+                            <span class="icon text-gray-600 mr-auto">
+                                <i class="fas fa-graduation-cap"></i>
+                            </span>
+                            <span class="text mr-auto">@index. @lectureTitle</span>
+                            </div>
+                            <span class="ml-auto icon @(completion == null ? " text-light" : "text-xbox") bg-light">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </a>
+                        <div class="my-2"></div>
+                        index++;
+                    }
                 </div>
             </div>
         </div>
