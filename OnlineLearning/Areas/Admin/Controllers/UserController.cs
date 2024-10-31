@@ -140,7 +140,7 @@ namespace OnlineLearning.Areas.Admin.Controllers
 
             return View(confirmation);
         }
-
+        [HttpPost]
         public async Task<IActionResult> ChangeRoleToInstructor(string Id)
         {
             var user = await _userManager.FindByIdAsync(Id);
@@ -179,6 +179,11 @@ namespace OnlineLearning.Areas.Admin.Controllers
             list.Courses = await _dataContext.Courses.Where(u => u.Title.Contains(search)).ToListAsync();
             list.Users = await _dataContext.Users.Where(i => i.FirstName.Contains(search) || i.LastName.Contains(search) || search.Equals(i.FirstName + " " + i.LastName)).ToListAsync();
             return View(list);
+        }
+        public async Task<IActionResult> ReportList()
+        {
+           var report = await _dataContext.Report.Where(r => r.Subject.StartsWith("LECTURE") || r.Subject.StartsWith("Course")).Include(r => r.User).OrderByDescending(r => r.FeedbackDate).ToListAsync();
+           return View(report);
         }
 
     }

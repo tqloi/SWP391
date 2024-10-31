@@ -9,6 +9,7 @@ using OnlineLearning.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using OnlineLearning.Services;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearning.Areas.Student.Models.ViewModel;
 
 namespace OnlineLearning.Areas.Student.Controllers
 {
@@ -76,7 +77,22 @@ namespace OnlineLearning.Areas.Student.Controllers
         {
             var course = await datacontext.Courses.FindAsync(CourseID);
             ViewBag.Course = course;
-            return View();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var testScore = await datacontext.Score.Where(t => t.StudentID.Equals(user.Id)).Include(t => t.Test).ToListAsync();
+            var assignmentScore = await datacontext.ScoreAssignment.Where(a => a.StudentID.Equals(user.Id)).Include(a => a.Assignment).ToListAsync();
+            var model = new GradeListViewModel
+            {
+                scoretests = testScore,
+                scoreAssignments = assignmentScore
+            };
+
+            return View(model);
         }
+        
     }
 }

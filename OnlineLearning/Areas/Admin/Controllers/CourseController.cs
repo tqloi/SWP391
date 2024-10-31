@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,18 @@ namespace OnlineLearning.Areas.Admin.Controllers
             var courses = await _dataContext.Courses.Include(c => c.Instructor).ThenInclude(i => i.AppUser).ToListAsync();
             return View(courses);
         }
-
+        public async Task<IActionResult> GetCourse(string Comment)
+        {
+            var match = Regex.Match(Comment, @"\[(.*?)\]");
+            var coursename = "";
+            if (match.Success)
+            {
+                var result = match.Groups[1].Value;
+                coursename = result.ToString();
+            }
+            var course = await _dataContext.Courses.Where(c => c.Title.Equals(coursename)).ToListAsync();
+            return View(course);
+        }
         public async Task<IActionResult> SetStatusCourse(int Id)
         {
             var course = await _dataContext.Courses.FindAsync(Id);

@@ -73,6 +73,8 @@ CREATE TABLE Courses (
 alter table Courses
 ADD Rating FLOAT NULL;
 alter table Courses
+ADD IsBan Bit NOT NULL;
+alter table Courses
 Alter column Price DECIMAL(10,1);
 go
 
@@ -235,6 +237,8 @@ ADD ScoreID INT PRIMARY KEY IDENTITY(1,1)
 
 ALTER TABLE Score 
 ALTER COLUMN Score FLOAT;
+ALTER TABLE Score 
+add DoTestAt Datetime;
 
 ALTER TABLE Score
 ADD NumberOfAttempt INT
