@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User 1</title>
-
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
     <style>
         #video-container {
@@ -49,9 +49,9 @@
         <div class="row">
 
             <div class="col-12">
-                <div class="jumbotron">
+                <div class="jumbotron" style="height: 109.6px;">
                     <div class="container">
-                        
+                        @Model.FullNameReceive
                         <div id="incoming-call-notice" style="display: none;">
                             <div class="spinner-grow text-primary" role="status">
                                 <span class="sr-only">Incoming call...</span>
@@ -62,9 +62,9 @@
 
                 </div>
 
-                <div id="video-container">
-                    <video id="localVideo" autoplay muted></video>
-                    <video id="remoteVideo" autoplay style="height: 100%; width:100%;"></video>
+                <div id="video-container" style="height: 516.8px; transition: none;"> 
+                    <video id="localVideo" style="width: 220.8px; left: 670px; top: 11px; height: 114.8px; transform: translate(0px, -17.6px); transition: none;" autoplay muted></video>
+                    <video id="remoteVideo" style="height: 528.8px; width: 1173.6px; transform: translate(-266.4px, -20.8px); transition: none;" autoplay style="height: 100%; width:100%;"></video>
                 </div>
 
             </div>
@@ -73,7 +73,7 @@
 
         <div class="row">
             <div class="col" id="action-buttons">
-                <button id="callButton" class="btn btn-success">Call</button>
+                <button id="callButton" class="btn btn-success"><i class="fa fa-phone" aria-hidden="true"></i></button>
                 <button id="answerCallButton" class="btn btn-info hidden-first">Answer Call</button>
                 <button id="rejectCallButton" class="btn btn-warning hidden-first">Reject Call</button>
                 <button id="endCallButton" class="btn btn-danger hidden-first">End Call</button>

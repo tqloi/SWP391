@@ -9,14 +9,14 @@
 <div class="container-fluid">
     
 
-        <div class="card shadow row">
+        <div class="card shadow row m-3">
             <div class="m-3">
                 <h4>Material</h4>
             </div>
             @if(Model != null && Model.Any()){
             @foreach (var mateial in Model)
             {
-                    
+            
                         string iconClass = "";
 
                         switch (mateial.fileExtension.ToLower())
@@ -37,18 +37,19 @@
                                 iconClass = "fas fa-file";
                                 break;
                         }
-                        <div class="position-relative mb-2">
-                            <i class="@iconClass me-2 ms-2"></i>
+                        <div class="position-relative mb-2 px-4 mb-3">
+                            <i class="@iconClass me-2 ms-2 fs-3"></i>
                     <a href="@mateial.MaterialsLink" class="btn-link" target="_blank">@mateial.FIleName</a>
                         </div>
                     
                 }
             }
-                else{
-            <div class="position-relative m-1 d-flex justify-content-center align-items-center" style="height: 200px;">
-                <p class="text-center text-muted">No material yet.</p>
+        else
+        {
+            <div class="d-flex align-items-center justify-content-center m-4" style="height: 60vh;">
+                <h5 class="text-muted">No materials available</h5>
             </div>
-                }
-                
+
+        }
         </div>
 </div>

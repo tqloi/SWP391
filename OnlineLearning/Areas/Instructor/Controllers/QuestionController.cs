@@ -13,24 +13,27 @@ using System.IO;
 using static System.Net.Mime.MediaTypeNames;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using OnlineLearning.Controllers;
+using OnlineLearning.Services;
 
-namespace OnlineLearning.Controllers
+namespace OnlineLearning.Areas.Instructor.Controllers
 {
     [Authorize]
+    [Area("Instructor")]
+    [Route("Instructor/[controller]/[action]")]
     public class QuestionController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly DataContext datacontext;
-        private UserManager<AppUserModel> _userManager;
-        private SignInManager<AppUserModel> _signInManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public QuestionController(ILogger<HomeController> logger, DataContext context, SignInManager<AppUserModel> signInManager, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment)
+        private readonly FileService _fileService;
+        public QuestionController(ILogger<HomeController> logger, DataContext context, IWebHostEnvironment webHostEnvironment, FileService fileService)
         {
             datacontext = context;
             _logger = logger;
-            _signInManager = signInManager;
+            _fileService = fileService;
             _webHostEnvironment = webHostEnvironment;
-            _userManager = userManager;
+
         }
         public IActionResult Index()
         {
@@ -38,18 +41,7 @@ namespace OnlineLearning.Controllers
         }
 
         [Authorize(Roles = "Instructor")]
-        public IActionResult CreateQuestionRedirector(int TestID)
-        {
-            ViewBag.TestID = TestID;
-            TestModel test = datacontext.Test.Find(TestID);
-            ViewBag.CourseID = test.CourseID;
-            ViewBag.Test = test;
-            var course = datacontext.Courses.Find(test.CourseID);
-            ViewBag.Course = course;
-            return View("CreateQuestion");
-        }
-
-        [Authorize(Roles = "Instructor")]
+        [Area("Instructor")]
         public IActionResult EditQuestionRedirector(int TestID)
         {
             ViewBag.TestID = TestID;
@@ -62,6 +54,18 @@ namespace OnlineLearning.Controllers
                 .Where(t => t.TestID == TestID)
                 .ToList();
             return View("ViewQuestionsToEdit", list);
+        }
+        [Authorize(Roles = "Instructor")]
+        [Area("Instructor")]
+        public IActionResult CreateQuestionRedirector(int TestID)
+        {
+            ViewBag.TestID = TestID;
+            TestModel test = datacontext.Test.Find(TestID);
+            ViewBag.CourseID = test.CourseID;
+            ViewBag.Test = test;
+            var course = datacontext.Courses.Find(test.CourseID);
+            ViewBag.Course = course;
+            return View("CreateQuestion");
         }
 
         [Authorize(Roles = "Instructor")]
@@ -92,28 +96,25 @@ namespace OnlineLearning.Controllers
                 Test = model.Test,
                 QuestionID = model.QuestionID,
                 Question = model.QuestionText,
-                
+
                 //  ImagePath=model.ImagePath, null for now
             };
             if (model.QuestionImage != null)
             {
-                string uploadpath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "QuestionImages");
-                string imagename = Guid.NewGuid() + "_" + model.QuestionImage.FileName;
-                string filepath = Path.Combine(uploadpath, imagename);
-
-                using (var fs = new FileStream(filepath, FileMode.Create))
+                try
                 {
-                    await model.QuestionImage.CopyToAsync(fs);
+                    string downloadUrl = await _fileService.UploadImage(model.QuestionImage);
+                    newQuestion.ImagePath = downloadUrl;
                 }
-                newQuestion.ImagePath = imagename;
-            }
-            else
-            {
-                newQuestion.ImagePath = "";
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                    return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                }
             }
             model.Test.NumberOfQuestion += 1;
             datacontext.Question.Add(newQuestion);
-
+            datacontext.SaveChanges();
             var numberOfQuestions = datacontext.Question.ToList()
                 .Where(q => q.TestID == model.TestID)
                 .Count();
@@ -171,7 +172,7 @@ namespace OnlineLearning.Controllers
             List<QuestionModel> questions = new List<QuestionModel>();
             var test = await datacontext.Test.FindAsync(TestID);
             // Use EPPlus to read the Excel file
-            using (var package = new OfficeOpenXml.ExcelPackage(ExcelFile.OpenReadStream()))
+            using (var package = new ExcelPackage(ExcelFile.OpenReadStream()))
             {
                 var worksheet = package.Workbook.Worksheets[0]; // Assuming the first sheet
 
@@ -194,7 +195,6 @@ namespace OnlineLearning.Controllers
                         string.IsNullOrEmpty(answerC) || string.IsNullOrEmpty(answerD) ||
                         string.IsNullOrEmpty(correctAnswer))
                     {
-                        TempData["Error"] = $"Row {row} contains invalid data. Ensure all columns are filled.";
                         break;
                     }
 
@@ -237,12 +237,12 @@ namespace OnlineLearning.Controllers
 
             // Save all the questions to the database
             datacontext.Question.AddRange(questions);
-
+            await datacontext.SaveChangesAsync();
             var numberOfQuestions = datacontext.Question.ToList()
                 .Where(q => q.TestID == TestID)
                 .Count();
 
-             test.NumberOfQuestion = numberOfQuestions;
+            test.NumberOfQuestion = numberOfQuestions;
 
             datacontext.Test.Update(test);
             await datacontext.SaveChangesAsync();
@@ -374,14 +374,14 @@ namespace OnlineLearning.Controllers
             }
 
             // Retrieve the test and set up ViewBag for Test and CourseID
-            var test = datacontext.Test.Find(TestID);   
+            var test = datacontext.Test.Find(TestID);
 
             var numberOfQuestions = datacontext.Question.ToList()
                 .Where(q => q.TestID == TestID)
                 .Count();
             test.NumberOfQuestion = numberOfQuestions;
             ViewBag.CourseID = test.CourseID;
-           // ViewBag.TestID = TestID;
+            // ViewBag.TestID = TestID;
 
             //not sure if necessary
             ViewBag.QuestionID = QuestionID;
@@ -406,7 +406,7 @@ namespace OnlineLearning.Controllers
             var course = datacontext.Courses.Find(test.CourseID);
             ViewBag.Course = course;
             // Return the view with the pre-filled model
-            return View(questionViewModel); 
+            return View(questionViewModel);
         }
 
         // POST: Update the question
@@ -437,27 +437,26 @@ namespace OnlineLearning.Controllers
                     // If there's an existing image, delete it
                     if (!string.IsNullOrEmpty(oldImagePath))
                     {
-                        string oldImageFullPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "QuestionImages", oldImagePath);
-                        if (System.IO.File.Exists(oldImageFullPath))
+                        try
                         {
-                            System.IO.File.Delete(oldImageFullPath);
+                            await _fileService.DeleteFile(oldImagePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(ex.Message);
                         }
                     }
-
-                    // Save the new image
-                    string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "QuestionImages");
-                    string imageName = Guid.NewGuid() + "_" + model.QuestionImage.FileName;
-                    string filePath = Path.Combine(uploadPath, imageName);
-
-                    using (var fs = new FileStream(filePath, FileMode.Create))
+                    try
                     {
-                        await model.QuestionImage.CopyToAsync(fs);
+                        string downloadUrl = await _fileService.UploadImage(model.QuestionImage);
+                        question.ImagePath = downloadUrl;
                     }
-
-                    // Update the image path in the database
-                    question.ImagePath = imageName;
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                        return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                    }
                 }
-
                 // Update the question in the database
                 datacontext.Update(question);
                 await datacontext.SaveChangesAsync();
@@ -469,11 +468,11 @@ namespace OnlineLearning.Controllers
                 TempData["Error"] = "Question not found.";
             }
 
-             return RedirectToAction("EditQuestionRedirector", new {TestID = model.TestID });
+            return RedirectToAction("EditQuestionRedirector", new { model.TestID });
         }
 
         [HttpPost]
-        public IActionResult DeleteQuestion(int QuestionID, int TestID)
+        public async Task<IActionResult> DeleteQuestion(int QuestionID, int TestID)
         {
             var Question = datacontext.Question.FirstOrDefault(q => q.QuestionID == QuestionID);
             var Test = datacontext.Test.FirstOrDefault(t => t.TestID == TestID);
@@ -484,18 +483,22 @@ namespace OnlineLearning.Controllers
             //delete image first
             if (!string.IsNullOrEmpty(Question.ImagePath))
             {
-                string ImageFullPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "QuestionImages", Question.ImagePath);
-                if (System.IO.File.Exists(ImageFullPath))
+                try
                 {
-                    System.IO.File.Delete(ImageFullPath);
+                    await _fileService.DeleteFile(Question.ImagePath);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
                 }
             }
             datacontext.Question.Remove(Question);
             datacontext.SaveChanges();
             TempData["success"] = "Delete Successfully";
 
-            return RedirectToAction("EditQuestionRedirector",new { TestID = TestID });
+            return RedirectToAction("EditQuestionRedirector", new { TestID });
         }
+
         //[Authorize(Roles = "Instructor")]
         //private async Task<bool> CheckValidTestToInstructor(int TestID)
         //{

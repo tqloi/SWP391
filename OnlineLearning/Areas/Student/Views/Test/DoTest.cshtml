@@ -1,17 +1,33 @@
-﻿@model IEnumerable<OnlineLearning.Models.QuestionModel>
+﻿@model DoTestViewModel
 
 @{
     ViewData["Title"] = "Do Test";
     Layout = null;
     <partial name="_NoficationPartial" />
 }
+<!-- No layout were uses, don't remove the head pls -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Take Test</title>
 
-<!-- Custom CSS for additional styling -->
-<link rel="stylesheet" href="~/css/DoTest.css" />
-<script>
-    var totalQuestions = @Model.Count();
-</script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Custom CSS for additional styling -->
+    <link rel="stylesheet" href="~/css/DoTest.css" />
+
+    <!-- Initialize totalQuestions for the JavaScript code -->
+    <script>
+        window.totalQuestions = @Model.Questions.Count();
+        window.timeLeftString = '@Model.TimeLeft';
+    </script>
+
+</head>
 @if (User.IsInRole("Student"))
 {
     <form asp-action="DoTest" asp-controller="Test" method="post">
@@ -26,11 +42,9 @@
                 <!-- Left-side question navigation with timer -->
                 <div class="question-nav">
 
-                    @* Timer will leave for now
-
-                <div class="timer mb-4">
-                Time left: 40:12
-                </div> *@
+                    <div class="timer mb-4">
+                        Time left: @Model.TimeLeft
+                    </div>
 
                     <div class="progress mb-4">
                         <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -38,13 +52,13 @@
 
                     <!-- Question navigation buttons -->
                     <div class="question-nav-buttons">
-                        @for (int i = 1; i <= Model.Count(); i++)
+                        @for (int i = 1; i <= Model.Questions.Count(); i++)
                         {
                             <button type="button" class="btn @(i == 1 ? "btn-primary active" : "btn-secondary")" onclick="showQuestion(@i - 1)">@i</button>
                         }
                     </div>
 
-                    <button type="submit" class="btn btn-danger w-100 mt-3">Submit</button>
+                    <button type="submit" onclick="openConfirmModal()" class="btn btn-danger w-100 mt-3">Submit</button>
                 </div>
 
                 <!-- Right-side question and answers section -->
@@ -52,7 +66,7 @@
                     @{
                         int questionNumber = 1;
                     }
-                    @foreach (var question in Model.Select((q, index) => new { Question = q, Index = index }))
+                    @foreach (var question in Model.Questions.Select((q, index) => new { Question = q, Index = index }))
                     {
                         // The 'question' variable now holds an anonymous object
                         // containing the current QuestionModel (q) and its index (position) in the collection.
@@ -64,9 +78,8 @@
                             <!-- Display the question ID and the question text. -->
                             @if (!string.IsNullOrEmpty(question.Question.ImagePath))
                             {
-                                string imagePath = $"~/Images/QuestionImages/{question.Question.ImagePath}";
                                 <div class="mt-3">
-                                    <img src="@Url.Content(imagePath)" alt="Question Image" class="img-fluid img-thumbnail" style="max-width: 500px; max-height: 500px;" />
+                                    <img src="@question.Question.ImagePath" alt="Question Image" class="img-fluid img-thumbnail" style="max-width: 500px; max-height: 500px;" />
                                     <!-- If the question has an associated image, display it. -->
                                 </div>
                             }
@@ -116,10 +129,19 @@ else
 {
     <h1>Your are not allowed</h1>
 }
+<!-- Modal -->
+<div id="customConfirmModal" class="modal">
+    <div class="modal-content">
+        <p>Submit the test?</p>
+        <button id="confirmSubmit" class="btn btn-danger">Yes</button>
+        <button id="cancelSubmit" class="btn btn-secondary">No</button>
+    </div>
+</div>
 
 <!-- Bootstrap JS for functionality -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- Include JavaScript for question navigation and timer -->
 <!--bust the cache by appending a query string to js file URL in the HTML.-->
-<script src="~/js/DoTest.js?v=@DateTime.Now.Ticks"></script>
+ <script src="~/js/DoTest.js?v=@DateTime.Now.Ticks"></script>
+@* <script src="~/js/DoTest.js"></script> *@

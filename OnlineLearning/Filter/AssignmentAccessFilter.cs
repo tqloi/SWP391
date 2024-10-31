@@ -29,6 +29,13 @@ namespace OnlineLearning.Filter
                 return;
             }
 
+            if (!context.ActionArguments.ContainsKey("CourseID") || context.ActionArguments["CourseID"] == null)
+            {
+                // Chuyển hướng đến trang 404 nếu không tìm thấy CourseID
+                context.Result = new NotFoundResult();
+                return;
+            }
+
             if (context.ActionDescriptor.RouteValues["action"] == "SubmitAssignment")
             {
                 var assignmentId = (int)context.ActionArguments["id"];

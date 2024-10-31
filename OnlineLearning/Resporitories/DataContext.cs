@@ -40,13 +40,13 @@ namespace OnlineLearningApp.Respositories
         public DbSet<ReportModel> Report { get; set; }
         public DbSet<BookMarkModel> BookMark { get; set; }
         public DbSet<VideoCallModel> VideoCallInfo { get; set; }
+        public DbSet<CommentModel> Comment { get; set; }
+        public DbSet<CommentFileModel> CommentFile { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             SeedRoles(builder);
         }
-
-       
 
         private void SeedRoles(ModelBuilder builder)
         {

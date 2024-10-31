@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.Contracts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.CopyAnalysis;
+using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearning.Services;
@@ -14,10 +16,12 @@ namespace OnlineLearning.Controllers
     {
         private readonly StringeeService _stringeeService;
         private readonly DataContext _datacontext;
-        public VideoCallController(StringeeService stringeeService, DataContext dataContext)
+        private readonly UserManager<AppUserModel> _userManager;
+        public VideoCallController(StringeeService stringeeService, DataContext dataContext, UserManager<AppUserModel> userManager)
         {
             _stringeeService = stringeeService;
             _datacontext = dataContext;
+            _userManager = userManager;
         }
 
         [HttpGet("{callerId}/{receiverId}")]
@@ -41,20 +45,30 @@ namespace OnlineLearning.Controllers
 
        
        
-        public IActionResult VideoCallView(string token, string callerId, string receiverId)
+        public async Task<IActionResult> VideoCallView(string token, string callerId, string receiverId)
         {
             // Kiểm tra token và ID
             if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(callerId) || string.IsNullOrEmpty(receiverId))
             {
                 return BadRequest("Token, Caller ID, and Receiver ID are required.");
             }
-            HttpContext.Session.SetString("idsend", callerId);
-            var model = new VideoCallViewModel
+            var senduser = await _userManager.FindByIdAsync(callerId);
+            var receiveuser = await _userManager.FindByIdAsync(receiverId);
+            if (senduser == null || receiveuser == null)
             {
-                Token = token,
-                SendId = callerId,
-                ReceiveId = receiverId
-            };
+                return NotFound("Caller or receiver not found.");
+            }
+
+            var model = new VideoCallViewModel
+                {
+                    Token = token,
+                    SendId = callerId,
+                    ReceiveId = receiverId,
+                    FullNameSend = senduser.FirstName + " " + senduser.LastName,
+                    FullNameReceive = receiveuser.FirstName + receiveuser.LastName
+                };
+            
+           
 
             return View(model);
         }

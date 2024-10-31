@@ -2,9 +2,9 @@
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
     <partial name="_NoficationPartial" />
     var lecture = ViewBag.Lecture;
-    var Url = 0;
+    var lectureID = lecture.LectureID;
 }
-
+<meta charset="UTF-8">
 @model List<LectureFileModel>
 
 <div class="container-fluid">
@@ -30,26 +30,67 @@
 
     <div class="row">
 
-        <div class="col-xl-8 col-lg-7">
+        <div class="col-xl-7 col-lg-7">
 
             <div class="card shadow mb-4">
+                @{
+                    var count = 0;
+                }
                 @foreach (var file in Model)
                 {
                     if (file.FileType.Equals("Video"))
                     {
+                        <div class="card-img-top bg-light text-black py-3 px-4 d-flex justify-content-end align-items-center" controls style="height:100%; width: 100%;">
+                            <i class="bi bi-skip-end-circle"></i>
+                            <div class="me-auto ml-1 fw-bold">
+                                @(file.FileName.Length > 40 ? file.FileName.Substring(0, 40) + "..." : file.FileName)
+                                </div>
+                            <div>
+                                <button data-bs-toggle="modal" data-bs-target="#uploadVideoModal"
+                                        class="btn btn-gradient-light active m-0 d-flex align-items-center" style="border-radius: 20px; height: 40px;">
+                                    Change Lecture Video
+                                </button>
+                            </div>
+                            <form asp-action="DeleteLectureFile" asp-controller="Lecture" asp-area="Instructor" method="post">
+                                <input type="hidden" class="form-control" name="LectureFileID" value="@file.FileID">
+                                <input type="hidden" class="form-control" name="LectureID" value="@lectureID">
+                                <button class="btn ml-2 active" type="submit" style="border-radius: 20px;">
+                                    <i class="text-danger bi bi-trash-fill"></i>
+                                </button>
+                            </form>
+                        </div>
                         <div class="position-relative">
                             <video class="card-img-top" controls style="height: 100%; width: 100%;">
                                 <source src="@file.FilePath" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
                         </div>
+                        count++;
                     }
                 }
+                @if(count == 0)
+                {
+                    <div class="position-relative">
+                        <div class="card-img-top bg-light py-3 px-4 d-flex justify-content-between align-items-center" controls style="height:100%; width: 100%;">
+                            <div>No lecture video yet.</div>
+                            <div>
+                                <button data-bs-toggle="modal" data-bs-target="#uploadVideoModal"
+                                    class="btn btn-info m-0 d-flex align-items-center" style="border-radius: 20px; height: 40px;">
+                                      Upload Lecture Video
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
                 <div class="m-3">
-                    <h5>Documents</h5>
+                    <h5>
+                        Documents
+                        <a class="ms-1 text-dark" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                            <i class="bi bi-plus-circle mt-1 fs-5"></i>
+                        </a>
+                    </h5>
                     @{
                         bool hasDocuments = false;
-                        Url = 1;
                     }
                     @foreach (var file in Model)
                     {
@@ -76,11 +117,18 @@
                                     break;
                             }
                             hasDocuments = true;
-                            <div class="position-relative mb-1">
+                            <div class="position-relative mb-1 d-flex align-items-center">
                                 <i class="@iconClass me-2 ms-2"></i>
                                 <a href="@file.FilePath" class="btn-link" target="_blank">
                                     @(file.FileName.Length > 80 ? file.FileName.Substring(0, 80) + "..." : file.FileName)
                                 </a>
+                                <form asp-action="DeleteLectureFile" asp-controller="Lecture" asp-area="Instructor" method="post">
+                                    <input type="hidden" class="form-control" name="LectureFileID" value="@file.FileID">
+                                    <input type="hidden" class="form-control" name="LectureID" value="@lectureID">
+                                    <button class="btn ml-auto" type="submit">
+                                        <i class="text-danger bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
                             </div>
                         }
                     }
@@ -95,39 +143,90 @@
 
             <div class="d-flex justify-content-between mt-3 mb-5">
                 <form asp-action="GoPrevious" asp-controller="Lecture" asp-area="Instructor" method="get" class="d-flex">
-                    <input type="hidden" name="LectureID" value="@lecture.LectureID">
+                    <input type="hidden" name="LectureID" value="@lectureID">
                     <button type="submit" class="btn btn-outline-black"><i class="fas fa-chevron-left mr-2"></i>Previous</button>
                 </form>
 
                 <form asp-action="GoNext" asp-controller="Lecture" asp-area="Instructor" method="get" class="d-flex">
-                    <input type="hidden" name="LectureID" value="@lecture.LectureID">
+                    <input type="hidden" name="LectureID" value="@lectureID">
                     <button type="submit" class="btn btn-outline-black">Next <i class="fas fa-chevron-right ml-1"></i></button>
                 </form>
             </div>
         </div>
 
         <!-- Donut Chart -->
-        <div class="col-xl-4 col-lg-5">
+        <div class="col-xl-5 col-lg-5">
             <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Disscusion</h6>
+                    <h6 class="m-0 font-weight-bold text-info">Disscusion</h6>
                 </div>
                 <!-- Card Body -->
+
                 <div class="card-body">
-                    <div class="chart-pie pt-4">
-                        <canvas id="myPieChart"></canvas>
+                    <div style="height: 400px; margin: -20px -20px 35px -10px; overflow-y: auto">
+                        @await Component.InvokeAsync("Comment", new { lectureId = lectureID })
                     </div>
-                    <hr>
-                    Styling for the donut chart can be found in the
-                    <code>/js/demo/chart-pie-demo.js</code> file.
+                    <div class="border-top p-2 bg-white w-100" style="position: absolute; bottom: 0px; z-index: 1; margin-left: -20px">
+                        <form asp-action="Create" asp-controller="Comment" method="post" class="input-group mt-auto d-flex align-items-end">
+                            <input type="hidden" name="LectureID" value="@lecture.LectureID" />
+
+                            <label for="file-upload" class="btn btn-info mr-2 mt-auto active m-0 d-flex align-items-center" style="border-radius: 20px; height: 40px;"><i class="bi bi-plus-lg"></i></label>
+                            <input type="file" id="file-upload" class="d-none" name="CommentFile" accept=".pdf,.doc,.docx,.ppt,.pptx, image/*" multiple>
+
+                            <textarea id="Content" type="text" name="Content" class="form-control Comment-Content" placeholder="Write your comment" rows="1" style="border-radius: 20px; resize: none;" required></textarea>
+
+                            <button type="submit" class="btn btn-info ml-2 mt-auto" style="border-radius: 20px; height: 40px;"><i class="bi bi-send-fill"></i></button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 <!-- /.container-fluid -->
+<div class="modal fade" id="uploadVideoModal" tabindex="-1" aria-labelledby="uploadVideoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadVideoModalLabel">Upload Lecture Video</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="UploadLectureVideo" asp-controller="Lecture" asp-area="Instructor" method="post" enctype="multipart/form-data">
+                    <input type="hidden" class="form-control" name="LectureID" value="@lectureID">
+                    <div class="mb-3">
+                        <label for="LectureVideo" class="form-label">Upload Lecture Video</label>
+                        <input type="file" class="form-control" id="LectureVideo" name="LectureVideo" accept=".mp4,.avi,.mov,.wmv" required>
+                    </div>
+                    <button type="submit" class="btn custom-btn w-100">Upload Video</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- uploadModal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">Upload File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="UploadLectureFile" asp-controller="Lecture" asp-area="Instructor" method="post" enctype="multipart/form-data">
+                    <input type="hidden" class="form-control" name="LectureID" value="@lectureID">
+                    <div class="mb-3">
+                        <label for="LectureFile" class="form-label">Upload Lecture Documents</label>
+                        <input type="file" class="form-control" id="LectureFile" name="LectureFile" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple required>
+                    </div>
+                    <button type="submit" class="btn custom-btn w-100">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Update Lecture Modal -->
 <div class="modal fade" id="updateLectureModal" tabindex="-1" aria-labelledby="deleteLectureModalLabel" aria-hidden="true">
@@ -138,24 +237,16 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="addLectureForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Lecture" asp-action="Create">
-                    <input type="hidden" class="form-control" name="CourseID" value="">
+                <form id="addLectureForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Lecture" asp-action="Update">
+                    <input type="hidden" class="form-control" name="LectureID" value="@lectureID">
                     <div class="mb-3">
                         <label for="Title" class="form-label">Title</label>
-                        <input type="text" class="form-control" name="Title" required>
+                        <input type="text" class="form-control" name="Title" value="@lecture.Title" required>
                     </div>
                     <div class="mb-3">
-                        <label for="Description" class="form-label">Description</label>
-                        <textarea class="form-control" name="Description" rows="3" required></textarea>
+                        <label for="Description" class="form-label">Description </label>
+                        <textarea class="form-control" name="Description" rows="3">@lecture.Description</textarea>
                     </div>
-@*                     <div class="mb-3">
-                        <label for="LectureFile" class="form-label">Upload Lecture Documents</label>
-                        <input type="file" class="form-control" name="LectureFile" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple>
-                    </div>
-                    <div class="mb-3">
-                        <label for="VideoFile" class="form-label">Upload Lecture Video</label>
-                        <input type="file" class="form-control" name="VideoFile" accept=".mp4,.mov,.avi">
-                    </div> *@
                     <button type="submit" class="custom-btn">Update Lecture</button>
                 </form>
             </div>
@@ -177,8 +268,6 @@
             <div class="modal-footer">
                 <form id="deleteCourseForm" method="post" asp-area="Instructor" asp-controller="Lecture" asp-action="Delete">
                     <input type="hidden" name="LectureID" value="@lecture.LectureID">
-                    <input type="hidden" name="PreviousUrl" value="@ViewBag.PreviousUrl">
-                    <input type="hidden" name="Test" value="@Url">
                     <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn custom-btn">Delete</button>
                 </form>

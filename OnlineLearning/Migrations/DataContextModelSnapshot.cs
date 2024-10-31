@@ -52,21 +52,27 @@ namespace OnlineLearning.Migrations
                         new
                         {
                             Id = "1",
+
                             ConcurrencyStamp = "188923da-843b-4aa6-ad64-57708f4269f3",
+
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
+
                             ConcurrencyStamp = "1418a316-6bdd-4075-9c94-65941ec50f28",
+
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = "3",
+
                             ConcurrencyStamp = "ea5a1705-ade7-4d79-84d0-aeb7bb14471d",
+
                             Name = "Instructor",
                             NormalizedName = "INSTRUCTOR"
                         });
@@ -283,10 +289,18 @@ namespace OnlineLearning.Migrations
                     b.Property<int>("CourseID")
                         .HasColumnType("int");
 
+
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime>("StartDate");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DueDate")
+
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
@@ -986,6 +1000,9 @@ namespace OnlineLearning.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<TimeSpan?>("TestTime")
+                        .HasColumnType("time");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -997,6 +1014,7 @@ namespace OnlineLearning.Migrations
 
                     b.ToTable("Test");
                 });
+
 
             modelBuilder.Entity("OnlineLearning.Models.VideoCallModel", b =>
                 {
@@ -1022,6 +1040,7 @@ namespace OnlineLearning.Migrations
 
                     b.ToTable("VideoCallInfo");
                 });
+
 
             modelBuilder.Entity("ReportModel", b =>
                 {
@@ -1460,6 +1479,7 @@ namespace OnlineLearning.Migrations
                     b.Navigation("Course");
                 });
 
+
             modelBuilder.Entity("OnlineLearning.Models.VideoCallModel", b =>
                 {
                     b.HasOne("OnlineLearning.Models.AppUserModel", "Receive")
@@ -1487,47 +1507,80 @@ namespace OnlineLearning.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
-                });
+                    modelBuilder.Entity("ReportModel", b =>
+                        {
+                            b.HasOne("OnlineLearning.Models.AppUserModel", "User")
+                                .WithMany()
+                                .HasForeignKey("UserID")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-            modelBuilder.Entity("ReviewModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.CourseModel", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                            b.Navigation("User");
+                        });
 
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    modelBuilder.Entity("ReviewModel", b =>
+                        {
+                            b.HasOne("OnlineLearning.Models.CourseModel", "Course")
+                                .WithMany()
+                                .HasForeignKey("CourseID")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-                    b.Navigation("Course");
+                            b.HasOne("OnlineLearning.Models.AppUserModel", "User")
+                                .WithMany()
+                                .HasForeignKey("UserID")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
 
-                    b.Navigation("User");
-                });
+                            b.Navigation("Course");
 
-            modelBuilder.Entity("YourNamespace.Models.LectureCompletionModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.LectureModel", "Lecture")
-                        .WithMany()
-                        .HasForeignKey("LectureID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                            b.Navigation("User");
+                        });
 
-                    b.Navigation("Lecture");
 
-                    b.Navigation("User");
-                });
+                    modelBuilder.Entity("ReviewModel", b =>
+                        {
+                            b.HasOne("OnlineLearning.Models.CourseModel", "Course")
+                                .WithMany()
+                                .HasForeignKey("CourseID")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b.HasOne("OnlineLearning.Models.AppUserModel", "User")
+                                .WithMany()
+                                .HasForeignKey("UserID")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b.Navigation("Course");
+
+                            b.Navigation("User");
+                        });
+
+                    modelBuilder.Entity("YourNamespace.Models.LectureCompletionModel", b =>
+                        {
+                            b.HasOne("OnlineLearning.Models.LectureModel", "Lecture")
+                                .WithMany()
+                                .HasForeignKey("LectureID")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b.HasOne("OnlineLearning.Models.AppUserModel", "User")
+                                .WithMany()
+                                .HasForeignKey("UserID")
+                                .OnDelete(DeleteBehavior.Cascade)
+                                .IsRequired();
+
+                            b.Navigation("Lecture");
+
+                            b.Navigation("User");
+                        });
 #pragma warning restore 612, 618
-        }
+                });
+                }
     }
-}
+                
+                
+    }
+

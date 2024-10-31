@@ -201,7 +201,13 @@ CREATE TABLE Test (
     [Status] NVARCHAR(255),
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
-<<<<<<< HEAD
+
+ALTER TABLE Test
+ADD TestTime TIME(0);
+
+ALTER TABLE Test
+DROP COLUMN TestTime;
+
 ALTER TABLE Test
 ADD PassingScore FLOAT;
 
@@ -248,6 +254,7 @@ CREATE TABLE Question (
     correctAnswer NVARCHAR(255),
     FOREIGN KEY (testID) REFERENCES Test(testID) ON DELETE CASCADE  
 );
+
 ALTER TABLE Question
 ADD ImagePath NVARCHAR(MAX)
 Alter table Question
@@ -332,14 +339,17 @@ CREATE TABLE Comment (
     CommentID INT PRIMARY KEY IDENTITY(1,1),
     LectureID INT NULL,  -- Foreign key to Lecture (nullable for course-level comments)
     UserID NVARCHAR(450),  -- Foreign key to Users (can be Student or Instructor)
-    Content TEXT,
+    Content NVARCHAR(MAX),
     [Timestamp] DATETIME,
-    
+    ParentCmtId INT NULL,
 	 -- Foreign key to Comment (nullable for root comments)
-    FOREIGN KEY (lectureID) REFERENCES Lecture(lectureID),
+    FOREIGN KEY (lectureID) REFERENCES Lecture(lectureID) ON DELETE CASCADE,
     FOREIGN KEY (userID) REFERENCES AspNetUsers(Id),  -- Could be Student or Instructor
-    FOREIGN KEY (parentCmtId) REFERENCES Comment(commentID)
+    FOREIGN KEY (parentCmtId) REFERENCES Comment(commentID) 
 );
+ALTER TABLE Comment
+Alter column ParentCmtId INT NULL;
+go
 
 -- comment file
 CREATE TABLE CommentFile (
@@ -374,13 +384,14 @@ CREATE TABLE Report (
 );
 go
 
-CREATE TABLE VideoCall (
+CREATE TABLE VideoCallInfo (
     VideoCallId INT PRIMARY KEY IDENTITY(1,1),
     SendID NVARCHAR(450) NOT NULL,
     ReceiveID NVARCHAR(450) NOT NULL,
     FOREIGN KEY (SendID) REFERENCES AspNetUsers(id),
     FOREIGN KEY (ReceiveID) REFERENCES AspNetUsers(id)
 );
+go
 
 CREATE TRIGGER trg_DeleteChildComments
 ON Comment
@@ -406,9 +417,10 @@ VALUES
     ('Web Development', 'Courses for building websites and web applications.'),
     ('Design', 'Courses for graphic design and multimedia.'); 
 INSERT INTO Courses 
-    (Title, CourseCode, [Description], CoverImagePath, InstructorID, NumberOfStudents, Price, CategoryID, [Level], [Status], CreateDate, LastUpdate, EndDate, NumberOfRate) 
+    (Title, CourseCode, [Description], CoverImagePath, InstructorID, NumberOfStudents, Price, CategoryID, [Level], [Status], CreateDate, LastUpdate, EndDate, NumberOfRate, Rating) 
 VALUES
     -- Programming Category
+
     ('Python for Beginners', 'CS101', 'Learn Python programming from scratch.', '/Images/cover/python.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 100.00, 1, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
     ('Java Advanced Techniques', 'CS102', 'Explore advanced Java programming concepts.', '/Images/cover/java.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 120.00, 1, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
     ('C# for Beginners', 'CS103', 'Introduction to C# programming.', '/Images/cover/csharp.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 90.00, 1, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
@@ -428,13 +440,6 @@ VALUES
     ('React for Beginners', 'WD103', 'Build user interfaces with React.', '/Images/cover/react.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 150.00, 3, 'Intermediate', 1, '2024-09-10', '2024-09-22', NULL, 0),
     ('Node.js for Beginners', 'WD104', 'Learn how to build web applications using Node.js.', '/Images/cover/nodejs_web.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 120.00, 3, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
     ('Advanced CSS Techniques', 'WD105', 'Explore advanced techniques in CSS for modern web design.', '/Images/cover/advanced_css.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 130.00, 3, 'Advanced', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
-
-    -- Design Category
-    ('Graphic Design Basics', 'D101', 'Learn the principles of graphic design.', '/Images/cover/graphic_design.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 90.00, 4, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
-    ('UI/UX Design Fundamentals', 'D102', 'Get started with UI/UX design principles.', '/Images/cover/uiux_design.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 100.00, 4, 'Intermediate', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
-    ('Adobe Photoshop for Beginners', 'D103', 'Learn the basics of Adobe Photoshop.', '/Images/cover/photoshop.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 120.00, 4, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
-    ('Illustration for Designers', 'D104', 'Master illustration techniques for graphic design.', '/Images/cover/illustration.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 130.00, 4, 'Advanced', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
-    ('Motion Graphics Basics', 'D105', 'Introduction to motion graphics using After Effects.', '/Images/cover/motion_graphics.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 150.00, 4, 'Advanced', 1,'2024-09-15', '2024-09-23', '2024-12-20', 0);
 
 	-- sua id instructor
 Insert into Instructors(InstructorID, Description)
@@ -514,6 +519,9 @@ ALTER TABLE CourseMaterials
 ADD FileExtension NVARCHAR(20);
 go
 
+ALTER TABLE AspNetUsers
+ADD [WalletUser] float;
+Go
 CREATE TRIGGER trg_UpdateNumberOfQuestion
 ON Question
 AFTER INSERT, UPDATE, DELETE

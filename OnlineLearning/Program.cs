@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineLearning.BackgroundServices;
 using OnlineLearning.Email;
 using OnlineLearning.Filter;
-
+using OnlineLearning.Hubs;
 using OnlineLearning.Models;
 using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
@@ -109,6 +109,8 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 //VnPay
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
+//services for test scheduler
+builder.Services.AddScoped<TestSchedulerService>();
 
 var app = builder.Build();
 
@@ -149,7 +151,11 @@ app.MapAreaControllerRoute(
     pattern: "{area:exists}/{controller=Student}/{action=Index}/{id?}");
 
 app.MapHub<ChatHub>("/chatHub");
+
 //404
 app.UseStatusCodePagesWithReExecute("/Home/Error404");
+
+app.MapHub<TestHub>("/testHub");
+
 
 app.Run();

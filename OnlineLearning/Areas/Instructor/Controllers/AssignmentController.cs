@@ -107,33 +107,35 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 TempData["warning"] = $"Assignment with title {model.Title} is already exist";
                 return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
             }
-
-            assignment.Title = model.Title;
-            assignment.StartDate = model.StartDate;
-            assignment.DueDate = model.DueDate;
-            assignment.CourseID = model.CourseID;
-            if (model.AssignmentLink != null)
+            else
             {
-                try
+                assignment.Title = model.Title;
+                assignment.StartDate = model.StartDate;
+                assignment.DueDate = model.DueDate;
+                assignment.CourseID = model.CourseID;
+                if (model.AssignmentLink != null)
                 {
-                    string downloadUrl = await _fileService.UploadLectureDocument(model.AssignmentLink);
-                    assignment.AssignmentLink = downloadUrl;
-                    model.ExistedAssignmentLink = downloadUrl;
+                    try
+                    {
+                        string downloadUrl = await _fileService.UploadLectureDocument(model.AssignmentLink);
+                        assignment.AssignmentLink = downloadUrl;
+                        model.ExistedAssignmentLink = downloadUrl;
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                        TempData["error"] = "Edit failed due to file upload error!";
+                        return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
+                    }
                 }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Error uploading file: " + ex.Message);
-                    TempData["error"] = "Edit failed due to file upload error!";
-                    return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
-                }
-            }
-            var course = await _dataContext.Courses.FindAsync(assignment.CourseID);
-            course.LastUpdate = DateTime.Now;
+                var course = await _dataContext.Courses.FindAsync(assignment.CourseID);
+                course.LastUpdate = DateTime.Now;
 
-            _dataContext.Update(assignment);
-            await _dataContext.SaveChangesAsync();
-            TempData["success"] = "Edit successful!";
-            return RedirectToAction("AssignmentList", "Participation", new {Areas = "", CourseID = assignment.CourseID });
+                _dataContext.Update(assignment);
+                await _dataContext.SaveChangesAsync();
+                TempData["success"] = "Edit successful!";
+                return RedirectToAction("AssignmentList", "Participation", new { Areas = "", CourseID = assignment.CourseID });
+            }
         }
         
         public async Task<IActionResult> DeleteAssignmentConfirmed(int id)
