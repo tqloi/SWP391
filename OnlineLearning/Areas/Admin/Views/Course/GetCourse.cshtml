@@ -1,13 +1,16 @@
 ﻿@{
     Layout = "~/Areas/Admin/Views/Shared/_layout.cshtml";
 }
-@using OnlineLearning.Models
-@model IEnumerable<InstructorConfirmationModel>
-
+  @using OnlineLearning.Models
+  @model CourseModel
 <partial name="_NoficationPartial" />
-
 <body>
+    <div>
+        <br />
+        <br />
+    </div>
     <style>
+
         body {
             margin-top: 20px;
         }
@@ -283,103 +286,96 @@
                     }
     </style>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-    <div>
-        <br />
-        <br />
-         <br />
-        <br />
-        
-        
-    </div>
+
     <div class="event-schedule-area-two bg-color pad100">
         <div class="container">
-           
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title text-center">
+                        <div class="title-text">
+                            <h2>Course List</h2>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- /.col end-->
+            </div>
+
             <!-- row end-->
             <div class="row">
                 <div class="col-lg-12">
-                   
+
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade active show" id="home" role="tabpanel">
                             <div class="table-responsive">
                                 <table class="table">
-                                    <thead>
+                                    <thead class="thanhtieude">
                                         <tr>
                                             <th class="text-center" scope="col">ID</th>
-                                            <th scope="col">Images</th>
-                                            <th scope="col">Candidate Name</th>
-                                            <th scope="col">Certification Link</th>
-                                            
-                                            <th class="text-center" scope="col">Action</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Decription</th>
+                                            <th scope="col">Price</th>
+                                            <th class="text-center" scope="col">Venue</th>
                                         </tr>
                                     </thead>
-                                    @{
-                                        int index = 1;
-                                    }
                                     <tbody>
-                                        @foreach (var item in Model)
-                                        {
+                                        
+                                        
                                             <tr class="inner-box">
-                                                <th scope="row">
-                                                    <div class="event-date">
-                                                        <span>@index</span>
-                                                    </div>
-                                                </th>
+                                                
                                                 <td>
                                                     <div class="event-img">
-                                                        <img src="@item.user.ProfileImagePath" alt="" />
+                                                        <img src="@Model.CoverImagePath" alt="" />
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <div class="event-wrap">
-                                                        <h3><a href="#">@item.user.FirstName @item.user.LastName</a></h3>
+                                                        <h3><a href="#">@Model.Title</a></h3>
                                                         <div class="meta">
-                                                            
+                                                            <div class="organizers">
+                                                                <a href="#">@Model.Instructor.AppUser.FirstName @Model.Instructor.AppUser.LastName</a>
+                                                            </div>
+                                                            <div class="categories">
+                                                                <a href="#"></a>
+                                                            </div>
                                                             <div class="time">
-                                                                <span>@item.SendDate</span>
+                                                                <span>@Model.CreateDate</span>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <div class="r-no">
-                                                        <h3><a href="@item.Certificatelink" target="_blank"> @item.FileName</a></h3>
+                                                        <span>@Model.Price</span>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <div class="primary-btn">
-                                                        <a data-bs-toggle="modal" data-bs-target="#confirmInstructorModal" class="btn btn-primary" >Upgrade</a>
-                                                    </div>
-                                                </td>
+                                                    @if (Model.Status == true)
+                                                    {
+                                                        <div class="primary-btn">
+                                                            <a class="btn btn-danger asp-action="SetStatusCourse" asp-action="SetStatusCourse" asp-controller="Course" asp-area="Admin" asp-route-Id="@Model.CourseID">Set Unavailable</a>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="primary-btn">
+                                                            <a class="btn btn-success asp-action="SetStatusCourse" asp-action="SetStatusCourse" asp-controller="Course" asp-area="Admin" asp-route-Id="@Model.CourseID">Set Available</a>
+                                                        </div>
+                                                    }
 
+                                                </td>
                                             </tr>
-                                            <div class="modal fade" id="confirmInstructorModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="deleteLectureModalLabel">Instructor Confirm</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>Are you sure you want to confirm this request?</p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <form method="post" asp-area="Admin" asp-action="ChangeRoleToInstructor" asp-controller="User">
-                                                                <input type="hidden" name="Id" value="@item.user.Id">
-                                                                <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
-                                                                <button type="submit" class="btn custom-btn btn-success">Confirm</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }    
+                                        
+
+
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                       
                     </div>
-                    
+                    <div class="primary-btn text-center">
+                        <a href="#" class="btn btn-primary">Download Schedule</a>
+                    </div>
                 </div>
                 <!-- /col end-->
             </div>

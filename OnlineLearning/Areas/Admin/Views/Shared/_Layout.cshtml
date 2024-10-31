@@ -174,15 +174,15 @@
                         </li>
                         <li class="nav-item">
                             <a data-bs-toggle="collapse" href="#forms">
-                                <i class="fas fa-pen-square"></i>
-                                <p>Forms</p>
+                                <i class="fa fa-ban" aria-hidden="true"></i>
+                                <p>Reports</p>
                                 <span class="caret"></span>
                             </a>
                             <div class="collapse" id="forms">
                                 <ul class="nav nav-collapse">
                                     <li>
-                                        <a href="forms/forms.html">
-                                            <span class="sub-item">Basic Form</span>
+                                        <a asp-area="Admin" asp-action="ReportList" asp-controller="User">
+                                            <span class="sub-item">Report</span>
                                         </a>
                                     </li>
                                 </ul>

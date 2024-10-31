@@ -41,7 +41,7 @@
                                     <h4>@Model.FirstName @Model.LastName</h4>
                                     <p class="text-secondary mb-1">@Model.UserName</p>
                                     <p class="text-muted font-size-sm">@Model.Address</p>
-                                    <button class="btn btn-outline-primary">Message</button>
+                                    <a class="btn btn-outline-primary" asp-area="" asp-action="Index" asp-controller="Chat" asp-route-id="@Model.Id">Message</a>
                                 </div>
                             </div>
                             <hr class="my-4">

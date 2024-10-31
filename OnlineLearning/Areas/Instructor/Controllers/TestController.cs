@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
+using OnlineLearning.Areas.Instructor.Models.ViewModel;
 using OnlineLearning.Controllers;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
@@ -345,6 +346,34 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             // ViewBag.CourseID = test.CourseID;
             ViewBag.Course = Course;
             return RedirectToAction("TestList", "Participation", new { CourseID = test.CourseID });
+        }
+        public  IActionResult ViewScoreTest(int TestID, int page = 1)
+        {
+            
+            var scorelist = datacontext.Score.Where(t => t.TestID == TestID).Include(t => t.Student).ToList();
+            var test = datacontext.Test.Find(TestID);
+            var course = datacontext.Courses.FirstOrDefault(c => c.CourseID == test.CourseID);
+            int pageSize = 20;
+            var totaltest = scorelist.Count();
+            scorelist = scorelist.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            ViewBag.Course = course;
+            if (scorelist.Count == 0)
+            {
+                TempData["info"] = "No students have submitted their assignments yet.";
+                return RedirectToAction("TestList", "Participation", new { Areas = "", CourseID = course.CourseID });
+            }
+           
+            
+                var model = new ScoreListViewModel
+                {
+                    TestID = TestID,
+                    ListScore = scorelist,
+                    CurrentPage = page,
+                    TotalPage = (int)Math.Ceiling(totaltest / (double)pageSize)
+                };
+            
+            return View(model);
+            
         }
     }
 }

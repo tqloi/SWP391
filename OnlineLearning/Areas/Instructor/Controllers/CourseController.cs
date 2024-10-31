@@ -37,7 +37,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         {
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            var user = await _userManager.FindByIdAsync(userId);
             var existingCourse = await datacontext.Courses.FirstOrDefaultAsync(c => c.CourseCode == model.CourseCode);
 
             if (existingCourse != null)
@@ -108,7 +108,14 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     }
                 }
             }
-
+            var notify = new NotificationModel
+            {
+                UserId = user.Id,
+                Description = $"{user.FirstName} {user.LastName} has just created a course named: {course.Title}",
+                CreatedAt = DateTime.Now
+            };
+            datacontext.Notification.Add(notify);
+            await datacontext.SaveChangesAsync();
             TempData["success"] = "Course created successfully!";
             //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
             return RedirectToAction("Dashboard", "Instructor", new { area = "Instructor", CourseID = newCourseId });
