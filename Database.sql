@@ -135,7 +135,7 @@ CREATE TABLE [Certificate](
 	EnrollmentDate DATETIME NOT NULL,
     CompletionDate DATETIME NOT NULL,
 	FOREIGN KEY (studentID) REFERENCES AspNetUsers(id),
-    FOREIGN KEY (courseID) REFERENCES Courses(courseID)
+    FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 )
 
 -- Lecture table

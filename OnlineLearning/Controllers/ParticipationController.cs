@@ -88,10 +88,10 @@ namespace OnlineLearning.Controllers
 
             double overallAverageScore = (averageAssignmentScore + averageTestScore) / 2;
 
-            bool isPass = false;
+            bool isPassed = false;
             if(studentCourse.Progress == 100 && overallAverageScore > 5)
             {
-                isPass = true;
+                isPassed = true;
             }
 
             var model = new CourseInfoViewModel
@@ -100,7 +100,8 @@ namespace OnlineLearning.Controllers
                 Completion = completion,
                 StudentCourse = studentCourse,
                 TotalCourse = totalCourses,
-                TotalStudent = totalStudents
+                TotalStudent = totalStudents,
+                IsPassed = isPassed
             };
 
             ViewBag.Course = course;

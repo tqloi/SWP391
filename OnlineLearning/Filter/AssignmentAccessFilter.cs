@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
@@ -29,18 +30,30 @@ namespace OnlineLearning.Filter
                 return;
             }
 
-            if (!context.ActionArguments.ContainsKey("CourseID") || context.ActionArguments["CourseID"] == null)
-            {
-                // Chuyển hướng đến trang 404 nếu không tìm thấy CourseID
-                context.Result = new NotFoundResult();
-                return;
-            }
-
             if (context.ActionDescriptor.RouteValues["action"] == "SubmitAssignment")
             {
                 var assignmentId = (int)context.ActionArguments["id"];
+
+                if (assignmentId == null)
+                {
+                    context.Result = new NotFoundResult();
+                    return;
+                }
+
                 var assignment = await _context.Assignment.FindAsync(assignmentId);
+
+                if (assignment == null)
+                {
+                    context.Result = new NotFoundResult();
+                    return;
+                }
                 var course = await _context.Courses.FindAsync(assignment.CourseID);
+
+                if (course == null)
+                {
+                    context.Result = new NotFoundResult(); 
+                    return;
+                }
 
                 if (course.InstructorID == user.Id)
                 {
@@ -64,4 +77,4 @@ namespace OnlineLearning.Filter
             }
         }
     }
-}
+} 

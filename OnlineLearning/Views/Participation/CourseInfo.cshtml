@@ -6,6 +6,7 @@
     var studentCourse = Model.StudentCourse;
     var lectures = Model.Lectures;
     var completions = Model.Completion;
+    var isPassed = Model.IsPassed;
 }
 
 <style>
@@ -40,6 +41,19 @@
 </style>
 
 <div class="container-fluid">
+
+    @if (isPassed)
+    {
+        <div class="bg-white p-3 shadow-lg rounded mb-4 text-black d-flex align-items-center justify-content-between">
+            <div class="fs-6 ml-3">Congratulations, you have completed our course.</div>
+            <form class="d-flex align-items-center">
+                <div class="mr-3 fs-6">Your certificate is ready!</div>
+                <button class="btn btn-warning text-black px-3 py-1 fs-6 border">Claim now</button>
+            </form>
+            <a href="/Student/Student/GenerateCertificate?studentName=John%20Doe&courseName=ASP.NET%20Core%20Development&instructorName=Jane%20Smith&date=2024-10-31" class="btn btn-primary">Tải xuống Chứng chỉ</a>
+        </div>
+
+    }
 
     <h1 class="h3 mb-4 text-gray-800">Welcome to @studentCourse.Course.Title</h1>
     <div class="row">
@@ -133,7 +147,7 @@
                 </div>
             </div>
 
-            <div class="card shadow mb-4">
+            <div class="card shadow mb-4" style="margin-bottom: 30px">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-info">Instructor</h6>
                 </div>
