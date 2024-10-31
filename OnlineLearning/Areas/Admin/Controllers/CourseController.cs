@@ -54,12 +54,14 @@ namespace OnlineLearning.Areas.Admin.Controllers
             if (course.Status == true)
             {
                 course.Status = false;
+                course.IsBaned = true;
                 await _dataContext.SaveChangesAsync();
             }
             else if (course.Status == false)
             {
 
                 course.Status = true;
+                course.IsBaned = false;
                 await _dataContext.SaveChangesAsync();
             }
                 TempData["success"] = "Set Status Successful!";

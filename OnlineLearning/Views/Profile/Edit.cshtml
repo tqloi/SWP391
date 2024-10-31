@@ -1,5 +1,6 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var introdution = ViewBag.IntructorIntro;
 }
 
 @model EditUserViewModel
@@ -83,6 +84,13 @@
                         </select>
                         <span asp-validation-for="gender" class="text-danger"></span>
                     </div>
+                    @if(User.IsInRole("Instructor"))
+                    {
+                    <div class="form-group">
+                        <label for="instructorIntro">Instructor Introduction:</label>
+                            <textarea type="text" class="form-control" name="Introduction" id="instructorIntro">@(introdution != null ? introdution : "")</textarea>
+                    </div>
+                    }
                     <button type="submit"
                             style="margin-top: 20px;"
                             class="btn custom-btn" onclick="toggleLoader()">
