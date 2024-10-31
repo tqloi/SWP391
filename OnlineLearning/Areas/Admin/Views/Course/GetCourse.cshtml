@@ -2,7 +2,7 @@
     Layout = "~/Areas/Admin/Views/Shared/_layout.cshtml";
 }
   @using OnlineLearning.Models
-  @model IEnumerable<CourseModel>
+  @model CourseModel
 <partial name="_NoficationPartial" />
 <body>
     <div>
@@ -319,62 +319,53 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @{
-                                            int index = 1;
-                                        }
-                                        @foreach (var item in Model)
-                                        {
+                                        
+                                        
                                             <tr class="inner-box">
-                                                <th scope="row">
-                                                    <div class="event-date">
-                                                        <span>@index</span>
-
-                                                    </div>
-                                                </th>
+                                                
                                                 <td>
                                                     <div class="event-img">
-                                                        <img src="@item.CoverImagePath" alt="" />
+                                                        <img src="@Model.CoverImagePath" alt="" />
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <div class="event-wrap">
-                                                        <h3><a href="#">@item.Title</a></h3>
+                                                        <h3><a href="#">@Model.Title</a></h3>
                                                         <div class="meta">
                                                             <div class="organizers">
-                                                                <a href="#">@item.Instructor.AppUser.FirstName @item.Instructor.AppUser.LastName</a>
+                                                                <a href="#">@Model.Instructor.AppUser.FirstName @Model.Instructor.AppUser.LastName</a>
                                                             </div>
                                                             <div class="categories">
                                                                 <a href="#"></a>
                                                             </div>
                                                             <div class="time">
-                                                                <span>@item.CreateDate</span>
+                                                                <span>@Model.CreateDate</span>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <div class="r-no">
-                                                        <span>@item.Price</span>
+                                                        <span>@Model.Price</span>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    @if (item.Status == true)
+                                                    @if (Model.Status == true)
                                                     {
                                                         <div class="primary-btn">
-                                                            <a class="btn btn-danger asp-action="SetStatusCourse" asp-action="SetStatusCourse" asp-controller="Course" asp-area="Admin" asp-route-Id="@item.CourseID">Set Unavailable</a>
+                                                            <a class="btn btn-danger asp-action="SetStatusCourse" asp-action="SetStatusCourse" asp-controller="Course" asp-area="Admin" asp-route-Id="@Model.CourseID">Set Unavailable</a>
                                                         </div>
                                                     }
                                                     else
                                                     {
                                                         <div class="primary-btn">
-                                                            <a class="btn btn-success asp-action="SetStatusCourse" asp-action="SetStatusCourse" asp-controller="Course" asp-area="Admin" asp-route-Id="@item.CourseID">Set Available</a>
+                                                            <a class="btn btn-success asp-action="SetStatusCourse" asp-action="SetStatusCourse" asp-controller="Course" asp-area="Admin" asp-route-Id="@Model.CourseID">Set Available</a>
                                                         </div>
                                                     }
 
                                                 </td>
                                             </tr>
-                                            index++;
-                                        }
+                                        
 
 
                                     </tbody>

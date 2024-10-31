@@ -40,7 +40,7 @@ namespace OnlineLearning.Areas.Admin.Controllers
                 var result = match.Groups[1].Value;
                 coursename = result.ToString();
             }
-            var course = await _dataContext.Courses.Where(c => c.Title.Equals(coursename)).ToListAsync();
+            var course = await _dataContext.Courses.FirstOrDefaultAsync(c => c.Title.Equals(coursename));
             return View(course);
         }
         public async Task<IActionResult> SetStatusCourse(int Id)
