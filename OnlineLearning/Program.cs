@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearning.Areas.Instructor.Models;
 using OnlineLearning.BackgroundServices;
 using OnlineLearning.Email;
 using OnlineLearning.Filter;
@@ -52,6 +53,7 @@ builder.Services.AddNotyf(config =>
     config.Position = NotyfPosition.BottomCenter;
 }
 );
+builder.Services.Configure<ApiVideoSettings>(builder.Configuration.GetSection("ApiVideo"));
 ///telling the application to use the specific ClientId, and the ClientSecret
 ///redirect user to the google login page for authentication
 

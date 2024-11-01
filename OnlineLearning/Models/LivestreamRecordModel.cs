@@ -22,10 +22,12 @@ namespace OnlineLearning.Models
         public string Title { get; set; }
         [StringLength(255)]
         public string LivestreamId { get; set; }
-        [Required]
-        [StringLength(255)]
-        public string StreamKey { get; set; }
+        public int CourseID { get; set; }
+       
         [ForeignKey("UserID")]
         public AppUserModel User { get; set; }
+
+        [ForeignKey("CourseID")]
+        public CourseModel Course { get; set; }
     }
 }

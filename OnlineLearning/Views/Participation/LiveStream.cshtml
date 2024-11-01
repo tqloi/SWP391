@@ -1,0 +1,27 @@
+﻿@{
+    Layout = "~/Views/Shared/_CourseLayout.cshtml";
+    <partial name="_NoficationPartial" />
+}
+@if (User.IsInRole("Instructor"))
+{
+    <div class="col-md-3">
+        <form asp-action="CreateLiveStream" asp-area="Instructor" asp-controller="LiveStream" method="post">
+            <h3>Create LiveStream</h3>
+            <label for="Title" class="form-label" id="Title">Enter title</label>
+            <input type="text" class="form-control" id="Title" name="Title" required />
+            <input type="hidden" id="CourseID" name="CourseID" value="@TempData["CourseID"]" />
+            <button class="btn btn-success" type="submit" onclick="return confirm('This action will create a livestream with the following title')">Create</button>
+        </form>
+    </div>
+    <div class="col-md-3">
+        <a asp-action="SeeAllLive" asp-area="Instructor" asp-controller="LiveStream" asp-route-CourseID="@TempData["CourseID"]" method="get">
+            See Your Livestreams
+        </a>
+    </div>
+}
+
+@if (User.IsInRole("Student"))
+{
+    <h3> Livestream frame</h3>
+
+}

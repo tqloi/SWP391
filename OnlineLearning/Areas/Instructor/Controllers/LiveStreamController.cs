@@ -4,8 +4,10 @@ using ApiVideo.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using MimeKit.Cryptography;
+using OnlineLearning.Areas.Instructor.Models;
 using OnlineLearning.Models;
 using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
@@ -14,36 +16,88 @@ using System.Security.Claims;
 
 namespace OnlineLearning.Areas.Instructor.Controllers
 {
+    /// <summary>
+    /// Web
+    /// https://docs.api.video/reference/api/Live-Streams
+    /// Github
+    /// https://github.com/apivideo/api.video-csharp-client
+    /// </summary>
     [ApiController]
     [Area("Instructor")]
-    [Authorize(Roles = "Instructor")]
-    [Route("Instructor/[controller]/[action]")]
+    [Route("Instructor/live-streams/[controller]/[action]")]
     public class LiveStreamController : Controller
     {
-        private readonly ApiVideoClient _client;
-        private readonly string _streamKey;
-        // private readonly string _playerId;
-        private readonly string _rtmpServer;
-
+        private ApiVideoClient _client;
         private readonly DataContext _datacontext;
         private UserManager<AppUserModel> _userManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly FileService _fileService;
-        public LiveStreamController(DataContext datacontext, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, FileService fileService)
+        public LiveStreamController(DataContext datacontext, UserManager<AppUserModel> userManager, IOptions<ApiVideoSettings> apiVideoSettings, IWebHostEnvironment webHostEnvironment, FileService fileService)
         {
-            _client = new ApiVideoClient("EugYjajLHbC5jEkLAng2tywbO1nP2vY3NmMX4nNtyyR");
+            _client = new ApiVideoClient(apiVideoSettings.Value.ApiKey);
             // if you rather like to use the sandbox environment:
             //_client = new ApiVideoClient("EugYjajLHbC5jEkLAng2tywbO1nP2vY3NmMX4nNtyyR", ApiVideoClient.Environment.SANDBOX);
-            _streamKey = "a3b0b9ad-7ef8-44bc-94e0-9809182f73cc";
-            //_playerId = "pt6xbd2agEoDgHIQhCNuNsFI";
-            _rtmpServer = "rtmp://broadcast.api.video/s";
             _datacontext = datacontext;
             _userManager = userManager;
             _webHostEnvironment = webHostEnvironment;
             _fileService = fileService;
         }
-
         [HttpGet]
+        public IActionResult SeeAllLive(int CourseID)
+        {
+            var course = _datacontext.Courses.FirstOrDefault(c => c.CourseID == CourseID);
+            var liveList = new List<LiveStream>();
+            try
+            {
+                var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var records = _datacontext.LivestreamRecord
+                    .ToList()
+                    .Where(r => r.UserID.Equals(user));
+                if (records != null)
+                {
+                    foreach (var record in records)
+                    {
+                        var live = RetrieveLiveStream(record.LivestreamId);
+                        if (live == null)
+                        {
+                            TempData["error"] = "Could not found live in the server";
+                            return RedirectToAction("Livestream", "Participation", new { CourseID = CourseID });
+                        }
+                        liveList.Add(live);
+                    }
+                }
+                else
+                {
+                    TempData["error"] = "No livestream found";
+                    TempData.Keep();
+                    return RedirectToAction("Livestream", "Participation", new { CourseID = CourseID });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            ViewBag.Course = course;
+            ViewBag.CourseID = CourseID;
+            return View(liveList);
+        }
+        [HttpGet("{liveStreamId}")]
+        public IActionResult Details(string liveStreamId)
+        {
+            var live = _client.LiveStreams().get(liveStreamId);
+            var record = _datacontext.LivestreamRecord.FirstOrDefault(r => r.LivestreamId.Equals(liveStreamId));
+            var course = _datacontext.Courses.FirstOrDefault(c => c.CourseID == record.CourseID);
+            ViewBag.Course = course;
+            return View(live);
+        }
+        /// <summary>
+        /// Should never be use, if so use by admin at least.
+        /// </summary>
+        /// <param name="liveStreamId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        //[Route("/live-streams")]
         public IActionResult ListAllLiveStream(string liveStreamId)
         {
             try
@@ -70,20 +124,20 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         }
 
         [HttpPost]
-        [Authorize("instructor")]
+        [Authorize(Roles = "Instructor")]
         //field now fix temporary
-        public IActionResult CreateLiveStream(string name, int CourseId)
+        public IActionResult CreateLiveStream([FromForm] string Title, [FromForm] int CourseID)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var course = _datacontext.Courses.FirstOrDefault(c => c.CourseID  == CourseId);
+            var course = _datacontext.Courses.FirstOrDefault(c => c.CourseID == CourseID);
             if (course == null)
             {
                 return NotFound();
             }
-            
+
             var liveStreamCreationPayload = new LiveStreamCreationPayload
             {
-                name = name,
+                name = Title,
                 _public = true,
                 //playerid = "_playerId"
 
@@ -95,15 +149,19 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 var liveStream = _client.LiveStreams().create(liveStreamCreationPayload);
                 var record = new LivestreamRecordModel
                 {
-                    CreateDate = DateTime.Now,
-                    UpdateDate = DateTime.Now,
+                    CreateDate = liveStream.createdat ?? DateTime.Now,
+                    UpdateDate = liveStream.updatedat ?? DateTime.Now,
                     UserID = userId,
-                    StreamKey = _streamKey,
+                    LivestreamId = liveStream.livestreamid,
+                    Title = Title,
+                    CourseID = CourseID,
+
                 };
                 _datacontext.LivestreamRecord.Add(record);
                 _datacontext.SaveChanges();
+                ViewBag.CourseID = CourseID;
                 TempData["success"] = "Create Success";
-                return Ok(liveStream);
+                return RedirectToAction("SeeAllLive", new { CourseID = CourseID });
             }
             catch (ApiException e)
             {
@@ -111,8 +169,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 return BadRequest($"Error creating live stream: {e.Message}");
             }
         }
-        [HttpGet("{liveStreamId}")]
-        public IActionResult RetrieveLiveStream(string liveStreamId)
+        private LiveStream? RetrieveLiveStream(string liveStreamId)
         {
             try
             {
@@ -122,7 +179,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 // Retrieve the live stream with the specified ID
                 var liveStream = apiInstance.get(liveStreamId);
 
-                return Ok(liveStream); // Return live stream details as JSON
+                return liveStream; // Return live stream details
             }
             catch (ApiException e)
             {
@@ -131,24 +188,32 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 Console.WriteLine("Status code: " + e.ErrorCode);
                 Console.WriteLine("Reason: " + e.Message);
                 //Console.WriteLine("Response headers: " + e.getResponseHeaders());
-
-                return BadRequest(new
-                {
-                    error = "Error retrieving live stream",
-                    message = e.Message,
-                    statusCode = e.ErrorCode
-                });
             }
+            return null;
         }
 
-        [HttpDelete("{liveStreamId}")]
-        public IActionResult DeleteLiveStream(string liveStreamId)
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult DeleteLiveStream([FromQuery] string liveStreamId)
         {
             try
             {
+                var record = _datacontext.LivestreamRecord.FirstOrDefault(r => r.LivestreamId.Equals(liveStreamId));
+
+                if (record == null)
+                {
+                    // If no record is found, return a NotFound response or an appropriate message
+                    TempData["error"] = "Live stream not found.";
+                    return RedirectToAction("SeeAllLive", new { CourseID = record.CourseID });
+                }
+
                 // Attempt to delete the live stream with the specified ID
                 _client.LiveStreams().delete(liveStreamId);
-                return Ok(new { message = "Live stream deleted successfully." });
+                _datacontext.LivestreamRecord.Remove(record);
+                _datacontext.SaveChanges();
+
+                TempData["success"] = "Live stream deleted successfully";
+                return RedirectToAction("SeeAllLive", new { CourseID = record.CourseID });
             }
             catch (ApiException e)
             {
@@ -165,13 +230,28 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 });
             }
         }
-        [HttpPatch("{liveStreamId}")]
-        public IActionResult UpdateLiveStream(string liveStreamId, [FromBody] LiveStreamUpdatePayload liveStreamUpdatePayload)
+
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult UpdateLiveStream([FromQuery] string liveStreamId, [FromForm] string _public, [FromForm] string name)
         {
             try
             {
+                bool isPublic;  // Declare the variable
+                bool.TryParse(_public, out isPublic);
+                LiveStreamUpdatePayload liveStreamUpdatePayload = new LiveStreamUpdatePayload
+                {
+                    name = name,
+                    _public = isPublic,
+                };
                 var liveStream = _client.LiveStreams().update(liveStreamId, liveStreamUpdatePayload);
-                return Ok(liveStream);
+                var record = _datacontext.LivestreamRecord.FirstOrDefault(r => r.LivestreamId == liveStreamId);
+                record.Title = name;
+                record.UpdateDate = liveStream.updatedat ?? DateTime.Now;
+                _datacontext.LivestreamRecord.Update(record);
+                _datacontext.SaveChanges();
+                TempData["success"] = "Update Livestream successfully";
+                return RedirectToAction("SeeAllLive", new { CourseID = record.CourseID });
             }
             catch (ApiException e)
             {
@@ -184,9 +264,15 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             }
         }
 
-        [HttpPost("{liveStreamId}/thumbnail")]
-        public IActionResult UploadThumbnail(string liveStreamId, IFormFile thumbnailFile)
+        //  [HttpPost("{liveStreamId}/thumbnail")]
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult UploadThumbnail([FromQuery] string liveStreamId, [FromForm] IFormFile thumbnailFile)
         {
+            if (liveStreamId == null)
+            {
+                return BadRequest("livestreamId not found.");
+            }
             if (thumbnailFile == null || thumbnailFile.Length == 0)
             {
                 return BadRequest("Thumbnail file is required.");
@@ -198,11 +284,13 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 using (var stream = new MemoryStream())
                 {
                     thumbnailFile.CopyTo(stream);
-                    stream.Position = 0; // Reset the stream position
+                    // Reset the stream position
+                    stream.Position = 0;
 
                     // Upload the thumbnail
                     var liveStream = _client.LiveStreams().uploadThumbnail(liveStreamId, stream);
-                    return Ok(liveStream);
+                    var record = _datacontext.LivestreamRecord.FirstOrDefault(s => s.LivestreamId == liveStreamId);
+                    return RedirectToAction("SeeAllLive", new { CourseID = record.CourseID });
                 }
             }
             catch (ApiException e)
@@ -215,15 +303,19 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 });
             }
         }
-        [HttpDelete("{liveStreamId}/thumbnail")]
+        // [HttpDelete("{liveStreamId}/thumbnail")]
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
         public IActionResult DeleteThumbnail(string liveStreamId)
         {
             try
             {
+                var record = _datacontext.LivestreamRecord.FirstOrDefault(r => r.LivestreamId.Equals(liveStreamId));
                 // Access the live streams API instance
                 var liveStream = _client.LiveStreams().deleteThumbnail(liveStreamId);
-
-                return Ok(new { message = "Thumbnail deleted successfully", liveStream });
+                TempData["success"] = "Thumbnail delete successfully";
+                TempData.Keep();
+                return RedirectToAction("SeeAllLive", new { CourseID = record.CourseID });
             }
             catch (ApiException e)
             {
@@ -241,7 +333,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             }
         }
 
-        [HttpPut("{liveStreamId}/complete")]
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
         public IActionResult CompleteLiveStream(string liveStreamId)
         {
             try
@@ -265,6 +358,43 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     statusCode = e.ErrorCode
                 });
             }
+        }
+        //Not sure if needed?
+        private LiveStreamAssets ParseLiveStreamAssets(string assetsString)
+        {
+            var liveStreamAssets = new LiveStreamAssets();
+
+            // Remove the outer braces and split the string into lines
+            var lines = assetsString.Trim(new char[] { '{', '}', ' ' }).Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var line in lines)
+            {
+                // Split by the first colon to separate the key and value
+                var parts = line.Split(new[] { ':' }, 2);
+                if (parts.Length == 2)
+                {
+                    var key = parts[0].Trim();
+                    var value = parts[1].Trim().Trim(new char[] { ' ', '"' });
+
+                    switch (key)
+                    {
+                        case "Hls":
+                            liveStreamAssets.hls = value;
+                            break;
+                        case "Iframe":
+                            liveStreamAssets.iframe = value;
+                            break;
+                        case "Player":
+                            liveStreamAssets.player = value;
+                            break;
+                        case "Thumbnail":
+                            liveStreamAssets.thumbnail = value;
+                            break;
+                    }
+                }
+            }
+
+            return liveStreamAssets;
         }
     }
 }

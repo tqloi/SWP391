@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineLearningApp.Respositories;
 
@@ -11,9 +12,11 @@ using OnlineLearningApp.Respositories;
 namespace OnlineLearning.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241031150031_Livestream")]
+    partial class Livestream
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,21 +55,21 @@ namespace OnlineLearning.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "adb48b3f-4ca6-4a41-a931-e73550cc4ade",
+                            ConcurrencyStamp = "efaf9e63-1421-4c25-bc05-b0d596746181",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "966ee4bc-b650-433d-a2dd-0211246ec24c",
+                            ConcurrencyStamp = "b4b7a275-e697-4cc2-a978-3a7a10ed9311",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = "3",
-                            ConcurrencyStamp = "981364b2-b73c-44ee-bdeb-f09794986cb9",
+                            ConcurrencyStamp = "db10adec-1693-4025-952b-e3efa647a88f",
                             Name = "Instructor",
                             NormalizedName = "INSTRUCTOR"
                         });
@@ -608,9 +611,6 @@ namespace OnlineLearning.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LivestreamRecordID"));
 
-                    b.Property<int>("CourseID")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
@@ -633,8 +633,6 @@ namespace OnlineLearning.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LivestreamRecordID");
-
-                    b.HasIndex("CourseID");
 
                     b.HasIndex("UserID");
 
@@ -1313,19 +1311,11 @@ namespace OnlineLearning.Migrations
 
             modelBuilder.Entity("OnlineLearning.Models.LivestreamRecordModel", b =>
                 {
-                    b.HasOne("OnlineLearning.Models.CourseModel", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("OnlineLearning.Models.AppUserModel", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Course");
 
                     b.Navigation("User");
                 });

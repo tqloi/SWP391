@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Compile Remove="Areas\Instructor\Data\**" />
-    <Compile Remove="Areas\Instructor\Models\**" />
     <Compile Remove="Areas\Instructor\Views\Payment\**" />
     <Compile Remove="Areas\Instructor\Views\Shared\Components\**" />
     <Compile Remove="Areas\Student\Models\**" />
@@ -17,7 +16,6 @@
     <Compile Remove="wwwroot\Assignment\**" />
     <Compile Remove="wwwroot\Images\NewFolder\**" />
     <Content Remove="Areas\Instructor\Data\**" />
-    <Content Remove="Areas\Instructor\Models\**" />
     <Content Remove="Areas\Instructor\Views\Payment\**" />
     <Content Remove="Areas\Instructor\Views\Shared\Components\**" />
     <Content Remove="Areas\Student\Models\**" />
@@ -26,7 +24,6 @@
     <Content Remove="wwwroot\Assignment\**" />
     <Content Remove="wwwroot\Images\NewFolder\**" />
     <EmbeddedResource Remove="Areas\Instructor\Data\**" />
-    <EmbeddedResource Remove="Areas\Instructor\Models\**" />
     <EmbeddedResource Remove="Areas\Instructor\Views\Payment\**" />
     <EmbeddedResource Remove="Areas\Instructor\Views\Shared\Components\**" />
     <EmbeddedResource Remove="Areas\Student\Models\**" />
@@ -35,7 +32,6 @@
     <EmbeddedResource Remove="wwwroot\Assignment\**" />
     <EmbeddedResource Remove="wwwroot\Images\NewFolder\**" />
     <None Remove="Areas\Instructor\Data\**" />
-    <None Remove="Areas\Instructor\Models\**" />
     <None Remove="Areas\Instructor\Views\Payment\**" />
     <None Remove="Areas\Instructor\Views\Shared\Components\**" />
     <None Remove="Areas\Student\Models\**" />
@@ -66,6 +62,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
 
     <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="17.11.1" />
   </ItemGroup>

@@ -23,24 +23,6 @@
         }
 
     </div>
-    @if (User.IsInRole("Instructor"))
-    {
-        <div class="col-md-3">
-            <form asp-action="CreateLiveStream" asp-antiforgery="true" asp-controller="LiveStream" method="post">
-                <h2>Create LiveStream</h2>
-                <label for="Title" id="Title">Enter title</label>
-                <input type="text" id="Title" name="Title" />
-                <button class="btn btn-success" type="submit" onclick="return confirm('You sure lil bro?')">Create</button>
-            </form>
-        </div>
-    }
-    @if (User.IsInRole("Student"))
-    {
-        <h3> Livestream frame</h3>
-        <iframe src="https://embed.api.video/live/li5gJBQfrXd10gKdAYyKZGW6"
-                width="500" height="500" frameborder="0" scrolling="no" allowfullscreen="true">
-        </iframe>
-    }
     <form>
 
         @foreach (var item in Model)

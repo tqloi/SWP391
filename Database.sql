@@ -382,12 +382,14 @@ CREATE TABLE LivestreamRecord
 	LivestreamRecordID INT PRIMARY KEY IDENTITY(1,1),
 	UserID NVARCHAR(450),
 	CreateDate DATETIME,
-	UpdateDate DATETIME
-	FOREIGN KEY (UserID) REFERENCES AspNetUsers(id) ON DELETE CASCADE
+	UpdateDate DATETIME,
+	CourseID INT,
+	FOREIGN KEY (UserID) REFERENCES AspNetUsers(id) ON DELETE CASCADE,
+	FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
 );
 go
 ALTER TABLE LivestreamRecord
-ADD StreamKey NVARCHAR(255);
+Drop COLUMn StreamKey
 Go
 ALTER TABLE LivestreamRecord
 ADD LivestreamId NVARCHAR(255);
