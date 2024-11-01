@@ -6,6 +6,8 @@
     var studentCourse = Model.StudentCourse;
     var lectures = Model.Lectures;
     var completions = Model.Completion;
+    var isPassed = Model.IsPassed;
+    var certificate = Model.Certificate;
 }
 
 <style>
@@ -41,7 +43,28 @@
 
 <div class="container-fluid">
 
-    <h1 class="h3 mb-4 text-gray-800">Welcome to @studentCourse.Course.Title</h1>
+    @if (isPassed)
+    {
+        <div class="bg-white p-3 shadow-lg rounded mb-4 text-black d-flex align-items-center justify-content-between">
+            <div class="fs-6 ml-3">Congratulations, you have completed our course.</div>
+            <form asp-action="GenerateCertificate" asp-controller="Student" asp-area="Student" class="d-flex align-items-center" onsubmit="return disableButton(this)">
+                <input type="hidden" name="StudentID" value="@studentCourse.StudentID" />
+                <input type="hidden" name="CourseID" value="@studentCourse.CourseID" />
+                <input type="hidden" name="InstructorID" value="@studentCourse.Course.InstructorID" />
+                <div class="mr-3 fs-6">Your certificate is ready!</div>
+                <button id="claimButton" class="btn btn-warning text-black px-3 py-1 fs-6 border">Claim now</button>
+            </form>
+       </div>
+    }
+
+    <h1 class="h3 mb-4 text-gray-800">
+        Welcome to @studentCourse.Course.Title
+        <button class="btn @(studentCourse.CertificateStatus == "Completed" ? "btn-warning" : "btn-light") text-black ml-2 px-2 py-0 fs-6 border border-dark fw-bold">@studentCourse.CertificateStatus</button>
+        @if (certificate != null)
+        {
+            <a href="@certificate.CertificateLink" target="_blank" class="fs-5 ml-1 d-flex align-items-center mt-1">View Certificate <i class="bi bi-caret-right-fill"></i> </a>
+        }
+    </h1>
     <div class="row">
         <div class="col-lg-7">
             <div class="card shadow mb-4">
@@ -133,7 +156,7 @@
                 </div>
             </div>
 
-            <div class="card shadow mb-4">
+            <div class="card shadow mb-4" style="margin-bottom: 30px">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-info">Instructor</h6>
                 </div>
@@ -189,7 +212,7 @@
                 </div>
                 <div class="card-body">
                     <p>
-                        To receive the certificate
+                        To pass this course,
                         you must complete all the lectures
                         and have an average score of 5 or above.
                     </p>
@@ -220,3 +243,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    function disableButton(form) {
+        const button = form.querySelector('#claimButton');
+        button.disabled = true; 
+        button.textContent = 'Processing...'; 
+        return true; 
+    }
+
+    window.addEventListener('beforeunload', function () {
+        document.getElementById('loading').style.display = 'none';
+    });
+</script>

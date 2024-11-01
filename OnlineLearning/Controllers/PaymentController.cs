@@ -8,7 +8,6 @@ using OnlineLearning.Models.ViewModel;
 
 using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
-using QRCoder;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;

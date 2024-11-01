@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+//using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using System.Diagnostics;
 
 using YourNamespace.Models;
@@ -88,10 +88,13 @@ namespace OnlineLearning.Controllers
 
             double overallAverageScore = (averageAssignmentScore + averageTestScore) / 2;
 
-            bool isPass = false;
-            if(studentCourse.Progress == 100 && overallAverageScore > 5)
+            var certificate = await datacontext.Certificate
+                               .Where(x => x.CourseID == CourseID && x.StudentID == userId).FirstOrDefaultAsync();
+
+            bool isPassed = false;
+            if(studentCourse.Progress == 100 && overallAverageScore >= 5 && certificate == null)
             {
-                isPass = true;
+                isPassed = true;
             }
 
             var model = new CourseInfoViewModel
@@ -100,7 +103,9 @@ namespace OnlineLearning.Controllers
                 Completion = completion,
                 StudentCourse = studentCourse,
                 TotalCourse = totalCourses,
-                TotalStudent = totalStudents
+                TotalStudent = totalStudents,
+                IsPassed = isPassed,
+                Certificate = certificate
             };
 
             ViewBag.Course = course;

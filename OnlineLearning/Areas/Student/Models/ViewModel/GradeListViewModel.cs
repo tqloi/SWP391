@@ -6,5 +6,6 @@ namespace OnlineLearning.Areas.Student.Models.ViewModel
     {
         public List<ScoreModel> scoretests { get; set; }
         public List<ScoreAssignmentModel> scoreAssignments { get; set; }
+        public List<SubmissionModel> submissions { get; set; }
     }
 }
