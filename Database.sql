@@ -62,6 +62,7 @@ CREATE TABLE Courses (
     CategoryID INT,
     [Level] NVARCHAR(50) CHECK (level IN ('Beginner', 'Intermediate', 'Advanced')),
     [Status] BIT NOT NULL DEFAULT 1, -- true: active, false: inactive
+	IsBaned BIT NOT NULL DEFAULT 1,
 	CreateDate DATE,
 	LastUpdate DATE,
 	EndDate DATE,
@@ -71,7 +72,10 @@ CREATE TABLE Courses (
     FOREIGN KEY (instructorID) REFERENCES Instructors(InstructorID) ON DELETE SET NULL  -- Foreign key to Instructor (userID from User)
 );
 alter table Courses
-ADD Rating FLOAT NULL;
+ADD IsBaned BIT NOT NULL DEFAULT 0;
+
+alter table Courses
+ADD IsBan Bit NOT NULL;
 alter table Courses
 Alter column Price DECIMAL(10,1);
 go
@@ -115,7 +119,7 @@ CREATE TABLE StudentCourses (
     StudentID NVARCHAR(450),  
     CourseID INT,        
     Progress DECIMAL(5,2) CHECK (progress >= 0 AND progress <= 100),  -- Tiến độ học tập (% hoàn thành)
-    CertificateStatus NVARCHAR(50) CHECK (certificateStatus IN ('Not Started', 'In Progress', 'Completed', 'Certified')), -- Trạng thái chứng chỉ
+    CertificateStatus NVARCHAR(50) CHECK (certificateStatus IN ('In Progress', 'Completed')), -- Trạng thái chứng chỉ
     EnrollmentDate DATETIME NOT NULL,
     CompletionDate DATETIME NULL,
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id), 
@@ -130,10 +134,10 @@ CREATE TABLE [Certificate](
 	CertificateID INT PRIMARY KEY IDENTITY(1,1),
 	StudentID NVARCHAR(450), 
 	CourseID INT,  
-	EnrollmentDate DATETIME NOT NULL,
     CompletionDate DATETIME NOT NULL,
+	CertificateLink NVARCHAR(MAX),
 	FOREIGN KEY (studentID) REFERENCES AspNetUsers(id),
-    FOREIGN KEY (courseID) REFERENCES Courses(courseID)
+    FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 )
 
 -- Lecture table
@@ -235,6 +239,8 @@ ADD ScoreID INT PRIMARY KEY IDENTITY(1,1)
 
 ALTER TABLE Score 
 ALTER COLUMN Score FLOAT;
+ALTER TABLE Score 
+add DoTestAt Datetime;
 
 ALTER TABLE Score
 ADD NumberOfAttempt INT

@@ -9,40 +9,32 @@
   <ItemGroup>
     <Compile Remove="Areas\Admin\Views\Shared\Components\**" />
     <Compile Remove="Areas\Instructor\Data\**" />
-    <Compile Remove="Areas\Instructor\Models\**" />
     <Compile Remove="Areas\Instructor\Views\Payment\**" />
     <Compile Remove="Areas\Instructor\Views\Shared\Components\**" />
-    <Compile Remove="Areas\Student\Models\**" />
     <Compile Remove="VideoCall\**" />
     <Compile Remove="wwwroot\assets\**" />
     <Compile Remove="wwwroot\Assignment\**" />
     <Compile Remove="wwwroot\Images\NewFolder\**" />
     <Content Remove="Areas\Admin\Views\Shared\Components\**" />
     <Content Remove="Areas\Instructor\Data\**" />
-    <Content Remove="Areas\Instructor\Models\**" />
     <Content Remove="Areas\Instructor\Views\Payment\**" />
     <Content Remove="Areas\Instructor\Views\Shared\Components\**" />
-    <Content Remove="Areas\Student\Models\**" />
     <Content Remove="VideoCall\**" />
     <Content Remove="wwwroot\assets\**" />
     <Content Remove="wwwroot\Assignment\**" />
     <Content Remove="wwwroot\Images\NewFolder\**" />
     <EmbeddedResource Remove="Areas\Admin\Views\Shared\Components\**" />
     <EmbeddedResource Remove="Areas\Instructor\Data\**" />
-    <EmbeddedResource Remove="Areas\Instructor\Models\**" />
     <EmbeddedResource Remove="Areas\Instructor\Views\Payment\**" />
     <EmbeddedResource Remove="Areas\Instructor\Views\Shared\Components\**" />
-    <EmbeddedResource Remove="Areas\Student\Models\**" />
     <EmbeddedResource Remove="VideoCall\**" />
     <EmbeddedResource Remove="wwwroot\assets\**" />
     <EmbeddedResource Remove="wwwroot\Assignment\**" />
     <EmbeddedResource Remove="wwwroot\Images\NewFolder\**" />
     <None Remove="Areas\Admin\Views\Shared\Components\**" />
     <None Remove="Areas\Instructor\Data\**" />
-    <None Remove="Areas\Instructor\Models\**" />
     <None Remove="Areas\Instructor\Views\Payment\**" />
     <None Remove="Areas\Instructor\Views\Shared\Components\**" />
-    <None Remove="Areas\Student\Models\**" />
     <None Remove="VideoCall\**" />
     <None Remove="wwwroot\assets\**" />
     <None Remove="wwwroot\Assignment\**" />
@@ -80,7 +72,7 @@
 
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 
-    <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="Select.Pdf.NetCore" Version="24.1.0" />
   </ItemGroup>
 
   <ItemGroup>

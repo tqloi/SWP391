@@ -30,7 +30,7 @@
 
     <div class="row">
 
-        <div class="col-xl-7 col-lg-7">
+        <div class="col-xl-8 col-lg-7">
 
             <div class="card shadow mb-4">
                 @{
@@ -40,7 +40,7 @@
                 {
                     if (file.FileType.Equals("Video"))
                     {
-                        <div class="card-img-top bg-light text-black py-3 px-4 d-flex justify-content-end align-items-center" controls style="height:100%; width: 100%;">
+                        <div class="card-header text-black py-3 px-4 d-flex justify-content-end align-items-center" controls style="height:100%; width: 100%;">
                             <i class="bi bi-skip-end-circle"></i>
                             <div class="me-auto ml-1 fw-bold">
                                 @(file.FileName.Length > 40 ? file.FileName.Substring(0, 40) + "..." : file.FileName)
@@ -71,8 +71,8 @@
                 @if(count == 0)
                 {
                     <div class="position-relative">
-                        <div class="card-img-top bg-light py-3 px-4 d-flex justify-content-between align-items-center" controls style="height:100%; width: 100%;">
-                            <div>No lecture video yet.</div>
+                        <div class="card-header bg-light py-3 px-4 d-flex justify-content-between align-items-center" controls style="height:100%; width: 100%;">
+                            <div><i class="bi bi-skip-end-circle mr-1"></i>No lecture video yet.</div>
                             <div>
                                 <button data-bs-toggle="modal" data-bs-target="#uploadVideoModal"
                                     class="btn btn-info m-0 d-flex align-items-center" style="border-radius: 20px; height: 40px;">
@@ -155,7 +155,7 @@
         </div>
 
         <!-- Donut Chart -->
-        <div class="col-xl-5 col-lg-5">
+        <div class="col-xl-4 col-lg-5">
             <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3">

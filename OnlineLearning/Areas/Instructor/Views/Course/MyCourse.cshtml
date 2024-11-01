@@ -170,11 +170,6 @@
                                     </script>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="EndDate" class="form-label">End Date</label>
-                                    <input type="date" class="form-control inputdate" name="EndDate"
-                                           value="@((course.EndDate.HasValue) ? course.EndDate.Value.ToString("yyyy-MM-dd") : string.Empty)">
-                                </div>
-                                <div class="mb-3">
                                     <label for="Price" class="form-label">Price</label>
                                     <input type="number" class="form-control" name="Price" value="@course.Price" step="0.01" min="0">
                                 </div>
@@ -328,16 +323,12 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="endDate" class="form-label">End Date</label>
-                            <input type="date" class="form-control inputdate" name="EndDate" required>
-                        </div>
-                        <div class="mb-3">
                             <label for="coursePrice" class="form-label">Price</label>
                             <input type="number" class="form-control" name="Price" step="0.01" min="0" required>
                         </div>
                         <div class="mb-3">
                             <label for="coursematerials" class="form-label">upload course materials</label>
-                            <input type="file" class="form-control" name="coursematerials" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple>
+                            <input type="file" class="form-control" name="coursematerials" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple required>
                         </div>
                         <button type="submit" class="btn custom-btn submit-btn" required>Add new course</button>
                     </form>
@@ -417,35 +408,3 @@
         </div>
     </div>
 </section>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const forms = document.querySelectorAll('.course-form');
-
-        forms.forEach(form => {
-            const endDateInput = form.querySelector('.inputdate');
-            const submitButton = form.querySelector('.submit-btn');
-
-            function validateDates() {
-                const endDate = new Date(endDateInput.value);
-                const currentDate = new Date();
-
-                // Reset custom error message
-                endDateInput.setCustomValidity('');
-                submitButton.disabled = false;
-
-                if (endDate < currentDate) {
-                    // Set custom validity message
-                    endDateInput.setCustomValidity('End Date cannot be in the past.');
-                    submitButton.type = 'button';
-                } else {
-                    submitButton.type = 'submit';
-                }
-
-                // Kiểm tra lại tính hợp lệ để hiển thị lỗi nếu có
-                endDateInput.reportValidity();
-            }
-
-            endDateInput.addEventListener('change', validateDates); // Đăng ký sự kiện cho endDateInput
-        });
-    });
-</script>

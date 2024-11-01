@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+//using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using System.Diagnostics;
 
 using YourNamespace.Models;
@@ -48,8 +48,68 @@ namespace OnlineLearning.Controllers
                 return NotFound();
             }
 
+            var totalCourses = await datacontext.Courses
+                               .Where(c => c.InstructorID == course.InstructorID)
+                               .CountAsync();
+            var totalStudents = await datacontext.StudentCourses
+                               .Where(sc => sc.Course.InstructorID == course.InstructorID)
+                               .Select(sc => sc.StudentID)
+                               .Distinct()
+                               .CountAsync();
+            var studentCourse = await datacontext.StudentCourses
+                               .Where(x => x.CourseID == CourseID && x.StudentID == userId)
+                               .Include(x => x.Course) 
+                               .ThenInclude(x => x.Category)
+                               .Include(x => x.Course)
+                               .ThenInclude(x => x.Instructor)
+                               .ThenInclude(x => x.AppUser)
+                               .FirstOrDefaultAsync(); 
+
+            var lectures = await datacontext.Lecture.Where(x => x.CourseID == CourseID) .ToListAsync();
+            var completion = await datacontext.LectureCompletion.ToListAsync();
+
+            var assignments = await datacontext.Assignment.Where(x => x.CourseID == CourseID).ToListAsync();
+            var assignmentIds = assignments.Select(a => a.AssignmentID).ToList();
+            var scoreAssignments = await datacontext.ScoreAssignment
+                                   .Where(x => assignmentIds.Contains(x.AssignmentID) && x.StudentID == userId)
+                                   .ToListAsync();
+            double averageAssignmentScore = scoreAssignments.Any()
+                                          ? scoreAssignments.Average(x => x.Score)
+                                          : 0;
+
+            var tests = await datacontext.Test.Where(x => x.CourseID == CourseID).ToListAsync();
+            var testIDs = tests.Select(a => a.TestID).ToList();
+            var scoreTests = await datacontext.Score
+                                   .Where(x => testIDs.Contains(x.TestID) && x.StudentID == userId)
+                                   .ToListAsync();
+            double averageTestScore = scoreTests.Any()
+                                    ? scoreTests.Average(x => x.Score)
+                                    : 0; 
+
+            double overallAverageScore = (averageAssignmentScore + averageTestScore) / 2;
+
+            var certificate = await datacontext.Certificate
+                               .Where(x => x.CourseID == CourseID && x.StudentID == userId).FirstOrDefaultAsync();
+
+            bool isPassed = false;
+            if(studentCourse.Progress == 100 && overallAverageScore >= 5 && certificate == null)
+            {
+                isPassed = true;
+            }
+
+            var model = new CourseInfoViewModel
+            {
+                Lectures = lectures,
+                Completion = completion,
+                StudentCourse = studentCourse,
+                TotalCourse = totalCourses,
+                TotalStudent = totalStudents,
+                IsPassed = isPassed,
+                Certificate = certificate
+            };
+
             ViewBag.Course = course;
-            return View(course);
+            return View(model);
         }
 
 

@@ -37,7 +37,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         {
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            var user = await _userManager.FindByIdAsync(userId);
             var existingCourse = await datacontext.Courses.FirstOrDefaultAsync(c => c.CourseCode == model.CourseCode);
 
             if (existingCourse != null)
@@ -108,10 +108,17 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     }
                 }
             }
-
+            var notify = new NotificationModel
+            {
+                UserId = user.Id,
+                Description = $"{user.FirstName} {user.LastName} has just created a course named: {course.Title}",
+                CreatedAt = DateTime.Now
+            };
+            datacontext.Notification.Add(notify);
+            await datacontext.SaveChangesAsync();
             TempData["success"] = "Course created successfully!";
             //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-            return RedirectToAction("CourseInfo", "Participation", new { CourseID = newCourseId });
+            return RedirectToAction("Dashboard", "Instructor", new { area = "Instructor", CourseID = newCourseId });
         }
 
         [HttpPost]
@@ -146,10 +153,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             {
                 course.Level = model.Level;
             }
-            if (model.EndDate != DateTime.MinValue)
-            {
-                course.EndDate = model.EndDate;
-            }
+
+            course.EndDate = new DateTime(2030, 1, 1);
             course.LastUpdate = DateTime.Now;
 
             if (model.CoverImage != null)
@@ -208,16 +213,22 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 TempData["error"] = "Course not found!";
                 return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
             }
+            if (course.Status == false && course.IsBaned == true) 
+            {
+                TempData["warning"] = "Cannot enable because the course violates the terms!";
+                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            }
+
             if (course.Status == false)
             {
                 var lectures = await datacontext.Lecture.Where(l => l.CourseID == CourseId).ToArrayAsync();
                 var tests = await datacontext.Test.Where(t => t.CourseID == CourseId).ToArrayAsync();
                 var assignments = await datacontext.Assignment.Where(a => a.CourseID == CourseId).ToArrayAsync();
                 var courseMaterials = await datacontext.CourseMaterials.Where(a => a.CourseID == CourseId).ToArrayAsync();
-                if (!lectures.Any() || !tests.Any() || !assignments.Any() || courseMaterials.Any()) 
+                if (!lectures.Any() || !tests.Any() || !assignments.Any() || !courseMaterials.Any()) 
                 {
                     TempData["warning"] = "Please add more course content";
-                    return RedirectToAction("CourseInfo", "Participation", new { CourseID = CourseId });
+                    return RedirectToAction("Dashboard", "Instructor", new { area = "Instructor", CourseID = CourseId });
                 }
             }
 

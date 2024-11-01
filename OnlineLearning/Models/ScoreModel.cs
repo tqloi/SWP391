@@ -14,6 +14,7 @@ namespace OnlineLearning.Models
 
         [ForeignKey("Test")]
         public int TestID { get; set; } // Corresponds to Test(testID)
+        public DateTime DoTestAt { get; set; }
 
         [Required]
         public double Score { get; set; } // Score value

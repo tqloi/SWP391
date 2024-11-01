@@ -1,16 +1,26 @@
 ﻿﻿@using OnlineLearning.Models.ViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AppUserModel> SignInManager
+@inject UserManager<AppUserModel> UserManager
 @{
     ViewData["Title"] = "TestList";
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
+    var currentCourse = ViewBag.Course as CourseModel;
+    var user = await UserManager.GetUserAsync(User);
 }
 @model TestListViewModel;
 <partial name="_NoficationPartial" />
 <!-- Bootstrap CSS (only the latest version) -->
 
 <link rel="stylesheet" href="~/css/TestList.css" />
-<h1>Test List</h1>
 
-<section class="topics-detail-section section-padding" id="topics-detail">
+<div class="container-fluid">
+    <div class="card shadow row m-3 mb-5">
+        <div class="d-flex justify-content-between align-items-center m-3">
+            <h4 class="mb-0">Tests</h4>
+        </div>
+      
+    <section class="topics-detail-section section-padding" id="topics-detail">
     @if (User.IsInRole("Instructor"))
     {
         <div class="row align-items-end">
@@ -79,7 +89,7 @@
                         <p><strong>Status:</strong> @test.Status</p>
                     </div>
 
-                    @if (User.IsInRole("Instructor"))
+                    @if (user.Id.Equals(currentCourse.InstructorID))
                     {
                         <div class="d-flex justify-content-between">
                             <form asp-controller="Question" asp-action="EditQuestionRedirector" asp-area="Instructor" method="post" asp-route-TestID="@test.TestID">
@@ -104,10 +114,11 @@
                                     Delete Test
                                 </button>
                             </form>
+                                    <a class="btn btn-success" asp-controller="Test" asp-action="ViewScoreTest" asp-area="Instructor" asp-route-TestID = "@test.TestID">View Score</a>
                         </div>
                     }
 
-                    @if (User.IsInRole("Student"))
+                    @if (!user.Id.Equals(currentCourse.InstructorID))
                     {
                         var currentTime = DateTime.Now;
                         var testNotStarted = currentTime < test.StartTime;
@@ -179,9 +190,10 @@
     {
         <h2>No Test available, you should add some new Test</h2>
     }
-
+   
 </section>
-
+</div>
+</div>
 <!-- Script for signalR -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
 <script src="~/js/testListSignalR.js"></script>

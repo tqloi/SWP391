@@ -1,95 +1,147 @@
 ﻿﻿@{
+    
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
     <partial name="_NoficationPartial" />
 }
-
+@using OnlineLearning.Areas.Instructor.Models.ViewModel
+@model DashBoardViewModel
+<!-- Begin Page Content -->
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Charts</h1>
-    <p class="mb-4">
-        Chart.js is a third party plugin that is used to generate the charts in this theme.
-        The charts below have been customized - for further customization options, please visit the <a target="_blank" href="https://www.chartjs.org/docs/latest/">
-            official Chart.js
-            documentation
-        </a>.
-    </p>
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+    </div>
 
-    <!-- Content Row -->
     <div class="row">
 
-        <div class="col-xl-8 col-lg-7">
-
-            <!-- Area Chart -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Area Chart</h6>
-                </div>
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="myAreaChart"></canvas>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                              Total Earnings 
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.EarningMonth.ToString("N0") VND</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
                     </div>
-                    <hr>
-                    Styling for the area chart can be found in the
-                    <code>/course/js/demo/chart-area-demo.js</code> file.
                 </div>
             </div>
-
-            <!-- Bar Chart -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Bar Chart</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-bar">
-                        <canvas id="myBarChart"></canvas>
-                    </div>
-                    <hr>
-                    Styling for the bar chart can be found in the
-                    <code>/course//js/demo/chart-bar-demo.js</code> file.
-                </div>
-            </div>
-
         </div>
 
-        <!-- Donut Chart -->
-        <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Donut Chart</h6>
-                </div>
-                <!-- Card Body -->
+        <!-- Earnings (Annual) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="chart-pie pt-4">
-                        <canvas id="myPieChart"></canvas>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Earnings (Week)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.EarningDay.ToString("N0") VND</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
                     </div>
-                    <hr>
-                    Styling for the donut chart can be found in the
-                    <code>/course/js/demo/chart-pie-demo.js</code> file.
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Number Student
+                            </div>
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto">
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">@Model.NumStudent</div>
+                                </div>
+                                <div class="col">
+                                    <div class="progress progress-sm mr-2">
+                                        <div class="progress-bar bg-info" role="progressbar"
+                                             style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Requests Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Rating
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Rating</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-</div>
-<!-- /.container-fluid -->
-@* <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<canvas id="myPieChart"></canvas>
+        <!-- Page Heading -->
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Student</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Student Name</th>
+                                <th>Progess</th>
+                                <th>Enroll Date</th>
+                            </tr>
+                        </thead>
 
-<script>
-    const ctx = document.getElementById('myPieChart').getContext('2d');
-    const myPieChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['Red', 'Blue', 'Yellow'], // Nhãn của các phần
-            datasets: [{
-                data: [300, 50, 100], // Dữ liệu cho từng phần
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'], // Màu cho từng phần
-            }]
-        },
-        options: {
-            responsive: true,
-        }
-    });
-</script> *@
+                        <tbody>
+                            @if (Model.ListStudent.Any())
+                            {
+                                @foreach (var item in Model.ListStudent)
+                                {
+                                    <tr>
+                                        <td>
+                                        <a asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@item.AppUser.Id">@item.AppUser.UserName</a>
+                                    </td>
+                                    <td>
+                                        <a asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@item.AppUser.Id">@item.AppUser.FirstName @item.AppUser.LastName</a>                                        
+                                    </td>
+                                        <td>@item.Progress</td>
+                                        <td>@item.EnrollmentDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+</div>
+<!-- End of Main Content -->

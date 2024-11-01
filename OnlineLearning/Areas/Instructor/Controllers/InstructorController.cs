@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearning.Areas.Instructor.Models.ViewModel;
 using OnlineLearning.Controllers;
 using OnlineLearning.Models;
 using OnlineLearningApp.Respositories;
@@ -30,12 +31,25 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
         [HttpGet]
         [ServiceFilter(typeof(CourseAccessFilter))]
-        public IActionResult Dashboard(int CourseID)
+        public async Task<IActionResult> Dashboard(int CourseID)
         {
             var course =  _dataContext.Courses.Find(CourseID);
             ViewBag.Course = course;
-
-            return View();
+            var startdate = DateTime.Now.AddDays(-7);
+            var now  = DateTime.Now;
+            var earning = _dataContext.Payment.Where(c => c.CourseID == CourseID).Sum(c => c.Amount);
+            var earningweek = _dataContext.Payment.Where(c => c.CourseID == CourseID && c.PaymentDate >= startdate && c.PaymentDate <= now).Sum(c => c.Amount);
+            var numstd = _dataContext.StudentCourses.Where(c => c.CourseID == CourseID).Count();
+            var liststd = await _dataContext.StudentCourses.Where(c => c.CourseID == CourseID).Include(c => c.AppUser).ToListAsync();
+            var dashboard = new DashBoardViewModel
+            {
+                EarningMonth = (double)earning,
+                EarningDay = (double)earningweek,
+                NumStudent = numstd,
+                Rating = course.Rating,
+                ListStudent = liststd
+            };
+            return View(dashboard);
         }
     }
 }
