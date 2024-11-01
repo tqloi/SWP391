@@ -153,10 +153,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             {
                 course.Level = model.Level;
             }
-            if (model.EndDate != DateTime.MinValue)
-            {
-                course.EndDate = model.EndDate;
-            }
+
+            course.EndDate = new DateTime(2030, 1, 1);
             course.LastUpdate = DateTime.Now;
 
             if (model.CoverImage != null)

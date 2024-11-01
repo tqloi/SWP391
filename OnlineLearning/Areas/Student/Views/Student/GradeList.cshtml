@@ -10,11 +10,11 @@
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">Student's Grade List</h1>
-    @* <p class="mb-4">
-        DataTables is a third party plugin that is used to generate the demo table below.
-        For more information about DataTables, please visit the <a target="_blank"
-                                                                   href="https://datatables.net">official DataTables documentation</a>.
-    </p> *@
+    <p class="mb-4">
+    To pass this course,
+    you must complete all the lectures
+    and have an average score of 5 or above.
+    </p>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
@@ -27,28 +27,20 @@
                     <thead>
                         <tr>
                             <th>Title</th>
-                            <th>Assignment Link</th>
                             <th>Grade</th>
-                            
+                            <th>Submit at</th>        
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Title</th>
-                            <th>Assignment Link</th>
-                            <th>Grade</th>
-                            
-                        </tr>
-                    </tfoot>
                     <tbody>
                         @if (Model.scoreAssignments.Any())
                         {
                             @foreach (var item in Model.scoreAssignments)
                             {
+                                var submission = Model.submissions.FirstOrDefault(p => p.AssignmentID == item.AssignmentID);
                                 <tr>
                                     <td>@item.Assignment.Title</td>
-                                    <td>@item.Assignment.AssignmentLink</td>
                                     <td>@item.Score</td>
+                                    <td>@submission.SubmissionDate</td>                 
                                 </tr>
                             }
                         }
@@ -59,9 +51,6 @@
                             </tr>
                         }
                     </tbody>
-
-                        
-                    
                 </table>
             </div>
         </div>
@@ -81,15 +70,6 @@
                             <th>Done At</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Title</th>
-
-                            <th>Grade</th>
-                            <th>Done At</th>
-
-                        </tr>
-                    </tfoot>
                     <tbody>
                         @if (Model.scoretests.Any())
 {
@@ -111,12 +91,6 @@
                                 <td colspan="3" style="text-align: center;">You haven't done any test.</td>
                             </tr>
                         }
-
-
-
-
-
-
                     </tbody>
                 </table>
             </div>

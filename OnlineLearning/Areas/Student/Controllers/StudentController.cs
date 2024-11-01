@@ -90,10 +90,12 @@ namespace OnlineLearning.Areas.Student.Controllers
             }
             var testScore = await datacontext.Score.Where(t => t.StudentID.Equals(user.Id)).Include(t => t.Test).ToListAsync();
             var assignmentScore = await datacontext.ScoreAssignment.Where(a => a.StudentID.Equals(user.Id)).Include(a => a.Assignment).ToListAsync();
+            var submission = await datacontext.Submission.Where(a => a.StudentID.Equals(user.Id)).ToListAsync();
             var model = new GradeListViewModel
             {
                 scoretests = testScore,
-                scoreAssignments = assignmentScore
+                scoreAssignments = assignmentScore,
+                submissions = submission
             };
 
             return View(model);

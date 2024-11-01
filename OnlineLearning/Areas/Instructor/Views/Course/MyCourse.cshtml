@@ -169,11 +169,11 @@
                                         document.getElementById("levelForm").value = selectedLevel;
                                     </script>
                                 </div>
-                                <div class="mb-3">
+@*                                 <div class="mb-3">
                                     <label for="EndDate" class="form-label">End Date</label>
                                     <input type="date" class="form-control inputdate" name="EndDate"
                                            value="@((course.EndDate.HasValue) ? course.EndDate.Value.ToString("yyyy-MM-dd") : string.Empty)">
-                                </div>
+                                </div> *@
                                 <div class="mb-3">
                                     <label for="Price" class="form-label">Price</label>
                                     <input type="number" class="form-control" name="Price" value="@course.Price" step="0.01" min="0">
@@ -327,10 +327,10 @@
                                 <option value="advanced">Advanced</option>
                             </select>
                         </div>
-                        <div class="mb-3">
+ @*                        <div class="mb-3">
                             <label for="endDate" class="form-label">End Date</label>
                             <input type="date" class="form-control inputdate" name="EndDate" required>
-                        </div>
+                        </div> *@
                         <div class="mb-3">
                             <label for="coursePrice" class="form-label">Price</label>
                             <input type="number" class="form-control" name="Price" step="0.01" min="0" required>
@@ -417,7 +417,7 @@
         </div>
     </div>
 </section>
-<script>
+@* <script>
     document.addEventListener('DOMContentLoaded', function () {
         const forms = document.querySelectorAll('.course-form');
 
@@ -448,4 +448,4 @@
             endDateInput.addEventListener('change', validateDates); // Đăng ký sự kiện cho endDateInput
         });
     });
-</script>
+</script> *@
