@@ -101,62 +101,47 @@
                 </div>
             </div>
         </div>
-        <div class="container-fluid">
-
-            <!-- Page Heading -->
-            <h1 class="h3 mb-2 text-gray-800">Student's Grade List</h1>
-            @* <p class="mb-4">
-            DataTables is a third party plugin that is used to generate the demo table below.
-            For more information about DataTables, please visit the <a target="_blank"
-            href="https://datatables.net">official DataTables documentation</a>.
-            </p> *@
-
-            <!-- DataTales Example -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Assignment</h6>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Student ID</th>
-                                    <th>Student Name</th>
-                                    <th>Progess</th>
-                                    <th>Enroll Date</th>
-                                   
-
-                                </tr>
-                            </thead>
-                           
-                            <tbody>
-                                @if (Model.ListStudent.Any())
-                                {
-                                    @foreach (var item in Model.ListStudent)
-                                    {
-                                        <tr>
-                                            <td>@item.StudentID</td>
-                                            <td>@item.AppUser.FirstName @item.AppUser.LastName</td>
-                                            <td>@item.Progress</td>
-                                            <td>@item.EnrollmentDate.ToString("yyyy-MM-dd HH:mm")</td>
-                                        </tr>
-                                    }
-                                }
-                                
-                            </tbody>
-
-
-
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
     </div>
 
-    
+        <!-- Page Heading -->
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Student</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Student Name</th>
+                                <th>Progess</th>
+                                <th>Enroll Date</th>
+                            </tr>
+                        </thead>
 
+                        <tbody>
+                            @if (Model.ListStudent.Any())
+                            {
+                                @foreach (var item in Model.ListStudent)
+                                {
+                                    <tr>
+                                        <td>
+                                        <a asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@item.AppUser.Id">@item.AppUser.UserName</a>
+                                    </td>
+                                    <td>
+                                        <a asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@item.AppUser.Id">@item.AppUser.FirstName @item.AppUser.LastName</a>                                        
+                                    </td>
+                                        <td>@item.Progress</td>
+                                        <td>@item.EnrollmentDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 </div>
 <!-- End of Main Content -->
