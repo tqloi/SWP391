@@ -59,7 +59,6 @@ namespace OnlineLearning.Areas.Admin.Controllers
             }
             else if (course.Status == false)
             {
-
                 course.Status = true;
                 course.IsBaned = false;
                 await _dataContext.SaveChangesAsync();
