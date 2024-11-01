@@ -73,7 +73,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     {
                         ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                         TempData["error"] = "Edit failed due to file upload error!";
-                        return View(model);
+                        return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lecture.LectureID });
                     }
                 }
 
@@ -98,7 +98,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                         {
                             ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                             TempData["error"] = "Edit failed due to file upload error!";
-                            return View(model);
+                            return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lecture.LectureID });
                         }
                     }
 

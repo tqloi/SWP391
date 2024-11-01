@@ -422,36 +422,32 @@ VALUES
     ('Data Science', 'Courses focused on data analysis and machine learning.'),
     ('Web Development', 'Courses for building websites and web applications.'),
     ('Design', 'Courses for graphic design and multimedia.'); 
+
 INSERT INTO Courses 
-    (Title, CourseCode, [Description], CoverImagePath, InstructorID, NumberOfStudents, Price, CategoryID, [Level], [Status], CreateDate, LastUpdate, EndDate, NumberOfRate, Rating) 
+    (Title, CourseCode, [Description], CoverImagePath, InstructorID, NumberOfStudents, Price, CategoryID, [Level], [Status], IsBaned, CreateDate, LastUpdate, EndDate, NumberOfRate, Rating) 
 VALUES
     -- Programming Category
-
-    ('Python for Beginners', 'CS101', 'Learn Python programming from scratch.', '/Images/cover/python.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 100.00, 1, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
-    ('Java Advanced Techniques', 'CS102', 'Explore advanced Java programming concepts.', '/Images/cover/java.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 120.00, 1, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
-    ('C# for Beginners', 'CS103', 'Introduction to C# programming.', '/Images/cover/csharp.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 90.00, 1, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
-    ('Full-Stack Development with Node.js', 'CS104', 'Learn full-stack development using Node.js.', '/Images/cover/nodejs.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 150.00, 1, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
-    ('Introduction to Algorithms', 'CS105', 'Learn about algorithms and data structures.', '/Images/cover/algorithms.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 110.00, 1, 'Advanced', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
+    ('Python for Beginners', 'CS101', 'Learn Python programming from scratch.', '/Images/cover/python.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 100.00, 1, 'Beginner', 1, 0, '2024-09-01', '2024-09-20', '2024-12-20', 0, NULL),
+    ('Java Advanced Techniques', 'CS102', 'Explore advanced Java programming concepts.', '/Images/cover/java.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 120.00, 1, 'Advanced', 1, 0, '2024-09-05', '2024-09-21', '2024-12-20', 0, NULL),
+    ('C# for Beginners', 'CS103', 'Introduction to C# programming.', '/Images/cover/csharp.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 90.00, 1, 'Beginner', 1, 0, '2024-09-10', '2024-09-22', '2024-12-20', 0, NULL),
+    ('Full-Stack Development with Node.js', 'CS104', 'Learn full-stack development using Node.js.', '/Images/cover/nodejs.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 150.00, 1, 'Intermediate', 1, 0, '2024-09-15', '2024-09-23', '2024-12-20', 0, NULL),
+    ('Introduction to Algorithms', 'CS105', 'Learn about algorithms and data structures.', '/Images/cover/algorithms.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 110.00, 1, 'Advanced', 1, 0, '2024-09-20', '2024-09-24', '2024-12-20', 0, NULL),
 
     -- Data Science Category
-    ('Data Analysis with R', 'DS101', 'Learn data analysis using R programming.', '/Images/cover/data_analysis.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 130.00, 2, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
-    ('Machine Learning A-Z', 'DS102', 'Master machine learning algorithms and techniques.', '/Images/cover/machine_learning.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 200.00, 2, 'Advanced', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
-    ('Data Science for Everyone', 'DS103', 'Introduction to data science concepts.', '/Images/cover/data_science.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 100.00, 2, 'Beginner', 1, '2024-09-10', '2024-09-22', '2024-12-20', 0),
-    ('Deep Learning with TensorFlow', 'DS104', 'Explore deep learning with TensorFlow.', '/Images/cover/deep_learning.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 150.00, 2, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
-    ('Statistics for Data Science', 'DS105', 'Learn statistics for data science applications.', '/Images/cover/statistics.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 120.00, 2, 'Intermediate', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
+    ('Data Analysis with R', 'DS101', 'Learn data analysis using R programming.', '/Images/cover/data_analysis.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 130.00, 2, 'Beginner', 1, 0, '2024-09-01', '2024-09-20', '2024-12-20', 0, NULL),
+    ('Machine Learning A-Z', 'DS102', 'Master machine learning algorithms and techniques.', '/Images/cover/machine_learning.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 200.00, 2, 'Advanced', 1, 0, '2024-09-05', '2024-09-21', '2024-12-20', 0, NULL),
+    ('Data Science for Everyone', 'DS103', 'Introduction to data science concepts.', '/Images/cover/data_science.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 100.00, 2, 'Beginner', 1, 0, '2024-09-10', '2024-09-22', '2024-12-20', 0, NULL),
+    ('Deep Learning with TensorFlow', 'DS104', 'Explore deep learning with TensorFlow.', '/Images/cover/deep_learning.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 150.00, 2, 'Intermediate', 1, 0, '2024-09-15', '2024-09-23', '2024-12-20', 0, NULL),
+    ('Statistics for Data Science', 'DS105', 'Learn statistics for data science applications.', '/Images/cover/statistics.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 120.00, 2, 'Intermediate', 1, 0, '2024-09-20', '2024-09-24', '2024-12-20', 0, NULL),
 
     -- Web Development Category
-    ('HTML & CSS for Beginners', 'WD101', 'Learn the basics of web development with HTML & CSS.', '/Images/cover/html_css.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 80.00, 3, 'Beginner', 1, '2024-09-01', '2024-09-20', '2024-12-20', 0),
-    ('JavaScript Essentials', 'WD102', 'Get started with JavaScript for web development.', '/Images/cover/javascript.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 100.00, 3, 'Beginner', 1, '2024-09-05', '2024-09-21', '2024-12-20', 0),
-    ('React for Beginners', 'WD103', 'Build user interfaces with React.', '/Images/cover/react.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 150.00, 3, 'Intermediate', 1, '2024-09-10', '2024-09-22', NULL, 0),
-    ('Node.js for Beginners', 'WD104', 'Learn how to build web applications using Node.js.', '/Images/cover/nodejs_web.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 120.00, 3, 'Intermediate', 1, '2024-09-15', '2024-09-23', '2024-12-20', 0),
-    ('Advanced CSS Techniques', 'WD105', 'Explore advanced techniques in CSS for modern web design.', '/Images/cover/advanced_css.jpg', 'df9870c0-1057-49b3-9a2a-bdbc832d3901', 0, 130.00, 3, 'Advanced', 1, '2024-09-20', '2024-09-24', '2024-12-20', 0),
+    ('HTML & CSS for Beginners', 'WD101', 'Learn the basics of web development with HTML & CSS.', '/Images/cover/html_css.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 80.00, 3, 'Beginner', 1, 0, '2024-09-01', '2024-09-20', '2024-12-20', 0, NULL),
+    ('JavaScript Essentials', 'WD102', 'Get started with JavaScript for web development.', '/Images/cover/javascript.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 100.00, 3, 'Beginner', 1, 0, '2024-09-05', '2024-09-21', '2024-12-20', 0, NULL),
+    ('React for Beginners', 'WD103', 'Build user interfaces with React.', '/Images/cover/react.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 150.00, 3, 'Intermediate', 1, 0, '2024-09-10', '2024-09-22', NULL, 0, NULL),
+    ('Node.js for Beginners', 'WD104', 'Learn how to build web applications using Node.js.', '/Images/cover/nodejs_web.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 120.00, 3, 'Intermediate', 1, 0, '2024-09-15', '2024-09-23', '2024-12-20', 0, NULL),
+    ('Advanced CSS Techniques', 'WD105', 'Explore advanced techniques in CSS for modern web design.', '/Images/cover/advanced_css.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 130.00, 3, 'Advanced', 1, 0, '2024-09-20', '2024-09-24', '2024-12-20', 0, NULL);
 
 	-- sua id instructor
-Insert into Instructors(InstructorID, Description)
-values
-('039f2d18-90fe-412c-89a4-038d55908b65','Heloo student');
-go
 
 INSERT INTO StudentCourses (StudentID, CourseID, Progress, CertificateStatus, EnrollmentDate)
 VALUES ('5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 2, 0, 'Not Started', GETDATE());

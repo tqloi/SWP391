@@ -181,13 +181,13 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int CourseId)
+        public async Task<IActionResult> Delete(int CourseId, string returnUrl = null)
         {
             var course = await datacontext.Courses.FindAsync(CourseId);
             if (course == null)
             {
                 TempData["error"] = "Course not found!";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                return Redirect(returnUrl);
             }
 
             var deleteAllowedDate = course.LastUpdate.AddDays(30);
@@ -195,28 +195,28 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             {
                 var daysRemaining = (deleteAllowedDate - DateTime.Now).Days;
                 TempData["warning"] = $"Can be deleted after {daysRemaining} days.";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                return Redirect(returnUrl);
             }
             datacontext.Courses.Remove(course);
             await datacontext.SaveChangesAsync();
 
             TempData["success"] = "Course deleted successfully!";
-            return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            return Redirect(returnUrl);
         }
 
         [HttpPost]
-        public async Task<IActionResult> SetSate(int CourseId)
+        public async Task<IActionResult> SetSate(int CourseId, string returnUrl = null)
         {
             var course = await datacontext.Courses.FindAsync(CourseId);
             if (course == null)
             {
                 TempData["error"] = "Course not found!";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                return Redirect(returnUrl);
             }
             if (course.Status == false && course.IsBaned == true) 
             {
                 TempData["warning"] = "Cannot enable because the course violates the terms!";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                return Redirect(returnUrl);
             }
 
             if (course.Status == false)
@@ -228,7 +228,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 if (!lectures.Any() || !tests.Any() || !assignments.Any() || !courseMaterials.Any()) 
                 {
                     TempData["warning"] = "Please add more course content";
-                    return RedirectToAction("Dashboard", "Instructor", new { area = "Instructor", CourseID = CourseId });
+                    return Redirect(returnUrl);
                 }
             }
 
@@ -237,7 +237,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             await datacontext.SaveChangesAsync();
 
             TempData["success"] = course.Status ? "Course enabled successfully!" : "Course disable successfully!";
-            return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            return Redirect(returnUrl);
         }
 
         [HttpGet]
