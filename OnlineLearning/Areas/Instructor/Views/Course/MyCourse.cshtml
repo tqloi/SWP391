@@ -163,10 +163,12 @@
                                         <option value="advanced">Advanced</option>
                                     </select>
                                     <script>
-                                        var selectedCategory = @course.CategoryID;
-                                        var selectedLevel = '@(course.Level ?? "")';
+                                        var selectedCategory = @course.CategoryID;       
                                         document.getElementById("categoryForm").value = selectedCategory;
-                                        document.getElementById("levelForm").value = selectedLevel;
+                                  </script>
+                                    <script>
+                                       var selectedLevel = @course.Level;
+                                       document.getElementById("levelForm").value = selectedLevel;
                                     </script>
                                 </div>
                                 <div class="mb-3">
@@ -192,6 +194,7 @@
                     </div>
                     <div class="modal-footer">
                         <form id="disableCourseForm" method="post" asp-controller="Course" asp-action="SetSate">
+                            <input type="hidden" name="returnUrl" value="@Url.Action("MyCourse", "Course", new { area = "Instructor", category = category, Level = level, page = Model.CurrentPage})">
                             <input type="hidden" name="CourseID" value="@course.CourseID">
                             <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn custom-btn">Confirm</button>
@@ -215,6 +218,7 @@
                     <div class="modal-footer">
                         <form id="deleteCourseForm" method="post" asp-area="Instructor" asp-controller="Course" asp-action="Delete">
                             <input type="hidden" name="CourseId" value="@course.CourseID">
+                            <input type="hidden" name="returnUrl" value="@Url.Action("MyCourse", "Course", new { area = "Instructor", category = category, Level = level, page = Model.CurrentPage})">
                             <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn custom-btn">Delete</button>
                         </form>

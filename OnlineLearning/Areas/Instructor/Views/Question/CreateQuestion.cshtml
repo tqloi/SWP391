@@ -11,7 +11,9 @@
 
         <link rel="stylesheet" href="~/css/CreateQuestion.css" />
 
-    <h2>Create Question</h2>
+    <h2>Create Question
+        <a asp-action="TestList" asp-controller="Participation" asp-route-CourseID="@ViewBag.Course.CourseID" class="btn btn-outline-black"> Back </a>
+    </h2>
 
     <section>
         <form asp-action="ImportCSV" asp-controller="Question" method="post" enctype="multipart/form-data" onsubmit="return confirmSkipFirstLine(event)">
@@ -136,5 +138,12 @@ else
         if (formToSubmit) {
             formToSubmit.submit(); // Submit the form that triggered the modal
         }
+    });
+</script>
+
+<!-- chặn hiệu ứng load trang -->
+<script>
+    window.addEventListener('beforeunload', function () {
+        document.getElementById('loading').style.display = 'none';
     });
 </script>

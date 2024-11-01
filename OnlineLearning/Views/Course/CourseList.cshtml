@@ -95,7 +95,7 @@
                                                     else
                                                     {
                                                         <h5>
-                                                            @course.Rating.ToString("F2")
+                                                            @course.Rating.ToString("N1")
                                                             @for (int i = 1; i <= 5; i++)
                                                             {
                                                                 if (i <= @course.Rating)
@@ -111,7 +111,7 @@
                                                         </h5>
                                                     }
                                                 </div>
-                                                <h4>@course.Price.ToString("N0") VNĐ</h4>
+                                                <h4>@(course.Price > 0 ? course.Price.ToString("N0") + " VNĐ" : "Free")</h4>
                                             </div>
                                             <span class="badge bg-music rounded-pill ms-auto">@course.NumberOfStudents</span>
                                         </div>

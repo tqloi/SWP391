@@ -12,7 +12,10 @@
 {
     <section>
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Edit Test</h2>
+            <h2>Edit Test
+                <a asp-action="TestList" asp-controller="Participation" asp-route-CourseID="@ViewBag.Course.CourseID" class="btn btn-outline-black"> Back </a>
+
+            </h2>
             <div class="d-flex">
 @*                 <form asp-action="ClearAllSubmission" asp-area="Instructor" asp-controller="Test" method="post" class="me-2">
                     <input type="hidden" name="TestID" value="@Model.TestID" />
