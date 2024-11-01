@@ -13,7 +13,6 @@ using OnlineLearning.Hubs;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
-using QRCoder;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Security.Claims;

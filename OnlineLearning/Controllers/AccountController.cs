@@ -13,10 +13,7 @@ using OnlineLearning.Email;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-
 using OnlineLearningApp.Respositories;
-
-using static QRCoder.PayloadGenerator.WiFi;
 using System.Data;
 using Newtonsoft.Json;
 using Firebase.Auth;

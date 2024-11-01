@@ -119,7 +119,7 @@ CREATE TABLE StudentCourses (
     StudentID NVARCHAR(450),  
     CourseID INT,        
     Progress DECIMAL(5,2) CHECK (progress >= 0 AND progress <= 100),  -- Tiến độ học tập (% hoàn thành)
-    CertificateStatus NVARCHAR(50) CHECK (certificateStatus IN ('Not Started', 'In Progress', 'Completed', 'Certified')), -- Trạng thái chứng chỉ
+    CertificateStatus NVARCHAR(50) CHECK (certificateStatus IN ('In Progress', 'Completed')), -- Trạng thái chứng chỉ
     EnrollmentDate DATETIME NOT NULL,
     CompletionDate DATETIME NULL,
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id), 
@@ -134,8 +134,8 @@ CREATE TABLE [Certificate](
 	CertificateID INT PRIMARY KEY IDENTITY(1,1),
 	StudentID NVARCHAR(450), 
 	CourseID INT,  
-	EnrollmentDate DATETIME NOT NULL,
     CompletionDate DATETIME NOT NULL,
+	CertificateLink NVARCHAR(MAX),
 	FOREIGN KEY (studentID) REFERENCES AspNetUsers(id),
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 )

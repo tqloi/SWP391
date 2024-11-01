@@ -42,6 +42,7 @@ namespace OnlineLearningApp.Respositories
         public DbSet<VideoCallModel> VideoCallInfo { get; set; }
         public DbSet<CommentModel> Comment { get; set; }
         public DbSet<CommentFileModel> CommentFile { get; set; }
+        public DbSet<CertificateModel> Certificate { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

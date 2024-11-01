@@ -11,10 +11,8 @@ using OnlineLearning.Email;
 using OnlineLearning.Filter;
 using OnlineLearning.Hubs;
 using OnlineLearning.Models;
-using DinkToPdf;
 using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
-using DinkToPdf.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -23,11 +21,6 @@ builder.Services.AddTransient<EmailSender>();
 builder.Services.AddHttpClient();
 //stringee
 builder.Services.AddTransient<StringeeService>();
-
-//PDF
-builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-builder.Services.AddSingleton<PdfService>();
-
 
 //file 
 builder.Services.AddScoped<FileService>();

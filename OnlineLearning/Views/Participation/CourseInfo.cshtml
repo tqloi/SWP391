@@ -7,6 +7,7 @@
     var lectures = Model.Lectures;
     var completions = Model.Completion;
     var isPassed = Model.IsPassed;
+    var certificate = Model.Certificate;
 }
 
 <style>
@@ -46,16 +47,24 @@
     {
         <div class="bg-white p-3 shadow-lg rounded mb-4 text-black d-flex align-items-center justify-content-between">
             <div class="fs-6 ml-3">Congratulations, you have completed our course.</div>
-            <form class="d-flex align-items-center">
+            <form asp-action="GenerateCertificate" asp-controller="Student" asp-area="Student" class="d-flex align-items-center" onsubmit="return disableButton(this)">
+                <input type="hidden" name="StudentID" value="@studentCourse.StudentID" />
+                <input type="hidden" name="CourseID" value="@studentCourse.CourseID" />
+                <input type="hidden" name="InstructorID" value="@studentCourse.Course.InstructorID" />
                 <div class="mr-3 fs-6">Your certificate is ready!</div>
-                <button class="btn btn-warning text-black px-3 py-1 fs-6 border">Claim now</button>
+                <button id="claimButton" class="btn btn-warning text-black px-3 py-1 fs-6 border">Claim now</button>
             </form>
-            <a href="/Student/Student/GenerateCertificate?studentName=John%20Doe&courseName=ASP.NET%20Core%20Development&instructorName=Jane%20Smith&date=2024-10-31" class="btn btn-primary">Tải xuống Chứng chỉ</a>
-        </div>
-
+       </div>
     }
 
-    <h1 class="h3 mb-4 text-gray-800">Welcome to @studentCourse.Course.Title</h1>
+    <h1 class="h3 mb-4 text-gray-800">
+        Welcome to @studentCourse.Course.Title
+        <button class="btn @(studentCourse.CertificateStatus == "Completed" ? "btn-warning" : "btn-light") text-black ml-2 px-2 py-0 fs-6 border border-dark fw-bold">@studentCourse.CertificateStatus</button>
+        @if (certificate != null)
+        {
+            <a href="@certificate.CertificateLink" target="_blank" class="fs-5 ml-1 d-flex align-items-center mt-1">View Certificate <i class="bi bi-caret-right-fill"></i> </a>
+        }
+    </h1>
     <div class="row">
         <div class="col-lg-7">
             <div class="card shadow mb-4">
@@ -234,3 +243,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    function disableButton(form) {
+        const button = form.querySelector('#claimButton');
+        button.disabled = true; 
+        button.textContent = 'Processing...'; 
+        return true; 
+    }
+
+    window.addEventListener('beforeunload', function () {
+        document.getElementById('loading').style.display = 'none';
+    });
+</script>

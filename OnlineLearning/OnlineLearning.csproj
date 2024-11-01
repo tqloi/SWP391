@@ -43,7 +43,6 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCoreHero.ToastNotification" Version="1.1.0" />
-    <PackageReference Include="DinkToPdf" Version="1.0.8" />
     <PackageReference Include="EPPlus" Version="7.4.1" />
     <PackageReference Include="Firebase.Auth" Version="1.0.0" />
     <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
@@ -73,7 +72,7 @@
 
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 
-    <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="Select.Pdf.NetCore" Version="24.1.0" />
   </ItemGroup>
 
   <ItemGroup>

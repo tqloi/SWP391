@@ -10,5 +10,6 @@ namespace OnlineLearning.Models.ViewModel
         public int TotalCourse { get; set; }
         public int TotalStudent { get; set; }
         public bool IsPassed { get; set; }
+        public CertificateModel Certificate { get; set; }
     }
 }
