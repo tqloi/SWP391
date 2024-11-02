@@ -6,8 +6,8 @@ GO
 -- instructor table
 CREATE TABLE Instructors (
     InstructorID nvarchar(450) PRIMARY KEY,
-	[Description] TEXT,
-    FOREIGN KEY (instructorID) REFERENCES AspNetUsers(Id) 
+	[Description] NVARCHAR(255),
+    FOREIGN KEY (instructorID) REFERENCES AspNetUsers(Id) ON DELETE CASCADE
 );
 
 -- Notification
@@ -16,7 +16,7 @@ CREATE TABLE [Notification] (
     UserID nvarchar(450) NOT NULL, 
     [Description] NVARCHAR(255) NOT NULL,  
     CreatedAt DATETIME DEFAULT GETDATE() 
-    FOREIGN KEY (UserID) REFERENCES AspNetUsers(Id) 
+    FOREIGN KEY (UserID) REFERENCES AspNetUsers(Id) ON DELETE CASCADE
 );
 
 -- InstructorConfirmation
@@ -26,15 +26,9 @@ CREATE TABLE InstructorConfirmation(
 	 Certificatelink nvarchar(400),
 	 [FileName] NVARCHAR(255),
 	 SendDate DATETIME DEFAULT GETDATE(),
-	 [Description] TEXT,
+	 [Description] NVARCHAR(255),
 	 FOREIGN KEY (UserID) REFERENCES AspNetUsers(Id) ON DELETE CASCADE 
 )
-ALTER TABLE InstructorConfirmation
-ADD [Description] TEXT;
-GO
-ALTER TABLE InstructorConfirmation
-ADD SendDate DATETIME DEFAULT GETDATE();
-GO
 
 -- Category
 CREATE TABLE Category(
@@ -58,11 +52,11 @@ CREATE TABLE Courses (
 	CoverImagePath NVARCHAR(MAX),
 	InstructorID NVARCHAR(450), -- instructor
     NumberOfStudents INT DEFAULT 0, 
-	Price DECIMAL(10,1),
+	Price DECIMAL(10,2),
     CategoryID INT,
     [Level] NVARCHAR(50) CHECK (level IN ('Beginner', 'Intermediate', 'Advanced')),
     [Status] BIT NOT NULL DEFAULT 1, -- true: active, false: inactive
-	IsBaned BIT NOT NULL DEFAULT 1,
+	IsBaned BIT NOT NULL DEFAULT 0,
 	CreateDate DATE,
 	LastUpdate DATE,
 	EndDate DATE,
@@ -74,18 +68,13 @@ CREATE TABLE Courses (
 alter table Courses
 ADD IsBaned BIT NOT NULL DEFAULT 0;
 
-alter table Courses
-ADD IsBan Bit NOT NULL;
-alter table Courses
-Alter column Price DECIMAL(10,1);
-go
-
 -- them bang material, 1 khoa hoc co nhieu material
 CREATE TABLE CourseMaterials (
     MaterialID INT PRIMARY KEY IDENTITY(1,1),
     CourseID INT NOT NULL,
 	[FileName] NVARCHAR(255),
     MaterialsLink NVARCHAR(MAX) NOT NULL,
+	FileExtension NVARCHAR(20),
     FOREIGN KEY (CourseID) REFERENCES Courses(CourseID) ON DELETE CASCADE 
 );
 
@@ -97,12 +86,10 @@ CREATE TABLE Payment(
 	Amount DECIMAL(10,2),
 	PaymentDate DATETIME DEFAULT GETDATE(), 
 	[Status] NVARCHAR(30) CHECK (status IN ('Pending', 'Completed', 'Failed', 'Cancelled')),
+	CONSTRAINT UC_Payment UNIQUE (StudentID, CourseID),
 	FOREIGN KEY (studentID) REFERENCES AspNetUsers(id),
 	FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE 
 );
-ALTER TABLE Payment
-ADD CONSTRAINT UC_Payment UNIQUE (StudentID, CourseID);
-go
 
 -- BookMark
 CREATE TABLE Bookmark (
@@ -122,12 +109,10 @@ CREATE TABLE StudentCourses (
     CertificateStatus NVARCHAR(50) CHECK (certificateStatus IN ('In Progress', 'Completed')), -- Trạng thái chứng chỉ
     EnrollmentDate DATETIME NOT NULL,
     CompletionDate DATETIME NULL,
+	CONSTRAINT UC_StudentCourses UNIQUE (StudentID, CourseID),
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id), 
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
-ALTER TABLE StudentCourses
-ADD CONSTRAINT UC_StudentCourses UNIQUE (StudentID, CourseID);
-go
 
 -- certificate table
 CREATE TABLE [Certificate](
@@ -160,10 +145,6 @@ CREATE TABLE LectureCompletion (
     FOREIGN KEY (UserID) REFERENCES AspNetUsers(id),
     FOREIGN KEY (LectureID) REFERENCES Lecture(LectureID) ON DELETE CASCADE
 );
-alter table LectureCompletion
-add CourseID INT;
-go
-DROP TABLE LectureCompletion
 
 -- Course image and video;
 CREATE TABLE LectureFiles (
@@ -175,9 +156,6 @@ CREATE TABLE LectureFiles (
     UploadDate DATETIME DEFAULT GETDATE(),  
     FOREIGN KEY (lectureID) REFERENCES Lecture(lectureID) ON DELETE CASCADE  
 );
-alter table LectureFiles
-add FileType NVARCHAR(255) CHECK (FileType IN ('Document', 'Video'));
-go
 
 --RequestTranfer
 CREATE TABLE RequestTranfer (
@@ -191,7 +169,6 @@ CREATE TABLE RequestTranfer (
     Status NVARCHAR(255), -- Tùy thuộc vào yêu cầu, có thể thay đổi kiểu dữ liệu
     FOREIGN KEY (UserID) REFERENCES AspNetUsers(Id) -- Thay AspNetUsers với tên bảng của người dùng nếu khác
 );
-alter table RequestTranfer add CreateAt datetime 
 
 -- Test table
 CREATE TABLE Test (
@@ -203,47 +180,24 @@ CREATE TABLE Test (
     EndTime DATETIME,
 	NumberOfQuestion INT NOT NULL,
     [Status] NVARCHAR(255),
+	TestTime TIME(0),
+	PassingScore FLOAT,
+	NumberOfMaxAttempt INT,
+	AlowRedo NVARCHAR(50) CHECK(AlowRedo In ('Yes', 'No')),
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
 
-ALTER TABLE Test
-ADD TestTime TIME(0);
-
-ALTER TABLE Test
-DROP COLUMN TestTime;
-
-ALTER TABLE Test
-ADD PassingScore FLOAT;
-
-ALTER TABLE Test
-ADD AlowRedo NVARCHAR(50) CHECK(AlowRedo In ('Yes', 'No'))
-
-Alter TABLE Test
-ADD NumberOfMaxAttempt INT
-
-Alter table Test
-Add Description NVARCHAR(255)
-Alter table Test
-Add Title NVARCHAR(255)
-
 -- Score table
 CREATE TABLE Score (
+	ScoreID INT PRIMARY KEY IDENTITY(1,1),
     studentID NVARCHAR(450) NOT NULL,
     testID INT NOT NULL,
     score FLOAT NOT NULL,
+	DoTestAt Datetime,
+	NumberOfAttempt INT,
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id),
     FOREIGN KEY (testID) REFERENCES Test(testID) ON DELETE CASCADE  
 );
-ALTER TABLE Score
-ADD ScoreID INT PRIMARY KEY IDENTITY(1,1)
-
-ALTER TABLE Score 
-ALTER COLUMN Score FLOAT;
-ALTER TABLE Score 
-add DoTestAt Datetime;
-
-ALTER TABLE Score
-ADD NumberOfAttempt INT
 
 -- Question table
 CREATE TABLE Question (
@@ -261,16 +215,6 @@ CREATE TABLE Question (
     FOREIGN KEY (testID) REFERENCES Test(testID) ON DELETE CASCADE  
 );
 
-ALTER TABLE Question
-ADD ImagePath NVARCHAR(MAX)
-Alter table Question
-Add Description NVARCHAR(255);
-Alter table Question
-Add Title NVARCHAR(255);
-Alter table Question
-Add ImagePath NVARCHAR(MAX);
-go
-
 -- Assignment table
 CREATE TABLE Assignment (
     AssignmentID INT PRIMARY KEY IDENTITY(1,1),
@@ -281,10 +225,6 @@ CREATE TABLE Assignment (
     DueDate DATETIME,
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
 );
-alter table Assignment add AssignmentLink  NVARCHAR(MAX);
-alter table Assignment add StartDate DATETIME;
-alter table Assignment drop column [description] ;
-go  
 
 CREATE TABLE ScoreAssignment (
 	ScoreAssignmentID INT PRIMARY KEY IDENTITY(1,1),
@@ -294,8 +234,6 @@ CREATE TABLE ScoreAssignment (
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id),
     FOREIGN KEY (AssignmentID) REFERENCES Assignment(AssignmentID) ON DELETE CASCADE  
 );
-insert into Assignment(CourseID, Title, Description, DueDate)
-values (9,'assignment 1','abcde',GETDATE())
 
 -- Submission table
 CREATE TABLE Submission (
@@ -307,16 +245,6 @@ CREATE TABLE Submission (
     SubmissionDate DATETIME,
     FOREIGN KEY (assignmentID) REFERENCES Assignment(assignmentID) ON DELETE CASCADE,
     FOREIGN KEY (studentID) REFERENCES AspNetUsers(id)  -- References Users table
-);
-alter table Submission add FileName nvarchar(250)
--- Chatbox
-CREATE TABLE ChatBox (
-    ChatBoxID INT PRIMARY KEY IDENTITY(1,1),
-    SenderID NVARCHAR(450),  -- Foreign key to Users
-    ReceiverID NVARCHAR(450),  -- Foreign key to Users
-    Title TEXT,
-    FOREIGN KEY (senderID) REFERENCES AspNetUsers(Id),  -- Can be a Student or Instructor
-    FOREIGN KEY (receiverID) REFERENCES AspNetUsers(Id),  -- Can be a Student or Instructor
 );
 
 -- Message table
@@ -337,7 +265,7 @@ CREATE TABLE MessageFile (
     [FileName] NVARCHAR(255),  
     FilePath NVARCHAR(MAX),  
     UploadDate DATETIME DEFAULT GETDATE(),  
-    FOREIGN KEY (messageID) REFERENCES [Message](messageID) ON DELETE CASCADE  
+    FOREIGN KEY (messageID) REFERENCES [Message](Id) ON DELETE CASCADE  
 );
 
 -- Comment table
@@ -353,9 +281,6 @@ CREATE TABLE Comment (
     FOREIGN KEY (userID) REFERENCES AspNetUsers(Id),  -- Could be Student or Instructor
     FOREIGN KEY (parentCmtId) REFERENCES Comment(commentID) 
 );
-ALTER TABLE Comment
-Alter column ParentCmtId INT NULL;
-go
 
 -- comment file
 CREATE TABLE CommentFile (
@@ -399,23 +324,6 @@ CREATE TABLE VideoCallInfo (
 );
 go
 
-CREATE TRIGGER trg_DeleteChildComments
-ON Comment
-INSTEAD OF DELETE
-AS
-BEGIN
-    WITH comments_to_delete AS (
-        SELECT commentID
-        FROM DELETED
-        UNION ALL
-        SELECT c.commentID
-        FROM Comment c
-        INNER JOIN comments_to_delete p ON c.parentCmtId = p.commentID
-    )
-    DELETE FROM Comment
-    WHERE commentID IN (SELECT commentID FROM comments_to_delete);
-END;
-
 INSERT INTO Category (FullName, [Description]) 
 VALUES
     ('Programming', 'Courses related to programming and software development.'),
@@ -449,35 +357,6 @@ VALUES
 
 	-- sua id instructor
 
-INSERT INTO StudentCourses (StudentID, CourseID, Progress, CertificateStatus, EnrollmentDate)
-VALUES ('5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 2, 0, 'Not Started', GETDATE());
-
-INSERT INTO StudentCourses (StudentID, CourseID, Progress, CertificateStatus, EnrollmentDate)
-VALUES ('a3f1464d-21b0-4354-b4f9-ce357e0ae4c5', 2, 0, 'Not Started', GETDATE());
-
-INSERT INTO Review (CourseID, StudentID, Rating, Comment, ReviewDate)
-VALUES ('2', '5e9bf460-cbe6-4f0b-b1dd-1c7d817bfffc', 5, 'comment_value', GETDATE());
-
-INSERT INTO Review (CourseID, StudentID, Rating, Comment, ReviewDate)
-VALUES ('2', 'a3f1464d-21b0-4354-b4f9-ce357e0ae4c5', 4, 'nice', GETDATE());
-
-ALTER TABLE Courses
-ADD Rating FLOAT NULL;
-go
-
-INSERT INTO Lecture (CourseID, Title, [Description], UpLoadDate) VALUES
-(1, 'Introduction to Programming', 'An introductory lecture on programming concepts.', GETDATE()),
-(1, 'Data Structures', 'An overview of basic data structures.', GETDATE()),
-(1, 'Introduction to Algorithms', 'Basic algorithms in programming.', GETDATE()),
-(1, 'Object-Oriented Programming', 'Concepts of object-oriented programming.', GETDATE()),
-(1, 'String Manipulation', 'How to manipulate strings in programming.', GETDATE()),
-(1, 'Introduction to Databases', 'Basic concepts of databases.', GETDATE()),
-(1, 'SQL Basics', 'Guide to basic SQL commands.', GETDATE()),
-(1, 'Building Web Applications', 'Steps to build web applications.', GETDATE()),
-(1, 'Software Testing', 'Methods of software testing.', GETDATE()),
-(1, 'Application Deployment', 'Guide to deploying applications on a server.', GETDATE());
-go
-
 ALTER TABLE AspNetUsers
 ALTER COLUMN ProfileImagePath NVARCHAR(MAX);
 
@@ -505,12 +384,6 @@ ALTER COLUMN FilePath NVARCHAR(MAX);
 ALTER TABLE Submission 
 ALTER COLUMN SubmissionLink NVARCHAR(MAX);
 
-Alter table Question
-Add ImagePath NVARCHAR(MAX);
-
-Alter table CourseMaterials
-Add [FileName] NVARCHAR(255);
-
 Alter table InstructorConfirmation
 Add [FileName] NVARCHAR(255);
 
@@ -519,37 +392,10 @@ ADD FileExtension NVARCHAR(20);
 
 ALTER TABLE CourseMaterials 
 ADD FileExtension NVARCHAR(20);
-go
 
 ALTER TABLE AspNetUsers
 ADD [WalletUser] float;
-Go
-CREATE TRIGGER trg_UpdateNumberOfQuestion
-ON Question
-AFTER INSERT, UPDATE, DELETE
-AS
-BEGIN
-	SET NOCOUNT ON;
-    UPDATE t
-    SET t.NumberOfQuestion = q.CountOfQuestions
-    FROM Test t
-    INNER JOIN (
-        SELECT testID, COUNT(*) AS CountOfQuestions
-        FROM Question
-        GROUP BY testID
-    ) q ON t.TestID = q.testID;
-END;
 
-SELECT 
-    CONSTRAINT_NAME, 
-    TABLE_NAME 
-FROM 
-    INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
-WHERE 
-    CONSTRAINT_TYPE = 'FOREIGN KEY';
-
-GO
-DROP TRIGGER trg_UpdateNumberOfQuestion
 
 
 

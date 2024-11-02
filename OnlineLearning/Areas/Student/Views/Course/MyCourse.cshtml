@@ -271,7 +271,7 @@
                                         </h4>
                                         <p class="mb-0"> Instructor: @course.Instructor?.AppUser?.FirstName @course.Instructor?.AppUser?.LastName</p>
                                         <div class="stars justify-content-between align-content-center">
-                                            @if (@course.NumberOfRate == 0)
+                                            @if (course.NumberOfRate == 0 || course.Rating == 0)
                                             {
                                                 <h6 class="text-muted mt-1">No reviews yet</h6>
                                             }
@@ -301,8 +301,7 @@
                                 <div class="d-flex align-items-center mt-4">
                                     <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@course.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
                                     <!-- book mark -->
-                                    <form asp-action="BookMark" asp-controller="Course" method="POST">
-                                        <input type="hidden" name="returnUrl" value="@Url.Action("MyCourse", "Course", new { area = "Student", Status = status ,category = category, Level = level, page = Model.CurrentPage})">
+                                    <form asp-action="BookMark" asp-controller="Course" asp-area="Student" method="POST">
                                         <input type="hidden" name="CourseID" value="@course.CourseID">
                                         <button type="submit" class="bg-transparent border-0 p-0 smoothscroll">
                                             <i class="custom-icon bi bi-bookmark-fill smoothscroll fs-1"></i>
