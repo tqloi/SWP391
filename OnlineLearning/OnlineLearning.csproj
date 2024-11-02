@@ -14,6 +14,8 @@
     <Compile Remove="VideoCall\**" />
     <Compile Remove="wwwroot\assets\**" />
     <Compile Remove="wwwroot\Assignment\**" />
+    <Compile Remove="wwwroot\course\libs\**" />
+    <Compile Remove="wwwroot\course\vendor\fontawesome-free\**" />
     <Compile Remove="wwwroot\Images\NewFolder\**" />
     <Content Remove="Areas\Admin\Views\Shared\Components\**" />
     <Content Remove="Areas\Instructor\Data\**" />
@@ -22,6 +24,8 @@
     <Content Remove="VideoCall\**" />
     <Content Remove="wwwroot\assets\**" />
     <Content Remove="wwwroot\Assignment\**" />
+    <Content Remove="wwwroot\course\libs\**" />
+    <Content Remove="wwwroot\course\vendor\fontawesome-free\**" />
     <Content Remove="wwwroot\Images\NewFolder\**" />
     <EmbeddedResource Remove="Areas\Admin\Views\Shared\Components\**" />
     <EmbeddedResource Remove="Areas\Instructor\Data\**" />
@@ -30,6 +34,8 @@
     <EmbeddedResource Remove="VideoCall\**" />
     <EmbeddedResource Remove="wwwroot\assets\**" />
     <EmbeddedResource Remove="wwwroot\Assignment\**" />
+    <EmbeddedResource Remove="wwwroot\course\libs\**" />
+    <EmbeddedResource Remove="wwwroot\course\vendor\fontawesome-free\**" />
     <EmbeddedResource Remove="wwwroot\Images\NewFolder\**" />
     <None Remove="Areas\Admin\Views\Shared\Components\**" />
     <None Remove="Areas\Instructor\Data\**" />
@@ -38,6 +44,8 @@
     <None Remove="VideoCall\**" />
     <None Remove="wwwroot\assets\**" />
     <None Remove="wwwroot\Assignment\**" />
+    <None Remove="wwwroot\course\libs\**" />
+    <None Remove="wwwroot\course\vendor\fontawesome-free\**" />
     <None Remove="wwwroot\Images\NewFolder\**" />
   </ItemGroup>
 
@@ -64,7 +72,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Instructor\Views\Shared\Components\" />
 
 
 
@@ -76,23 +83,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Areas\Instructor\Views\Shared\login_layout.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Areas\Instructor\Views\Shared\_Layout.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Update="Areas\Instructor\Views\Shared\_NoficationPartial.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Areas\Instructor\Views\Shared\_SideCategory.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Areas\Instructor\Views\Shared\_ValidationScriptsPartial.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
