@@ -88,7 +88,7 @@
                                                 </h4>
                                                 <p class="mb-0"> Instructor: @course.Instructor?.AppUser?.FirstName @course.Instructor?.AppUser?.LastName</p>
                                                 <div class="stars justify-content-between align-content-center">
-                                                    @if (@course.NumberOfRate == 0)
+                                                    @if (course.NumberOfRate == 0 || course.Rating == 0)
                                                     {
                                                         <h6 class="text-muted mt-1">No reviews yet</h6>
                                                     }

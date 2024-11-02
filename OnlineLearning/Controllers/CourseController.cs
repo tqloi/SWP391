@@ -166,32 +166,5 @@ namespace OnlineLearning.Controllers
             }
             return View(model);
         }
-
-        [Authorize(Roles = "Student")]
-        public async Task<IActionResult> BookMark(int CourseID, string returnUrl = null)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var bookmark = datacontext.BookMark
-                                .Where(bm => bm.CourseID == CourseID && bm.StudentID == userId)
-                                .FirstOrDefault();
-            if(bookmark != null)
-            {
-                datacontext.BookMark.Remove(bookmark);
-                await datacontext.SaveChangesAsync();
-                TempData["info"] = "Undo saved!";
-            }
-            else
-            {
-                bookmark = new BookMarkModel
-                {
-                    StudentID = userId,
-                    CourseID = CourseID,
-                };
-                datacontext.BookMark.Add(bookmark);
-                await datacontext.SaveChangesAsync();
-                TempData["info"] = "Saved!";
-            }
-            return Redirect(returnUrl);
-        }
     }
 }

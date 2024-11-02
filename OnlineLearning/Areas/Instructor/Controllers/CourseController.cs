@@ -133,7 +133,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (existingCourse != null)
             {
                 TempData["warning"] = "Course code already exists!";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                return Redirect(Request.Headers["Referer"].ToString());
             }
 
             if (course == null)
@@ -169,7 +169,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 {
                     ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                     TempData["error"] = "Edit failed due to file upload error!";
-                    return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                    return Redirect(Request.Headers["Referer"].ToString());
                 }
             }
 
@@ -177,17 +177,17 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             TempData["success"] = "Update created successfully!";
             //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-            return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int CourseId, string returnUrl = null)
+        public async Task<IActionResult> Delete(int CourseId)
         {
             var course = await datacontext.Courses.FindAsync(CourseId);
             if (course == null)
             {
                 TempData["error"] = "Course not found!";
-                return Redirect(returnUrl);
+                return Redirect(Request.Headers["Referer"].ToString());
             }
 
             var deleteAllowedDate = course.LastUpdate.AddDays(30);
@@ -195,28 +195,28 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             {
                 var daysRemaining = (deleteAllowedDate - DateTime.Now).Days;
                 TempData["warning"] = $"Can be deleted after {daysRemaining} days.";
-                return Redirect(returnUrl);
+                return Redirect(Request.Headers["Referer"].ToString());
             }
             datacontext.Courses.Remove(course);
             await datacontext.SaveChangesAsync();
 
             TempData["success"] = "Course deleted successfully!";
-            return Redirect(returnUrl);
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         [HttpPost]
-        public async Task<IActionResult> SetSate(int CourseId, string returnUrl = null)
+        public async Task<IActionResult> SetSate(int CourseId)
         {
             var course = await datacontext.Courses.FindAsync(CourseId);
             if (course == null)
             {
                 TempData["error"] = "Course not found!";
-                return Redirect(returnUrl);
+                return Redirect(Request.Headers["Referer"].ToString());
             }
             if (course.Status == false && course.IsBaned == true) 
             {
                 TempData["warning"] = "Cannot enable because the course violates the terms!";
-                return Redirect(returnUrl);
+                return Redirect(Request.Headers["Referer"].ToString());
             }
 
             if (course.Status == false)
@@ -228,7 +228,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 if (!lectures.Any() || !tests.Any() || !assignments.Any() || !courseMaterials.Any()) 
                 {
                     TempData["warning"] = "Please add more course content";
-                    return Redirect(returnUrl);
+                    return Redirect(Request.Headers["Referer"].ToString());
                 }
             }
 
@@ -237,7 +237,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             await datacontext.SaveChangesAsync();
 
             TempData["success"] = course.Status ? "Course enabled successfully!" : "Course disable successfully!";
-            return Redirect(returnUrl);
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         [HttpGet]
