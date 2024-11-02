@@ -21,12 +21,32 @@ namespace OnlineLearning.BackgroundServices
                 {
                     await CleanupOldNotificationsAsync();
                     await CleanupOldRequestPaymentAsync();
+                    await CleanupOldVideoCallInfoAsync();
                     // Đợi 24 giờ trước khi thực hiện lại
                     await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error occurred while cleaning up old notifications.");
+                }
+            }
+        }
+        private async Task CleanupOldVideoCallInfoAsync()
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+                // Lấy các thông báo đã quá 7 ngày
+                var oldVdeoCall = dataContext.VideoCallInfo
+                    .Where(n => n.CreateAt < DateTime.Now.AddMinutes(-1));
+
+                if (oldVdeoCall.Any())
+                {
+                    dataContext.VideoCallInfo.RemoveRange(oldVdeoCall);
+                    await dataContext.SaveChangesAsync();
+
+                    _logger.LogInformation($"{oldVdeoCall.Count()} notifications deleted successfully.");
                 }
             }
         }

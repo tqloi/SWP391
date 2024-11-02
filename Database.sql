@@ -123,7 +123,7 @@ CREATE TABLE [Certificate](
 	CertificateLink NVARCHAR(MAX),
 	FOREIGN KEY (studentID) REFERENCES AspNetUsers(id),
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
-)
+);
 
 -- Lecture table
 CREATE TABLE Lecture (
@@ -319,10 +319,12 @@ CREATE TABLE VideoCallInfo (
     VideoCallId INT PRIMARY KEY IDENTITY(1,1),
     SendID NVARCHAR(450) NOT NULL,
     ReceiveID NVARCHAR(450) NOT NULL,
+	CreateAt Datetime,
     FOREIGN KEY (SendID) REFERENCES AspNetUsers(id),
     FOREIGN KEY (ReceiveID) REFERENCES AspNetUsers(id)
 );
 go
+alter table VideoCallInfo add CreateAt Datetime;
 
 INSERT INTO Category (FullName, [Description]) 
 VALUES

@@ -309,7 +309,6 @@
                                         <div class="modal-footer">
                                             <div id="callerIdDisplay"></div>
                                             <a id="rejectCallButton" asp-action="Index" asp-controller="Chat" asp-area="" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</a>
-
                                             <a asp-action="AnswerCall" asp-controller="Chat" asp-area="" class="btn btn-primary">Answer</a>
                                              
                                         </div>
@@ -331,17 +330,7 @@
             </div>
         </div>
     </main>
-    <script>
-        $(document).ready(function () {
-            // Lấy giá trị callerId từ data-caller-id
-            var callerIdFromView = $('#myElement').data('caller-id');
-
-
-            // Bạn có thể sử dụng callerIdFromView cho bất kỳ mục đích nào ở đây
-            // Ví dụ: hiển thị callerId trong một phần tử khác
-            $('#callerIdDisplay').text(callerIdFromView);
-        });
-    </script>
+    
 
 
 

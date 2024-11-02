@@ -9,6 +9,7 @@ namespace OnlineLearning.Models
         public int VideoCallId { get; set; }
         public string SendID { get; set; }
         public string ReceiveID { get; set; }
+        public DateTime CreateAt { get; set; }
         [ForeignKey("SendID")]
         public AppUserModel Send { get; set; }
         [ForeignKey("ReceiveID")]

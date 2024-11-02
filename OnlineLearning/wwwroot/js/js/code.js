@@ -122,6 +122,8 @@ jQuery(function(){
         $(this).hide();
         answerCallButton.hide();
         $('#incoming-call-notice').hide();
+        var myModal = new bootstrap.Modal(document.getElementById('createAssignmentModal'));
+        myModal.hide();
         
     });
 

@@ -167,7 +167,7 @@ namespace OnlineLearning.Controllers
             };
             return View(roleview);
         }
-        public async Task<IActionResult> AnswerCallAsync()
+        public async Task<IActionResult> AnswerCall()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
