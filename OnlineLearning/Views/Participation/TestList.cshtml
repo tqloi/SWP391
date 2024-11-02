@@ -21,7 +21,7 @@
         </div>
       
     <section class="topics-detail-section section-padding" id="topics-detail">
-    @if (User.IsInRole("Instructor"))
+     @if (user.Id.Equals(currentCourse.InstructorID))
     {
         <div class="row align-items-end">
             <div class="col">
@@ -40,7 +40,7 @@
         foreach (var test in Model.Tests)
         {
             // Skip inactive tests for students
-            if (User.IsInRole("Student") && (test.Status == "Inactive" || test.NumberOfQuestion == 0))
+             if (!user.Id.Equals(currentCourse.InstructorID) && (test.Status == "Inactive" || test.NumberOfQuestion == 0))
             {
                 continue;
             }
@@ -70,7 +70,7 @@
                     <div class="mb-4">
                         <p><strong>Score to Pass:</strong> @test.PassingScore</p>
                     </div>
-                    @if (User.IsInRole("Student") && attemptsLeft != -1)
+                    @if (!user.Id.Equals(currentCourse.InstructorID) && attemptsLeft != -1)
                     {
                         <div class="mb-4">
                             <p><strong>Your attempts left: </strong> @attemptsLeft</p>
@@ -78,7 +78,7 @@
                     }
                     else
                     {
-                        if (User.IsInRole("Student") && attemptsLeft == -1 || User.IsInRole("Instructor"))
+                        if ((!user.Id.Equals(currentCourse.InstructorID) && attemptsLeft == -1) || user.Id.Equals(currentCourse.InstructorID))
                         {
                             <div class="mb-4">
                                 <p><strong>Number of max attempts: </strong> @test.NumberOfMaxAttempt</p>
@@ -93,7 +93,7 @@
                     {
                         <div class="d-flex justify-content-between">
                             <form asp-controller="Question" asp-action="EditQuestionRedirector" asp-area="Instructor" method="post" asp-route-TestID="@test.TestID">
-                                <button type="submit" class="btn btn-success">
+                                <button type="submit" class="btn btn-warning">
                                     Edit Question
                                 </button>
                             </form>
@@ -104,7 +104,7 @@
                             </form>
                             <form asp-controller="Test" asp-action="EditTest" asp-area="Instructor" method="get">
                                 <input type="hidden" name="TestID" value="@test.TestID" />
-                                <button type="submit" class="btn btn-success">
+                                <button type="submit" class="btn btn-warning">
                                     Edit Test
                                 </button>
                             </form>
@@ -114,7 +114,7 @@
                                     Delete Test
                                 </button>
                             </form>
-                                    <a class="btn btn-success" asp-controller="Test" asp-action="ViewScoreTest" asp-area="Instructor" asp-route-TestID = "@test.TestID">View Score</a>
+                                    <a class="btn btn-info" asp-controller="Test" asp-action="ViewScoreTest" asp-area="Instructor" asp-route-TestID = "@test.TestID">View Score</a>
                         </div>
                     }
 

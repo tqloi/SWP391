@@ -70,7 +70,7 @@
                     }
                     else
                     {
-                        <h7 class="me-1 text-white" >@Model.Course.Rating.ToString("F2")</h7>
+                        <h7 class="me-1 text-white">@Model.Course.Rating.ToString("N1")</h7>
                         <div class="stars me-2 mb-1">
                             @*  <span class="star">&#9733;</span> *@
                             @for (int i = 1; i <= 5; i++)
@@ -87,8 +87,9 @@
                         </div>
                         <a class="me-3" href="#comments"><h7 class="text-white-50">(@Model.Course.NumberOfRate rates)</h7></a>
                     }
-                    <h7 class="text-white">@Model.Course.NumberOfStudents students</h7>                </div>
-                <h4 class="text-white">@Model.Course.Price.ToString("N0") VNĐ</h4>
+                    <h7 class="text-white">@Model.Course.NumberOfStudents students</h7>                
+                </div>
+                <h4 class="text-white">@(Model.Course.Price > 0 ? Model.Course.Price.ToString("N0") + " VNĐ" : "Free")</h4>
                 <h7 class="text-white">Create by: <a class="text-white-50" asp-area="" asp-action="ViewUserProfile" asp-controller="Profile" asp-route-id="@Model.Course.InstructorID"> @Model.Course.Instructor?.AppUser?.FirstName @Model.Course.Instructor?.AppUser?.LastName</a></h7>
                 <h7 class="text-white d-flex mt-2 me-2">
                     Last Update: @Model.Course.LastUpdate.ToString("dd/MM/yyyy")
@@ -106,11 +107,20 @@
                         if (@Model.Course.Status != false)
                         {
                             <div class="d-flex align-items-center mt-4">
-                                <!-- pay -->
-                                <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@Model.Course.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
+                                @if (Model.Course.Price <= 0)
+                                {
+                                    <form asp-action="GetFreeCourse" asp-controller="Payment" method="post">
+                                        <input type="hidden" name="CourseID" value="@Model.Course.CourseID"/>
+                                        <button type="submit" class="btn custom-btn smoothscroll me-4">Enroll Now</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <!-- pay -->
+                                    <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@Model.Course.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
+                                }
                                 <!-- book mark -->
-                                <form asp-action="BookMark" asp-controller="Course" method="POST">
-                                    <input type="hidden" name="returnUrl" value="@Url.Action("CourseDetail", "Course", new { CourseID = Model.Course.CourseID })">
+                                <form asp-action="BookMark" asp-controller="Course" asp-area="Student" method="POST">
                                     <input type="hidden" name="CourseID" value="@Model.Course.CourseID">
                                     <button type="submit" class="bg-transparent border-0 p-0 smoothscroll">
                                         <i class="custom-icon bi @(Model.IsMark == true ? "bi-bookmark-fill" : "bi-bookmark") smoothscroll fs-1"></i>

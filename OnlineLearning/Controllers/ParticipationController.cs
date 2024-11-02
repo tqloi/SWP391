@@ -73,30 +73,35 @@ namespace OnlineLearning.Controllers
             var scoreAssignments = await datacontext.ScoreAssignment
                                    .Where(x => assignmentIds.Contains(x.AssignmentID) && x.StudentID == userId)
                                    .ToListAsync();
-            double averageAssignmentScore = scoreAssignments.Any()
-                                          ? scoreAssignments.Average(x => x.Score)
-                                          : 0;
-
+            
             var tests = await datacontext.Test.Where(x => x.CourseID == CourseID).ToListAsync();
             var testIDs = tests.Select(a => a.TestID).ToList();
             var scoreTests = await datacontext.Score
                                    .Where(x => testIDs.Contains(x.TestID) && x.StudentID == userId)
                                    .ToListAsync();
-            double averageTestScore = scoreTests.Any()
-                                    ? scoreTests.Average(x => x.Score)
-                                    : 0; 
-
-            double overallAverageScore = (averageAssignmentScore + averageTestScore) / 2;
-
-            var certificate = await datacontext.Certificate
-                               .Where(x => x.CourseID == CourseID && x.StudentID == userId).FirstOrDefaultAsync();
-
             bool isPassed = false;
-            if(studentCourse.Progress == 100 && overallAverageScore >= 5 && certificate == null)
-            {
-                isPassed = true;
-            }
+            var certificate = await datacontext.Certificate
+                                  .Where(x => x.CourseID == CourseID && x.StudentID == userId).FirstOrDefaultAsync();
 
+            bool hasZeroAssignmentScore = scoreAssignments.Any(x => x.Score == 0);
+            bool hasZeroTestScore = scoreTests.Any(x => x.Score == 0);
+
+            if (!hasZeroAssignmentScore && !hasZeroTestScore)
+            {
+                double averageAssignmentScore = scoreAssignments.Any()
+                                   ? scoreAssignments.Average(x => x.Score)
+                                   : 0;
+                double averageTestScore = scoreTests.Any()
+                                        ? scoreTests.Average(x => x.Score)
+                                        : 0;
+                double overallAverageScore = (averageAssignmentScore + averageTestScore) / 2;
+
+                if (studentCourse.Progress == 100 && overallAverageScore >= 5 && certificate == null)
+                {
+                    isPassed = true;
+                }
+            }
+          
             var model = new CourseInfoViewModel
             {
                 Lectures = lectures,

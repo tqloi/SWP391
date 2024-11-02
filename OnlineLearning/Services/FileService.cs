@@ -11,7 +11,7 @@ namespace OnlineLearning.Services
     {
         private static string ApiKey = "AIzaSyAh05m43IMgIKFxjJnOz1qUy7ZpblQUVVo";
         private static string Bucket = "online-88d8b.appspot.com";
-        private static string AuthEmail = "quyloivn@gmail.com";
+        private static string AuthEmail = "quyloimobi@gmail.com";
         private static string AuthPassword = "Abc123";
 
         public async Task<string> UploadImage(IFormFile file)
