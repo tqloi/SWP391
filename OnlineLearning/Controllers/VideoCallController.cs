@@ -34,7 +34,9 @@ namespace OnlineLearning.Controllers
             var videocallinfo = new VideoCallModel
             {
                 SendID = callerId,
-                ReceiveID = receiverId
+                ReceiveID = receiverId,
+                CreateAt = DateTime.Now
+
             };
             
             _datacontext.VideoCallInfo.Add(videocallinfo);
@@ -64,8 +66,7 @@ namespace OnlineLearning.Controllers
                     Token = token,
                     SendId = callerId,
                     ReceiveId = receiverId,
-                    FullNameSend = senduser.FirstName + " " + senduser.LastName,
-                    FullNameReceive = receiveuser.FirstName + receiveuser.LastName
+                    
                 };
             
            

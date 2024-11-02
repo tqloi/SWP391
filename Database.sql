@@ -138,7 +138,7 @@ CREATE TABLE [Certificate](
 	CertificateLink NVARCHAR(MAX),
 	FOREIGN KEY (studentID) REFERENCES AspNetUsers(id),
     FOREIGN KEY (courseID) REFERENCES Courses(courseID) ON DELETE CASCADE  
-)
+);
 
 -- Lecture table
 CREATE TABLE Lecture (
@@ -398,6 +398,8 @@ CREATE TABLE VideoCallInfo (
     FOREIGN KEY (ReceiveID) REFERENCES AspNetUsers(id)
 );
 go
+
+alter table VideoCallInfo add CreateAt Datetime;
 
 CREATE TRIGGER trg_DeleteChildComments
 ON Comment
