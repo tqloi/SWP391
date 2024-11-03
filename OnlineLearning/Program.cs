@@ -18,6 +18,13 @@ using OnlineLearningApp.Respositories;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
+// Configure Kestrel to set the max request header size
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestHeadersTotalSize = 1048576; // Set the limit (in bytes)
+    //1048576 bytes equals 1MB.
+});
+
 builder.Services.AddTransient<EmailSender>();
 builder.Services.AddHttpClient();
 //stringee

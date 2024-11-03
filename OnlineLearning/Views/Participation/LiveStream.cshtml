@@ -2,26 +2,47 @@
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
     <partial name="_NoficationPartial" />
 }
-@if (User.IsInRole("Instructor"))
-{
-    <div class="col-md-3">
-        <form asp-action="CreateLiveStream" asp-area="Instructor" asp-controller="LiveStream" method="post">
-            <h3>Create LiveStream</h3>
-            <label for="Title" class="form-label" id="Title">Enter title</label>
-            <input type="text" class="form-control" id="Title" name="Title" required />
-            <input type="hidden" id="CourseID" name="CourseID" value="@TempData["CourseID"]" />
-            <button class="btn btn-success" type="submit" onclick="return confirm('This action will create a livestream with the following title')">Create</button>
-        </form>
-    </div>
-    <div class="col-md-3">
-        <a asp-action="SeeAllLive" asp-area="Instructor" asp-controller="LiveStream" asp-route-CourseID="@TempData["CourseID"]" method="get">
-            See Your Livestreams
-        </a>
-    </div>
-}
+<link rel="stylesheet" href="~/css/Livestream.css" asp-append-version="true" />
 
-@if (User.IsInRole("Student"))
-{
-    <h3> Livestream frame</h3>
+<div class="row justify-content-center align-items-start my-5">
+    @if (User.IsInRole("Instructor"))
+    {
+        <div class="col-md-4">
+            <form asp-action="CreateLiveStream" asp-area="Instructor" asp-controller="LiveStream" method="post" class="p-4 border rounded bg-white shadow text-center">
+                <img src="~/images/live-stream.png" alt="Live Stream Icon" class="img-fluid mb-3" style="width: 60px; height: 60px;" />
+                <h4 class="fw-bold text-dark mb-2">Create a Live Stream</h4>
+                <p class="text-secondary mb-4">Start a live session for your students. Provide a title and click 'Create'.</p>
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Enter title" id="Title" name="Title" required />
+                </div>
+                <input type="hidden" id="CourseID" name="CourseID" value="@TempData["CourseID"]" />
+                <button class="btn btn-success w-100 py-2" type="submit" onclick="return confirm('This action will create a livestream with the following title')">
+                    <i class="fas fa-video"></i> Create Live Stream
+                </button>
+            </form>
+        </div>
 
-}
+        <div class="col-md-4">
+            <form asp-action="SeeAllLive" asp-area="Instructor" asp-controller="LiveStream" asp-route-CourseID="@TempData["CourseID"]" method="get" class="p-4 border rounded bg-white shadow text-center">
+                <h4 class="fw-bold text-dark mb-2">View Your Live Streams</h4>
+                <p class="text-secondary mb-4">Access and manage all your live sessions for this course.</p>
+                <button type="submit" class="btn btn-primary w-100 py-2">
+                    <i class="fas fa-tv"></i> See Your Livestreams
+                </button>
+            </form>
+        </div>
+    }
+
+    @if (User.IsInRole("Student"))
+    {
+        <div class="col-md-4">
+            <form asp-action="SeeAllLive" asp-area="Student" asp-controller="LiveStream" asp-route-CourseID="@TempData["CourseID"]" method="get" class="p-4 border rounded bg-white shadow text-center">
+                <h4 class="fw-bold text-dark mb-2">See Course Live Streams</h4>
+                <p class="text-secondary mb-4">Watch all live sessions associated with this course.</p>
+                <button type="submit" class="btn btn-info w-100 py-2">
+                    <i class="fas fa-eye"></i> View Course Streams
+                </button>
+            </form>
+        </div>
+    }
+</div>

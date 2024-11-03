@@ -36,13 +36,14 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         {
             _client = new ApiVideoClient(apiVideoSettings.Value.ApiKey);
             // if you rather like to use the sandbox environment:
-            //_client = new ApiVideoClient("EugYjajLHbC5jEkLAng2tywbO1nP2vY3NmMX4nNtyyR", ApiVideoClient.Environment.SANDBOX);
+            //_client = new ApiVideoClient(apiVideoSettings.Value.ApiKey, ApiVideoClient.Environment.SANDBOX);
             _datacontext = datacontext;
             _userManager = userManager;
             _webHostEnvironment = webHostEnvironment;
             _fileService = fileService;
         }
-        [HttpGet]
+        [HttpGet("{CourseID}")]
+        [Authorize(Roles = "Instructor")]
         public IActionResult SeeAllLive(int CourseID)
         {
             var course = _datacontext.Courses.FirstOrDefault(c => c.CourseID == CourseID);
@@ -79,7 +80,9 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             }
             ViewBag.Course = course;
             ViewBag.CourseID = CourseID;
-            return View(liveList);
+            // Sort active streams first, followed by inactive streams
+            var sortedlist = liveList.OrderByDescending(stream => stream.broadcasting).ToList();
+            return View(sortedlist);
         }
         [HttpGet("{liveStreamId}")]
         public IActionResult Details(string liveStreamId)
@@ -339,17 +342,21 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         {
             try
             {
+                var record = _datacontext.LivestreamRecord.FirstOrDefault(r => r.LivestreamId.Equals(liveStreamId));
+                if (record == null)
+                {
+                    return NotFound(new { error = "Live stream not found", liveStreamId });
+                }
+
                 // Complete the live stream with the specified ID
                 _client.LiveStreams().complete(liveStreamId);
-
-                return Ok(new { message = "Live stream completed successfully." });
+                TempData["success"] = "livestream has ended";
+                return RedirectToAction("SeeAllLive", new { CourseID = record.CourseID });
             }
             catch (ApiException e)
             {
-                // Log the error details and return an error response
-                Console.WriteLine("Exception when calling LiveStreamsApi.complete");
-                Console.WriteLine("Status code: " + e.ErrorCode);
-                Console.WriteLine("Reason: " + e.Message);
+                // Log the error details using structured logging (e.g., with Serilog)
+                Console.WriteLine($"Exception when calling LiveStreamsApi.complete - Status code: {e.ErrorCode}, Reason: {e.Message}");
 
                 return BadRequest(new
                 {
@@ -359,6 +366,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 });
             }
         }
+
         //Not sure if needed?
         private LiveStreamAssets ParseLiveStreamAssets(string assetsString)
         {

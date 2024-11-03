@@ -6,7 +6,7 @@
 @model ApiVideo.Model.LiveStream
 
 <link rel="stylesheet" href="~/css/WatchLive.css" />
-@if (User.IsInRole("Instructor"))
+@if (User.IsInRole("Student"))
 {
     <div class="container text-center">
         <h1 class="display-4">Live Stream: @Model.name</h1>
@@ -26,14 +26,8 @@
             <p><a href="@Model.assets.hls" target="_blank" class="btn btn-primary">Watch HLS Stream</a></p>
         </div>
     </div>
-
-    <form asp-action="CompleteLiveStream" asp-controller="LiveStream" asp-route-liveStreamId="@Model.livestreamid" method="post">
-        <button type="submit" onclick="return confirm('End your livestream ?')" class="btn btn-success">
-            Complete Livestream
-        </button>
-    </form>
 }
 else
 {
-    <h3>You do not have permision</h3>
+    <h3>You do not have permision </h3>
 }
