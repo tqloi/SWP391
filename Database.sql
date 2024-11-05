@@ -384,21 +384,13 @@ CREATE TABLE LivestreamRecord
 	CreateDate DATETIME,
 	UpdateDate DATETIME,
 	CourseID INT,
+	Title NVARCHAR(255),
+	ScheduleStartTime DATETIME DEFAULT '2001-01-01 00:00:00',
+	ScheduleLiveDuration TIME(0),
 	FOREIGN KEY (UserID) REFERENCES AspNetUsers(id) ON DELETE CASCADE,
 	FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
 );
 go
-ALTER TABLE LivestreamRecord
-Drop COLUMn StreamKey
-Go
-ALTER TABLE LivestreamRecord
-ADD LivestreamId NVARCHAR(255);
-Go
-ALTER TABLE LivestreamRecord
-ADD Title NVARCHAR(255);
-Go
-Drop Table LivestreamRecord
-Go
 CREATE TRIGGER trg_DeleteChildComments
 ON Comment
 INSTEAD OF DELETE

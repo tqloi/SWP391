@@ -2,6 +2,7 @@
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
     <partial name="_NoficationPartial" />
 }
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="~/css/Livestream.css" asp-append-version="true" />
 
 <div class="row justify-content-center align-items-start my-5">
@@ -15,6 +16,15 @@
                 <div class="mb-3">
                     <input type="text" class="form-control" placeholder="Enter title" id="Title" name="Title" required />
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">Schedule your start time</label>
+                    <input type="text" class="form-control" id="ScheduleStartTime" name="ScheduleStartTime" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Duration of the stream</label>
+                    <input type="text" class="form-control" id="ScheduleDuration" name="ScheduleDuration" required />
+                </div>
+
                 <input type="hidden" id="CourseID" name="CourseID" value="@TempData["CourseID"]" />
                 <button class="btn btn-success w-100 py-2" type="submit" onclick="return confirm('This action will create a livestream with the following title')">
                     <i class="fas fa-video"></i> Create Live Stream
@@ -30,13 +40,21 @@
                     <i class="fas fa-tv"></i> See Your Livestreams
                 </button>
             </form>
+
+            <form asp-action="SeePastLive" asp-area="Instructor" asp-controller="LiveStream" asp-route-CourseID="@TempData["CourseID"]" method="get" class="p-4 border rounded bg-white shadow text-center">
+                <h4 class="fw-bold text-dark mb-2">See Past Live Streams</h4>
+                <p class="text-secondary mb-4">Access all past live sessions for this course.</p>
+                <button type="submit" class="btn btn-warning w-100 py-2">
+                    <i class="fas fa-history"></i> See Past Streams
+                </button>
+            </form>
         </div>
     }
 
     @if (User.IsInRole("Student"))
     {
         <div class="col-md-4">
-            <form asp-action="SeeAllLive" asp-area="Student" asp-controller="LiveStream" asp-route-CourseID="@TempData["CourseID"]" method="get" class="p-4 border rounded bg-white shadow text-center">
+            <form asp-action="SeeAllLive" asp-area="Student" asp-controller="LiveStreamVideo" asp-route-CourseID="@TempData["CourseID"]" method="get" class="p-4 border rounded bg-white shadow text-center">
                 <h4 class="fw-bold text-dark mb-2">See Course Live Streams</h4>
                 <p class="text-secondary mb-4">Watch all live sessions associated with this course.</p>
                 <button type="submit" class="btn btn-info w-100 py-2">
@@ -44,5 +62,16 @@
                 </button>
             </form>
         </div>
+        <div class="col-md-4">
+            <form asp-action="SeePastLive" asp-area="Student" asp-controller="LiveStream" asp-route-CourseID="@TempData["CourseID"]" method="get" class="p-4 border rounded bg-white shadow text-center">
+                <h4 class="fw-bold text-dark mb-2">See Past Live Streams</h4>
+                <p class="text-secondary mb-4">Access all past live sessions for this course.</p>
+                <button type="submit" class="btn btn-warning w-100 py-2">
+                    <i class="fas fa-history"></i> See Past Streams
+                </button>
+            </form>
+        </div>
     }
 </div>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="~/js/Livestream.js"></script>

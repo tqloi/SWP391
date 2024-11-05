@@ -45,6 +45,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 //dang ki background service
 builder.Services.AddHostedService<NotificationCleanupService>();
+//Auto complete livestream 
+builder.Services.AddHostedService<EndLiveStreamService>();
 
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(5); // Thời gian sống của session

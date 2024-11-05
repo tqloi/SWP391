@@ -1,6 +1,7 @@
 ﻿using ApiVideo.Api;
 using ApiVideo.Client;
 using ApiVideo.Model;
+using Firebase.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using MimeKit.Cryptography;
 using OnlineLearning.Areas.Instructor.Models;
 using OnlineLearning.Models;
+using OnlineLearning.Models.ViewModel;
 using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
 using System.Collections.Generic;
@@ -24,15 +26,14 @@ namespace OnlineLearning.Areas.Instructor.Controllers
     /// </summary>
     [ApiController]
     [Area("Instructor")]
-    [Route("Instructor/live-streams/[controller]/[action]")]
+    [Route("Instructor/Live-streams/[controller]/[action]")]
     public class LiveStreamController : Controller
     {
         private ApiVideoClient _client;
         private readonly DataContext _datacontext;
         private UserManager<AppUserModel> _userManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly FileService _fileService;
-        public LiveStreamController(DataContext datacontext, UserManager<AppUserModel> userManager, IOptions<ApiVideoSettings> apiVideoSettings, IWebHostEnvironment webHostEnvironment, FileService fileService)
+        public LiveStreamController(DataContext datacontext, UserManager<AppUserModel> userManager, IOptions<ApiVideoSettings> apiVideoSettings, IWebHostEnvironment webHostEnvironment)
         {
             _client = new ApiVideoClient(apiVideoSettings.Value.ApiKey);
             // if you rather like to use the sandbox environment:
@@ -40,20 +41,21 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             _datacontext = datacontext;
             _userManager = userManager;
             _webHostEnvironment = webHostEnvironment;
-            _fileService = fileService;
         }
+
         [HttpGet("{CourseID}")]
         [Authorize(Roles = "Instructor")]
         public IActionResult SeeAllLive(int CourseID)
         {
             var course = _datacontext.Courses.FirstOrDefault(c => c.CourseID == CourseID);
             var liveList = new List<LiveStream>();
+
+            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var records = _datacontext.LivestreamRecord
+                            .ToList()
+                            .Where(r => r.UserID.Equals(user));
             try
             {
-                var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var records = _datacontext.LivestreamRecord
-                    .ToList()
-                    .Where(r => r.UserID.Equals(user));
                 if (records != null)
                 {
                     foreach (var record in records)
@@ -82,7 +84,12 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             ViewBag.CourseID = CourseID;
             // Sort active streams first, followed by inactive streams
             var sortedlist = liveList.OrderByDescending(stream => stream.broadcasting).ToList();
-            return View(sortedlist);
+            var model = new SeeAllLiveViewModel
+            {
+                LivestreamRecords = records,
+                liveStreams = sortedlist
+            };
+            return View(model);
         }
         [HttpGet("{liveStreamId}")]
         public IActionResult Details(string liveStreamId)
@@ -128,9 +135,14 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Instructor")]
-        //field now fix temporary
-        public IActionResult CreateLiveStream([FromForm] string Title, [FromForm] int CourseID)
+        public IActionResult CreateLiveStream([FromForm] string Title, [FromForm] DateTime ScheduleStartTime, [FromForm] string ScheduleDuration, [FromForm] int CourseID)
         {
+            // Parse the duration from string to TimeSpan
+            if (!TimeSpan.TryParse(ScheduleDuration, out TimeSpan parsedDuration))
+            {
+                ModelState.AddModelError("ScheduleDuration", "Invalid duration format. Please enter in HH:mm format.");
+                return RedirectToAction("Livestream", "Participation", new {CourseID = CourseID});
+            }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var course = _datacontext.Courses.FirstOrDefault(c => c.CourseID == CourseID);
             if (course == null)
@@ -143,7 +155,6 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 name = Title,
                 _public = true,
                 //playerid = "_playerId"
-
                 //currently no restream
             };
 
@@ -158,7 +169,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     LivestreamId = liveStream.livestreamid,
                     Title = Title,
                     CourseID = CourseID,
-
+                    ScheduleStartTime = ScheduleStartTime,
+                    ScheduleLiveDuration = parsedDuration,
                 };
                 _datacontext.LivestreamRecord.Add(record);
                 _datacontext.SaveChanges();
@@ -236,10 +248,12 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Instructor")]
-        public IActionResult UpdateLiveStream([FromQuery] string liveStreamId, [FromForm] string _public, [FromForm] string name)
+        public IActionResult UpdateLiveStream([FromQuery] string liveStreamId, [FromForm] string _public, [FromForm] string name,
+            [FromForm] double ScheduleLiveDuration, [FromForm] DateTime ScheduleStartTime)
         {
             try
             {
+                TimeSpan scheduleLiveDuration = TimeSpan.FromHours(ScheduleLiveDuration);
                 bool isPublic;  // Declare the variable
                 bool.TryParse(_public, out isPublic);
                 LiveStreamUpdatePayload liveStreamUpdatePayload = new LiveStreamUpdatePayload
@@ -249,8 +263,19 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 };
                 var liveStream = _client.LiveStreams().update(liveStreamId, liveStreamUpdatePayload);
                 var record = _datacontext.LivestreamRecord.FirstOrDefault(r => r.LivestreamId == liveStreamId);
+                if (ScheduleStartTime < DateTime.UtcNow)
+                {
+                    TempData["error"] = "Schedule time to the past";
+                    return RedirectToAction("SeeAllLive", new { CourseID = record.CourseID });
+                }
+                else
+                {
+                    record.ScheduleStartTime = ScheduleStartTime;
+                }
                 record.Title = name;
                 record.UpdateDate = liveStream.updatedat ?? DateTime.Now;
+                record.ScheduleLiveDuration = scheduleLiveDuration;
+
                 _datacontext.LivestreamRecord.Update(record);
                 _datacontext.SaveChanges();
                 TempData["success"] = "Update Livestream successfully";
