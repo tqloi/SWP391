@@ -1,20 +1,20 @@
-﻿using ApiVideo.Api;
-using ApiVideo.Client;
-using ApiVideo.Model;
-using Firebase.Auth;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
-using MimeKit.Cryptography;
-using OnlineLearning.Areas.Instructor.Models;
-using OnlineLearning.Models;
-using OnlineLearning.Models.ViewModel;
-using OnlineLearning.Services;
-using OnlineLearningApp.Respositories;
-using System.Collections.Generic;
-using System.Security.Claims;
+﻿using ApiVideo.Api; 
+using ApiVideo.Client; 
+using ApiVideo.Model; 
+using Firebase.Auth; 
+using Microsoft.AspNetCore.Authorization; 
+using Microsoft.AspNetCore.Identity; 
+using Microsoft.AspNetCore.Mvc; 
+using Microsoft.Extensions.Options; 
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor; 
+using MimeKit.Cryptography; 
+using OnlineLearning.Areas.Instructor.Models; 
+using OnlineLearning.Models; 
+using OnlineLearning.Models.ViewModel; 
+using OnlineLearning.Services; 
+using OnlineLearningApp.Respositories; 
+using System.Collections.Generic; 
+using System.Security.Claims; 
 
 namespace OnlineLearning.Areas.Instructor.Controllers
 {
@@ -71,7 +71,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 }
                 else
                 {
-                    TempData["error"] = "No livestream found";
+                    TempData["error"] = "No livestream found!";
                     TempData.Keep();
                     return RedirectToAction("Livestream", "Participation", new { CourseID = CourseID });
                 }
@@ -126,7 +126,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
                 return BadRequest(new
                 {
-                    error = "Error retrieving live stream",
+                    error = "Error retrieving live stream.",
                     message = e.Message,
                     statusCode = e.ErrorCode
                 });
@@ -175,7 +175,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 _datacontext.LivestreamRecord.Add(record);
                 _datacontext.SaveChanges();
                 ViewBag.CourseID = CourseID;
-                TempData["success"] = "Create Success";
+                TempData["success"] = "Create Success!";
                 return RedirectToAction("SeeAllLive", new { CourseID = CourseID });
             }
             catch (ApiException e)
@@ -227,7 +227,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 _datacontext.LivestreamRecord.Remove(record);
                 _datacontext.SaveChanges();
 
-                TempData["success"] = "Live stream deleted successfully";
+                TempData["success"] = "Live stream deleted successfully!";
                 return RedirectToAction("SeeAllLive", new { CourseID = record.CourseID });
             }
             catch (ApiException e)
@@ -265,7 +265,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 var record = _datacontext.LivestreamRecord.FirstOrDefault(r => r.LivestreamId == liveStreamId);
                 if (ScheduleStartTime < DateTime.UtcNow)
                 {
-                    TempData["error"] = "Schedule time to the past";
+                    TempData["error"] = "Schedule time to the past.";
                     return RedirectToAction("SeeAllLive", new { CourseID = record.CourseID });
                 }
                 else
@@ -341,7 +341,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 var record = _datacontext.LivestreamRecord.FirstOrDefault(r => r.LivestreamId.Equals(liveStreamId));
                 // Access the live streams API instance
                 var liveStream = _client.LiveStreams().deleteThumbnail(liveStreamId);
-                TempData["success"] = "Thumbnail delete successfully";
+                TempData["success"] = "Thumbnail delete successfully!";
                 TempData.Keep();
                 return RedirectToAction("SeeAllLive", new { CourseID = record.CourseID });
             }
@@ -370,12 +370,12 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 var record = _datacontext.LivestreamRecord.FirstOrDefault(r => r.LivestreamId.Equals(liveStreamId));
                 if (record == null)
                 {
-                    return NotFound(new { error = "Live stream not found", liveStreamId });
+                    return NotFound(new { error = "Live stream not found!", liveStreamId });
                 }
 
                 // Complete the live stream with the specified ID
                 _client.LiveStreams().complete(liveStreamId);
-                TempData["success"] = "livestream has ended";
+                TempData["success"] = "livestream has ended.";
                 return RedirectToAction("SeeAllLive", new { CourseID = record.CourseID });
             }
             catch (ApiException e)
