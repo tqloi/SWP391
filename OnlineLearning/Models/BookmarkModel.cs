@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace OnlineLearning.Models
 {
@@ -8,15 +8,19 @@ namespace OnlineLearning.Models
         [Key]
         public int BookmarkID { get; set; }
 
-        [ForeignKey("Student")]
+        [Required]
         [StringLength(450)]
-        public string StudentID { get; set; }
+        public string StudentID { get; set; } // AspNetUsers Foreign Key
 
-        [ForeignKey("Course")]
-        public int CourseID { get; set; }
+        [Required]
+        public int CourseID { get; set; } // Courses Foreign Key
 
         // Navigation properties
-        public AppUserModel Student { get; set; }
-        public  CourseModel Course { get; set; }
+        [ForeignKey("StudentID")]
+        public virtual AppUserModel Student { get; set; } // Assuming your user model is called ApplicationUser
+
+        [ForeignKey("CourseID")]
+        public virtual CourseModel Course { get; set; } // Assuming your Course model is called Course
+
     }
 }
