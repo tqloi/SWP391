@@ -36,7 +36,7 @@ namespace OnlineLearning.Controllers
             };
             _dataContext.Comment.Add(comment);
             await _dataContext.SaveChangesAsync();
-            return RedirectToAction("LectureDetail", "Participation", new { LectureID = model.LectureID});
+            return RedirectToAction("LectureDetail", "Participation", new { LectureID = model.LectureID });
         }
 
         [HttpPost]
@@ -81,7 +81,7 @@ namespace OnlineLearning.Controllers
 
             foreach (var childComment in childComments)
             {
-                await DeleteCommentWithChildren(childComment); 
+                await DeleteCommentWithChildren(childComment);
             }
 
             _dataContext.Comment.Remove(comment);

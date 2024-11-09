@@ -387,11 +387,6 @@ CREATE TABLE Report (
 );
 go
 
-<<<<<<< HEAD:Database.sql
-CREATE TABLE LivestreamRecord 
-(
-	LivestreamRecordID INT PRIMARY KEY IDENTITY(1,1),
-=======
 CREATE TABLE VideoCallInfo (
     VideoCallId INT PRIMARY KEY IDENTITY(1,1),
     SendID NVARCHAR(450) NOT NULL,
@@ -405,14 +400,10 @@ go
 CREATE TABLE LivestreamRecord 
 (
 	LivestreamRecordID INT PRIMARY KEY IDENTITY(1,1),
-	Title NVARCHAR(255),
-	LivestreamId NVARCHAR(255),
->>>>>>> loii:Group5_OLF_DB_final.sql.sql
 	UserID NVARCHAR(450),
 	CreateDate DATETIME,
 	UpdateDate DATETIME,
 	CourseID INT,
-<<<<<<< HEAD:Database.sql
 	Title NVARCHAR(255),
 	ScheduleStartTime DATETIME DEFAULT '2001-01-01 00:00:00',
 	ScheduleLiveDuration TIME(0),
@@ -420,27 +411,6 @@ CREATE TABLE LivestreamRecord
 	FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
 );
 go
-CREATE TRIGGER trg_DeleteChildComments
-ON Comment
-INSTEAD OF DELETE
-AS
-BEGIN
-    WITH comments_to_delete AS (
-        SELECT commentID
-        FROM DELETED
-        UNION ALL
-        SELECT c.commentID
-        FROM Comment c
-        INNER JOIN comments_to_delete p ON c.parentCmtId = p.commentID
-    )
-    DELETE FROM Comment
-    WHERE commentID IN (SELECT commentID FROM comments_to_delete);
-END;
-=======
-	FOREIGN KEY (UserID) REFERENCES AspNetUsers(id),
-	FOREIGN KEY (CourseID) REFERENCES Courses(CourseID) ON DELETE CASCADE
-);
->>>>>>> loii:Group5_OLF_DB_final.sql.sql
 
 INSERT INTO Courses 
     (Title, CourseCode, [Description], CoverImagePath, InstructorID, NumberOfStudents, Price, CategoryID, [Level], [Status], IsBaned, CreateDate, LastUpdate, EndDate, NumberOfRate, Rating) 

@@ -72,7 +72,7 @@ else
                     <div class="d-flex justify-content-between">
                         <span class="fw-bold" style="font-size: 15px;">
                             @comment.User.FirstName @comment.User.LastName @(User.Identity.Name == comment.User.UserName ? "(me)" : "")
-                            </span>
+                        </span>
                         <span class="comment-timestamp">@displaydate</span>
                     </div>
                     <div class="d-flex align-items-center">
@@ -126,14 +126,14 @@ else
                                 // Lấy tất cả các textarea có class 'Content'
                                 const textareas = document.querySelectorAll('.Comment-Content');
 
-                                    // Lặp qua từng textarea và thêm sự kiện 'input'
-                                    textareas.forEach(textarea => {
-                                        textarea.addEventListener('input', () => {
-                                            textarea.style.height = 'auto'; // Đặt lại chiều cao trước khi tính toán
-                                            textarea.style.height = `${textarea.scrollHeight}px`; // Đặt chiều cao dựa trên nội dung
-                                        });
+                                // Lặp qua từng textarea và thêm sự kiện 'input'
+                                textareas.forEach(textarea => {
+                                    textarea.addEventListener('input', () => {
+                                        textarea.style.height = 'auto'; // Đặt lại chiều cao trước khi tính toán
+                                        textarea.style.height = `${textarea.scrollHeight}px`; // Đặt chiều cao dựa trên nội dung
                                     });
                                 });
+                            });
                         </script>
                         @await Component.InvokeAsync("Comment", new { lectureId = LectureID, ParentCommentID = commentID })
                     </div>
@@ -212,7 +212,7 @@ else
                                 <div class="mt-3 text-end">
                                     <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
                                     <button type="submit" class="btn custom-btn">Submit Report</button>
-                                </div>               
+                                </div>
                             </form>
                         </div>
                     </div>
