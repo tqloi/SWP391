@@ -1,8 +1,10 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    Random random = new Random();
 }
 <partial name="_NoficationPartial" />
 @model ListViewModel
+
 
 <section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
     <div class="container">
@@ -37,19 +39,25 @@
 
             <div class="col-lg-4 col-12 mb-4 mb-lg-0">
                 <div class="custom-block bg-white shadow-lg">
-                    <a asp-action="CourseList" asp-controller="Course">
+                    @if (Model.Courses != null && Model.Courses.Any())
+                    {            
+                        int randomIndex = random.Next(Model.Courses.Count());
+                        var randomCourse = Model.Courses.ElementAt(randomIndex);
+                    
+                    <a asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@randomCourse.CourseID">
                         <div class="d-flex">
                             <div>
-                                <h5 class="mb-2">Web Design</h5>
-
-                                <p class="mb-0">When you search for free CSS templates, you will notice that TemplateMo is one of the best websites.</p>
+                                <h5 class="mb-2">@randomCourse.Title</h5>
+ 
+                                <p class="mb-0">@randomCourse.Description.</p>
                             </div>
 
-                            <span class="badge bg-design rounded-pill ms-auto">14</span>
+                            <span class="badge bg-design rounded-pill ms-auto">@randomCourse.NumberOfStudents</span>
                         </div>
 
-                        <img src="~/Images/topics/undraw_Remote_design_team_re_urdx.png" class="custom-block-image img-fluid" alt="">
+                        <img src="@randomCourse.CoverImagePath" class="custom-block-image img-fluid" alt="">
                     </a>
+                    }
                 </div>
             </div>
 
@@ -57,17 +65,21 @@
                 <div class="custom-block custom-block-overlay">
                     <div class="d-flex flex-column h-100">
                         <img src="images/businesswoman-using-tablet-analysis.jpg" class="custom-block-image img-fluid" alt="">
-
+                        @{
+                            int index = random.Next(Model.Categories.Count);
+                            var randomCategory = Model.Categories[index];
+                        }
                         <div class="custom-block-overlay-text d-flex">
+
                             <div>
-                                <h5 class="text-white mb-2">Finance</h5>
+                                <h5 class="text-white mb-2">@randomCategory.FullName</h5>
 
-                                <p class="text-white">Topic Listing Template includes homepage, listing page, detail page, and contact page. You can feel free to edit and adapt for your CMS requirements.</p>
+                                <p class="text-white">@randomCategory.Description.</p>
 
-                                <a asp-action="CourseList" asp-controller="Course" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
+                                <a asp-action="CourseList" asp-controller="Course" asp-route-category="@randomCategory.CategoryID" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
                             </div>
 
-                            <span class="badge bg-finance rounded-pill ms-auto">25</span>
+                            <span class="badge bg-graphic rounded-pill ms-auto">25</span>
                         </div>
 
                         <div class="social-share d-flex">
@@ -81,7 +93,7 @@
                                 <li class="social-icon-item">
                                     <a href="#" class="social-icon-link bi-facebook"></a>
                                 </li>
-                                </ul>
+                            </ul>
                         </div>
 
                         <div class="section-overlay"></div>
@@ -92,30 +104,15 @@
     </div>
 </section>
 
-<style>
-    .limited-text {
-        line-height: 1.5em; /* Chiều cao của một dòng */
-        height: 1.5em; /* Chiều cao cho đúng 1 dòng */
-        overflow: hidden; /* Ẩn phần văn bản vượt quá */
-        text-overflow: ellipsis; /* Thêm dấu ba chấm nếu văn bản bị cắt ngắn */
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        max-height: 4.5em;
-        white-space: normal;
-        word-break: break-word; /* Đảm bảo văn bản bị ngắt đúng chỗ */
-    }
-</style>
-
 <section class="explore-section section-padding" id="section_2">
     <div class="container">
-        
+
 
         <div class="col-12 text-center">
             <h2 class="mb-4">Browse Topics</h2>
         </div>
 
-    </div>  
+    </div>
 
     <div class="container-fluid">
         <div class="row">
@@ -123,7 +120,7 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-tab-pane" type="button" role="tab" aria-controls="all-tab-pane" aria-selected="true">All Categories</button>
                 </li>
-                @foreach(var category in Model.Categories)
+                @foreach (var category in Model.Categories)
                 {
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="tab-@category.CategoryID-tab" data-bs-toggle="tab" data-bs-target="#tab-@category.CategoryID-tab-pane" type="button" role="tab" aria-controls="tab-@category.CategoryID-tab-pane" aria-selected="false">@category.FullName</button>
@@ -139,12 +136,19 @@
             <div class="col-12">
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="all-tab-pane" role="tabpanel" aria-labelledby="programming-tab" tabindex="0">
-                            <div class="row">
-                            @for (int i = 0; i < Model.Courses.Count() && i < 6; i++)
+                        <div class="row">
+                            @{
+                                int displayedCourses = 0;
+                            }
+                            @foreach (var item in Model.Courses)
                             {
-                                var item = Model.Courses.ElementAt(i);
+                                if (displayedCourses >= 6)
+                                {
+                                    break;
+                                }
                                 if (item.Status == true)
                                 {
+                                    displayedCourses++;
                                     <div class="col-lg-4 col-md-6 col-12 mb-4 mb-lg-0">
                                         <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
                                             <a asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@item.CourseID">
@@ -152,9 +156,11 @@
                                                     <div>
                                                         <h5 class="mb-2 limited-text">
                                                             <span class="dot @((item.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
-                                                            @item.Title
+                                                            @(item.Title.Length > 19 ? item.Title.Substring(0, 19) + "..." : item.Title)
                                                         </h5>
-                                                        <p class="mb-0 limited-text">@item.Description</p>
+                                                        <p class="mb-0 limited-text">
+                                                            @(item.Description.Length > 29 ? item.Description.Substring(0, 29) + "..." : item.Description)
+                                                        </p>
                                                     </div>
                                                     <span class="badge bg-music rounded-pill ms-auto">@item.NumberOfStudents</span>
                                                 </div>
@@ -164,16 +170,16 @@
                                     </div>
                                 }
                             }
-                            </div>
                         </div>
+                    </div>
 
-                    @foreach(var category in Model.Categories)
+                    @foreach (var category in Model.Categories)
                     {
                         <div class="tab-pane fade" id="tab-@category.CategoryID-tab-pane" role="tabpanel" aria-labelledby="tab-@category.CategoryID-tab" tabindex="0">
                             <div class="row">
                                 <dic class=" mb-4">
-                                   <div class="col-lg-12 col-12 text-center">
-                                        <h5 class="mb-4"> @category.Description</h5>
+                                    <div class="col-lg-12 col-12 text-center">
+                                        <h5 class="mb-4 text-muted"> @category.Description</h5>
                                     </div>
                                 </dic>
                                 @foreach (var item in Model.Courses)
@@ -182,15 +188,16 @@
                                     {
                                         <div class="col-lg-4 col-md-6 col-12 mb-4 mb-lg-0">
                                             <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
-                                                <a asp-action="CourseDetail" asp-controller="Course" asp-route-id="@item.CourseID">
+                                                <a asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@item.CourseID">
                                                     <div class="d-flex">
                                                         <div>
                                                             <h5 class="mb-2 limited-text">
                                                                 <span class="dot @((item.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
-                                                                @item.Title
+                                                                @(item.Title.Length > 19 ? item.Title.Substring(0, 19) + "..." : item.Title)
                                                             </h5>
-
-                                                            <p class="mb-0 limited-text">@item.Description</p>
+                                                            <p class="mb-0 limited-text">
+                                                                @(item.Description.Length > 29 ? item.Description.Substring(0, 29) + "..." : item.Description)
+                                                            </p>
                                                         </div>
                                                         <span class="badge bg-music rounded-pill ms-auto">@item.NumberOfStudents</span>
                                                     </div>
@@ -233,7 +240,7 @@
                         <li>
                             <h4 class="text-white mb-3">Search your favourite topic</h4>
 
-                            <p class="text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis, cumque magnam? Sequi, cupiditate quibusdam alias illum sed esse ad dignissimos libero sunt, quisquam numquam aliquam? Voluptas, accusamus omnis?</p>
+                            <p class="text-white">Explore a vast array of courses and resources tailored to your learning interests. Use our powerful search feature to easily find topics, lessons, and materials that resonate with you.</p>
 
                             <div class="icon-holder">
                                 <i class="bi-search"></i>
@@ -243,7 +250,7 @@
                         <li>
                             <h4 class="text-white mb-3">Bookmark &amp; Keep it for yourself</h4>
 
-                            <p class="text-white">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint animi necessitatibus aperiam repudiandae nam omnis est vel quo, nihil repellat quia velit error modi earum similique odit labore. Doloremque, repudiandae?</p>
+                            <p class="text-white">Never lose track of valuable learning resources again! With our bookmarking feature, you can save your favorite courses, articles, and videos, ensuring you have quick access whenever you need them.</p>
 
                             <div class="icon-holder">
                                 <i class="bi-bookmark"></i>
@@ -253,7 +260,7 @@
                         <li>
                             <h4 class="text-white mb-3">Read &amp; Enjoy</h4>
 
-                            <p class="text-white">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Animi vero quisquam, rem assumenda similique voluptas distinctio, iste est hic eveniet debitis ut ducimus beatae id? Quam culpa deleniti officiis autem?</p>
+                            <p class="text-white">Immerse yourself in the knowledge you've gathered! Take the time to read through saved materials, engage with diverse topics, and enhance your learning journey at your own pace.</p>
 
                             <div class="icon-holder">
                                 <i class="bi-book"></i>
@@ -352,26 +359,27 @@
             </div>
 
             <div class="col-lg-3 col-md-6 col-12 mb-3 mb-lg- mb-md-0 ms-auto">
-                <h4 class="mb-3">Head office</h4>
+                <h4 class="mb-3">FPT University Da Nang</h4>
 
-                <p>Bay St &amp;, Larkin St, San Francisco, CA 94109, United States</p>
+                <p>Hoa Hai, Ngu Hanh Son, Da Nang, Viet Nam</p>
 
                 <hr>
 
                 <p class="d-flex align-items-center mb-1">
                     <span class="me-2">Phone</span>
 
-                    <a href="tel: 305-240-9671" class="site-footer-link">
-                        305-240-9671
+                    <a href="tel: 125-125-8386" class="site-footer-link">
+                        110-220-8386
                     </a>
                 </p>
 
                 <p class="d-flex align-items-center">
                     <span class="me-2">Email</span>
 
-                    <a href="mailto:info@company.com" class="site-footer-link">
-                        info@company.com
+                    <a href="https://mail.google.com" target="_blank" class="site-footer-link">
+                        fudn@fpt.edu.vn
                     </a>
+
                 </p>
             </div>
 
@@ -385,17 +393,18 @@
                 <p class="d-flex align-items-center mb-1">
                     <span class="me-2">Phone</span>
 
-                    <a href="tel: 110-220-3400" class="site-footer-link">
-                        110-220-3400
+                    <a href="tel: 110-220-8386" class="site-footer-link">
+                        125-125-8386
                     </a>
                 </p>
 
                 <p class="d-flex align-items-center">
                     <span class="me-2">Email</span>
 
-                    <a href="mailto:info@company.com" class="site-footer-link">
-                        info@company.com
+                    <a href="https://mail.google.com" class="site-footer-link">
+                        quyloi123@gmail.com
                     </a>
+
                 </p>
             </div>
 

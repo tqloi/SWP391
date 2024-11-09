@@ -15,27 +15,31 @@ using YourNamespace.Models;
 namespace OnlineLearning.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
-    [Authorize(Roles = "Instructor")]
     [Route("Instructor/[controller]/[action]")]
+    [Authorize(Roles = "Instructor")]
     public class LectureController : Controller
     {
         private readonly DataContext _dataContext;
         private UserManager<AppUserModel> _userManager;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly FileService _fileService;
 
-        public LectureController(DataContext context, UserManager<AppUserModel> userManager, IWebHostEnvironment webHostEnvironment, FileService fileService)
+        public LectureController(DataContext context, UserManager<AppUserModel> userManager, FileService fileService)
         {
             _dataContext = context;
-            _webHostEnvironment = webHostEnvironment;
             _userManager = userManager;
             _fileService = fileService;
         }
+
+        // CRUD LECTURE
         [HttpPost]
         public async Task<IActionResult> Create(LectureViewModel model)
         {
-            var course = await _dataContext.Courses.FindAsync(model.CourseID);
-            ViewBag.Course = course;
+            var existLecture = await _dataContext.Lecture.Where(c => c.CourseID == model.CourseID).FirstOrDefaultAsync(c => c.Title == model.Title);
+            if (existLecture != null)
+            {
+                TempData["warning"] = $"Lecture with title {model.Title} is already exist";
+                return Redirect(Request.Headers["Referer"].ToString());
+            }
 
             try
             {
@@ -43,7 +47,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 {
                     CourseID = model.CourseID,
                     Title = model.Title,
-                    Description = model.Description,
+                    Description = model.Description == null ? "" : model.Description,
                     UpLoadDate = DateTime.Now,
                 };
 
@@ -69,7 +73,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     {
                         ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                         TempData["error"] = "Edit failed due to file upload error!";
-                        return View(model);
+                        return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lecture.LectureID });
                     }
                 }
 
@@ -94,11 +98,13 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                         {
                             ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                             TempData["error"] = "Edit failed due to file upload error!";
-                            return View(model);
+                            return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lecture.LectureID });
                         }
                     }
 
                 }
+                var course = await _dataContext.Courses.FindAsync(lecture.CourseID);
+                course.LastUpdate = DateTime.Now;
 
                 TempData["success"] = "Lecture Addded successfully!";
                 //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
@@ -108,9 +114,180 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             {
                 TempData["success"] = "Added Failed!";
                 //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-                return RedirectToAction("CourseInfo", "Participation", new { CourseID = model.CourseID });
+                return RedirectToAction("Dashboard", "Instructor", new { area = "Instructor", CourseID = model.CourseID });
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(LectureModel model)
+        {
+            var lecture = await _dataContext.Lecture.FindAsync(model.LectureID);
+
+            var existLecture = await _dataContext.Lecture.Where(c => c.CourseID == lecture.CourseID).FirstOrDefaultAsync(c => c.Title == model.Title && c.LectureID != model.LectureID);
+            if (existLecture != null)
+            {
+                TempData["warning"] = $"Lecture with title {model.Title} is already exist";
+                return Redirect(Request.Headers["Referer"].ToString());
+            }
+
+            lecture.Title = model.Title;
+            lecture.Description = model.Description != null ? model.Description : "";
+
+            var course = await _dataContext.Courses.FindAsync(lecture.CourseID);
+            course.LastUpdate = DateTime.Now;
+
+            _dataContext.Lecture.Update(lecture);
+            await _dataContext.SaveChangesAsync();
+
+            TempData["success"] = "Lecture Addded successfully!";
+            //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
+            return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lecture.LectureID });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int LectureID)
+        {
+            var lecture = await _dataContext.Lecture.FindAsync(LectureID);
+            int CourseID = lecture.CourseID;
+
+            var comments = await _dataContext.Comment
+              .Where(c => c.LectureID == LectureID && c.ParentCmtId == null).ToListAsync();
+
+            foreach (var ccomment in comments)
+            {
+                await DeleteCommentWithChildren(ccomment);
+            }
+            var course = await _dataContext.Courses.FindAsync(lecture.CourseID);
+            course.LastUpdate = DateTime.Now;
+
+            _dataContext.Lecture.Remove(lecture);
+            await _dataContext.SaveChangesAsync();
+            TempData["success"] = "Lecture Deleted";
+            return RedirectToAction("Dashboard", "Instructor", new { area = "Instructor", CourseID = CourseID });
+        }
+        private async Task DeleteCommentWithChildren(CommentModel comment)
+        {
+            var childComments = await _dataContext.Comment
+                .Where(c => c.ParentCmtId == comment.CommentID).ToListAsync();
+
+            foreach (var childComment in childComments)
+            {
+                await DeleteCommentWithChildren(childComment);
+            }
+
+            _dataContext.Comment.Remove(comment);
+        }
+
+        // LECTUREFILE
+        [HttpPost]
+        public async Task<IActionResult> UploadLectureFile(IFormFileCollection LectureFile, int LectureID)
+        {
+            var lecture = await _dataContext.Lecture.FindAsync(LectureID);
+
+            if (LectureFile == null || LectureID == null)
+            {
+                TempData["error"] = "Edit failed due to file upload error!";
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = LectureID });
+            }
+
+            if (LectureFile != null && LectureFile.Count > 0)
+            {
+                foreach (var file in LectureFile)
+                {
+                    var lectueFile = new LectureFileModel();
+                    string fileName = file.FileName;
+                    try
+                    {
+                        string downloadUrl = await _fileService.UploadLectureDocument(file);
+                        lectueFile.LectureID = lecture.LectureID;
+                        lectueFile.FilePath = downloadUrl;
+                        lectueFile.FileName = fileName;
+                        lectueFile.FileType = "Document";
+                        lectueFile.fileExtension = Path.GetExtension(fileName);
+                        _dataContext.LectureFiles.Add(lectueFile);
+                        await _dataContext.SaveChangesAsync();
+                        TempData["success"] = "File(s) Uploaded";
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                        TempData["error"] = "Edit failed due to file upload error!";
+                        return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = LectureID });
+                    }
+                }
+            }
+            var course = await _dataContext.Courses.FindAsync(lecture.CourseID);
+            if (course != null)
+            {
+                course.LastUpdate = DateTime.Now;
+            }
+            await _dataContext.SaveChangesAsync();
+            return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = LectureID });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadLectureVideo(IFormFile LectureVideo, int LectureID)
+        {
+            var existVideo = await _dataContext.LectureFiles.FirstOrDefaultAsync(l => l.LectureID == LectureID && l.FileType.Equals("Video"));
+            string downloadUrl = "";
+            if (LectureVideo != null)
+            {
+                var lectueFile = new LectureFileModel();
+                string fileName = LectureVideo.FileName;
+                try
+                {
+                    downloadUrl = await _fileService.UploadVideo(LectureVideo);
+                    lectueFile.LectureID = LectureID;
+                    lectueFile.FilePath = downloadUrl;
+                    lectueFile.FileName = fileName;
+                    lectueFile.FileType = "Video";
+                    lectueFile.fileExtension = Path.GetExtension(fileName);
+                    _dataContext.LectureFiles.Add(lectueFile);
+                    await _dataContext.SaveChangesAsync();
+                    TempData["success"] = "File Uploaded";
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error uploading file: " + ex.Message);
+                    TempData["error"] = "Edit failed due to file upload error!";
+                    return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = LectureID });
+                }
+            }
+            if (downloadUrl != "" && existVideo != null)
+            {
+                _dataContext.LectureFiles.Remove(existVideo);
+                await _fileService.DeleteFile(existVideo.FilePath);
+            }
+            var lecture = await _dataContext.Lecture.FindAsync(LectureID);
+            var course = await _dataContext.Courses.FindAsync(lecture.CourseID);
+            if (course != null)
+            {
+                course.LastUpdate = DateTime.Now;
+            }
+            await _dataContext.SaveChangesAsync();
+            return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = LectureID });
+        }
+
+        // LECTURE VIEW
+        [HttpPost]
+        public async Task<IActionResult> DeleteLectureFile(int LectureFileID, int LectureID)
+        {
+            var lecture = await _dataContext.Lecture.FindAsync(LectureID);
+            var lectureFile = await _dataContext.LectureFiles.FindAsync(LectureFileID);
+            await _fileService.DeleteFile(lectureFile.FilePath);
+
+            var course = await _dataContext.Courses.FindAsync(lecture.CourseID);
+            if (course != null)
+            {
+                course.LastUpdate = DateTime.Now;
+            }
+
+            _dataContext.LectureFiles.Remove(lectureFile);
+            await _dataContext.SaveChangesAsync();
+            TempData["success"] = "File Deleted";
+                return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lecture.LectureID});
+        }
+
         [HttpGet]
         [ServiceFilter(typeof(CourseAccessFilter))]
         public async Task<IActionResult> LectureDetail(int LectureID)
@@ -124,6 +301,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             return View(lectureFiles);
         }
+
         public async Task<IActionResult> GoNext(int lectureID)
         {
             var currentLecture = await _dataContext.Lecture.FindAsync(lectureID);
@@ -147,7 +325,6 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 return RedirectToAction("LectureDetail", "Lecture", new { area = "Instructor", LectureID = lectureID });
             }
         }
-
 
         [HttpGet]
         public async Task<IActionResult> GoPrevious(int lectureID)

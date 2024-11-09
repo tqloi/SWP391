@@ -14,8 +14,9 @@ using System.Security.Claims;
 namespace OnlineLearning.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
-    [Authorize(Roles = "Instructor")]
     [Route("Instructor/[controller]/[action]")]
+
+    [Authorize(Roles = "Instructor")]
     public class CourseController : Controller
     {
         private readonly DataContext datacontext;
@@ -36,17 +37,12 @@ namespace OnlineLearning.Areas.Instructor.Controllers
         {
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            var user = await _userManager.FindByIdAsync(userId);
             var existingCourse = await datacontext.Courses.FirstOrDefaultAsync(c => c.CourseCode == model.CourseCode);
 
             if (existingCourse != null)
             {
                 TempData["warning"] = "Course code already exists!";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
-            }
-            if (model.EndDate <= DateTime.Now)
-            {
-                TempData["warning"] = "Invalid end date!";
                 return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
             }
 
@@ -112,16 +108,22 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                     }
                 }
             }
-
+            var notify = new NotificationModel
+            {
+                UserId = user.Id,
+                Description = $"{user.FirstName} {user.LastName} has just created a course named: {course.Title}",
+                CreatedAt = DateTime.Now
+            };
+            datacontext.Notification.Add(notify);
+            await datacontext.SaveChangesAsync();
             TempData["success"] = "Course created successfully!";
             //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-            return RedirectToAction("CourseInfo", "Participation", new { CourseID = newCourseId });
+            return RedirectToAction("Dashboard", "Instructor", new { area = "Instructor", CourseID = newCourseId });
         }
 
         [HttpPost]
         public async Task<IActionResult> Update(CourseViewModel model)
         {
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var course = await datacontext.Courses.FindAsync(model.CourseID);
 
@@ -131,12 +133,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (existingCourse != null)
             {
                 TempData["warning"] = "Course code already exists!";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
-            }
-            if (model.EndDate < DateTime.Now.Date)
-            {
-                TempData["warning"] = "Invalid end date!";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                return Redirect(Request.Headers["Referer"].ToString());
             }
 
             if (course == null)
@@ -156,10 +153,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             {
                 course.Level = model.Level;
             }
-            if (model.EndDate != DateTime.MinValue)
-            {
-                course.EndDate = model.EndDate;
-            }
+
+            course.EndDate = new DateTime(2030, 1, 1);
             course.LastUpdate = DateTime.Now;
 
             if (model.CoverImage != null)
@@ -174,7 +169,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 {
                     ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                     TempData["error"] = "Edit failed due to file upload error!";
-                    return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                    return Redirect(Request.Headers["Referer"].ToString());
                 }
             }
 
@@ -182,7 +177,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
 
             TempData["success"] = "Update created successfully!";
             //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
-            return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         [HttpPost]
@@ -192,7 +187,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (course == null)
             {
                 TempData["error"] = "Course not found!";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                return Redirect(Request.Headers["Referer"].ToString());
             }
 
             var deleteAllowedDate = course.LastUpdate.AddDays(30);
@@ -200,13 +195,13 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             {
                 var daysRemaining = (deleteAllowedDate - DateTime.Now).Days;
                 TempData["warning"] = $"Can be deleted after {daysRemaining} days.";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                return Redirect(Request.Headers["Referer"].ToString());
             }
             datacontext.Courses.Remove(course);
             await datacontext.SaveChangesAsync();
 
             TempData["success"] = "Course deleted successfully!";
-            return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         [HttpPost]
@@ -216,7 +211,25 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             if (course == null)
             {
                 TempData["error"] = "Course not found!";
-                return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+                return Redirect(Request.Headers["Referer"].ToString());
+            }
+            if (course.Status == false && course.IsBaned == true) 
+            {
+                TempData["warning"] = "Cannot enable because the course violates the terms!";
+                return Redirect(Request.Headers["Referer"].ToString());
+            }
+
+            if (course.Status == false)
+            {
+                var lectures = await datacontext.Lecture.Where(l => l.CourseID == CourseId).ToArrayAsync();
+                var tests = await datacontext.Test.Where(t => t.CourseID == CourseId).ToArrayAsync();
+                var assignments = await datacontext.Assignment.Where(a => a.CourseID == CourseId).ToArrayAsync();
+                var courseMaterials = await datacontext.CourseMaterials.Where(a => a.CourseID == CourseId).ToArrayAsync();
+                if (!lectures.Any() || !tests.Any() || !assignments.Any() || !courseMaterials.Any()) 
+                {
+                    TempData["warning"] = "Please add more course content";
+                    return Redirect(Request.Headers["Referer"].ToString());
+                }
             }
 
             course.Status = !course.Status;
@@ -224,7 +237,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             await datacontext.SaveChangesAsync();
 
             TempData["success"] = course.Status ? "Course enabled successfully!" : "Course disable successfully!";
-            return RedirectToAction("MyCourse", "Course", new { area = "Instructor" });
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         [HttpGet]
@@ -260,9 +273,9 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            var model = new CourseListViewModel
+            var model = new ListViewModel
             {
-                CourseList = courses,
+                Courses = courses,
                 TotalPage = (int)Math.Ceiling(totalCourses / (double)pageSize),
                 CurrentPage = page,
                 Category = category,

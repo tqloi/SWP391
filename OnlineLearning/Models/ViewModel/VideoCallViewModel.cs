@@ -5,5 +5,6 @@
         public string Token { get; set; }
         public string SendId { get; set; }
         public string ReceiveId { get; set; }
+        
     }
 }

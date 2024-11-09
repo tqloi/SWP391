@@ -45,8 +45,6 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 //dang ki background service
 builder.Services.AddHostedService<NotificationCleanupService>();
-//Auto complete livestream 
-builder.Services.AddHostedService<EndLiveStreamService>();
 
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(5); // Thời gian sống của session
@@ -92,8 +90,9 @@ builder.Services.AddIdentity<AppUserModel, IdentityRole>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<CourseAccessFilter>();
-
 builder.Services.AddScoped<LectureAccessFilter>();
+builder.Services.AddScoped<AdminRedirectFilter>();
+builder.Services.AddScoped<AssignmentAccessFilter>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -125,9 +124,14 @@ builder.Services.AddScoped<TestSchedulerService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-	app.UseExceptionHandler("/Home/Error");
+    app.UseDeveloperExceptionPage(); // Chỉ hiển thị trang lỗi chi tiết khi ở môi trường phát triển
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error"); // Sử dụng trang lỗi tổng quát trong môi trường sản xuất
+    app.UseHsts();
 }
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -155,8 +159,12 @@ app.MapAreaControllerRoute(
     areaName: "Student",
     pattern: "{area:exists}/{controller=Student}/{action=Index}/{id?}");
 
-app.MapHub<ReviewHub>("/review");
 app.MapHub<ChatHub>("/chatHub");
+
+//404
+app.UseStatusCodePagesWithReExecute("/Home/Error404");
+
 app.MapHub<TestHub>("/testHub");
+
 
 app.Run();

@@ -8,7 +8,6 @@ using OnlineLearning.Models.ViewModel;
 
 using OnlineLearning.Services;
 using OnlineLearningApp.Respositories;
-using QRCoder;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -17,7 +16,7 @@ using System.Security.Claims;
 namespace OnlineLearning.Controllers
 {
 
-    [Authorize(Roles = "Student, Instructor" )]
+    [Authorize(Roles = "Student,Instructor")]
     public class PaymentController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -39,6 +38,7 @@ namespace OnlineLearning.Controllers
             _vnPayservice = vnPayservice;
         }
         [HttpGet]
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> PaymentConfirmation(int CourseID)
         {
             var course = await datacontext.Courses
@@ -66,7 +66,8 @@ namespace OnlineLearning.Controllers
         }
 
         [HttpPost]
-            public async Task<IActionResult> PaymentConfirmation(PaymentViewModel model)
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> PaymentConfirmation(PaymentViewModel model)
             {
             var user = await _userManager.FindByIdAsync(model.UserID);
             
@@ -135,7 +136,32 @@ namespace OnlineLearning.Controllers
             return View(model);
             }
 
+        [HttpPost]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> GetFreeCourse(int CourseID)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var studentCourse = new StudentCourseModel
+            {
+                CourseID = CourseID,
+                StudentID = userId,
+                EnrollmentDate = DateTime.Now,
+                Progress = 0,
+                CertificateStatus = "In Progress"
+            };
+
+            datacontext.StudentCourses.Add(studentCourse);
+            var course = await datacontext.Courses.FirstOrDefaultAsync(c => c.CourseID == CourseID);
+            course.NumberOfStudents += 1;
+            await datacontext.SaveChangesAsync();
+
+            TempData["success"] = "Course Enrolled!";
+            return RedirectToAction("CourseDetail", "Course", new { CourseID = CourseID });
+        }
+
         [Authorize]
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> PaymentRollBack()
         {
             var response = _vnPayservice.PaymentExecute(Request.Query);
@@ -212,17 +238,14 @@ namespace OnlineLearning.Controllers
             }
             return RedirectToAction("CourseDetail", "Course", new { CourseID = studentCourse.CourseID });
 
-
-
             
             }
              public IActionResult ErrorPayment()
             {
                 return View();
              }
+
         [HttpGet]
-        [Authorize]
-        
         public async Task<IActionResult> RequestWithdraw()
         {
 
@@ -232,10 +255,12 @@ namespace OnlineLearning.Controllers
             {
                 UserID = user.Id,
                 Status = "In processing",
-                CreateAtTime = DateTime.Now
+                CreateAtTime = DateTime.Now,
+                CurrentMoney = (double) user.WalletUser
             };
             return View(request);
         }
+
         [HttpPost]
         public async Task<IActionResult> RequestWithdraw(RequestTransferViewModel model)
         {
@@ -278,12 +303,36 @@ namespace OnlineLearning.Controllers
 
 
         }
-        public IActionResult ListRequest()
+
+        public async Task<IActionResult> ListRequest()
         {
-            return View();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+            var listrequest = await datacontext.RequestTranfer.Where(r => r.UserID.Equals(user.Id)).Select(u => new HistoryPaymentViewModel
+            {
+                Id = u.TranferID,
+                FullName = u.FullName,
+                Type = "Withdraw",
+                Description = $"Bank: {u.BankName} - " +
+                $" \n Account: {u.AccountNumber}",
+                Amount = u.MoneyNumber,
+                Date = u.CreateAt,
+                Status = u.Status
+            }).ToListAsync();
+            var listpayment = await datacontext.Payment.Where(r => r.Student.Id.Equals(user.Id)).Select(u => new HistoryPaymentViewModel
+            {
+                Id = u.PaymentID,
+                FullName = u.Student.FirstName + " " + u.Student.LastName,
+                Type = "Payment",
+                Description = $"Payment for {u.Course.Title}",
+                Amount = (double)u.Amount,
+                Date = u.PaymentDate,
+                Status = u.Status
+            }).ToListAsync();
+            var combine = listpayment.Concat(listrequest).OrderByDescending(l => l.Date).ToList();
+            return View(combine);
         }
 
     }
-
-    }
+}
 

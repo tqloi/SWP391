@@ -3,40 +3,66 @@
 }
 
 @model InstructorProfileViewModel
-
-
 <partial name="_NoficationPartial" />
-<section class="profile-section">
-    <div class="container emp-profile">
+
+
+<section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
+    <div class="container">
         <div class="row">
-            <div class="col-md-4">
-                <div class="profile-img">
-                    <img src="@Model.ExistingProfileImagePath" alt="Profile Image" />
+        </div>
+    </div>
+</section>
+
+
+<section class="featured-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-3 col-12 mb-4 mb-lg-0 d-flex justify-content-end">
+                <div class="custom-block shadow-lg rounded-circle" style="width: 250px; height: 250px; margin-top: -30px;">
+                    <div class="profile-img">
+                        <img src="@Model.User.ProfileImagePath" alt="Profile Image" style="margin-top: -30px; margin-left: -30px">
+                    </div>
                 </div>
             </div>
-            <div class="col-md-8">
-                <h5>@Model.UserName</h5>
-                <p>Full Name: @Model.FirstName @Model.LastName</p>
-                <p>Email: @Model.Email</p>
-                <p>Phone: @Model.PhoneNumber</p>
-                <p>Address: @Model.Address</p>
-                <p>Date of birth: @Model.Dob</p>
-                <p>
-                    Gender:@if (@Model.gender == true)
-                    {
-                        @:Male
-                    }
+            <div class="col-lg-9 col-12">
+            </div>
+            <div class="container emp-profile" style="height: 100%; margin-top: -120px;">
+                <div class="row">
+                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-5" style=" min-height: 370px">
+                        <h3 class="mt-2 mb-4">@Model.User.FirstName @Model.User.LastName 
+                            <div class="btn ms-1 mb-1 text-black @(Model.Role == "STUDENT" ? "btn-light active" : "btn-warning" )">@Model.Role</div>
+                        </h3>
+                        <p>Username: @Model.User.UserName</p>
+                        <p>Email: @Model.User.Email</p>
+                        <p>
+                            Gender
+                            @if (Model.User.Gender == true)
+                            {
+                                @:Male
+                            }
 
-                    else
+                            else
 
-                    {
-                        @:Female
-                    }
-                </p>
-
-                <a asp-action="Index" asp-controller="Chat" asp-route-id="@Model.UserId" class="btn custom-btn">Message</a>
-
-
+                            {
+                                @:Female
+                            }
+                        </p>
+                        <p>Date of birth: @Model.User.Dob</p>
+                        @if (Model.Role == "INSTRUCTOR")
+                        {
+                            <p>Introducton: @Model.Instructor.Description</p>
+                            <p>Number of course: @Model.TotalCourse</p>
+                            <p>Number of student: @Model.TotalStudent</p>
+                        }
+                    </div>
+                    <div class="col-md-4 row d-flex align-items-center">
+                        <div class="col-md-8 mb-5">
+                            <a asp-action="Index" asp-controller="Chat" asp-route-id="@Model.User.Id" class="btn custom-btn mb-4 w-100">Message</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -6,12 +6,10 @@
 <html lang="en">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Kaiadmin - Bootstrap 5 Admin Dashboard</title>
+    <title>Lean0n | Admin Dashboard</title>
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
           name="viewport" />
-    <link rel="icon"
-          href="~/img/kaiadmin/favicon.ico"
-          type="image/x-icon" />
+    <link rel="icon" type="image/png" href="~/Images/webLogo.png">
 
     <!-- Fonts and icons -->
     <script src="~/js/plugin/webfont/webfont.min.js"></script>
@@ -106,11 +104,6 @@
                             <div class="collapse" id="base">
                                 <ul class="nav nav-collapse">
                                     <li>
-                                        <a asp-area="Admin" asp-controller="User" asp-action="UserList">
-                                            <span class="sub-item">Users</span>
-                                        </a>
-                                    </li>
-                                    <li>
                                         <a asp-area="Admin" asp-controller="Course" asp-action="Index">
                                             <span class="sub-item">Courses</span>
                                         </a>
@@ -155,20 +148,25 @@
                         </li>
                         <li class="nav-item">
                             <a data-bs-toggle="collapse" href="#sidebarLayouts">
-                                <i class="fas fa-th-list"></i>
-                                <p>Sidebar Layouts</p>
+                                <i class="fa fa-users" aria-hidden="true"></i>
+                                <p>Users</p>
                                 <span class="caret"></span>
                             </a>
                             <div class="collapse" id="sidebarLayouts">
                                 <ul class="nav nav-collapse">
                                     <li>
-                                        <a href="sidebar-style-2.html">
-                                            <span class="sub-item">Sidebar Style 2</span>
+                                        <a asp-area="Admin" asp-controller="User" asp-action="UserList">
+                                            <span class="sub-item">ALL</span>
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="icon-menu.html">
-                                            <span class="sub-item">Icon Menu</span>
+                                        <a asp-area="Admin" asp-controller="User" asp-action="InstructorList">
+                                            <span class="sub-item">Instructor</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a asp-area="Admin" asp-controller="User" asp-action="StudentList">
+                                            <span class="sub-item">Student</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -176,15 +174,15 @@
                         </li>
                         <li class="nav-item">
                             <a data-bs-toggle="collapse" href="#forms">
-                                <i class="fas fa-pen-square"></i>
-                                <p>Forms</p>
+                                <i class="fa fa-ban" aria-hidden="true"></i>
+                                <p>Reports</p>
                                 <span class="caret"></span>
                             </a>
                             <div class="collapse" id="forms">
                                 <ul class="nav nav-collapse">
                                     <li>
-                                        <a href="forms/forms.html">
-                                            <span class="sub-item">Basic Form</span>
+                                        <a asp-area="Admin" asp-action="ReportList" asp-controller="User">
+                                            <span class="sub-item">Report</span>
                                         </a>
                                     </li>
                                 </ul>

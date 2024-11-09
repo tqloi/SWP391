@@ -1,11 +1,10 @@
-﻿
-@model VideoCallViewModel
+﻿@model VideoCallViewModel
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User 1</title>
+    <title>User 2</title>
 
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
     <style>
@@ -50,8 +49,8 @@
             <div class="col-12">
                 <div class="jumbotron">
                     <div class="container">
-                        <h2>Video call Demo - @Model.Token</h2>
-                        <p>By <a href="https://developer.stringee.com/">stringee.com</a></p>
+                        <h2>@Model.ReceiveId</h2>
+                        <a asp-action="Index" asp-controller="Chat" asp-area="" class="btn btn-primary">Back</a>
                         <div id="incoming-call-notice" style="display: none;">
                             <div class="spinner-grow text-primary" role="status">
                                 <span class="sr-only">Incoming call...</span>
@@ -82,11 +81,10 @@
         </div>
     </div>
 
+
     <script src="~/js/js/lib/jquery.js"></script>
     <script src="~/js/js/lib/socket.io-2.2.0.js"></script>
     <script src="~/js/js/StringeeSDK-1.5.10.js"></script>
-   
-
 
 
 

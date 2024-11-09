@@ -35,16 +35,27 @@ namespace OnlineLearning.Controllers
         [Authorize]
         public async Task<IActionResult> Index(string id)
         {
-           
-            var model = new RoleViewModel();
+           var model = new RoleViewModel();
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //khong cho nhan tin voi myself
+            if (userId == id)
+            {
+                return Redirect($"/Chat");
+            }
             var user = await _userManager.FindByIdAsync(userId);
-            var list = await _db.Users.Where(u => !u.Id.Equals(user.Id)).ToListAsync();
+            var list = await _db.Users
+    .Where(u => u.Id != user.Id &&
+        _db.Message.Any(m =>
+            (m.SenderId == user.Id && m.ReceiverId == u.Id) ||
+            (m.SenderId == u.Id && m.ReceiverId == user.Id)
+        )
+    )
+    .ToListAsync();
             var receiver = await _userManager.FindByIdAsync(id);
             var messages = await _db.Message
         .Where(m => (m.SenderId == user.Id && m.ReceiverId == id) ||
-                     (m.SenderId == id && m.ReceiverId == user.Id))
-        .OrderBy(m => m.Timestamp)
+                     (m.SenderId == id && m.ReceiverId == user.Id)).OrderBy(m => m.Timestamp)
+        
         .ToListAsync();
             var isreadmess = await _db.Message.Where(m => (m.ReceiverId.Equals(userId) && m.SenderId.Equals(id)) || (m.SenderId.Equals(userId) && m.ReceiverId.Equals(id))).OrderByDescending(t => t.Timestamp).Select(m => new {m.Content, m.SenderId, m.ReceiverId}).FirstOrDefaultAsync();
             if(isreadmess == null)
@@ -81,7 +92,7 @@ namespace OnlineLearning.Controllers
                 }
             }
             
-            
+
 
 
             return View(model);
@@ -94,7 +105,7 @@ namespace OnlineLearning.Controllers
         {
             var userId = _db.Users.FirstOrDefault(u => u.Id.Equals(receiver))?.Id;
              
-            if (!string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(message))
             {
                 var messageModel = new MessageModel
                 {
@@ -133,7 +144,41 @@ namespace OnlineLearning.Controllers
             var roles = await _userManager.GetRolesAsync(user);
             return roles;
         }
-        
+        [HttpPost]
+        public async Task<IActionResult> SearchUserMess(string Name)
+        {
+            if (string.IsNullOrEmpty(Name))
+            {
+                return RedirectToAction("Index");
+            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user =  await _userManager.FindByIdAsync(userId);
+            var list = _db.Users.Where(u => !u.Id.Equals(user.Id) &&
+                (
+                    u.UserName.ToLower().Contains(Name.ToLower()) ||
+                    u.FirstName.ToLower().Contains(Name.ToLower()) ||
+                    u.LastName.ToLower().Contains(Name.ToLower()) ||
+                    
+                   Name.ToLower().Equals(u.FirstName.ToLower()+" " + u.LastName.ToLower()))
+            ).ToList();
+            var roleview = new RoleViewModel
+            {
+                ListUser = list
+            };
+            return View(roleview);
+        }
+        public async Task<IActionResult> AnswerCall()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+            var callerId = user.Id;
+            var receiver = await _db.VideoCallInfo.FirstOrDefaultAsync(r => r.ReceiveID.Equals(callerId));
+            var receiverId = receiver.SendID;
+
+            var token = _stringeeService.GenerateAccessToken(callerId);
+            return RedirectToAction("VideoCallView","VideoCall", new { token, callerId, receiverId });
+        }
+
 
 
     }

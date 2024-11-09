@@ -13,8 +13,8 @@ using YourNamespace.Models;
 
 namespace OnlineLearning.Controllers
 {
-    
-	public class HomeController : Controller
+    [ServiceFilter(typeof(AdminRedirectFilter))]
+    public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
         private readonly DataContext _dataContext;
@@ -31,10 +31,6 @@ namespace OnlineLearning.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("Admin"))
-            {
-                return RedirectToAction("Index", "Admin", new { area = "Admin" });
-            }
             var model = new ListViewModel();
             model.Courses = await _dataContext.Courses.Include(c => c.Category)
                 .OrderByDescending(sc => sc.CourseID).ToListAsync();
@@ -43,55 +39,24 @@ namespace OnlineLearning.Controllers
 			return View(model);
 		}
 
+
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Student, Instructor")]
         public IActionResult Contact()
         {
-            if (User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
             return View();
         }
 
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> Contact(ReportModel model)
+        public IActionResult Error404()
         {
-            if (User.IsInRole("Admin"))
-            {
-                return Forbid();
-            }
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            try
-            {
-                var feedback = new ReportModel
-                {
-                    UserID = userId,
-                    Subject = model.Subject,
-                    Comment = model.Comment,
-                    FeedbackDate = DateTime.Now,
-                };
-                _dataContext.Report.Add(feedback);
-                await _dataContext.SaveChangesAsync();
-
-                TempData["success"] = "Feedback has been submitted successfully!";
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = "Failed to submit feedback. Please try again later.";
-                return View(model);
-            }
-
             return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error()
-		{
-			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-		}
-	}
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+    }
 }

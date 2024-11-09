@@ -27,6 +27,7 @@ namespace OnlineLearning.Models
 
         public string Level { get; set; }
         public bool Status { get; set; } = true;
+        public bool IsBaned { get; set; } = false;
 
         public DateTime CreateDate { get; set; }
         public DateTime LastUpdate { get; set; }

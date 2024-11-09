@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,18 @@ namespace OnlineLearning.Areas.Admin.Controllers
             var courses = await _dataContext.Courses.Include(c => c.Instructor).ThenInclude(i => i.AppUser).ToListAsync();
             return View(courses);
         }
-
+        public async Task<IActionResult> GetCourse(string Comment)
+        {
+            var match = Regex.Match(Comment, @"\[(.*?)\]");
+            var coursename = "";
+            if (match.Success)
+            {
+                var result = match.Groups[1].Value;
+                coursename = result.ToString();
+            }
+            var course = await _dataContext.Courses.FirstOrDefaultAsync(c => c.Title.Equals(coursename));
+            return View(course);
+        }
         public async Task<IActionResult> SetStatusCourse(int Id)
         {
             var course = await _dataContext.Courses.FindAsync(Id);
@@ -42,12 +54,13 @@ namespace OnlineLearning.Areas.Admin.Controllers
             if (course.Status == true)
             {
                 course.Status = false;
+                course.IsBaned = true;
                 await _dataContext.SaveChangesAsync();
             }
             else if (course.Status == false)
             {
-
                 course.Status = true;
+                course.IsBaned = false;
                 await _dataContext.SaveChangesAsync();
             }
                 TempData["success"] = "Set Status Successful!";

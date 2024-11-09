@@ -1,120 +1,151 @@
-﻿
+﻿@model IEnumerable<HistoryPaymentViewModel>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <partial name="_NoficationPartial" />
+}
+<header class="site-header d-flex flex-column justify-content-center align-items-center">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <div class="col-lg-5 col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Homepage</a></li>
+
+                        <li class="breadcrumb-item active" aria-current="page">History Transfer</li>
+                    </ol>
+                </nav>
+
+                <h2 class="text-white">History Transfer</h2>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-lg-12">
+           <div class="main-box clearfix mt-3">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover user-list table-bordered">
+                        <thead>
+                            <tr class="d flex align-items-center">
+                                <th class="align-middle">Full Name</th>
+                                <th class="align-middle">Description</th>
+                                <th class="align-middle">Amount</th>
+                                <th class="align-middle">Create date</th>
+                                <th class="align-middle">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <p style="font-size: large; position: relative; left: -4px; top: 10px;">@item.FullName</p>
+                                        <br />
+                                        <span style="font-size:small">Type: @item.Type</span>
+                                    </td>
+                                    <td>@item.Description</td>
+                                    <td>
+                                        @item.Amount.ToString("N0") VND
+                                    </td>
+                                    <td style="width: 20%;">
+                                        @item.Date
+                                    </td>
+                                    <td>
+                                        @if (item.Status.Equals("Success") || item.Status.Equals("Completed"))
+                                        {
+                                            <span class="text-success"> @item.Status</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-warning"> @item.Status</span>
+                                        }
+                                    </td>
+                                </tr>
+
+                               
+
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <ul class="pagination pull-right">
+                    <li><a href="#"><i class="fa fa-chevron-left"></i></a></li>
+                    <li><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#"><i class="fa fa-chevron-right"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
-    body {
-  font-family: 'lato', sans-serif;
-}
-.container {
-  max-width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 10px;
-  padding-right: 10px;
-}
+    /* USER LIST TABLE */
+    .user-list tbody td > img {
+        position: relative;
+        max-width: 50px;
+        float: left;
+        margin-right: 15px;
+    }
 
-h2 {
-  font-size: 26px;
-  margin: 20px 0;
-  text-align: center;
-  small {
-    font-size: 0.5em;
-  }
-}
+    .user-list tbody td .user-link {
+        display: block;
+        font-size: 1.25em;
+        margin-left: 60px;
+    }
 
-.responsive-table {
-  li {
-    border-radius: 3px;
-    padding: 25px 30px;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 25px;
-  }
-  .table-header {
-    background-color: #95A5A6;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-  .table-row {
-    background-color: #ffffff;
-    box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);
-  }
-  .col-1 {
-    flex-basis: 10%;
-  }
-  .col-2 {
-    flex-basis: 40%;
-  }
-  .col-3 {
-    flex-basis: 25%;
-  }
-  .col-4 {
-    flex-basis: 25%;
-  }
-  
-  media all and (max-width: 767px) {
-    .table-header {
-      display: none;
+    .user-list tbody td .user-subhead {
+        font-size: 0.875em;
+        font-style: italic;
     }
-    .table-row{
-      
+
+    .table-hover > tbody > tr:hover > td,
+    .table-hover > tbody > tr:hover > th {
+        background-color: #eee;
     }
-    li {
-      display: block;
+
+    .table thead > tr > th {
+        border-bottom: 1px solid #C2C2C2;
+        padding-bottom: 0;
     }
-    .col {
-      
-      flex-basis: 100%;
-      
+
+    .table tbody > tr > td {
+        font-size: 0.875em;
+        background: #f5f5f5;
+        border-top: 10px solid #fff;
+        vertical-align: middle;
+        padding: 12px 8px;
     }
-    .col {
-      display: flex;
-      padding: 10px 0;
-      &:before {
-        color: #6C7A89;
-        padding-right: 10px;
-        content: attr(data-label);
-        flex-basis: 50%;
-        text-align: right;
-      }
+
+        .table tbody > tr > td:first-child,
+        .table thead > tr > th:first-child {
+            padding-left: 20px;
+        }
+
+    .table a.table-link {
+        margin: 0 5px;
+        font-size: 1.125em;
     }
-  }
-}
+
+        .table a.table-link:hover {
+            text-decoration: none;
+            color: #2aa493;
+        }
+
+        .table a.table-link.danger {
+            color: #fe635f;
+        }
+
+            .table a.table-link.danger:hover {
+                color: #dd504c;
+            }
 </style>
-<body>
-    <div class="container">
-        <h2>Responsive Tables Using LI <small>Triggers on 767px</small></h2>
-        <ul class="responsive-table">
-            <li class="table-header">
-                <div class="col col-1">Job Id</div>
-                <div class="col col-2">Customer Name</div>
-                <div class="col col-3">Amount Due</div>
-                <div class="col col-4">Payment Status</div>
-            </li>
-            <li class="table-row">
-                <div class="col col-1" data-label="Job Id">42235</div>
-                <div class="col col-2" data-label="Customer Name">John Doe</div>
-                <div class="col col-3" data-label="Amount">$350</div>
-                <div class="col col-4" data-label="Payment Status">Pending</div>
-            </li>
-            <li class="table-row">
-                <div class="col col-1" data-label="Job Id">42442</div>
-                <div class="col col-2" data-label="Customer Name">Jennifer Smith</div>
-                <div class="col col-3" data-label="Amount">$220</div>
-                <div class="col col-4" data-label="Payment Status">Pending</div>
-            </li>
-            <li class="table-row">
-                <div class="col col-1" data-label="Job Id">42257</div>
-                <div class="col col-2" data-label="Customer Name">John Smith</div>
-                <div class="col col-3" data-label="Amount">$341</div>
-                <div class="col col-4" data-label="Payment Status">Pending</div>
-            </li>
-            <li class="table-row">
-                <div class="col col-1" data-label="Job Id">42311</div>
-                <div class="col col-2" data-label="Customer Name">John Carpenter</div>
-                <div class="col col-3" data-label="Amount">$115</div>
-                <div class="col col-4" data-label="Payment Status">Pending</div>
-            </li>
-        </ul>
-    </div>
-</body>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">

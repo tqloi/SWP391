@@ -1,6 +1,12 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<AppUserModel> SignInManager
 @inject UserManager<AppUserModel> UserManager
+
+@{
+    var currentCourse = ViewBag.Course as CourseModel;
+    var courseID = currentCourse.CourseID;
+    var user = await UserManager.GetUserAsync(User);
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,19 +19,19 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Tables</title>
+    <title>Learn0n | @currentCourse.Title</title>
 
     <!-- Custom fonts for this template -->
     <link href="~/course/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
           rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="icon" type="image/png" href="~/Images/webLogo.png">
 
     <!-- Custom styles for this template-->
     <link href="~/css/bootstrap.min.css" rel="stylesheet">
-    <link href="~/css/bootstrap-icons.css" rel="stylesheet">
-    <link href="~/course/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="~/course/css/sb-admin-2.css" rel="stylesheet">
     <link href="~/css/templatemo-topic-listing.css" rel="stylesheet">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
@@ -34,11 +40,11 @@
 
 <body id="page-top">
 
-    @{
-        var currentCourse = ViewBag.Course as CourseModel;
-        var courseID = currentCourse.CourseID;
-        var user = await UserManager.GetUserAsync(User);
-    }
+    <div class="loading-overlay" id="loading" style="display: none;">
+        <div id="spinner" class="show w-100 vh-100 position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+            <div class="spinner-grow" role="status"></div>
+        </div>
+    </div>
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -49,30 +55,33 @@
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand text-dark mr-auto" asp-action="Index" asp-controller="Home">
                 <i class="bi-back"></i>
-                <span>Topic</span>
+                <span>LearnOn</span>
             </a>
 
             @if (currentCourse.InstructorID.Equals(user.Id))
             {
                 <!-- Nav Item - Dashboard -->
-                <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Instructor" && ViewContext.RouteData.Values["action"].ToString() == "Dashboard" ? "active" : "")">
-                    <a class="nav-link" asp-action="Dashboard" asp-controller="Instructor" asp-route-CourseID="@courseID">
+                <li title="Dashboard" class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Instructor" && ViewContext.RouteData.Values["action"].ToString() == "Dashboard" ? "active" : "")">
+                    <a class="nav-link" asp-action="Dashboard" asp-controller="Instructor" asp-area="Instructor" asp-route-CourseID="@courseID">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
                         <nav-link>Dashboard</nav-link>
                     </a>
                 </li>
             }
+            else
+            {
 
-            <!-- Nav Item - Course Info -->
-            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "CourseInfo" ? "active" : "")">
-                <a class="nav-link" asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@courseID">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <nav-link>Course Info</nav-link>
-                </a>
-            </li>
+                <!-- Nav Item - Course Info -->
+                <li title="Course Info" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "CourseInfo" ? "active" : "")">
+                    <a class="nav-link" asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@courseID">
+                        <i class="bi bi-info-circle"></i>
+                        <nav-link>Course Info</nav-link>
+                    </a>
+                </li>
+            }
 
             <!-- Nav Item - Material -->
-            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "MaterialList" ? "active" : "")">
+            <li title="Materials" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Material" && ViewContext.RouteData.Values["action"].ToString() == "MaterialList" ? "active" : "")">
                 <a class="nav-link" asp-action="MaterialList" asp-controller="Participation" asp-route-CourseID="@courseID">
                     <i class="fas fa-file-alt"></i>
                     <nav-link> Materials</nav-link>
@@ -80,7 +89,7 @@
             </li>
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Lecture" && ViewContext.RouteData.Values["action"].ToString() == "LectureDetail" ? "active" : "")">
+            <li title="Lectures" class="nav-item @(ViewContext.RouteData.Values["controller"].ToString() == "Lecture" && ViewContext.RouteData.Values["action"].ToString() == "LectureDetail" ? "active" : "")">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#lectureList"
                    aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-book-open"></i>
@@ -103,28 +112,31 @@
                 </div>
             </li>
 
-            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "Grades" ? "active" : "")">
-                <a class="nav-link" asp-action="GradeList" asp-controller="Participation" asp-route-CourseID="@courseID">
-                    <i class="fas fa-clipboard-list"></i>
-                    <nav-link>Grades</nav-link>
-                </a>
-            </li>
+            @if (!currentCourse.InstructorID.Equals(user.Id))
+            {
+                <li title="Grades" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Student" && ViewContext.RouteData.Values["action"].ToString() == "Grades" ? "active" : "")">
+                    <a class="nav-link" asp-action="GradeList" asp-controller="Student" asp-area="Student" asp-route-CourseID="@courseID">
+                        <i class="fas fa-clipboard"></i>
+                        <nav-link>Grades</nav-link>
+                    </a>
+                </li>
+            }
 
-            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "TestList" ? "active" : "")">
+            <li title="Tests" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "TestList" ? "active" : "")">
                 <a class="nav-link" asp-action="TestList" asp-controller="Participation" asp-route-CourseID="@courseID">
                     <i class="fas fa-clipboard-list"></i>
                     <nav-link>Tests</nav-link>
                 </a>
             </li>
 
-            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "AssignmentList" ? "active" : "")">
+            <li title="Assignments" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "AssignmentList" ? "active" : "")">
                 <a class="nav-link" asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID">
                     <i class="fas fa-tasks"></i>
                     <nav-link>Assignments</nav-link>
                 </a>
             </li>
 
-            <li class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "Livestream" ? "active" : "")">
+            <li title="Live stream" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "AssignmentList" ? "active" : "")">
                 <a class="nav-link" asp-action="Livestream" asp-controller="Participation" asp-route-CourseID="@courseID">
                     <i class="bi bi-broadcast"></i>
                     <nav-link>Live stream</nav-link>
@@ -135,9 +147,9 @@
             <hr class="sidebar-divider d-none d-md-block">
 
             <!-- Sidebar Toggler (Sidebar) -->
-@*             <div class="text-center d-none d-md-inline">
+            <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div> *@
+            </div>
 
         </ul>
         <!-- End of Sidebar -->
@@ -169,7 +181,7 @@
                     <!-- Topbar Search -->
                     <div class="d-none d-lg-block ml-auto">
                         <form asp-action="CourseList" asp-controller="Course" method="GET" class="navbar-form">
-                            <div class="input-group bg-white" style="padding: 3px; padding-left: 13px; border-radius: 25px; border: 1px solid #ccc;">
+                            <div class="input-group bg-white flex-nowrap" style="padding: 3px; padding-left: 13px; border-radius: 25px; border: 1px solid #ccc;">
                                 <input type="search" name="keyword" placeholder="Search" style="border: none; outline: none;" required>
                                 <button type="submit" class="btn btn-white border-0">
                                     <i class="bi bi-search" style="font-size: 1.2em;"></i>
@@ -191,9 +203,9 @@
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle"  asp-action="Index" asp-controller="Chat"  id="messagesDropdown" role="button">
+                            <a class="nav-link dropdown-toggle" asp-action="Index" asp-controller="Chat" id="messagesDropdown" role="button">
                                 <i class="fas fa-envelope fa-fw"></i>
-                           @*      <span class="badge badge-danger badge-counter">7</span> *@
+                                @*      <span class="badge badge-danger badge-counter">7</span> *@
                             </a>
                         </li>
 
@@ -204,7 +216,7 @@
                                 <img class="img-profile rounded-circle"
                                      src="@user.ProfileImagePath">
                                 <span class="ml-2 d-none d-lg-inline text-gray-600 small">@user.FirstName @user.LastName</span>
-                                <i class="fas fa-caret-down ml-2"></i> 
+                                <i class="fas fa-caret-down ml-2"></i>
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow"
@@ -228,8 +240,9 @@
 
                 </nav>
 
-
-                @RenderBody()
+                <div style="min-height: 100vh">
+                    @RenderBody()
+                </div>
 
                 <!-- Add Lecture Modal -->
                 <div class="modal fade" id="createLectureModal" tabindex="-1" aria-labelledby="addLectureModalLabel" aria-hidden="true">
@@ -240,26 +253,38 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form id="addLectureForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Lecture" asp-action="Create">
+                                <form id="addLectureForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Lecture" asp-action="Create" onsubmit="return validateForm()">
                                     <input type="hidden" class="form-control" name="CourseID" value="@courseID" required>
                                     <div class="mb-3">
                                         <label for="Title" class="form-label">Title</label>
                                         <input type="text" class="form-control" name="Title" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="Description" class="form-label">Description</label>
-                                        <textarea class="form-control" name="Description" rows="3" required></textarea>
+                                        <label for="Description" class="form-label">Description (not required)</label>
+                                        <textarea class="form-control" name="Description" rows="3"></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label for="LectureFile" class="form-label">Upload Lecture Documents</label>
-                                        <input type="file" class="form-control" name="LectureFile" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple>
+                                        <input type="file" class="form-control" id="LectureFile" name="LectureFile" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple>
                                     </div>
                                     <div class="mb-3">
                                         <label for="VideoFile" class="form-label">Upload Lecture Video</label>
-                                        <input type="file" class="form-control" name="VideoFile" accept=".mp4,.mov,.avi">
+                                        <input type="file" class="form-control" id="VideoFile" name="VideoFile" accept=".mp4,.mov,.avi">
                                     </div>
                                     <button type="submit" class="custom-btn">Add Lecture</button>
                                 </form>
+                                <script>
+                                    function validateForm() {
+                                        const lectureFile = document.getElementById('LectureFile').files.length;
+                                        const videoFile = document.getElementById('VideoFile').files.length;
+
+                                        if (lectureFile === 0 && videoFile === 0) {
+                                            alert('Please upload at least one document or video file.');
+                                            return false;
+                                        }
+                                        return true;
+                                    }
+                                </script>
                             </div>
                         </div>
                     </div>
@@ -269,68 +294,94 @@
             </div>
             <!-- End of Main Content -->
             <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2020</span>
+
+            <footer class="sticky-footer site-footer section-padding bg-white">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-3 col-12 mb-4 pb-2">
+                            <a class="navbar-brand mb-2" href="#">
+                                <i class="bi-back"></i>
+                                <span>Learn0n</span>
+                            </a>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 col-6">
+                            <h6 class="site-footer-title mb-3">Resources</h6>
+                            <ul class="site-footer-links">
+                                <li class="site-footer-link-item">
+                                    <a asp-action="Index" asp-controller="Home" class="site-footer-link">Home</a>
+                                </li>
+                                <li class="site-footer-link-item">
+                                    <a asp-action="Index" asp-controller="Home" asp-fragment="section_3" class="site-footer-link">How it works</a>
+                                </li>
+                                <li class="site-footer-link-item">
+                                    <a asp-action="Index" asp-controller="Home" asp-fragment="section_4" class="site-footer-link">FAQs</a>
+                                </li>
+                                <li class="site-footer-link-item">
+                                    <a asp-action="Contact" asp-controller="Home" class="site-footer-link">Contact</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 col-6 mb-4 mb-lg-0">
+                            <h6 class="site-footer-title mb-3">Information</h6>
+                            <p class="text-white d-flex mb-1">
+                                <a href="tel:110-220-8386" class="site-footer-link">110-220-8386</a>
+                            </p>
+                            <p class="text-white d-flex">
+                                <a href="https://mail.google.com" target="_blank" class="site-footer-link">info@company.com</a>
+                            </p>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 col-12 mt-4 mt-lg-0 ms-auto">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    English
+                                </button>
+                                @*                                 <ul class="dropdown-menu">
+                                <li><button class="dropdown-item" type="button">VietNam</button></li>
+                                </ul> *@
+                            </div>
+                        </div>
                     </div>
                 </div>
             </footer>
             <!-- End of Footer -->
 
         </div>
-        <!-- End of Content Wrapper -->
+
 
     </div>
     <!-- End of Page Wrapper -->
     <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
+    <a class="scroll-to-top rounded" style="z-index: 10;" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
 
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn custom-btn active" type="button" data-dismiss="modal">Cancel</button>
-                    <form asp-action="Logout" asp-controller="Account" method="post">
-                        <button type="submit" class="btn custom-btn ">Logout</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Bootstrap core JavaScript-->
-    <script src="~/course/vendor/jquery/jquery.min.js"></script>
-    <script src="~/course/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/course/vendor/jquery/jquery.js"></script>
+    <script src="~/course/vendor/bootstrap/js/bootstrap.js"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="~/course/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="~/course/js/sb-admin-2.min.js"></script>
-
-    <!-- Page level plugins -->
-    <script src="~/course/vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="~/course/vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="~/course/js/demo/datatables-demo.js"></script>
+    <!-- custom scripts for all pages-->
+    <script src="~/course/js/sb-admin-2.js"></script>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap Bundle JS (includes Popper.js) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const forms = document.querySelectorAll('form');
+
+            forms.forEach(form => {
+                form.addEventListener('submit', function () {
+                    document.getElementById('loading').style.display = 'block';
+                });
+            });
+        });
+    </script>
 
     @await Component.InvokeAsync("Notyf")
     @await RenderSectionAsync("Scripts", required: false)

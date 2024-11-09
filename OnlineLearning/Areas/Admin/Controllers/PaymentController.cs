@@ -33,6 +33,7 @@ namespace OnlineLearning.Areas.Admin.Controllers
             var listrequest = await _dataContext.RequestTranfer.Include(i => i.User).OrderByDescending(r => r.CreateAt).ToListAsync();
             return View(listrequest);
         }
+        [HttpPost]
         public async Task<IActionResult> PaymentConfirm(int id)
         {
             var paymentUser = await _dataContext.RequestTranfer.FirstOrDefaultAsync(p => p.TranferID == id);

@@ -347,10 +347,31 @@
                                                 </td>
                                                 <td>
                                                     <div class="primary-btn">
-                                                        <a class="btn btn-primary" asp-area="Admin" asp-action="ChangeRoleToInstructor" asp-controller="User" asp-route-Id="@item.user.Id">Upgrade</a>
+                                                        <a data-bs-toggle="modal" data-bs-target="#confirmInstructorModal" class="btn btn-primary" >Upgrade</a>
                                                     </div>
                                                 </td>
+
                                             </tr>
+                                            <div class="modal fade" id="confirmInstructorModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="deleteLectureModalLabel">Instructor Confirm</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Are you sure you want to confirm this request?</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <form method="post" asp-area="Admin" asp-action="ChangeRoleToInstructor" asp-controller="User">
+                                                                <input type="hidden" name="Id" value="@item.user.Id">
+                                                                <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
+                                                                <button type="submit" class="btn custom-btn btn-success">Confirm</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         }    
                                     </tbody>
                                 </table>

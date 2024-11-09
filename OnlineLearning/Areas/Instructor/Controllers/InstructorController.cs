@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearning.Areas.Instructor.Models.ViewModel;
 using OnlineLearning.Controllers;
 using OnlineLearning.Models;
 using OnlineLearningApp.Respositories;
@@ -17,72 +18,38 @@ namespace OnlineLearning.Areas.Instructor.Controllers
     {
 
         private readonly ILogger<InstructorController> _logger;
-        public readonly DataContext _context;
+        public readonly DataContext _dataContext;
         private UserManager<AppUserModel> _userManager;
         private SignInManager<AppUserModel> _signInManager;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        public InstructorController(DataContext context, ILogger<InstructorController> logger, UserManager<AppUserModel> userManager, SignInManager<AppUserModel> signInManager, IWebHostEnvironment webHostEnvironment)
+        public InstructorController(DataContext context, ILogger<InstructorController> logger, UserManager<AppUserModel> userManager, SignInManager<AppUserModel> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _webHostEnvironment = webHostEnvironment;
             _logger = logger;
-            _context = context;
+            _dataContext = context;
         }
 
         [HttpGet]
-        public IActionResult Index(int CourseID)
+        [ServiceFilter(typeof(CourseAccessFilter))]
+        public async Task<IActionResult> Dashboard(int CourseID)
         {
-            //Debug.WriteLine("Course from My course: " + course);
-            //var course = _context.Courses.FirstOrDefault(c => c.CourseID == CourseID);
-            ViewBag.CourseID =CourseID;
-            
-            return View();
-        }
-
-        [Route("/CreateTest")]
-        [HttpPost]
-        public async Task<IActionResult> CreateTest(TestModel model)
-        {
-            if (ModelState.IsValid)
+            var course =  _dataContext.Courses.Find(CourseID);
+            ViewBag.Course = course;
+            var startdate = DateTime.Now.AddDays(-7);
+            var now  = DateTime.Now;
+            var earning = _dataContext.Payment.Where(c => c.CourseID == CourseID).Sum(c => c.Amount);
+            var earningweek = _dataContext.Payment.Where(c => c.CourseID == CourseID && c.PaymentDate >= startdate && c.PaymentDate <= now).Sum(c => c.Amount);
+            var numstd = _dataContext.StudentCourses.Where(c => c.CourseID == CourseID).Count();
+            var liststd = await _dataContext.StudentCourses.Where(c => c.CourseID == CourseID).Include(c => c.AppUser).ToListAsync();
+            var dashboard = new DashBoardViewModel
             {
-                var course = _context.Courses.FirstOrDefault(c => c.CourseID == model.CourseID);
-                if (course == null)
-                {
-                    TempData["error"] = "Course not found!";
-                    return RedirectToAction("Index");
-                }
-                model.Course = course;
-
-                Debug.WriteLine("ID retrieved valid");
-                var newTest = new TestModel
-                {
-                    AlowRedo = model.AlowRedo,
-                    Title = model.Title,
-                    Course = course,
-                    Description = model.Description,
-                    StartTime = model.StartTime,
-                    EndTime = model.EndTime,
-                    Status = model.Status,
-                    CourseID = model.CourseID,
-                    NumberOfQuestion = 0
-                };
-                // Add the test to the context and save changes
-                _context.Test.Add(newTest);
-                await _context.SaveChangesAsync();
-                Debug.WriteLine("Test saved to database");
-
-                TempData["success"] = "Test created successfully!";
-                return RedirectToAction("Index");
-            }
-            Debug.WriteLine("ModelState is invalid");
-            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-            {
-                Debug.WriteLine($"Error: {error.ErrorMessage}");
-            }
-            TempData["error"] = "Test creation failed!";
-            return RedirectToAction("Index");
+                EarningMonth = (double)earning,
+                EarningDay = (double)earningweek,
+                NumStudent = numstd,
+                Rating = course.Rating,
+                ListStudent = liststd
+            };
+            return View(dashboard);
         }
-
     }
 }

@@ -20,150 +20,369 @@
         </div>
     </div>
 </header>
-
+@{
+    var category = Model.Category;
+    var level = Model.Level;
+    var status = Model.Status;
+}
 <section class="topics-section">
     <div class="button-group d-flex justify-content-between align-items-center">
         <div>
-            <button class="btn custom-btn active me-2" onclick="togglebutton(this)">in progress</button>
-            <button class="btn custom-btn active me-2" onclick="togglebutton(this)">complete</button>
-            <button class="btn custom-btn active me-2" onclick="togglebutton(this)">saved</button>
+            <select class="filter-select me-2" id="statusFilter" onchange="applyFilters()">       
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Saved">Saved</option>
+            </select>
         </div>
         <div>
-            <select class="filter-select me-2" id="categoryFilter">
+            <select class="filter-select me-2" id="categoryFilter" onchange="applyFilters()">
                 <option value="">All Category</option>
                 @Html.Partial("_SideCategory")
             </select>
 
-            <select class="filter-select" id="difficultyFilter">
+            <select class="filter-select" id="difficultyFilter" onchange="applyFilters()">
                 <option value="">All Level</option>
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
             </select>
+            <script>
+                function applyFilters() {
+                    var selectedStatus = document.getElementById("statusFilter").value;
+                    var selectedCategory = document.getElementById("categoryFilter").value;
+                    var selectedLevel = document.getElementById("difficultyFilter").value;
+                    var url = '/Student/Course/MyCourse?status=' + selectedStatus+ '&category=' + selectedCategory + '&level=' + selectedLevel;
+                    window.location.href = url;
+                }
+            </script>
+            <script>
+                var selectedStatus = '@(status ?? "")';
+                document.getElementById("statusFilter").value = selectedStatus;
+            </script>
+
+            <script>
+                var selectedCategory = @category;
+                document.getElementById("categoryFilter").value = selectedCategory;
+            </script>
+            <script>
+                var selectedLevel = '@(level ?? "")';
+                document.getElementById("difficultyFilter").value = selectedLevel;
+            </script>
+            
         </div>
     </div>
-    @foreach (var course in Model.Courses)
+    
+    @if (Model.StudentCourses != null)
     {
+        if (Model.StudentCourses.Any())
+        {
+            @foreach (var studentCourse in Model.StudentCourses)
+            {
+                var course = Model.Courses.FirstOrDefault(c => c.CourseID == studentCourse.CourseID);
+                <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
+                    <div class="row">
 
-        <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
-            <div class="row">
-
-                <div class="col-md-2">
-                    <img src="@course.CoverImagePath" class="custom-block-image img-fluid ms-3" alt="">
-                </div>
-                <div class="col-md-9 row custom-block-topics-listing-info">
-                    <div class="col-md-11 ms-3">
-                        <div class="d-flex">
-                            <div>
-                                <h4 class="mb-2">
-                                    @course.Title
-                                    <span class="dot @((course.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
-                                </h4>
-                            </div>
+                        <div class="col-md-2">
+                            <img src="@course.CoverImagePath" class="custom-block-image rounded img-fluid ms-3" alt="">
                         </div>
-                        <h6>@course.Level</h6>
-                        <p>Instructor: @course.Instructor?.AppUser?.FirstName @course.Instructor?.AppUser?.LastName</p>
-                        <div class="row progress-group d-flex justify-content-between">
-                            @if (Model.StudentCourses != null && User.IsInRole("Student"))
-                            {
-                                var studentCourse = Model.StudentCourses.FirstOrDefault(cs => cs.CourseID == course.CourseID);
-
-                                <div class="col-md-9 row align-items-end">
-                                    <div class="col-md-8">
-                                        <div>
-                                            <h8>@studentCourse.CertificateStatus: @(studentCourse.Progress)%</h8>
-                                        </div>
-                                        <div class="progress">
-                                            <div class="progress-bar-custom" style="width:@(studentCourse.Progress)%;">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <i class="fas fa-flag"></i>
-                                        <h8>Ends on @String.Format("{0:dd/MM/yyyy}", course.EndDate)</h8>
+                        <div class="col-md-9 row custom-block-topics-listing-info">
+                            <div class="col-md-11 ms-3">
+                                <div class="d-flex">
+                                    <div>
+                                        <h4 class="mb-2">
+                                            @course.Title
+                                            <span class="dot @((course.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
+                                        </h4>
                                     </div>
                                 </div>
-                            }
-                            <div class="col-md-3">
-                                <a asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@course.CourseID" class="btn custom-btn mt-auto mt-lg-4">Go to course</a>
+                                <h6>@course.Level</h6>
+                                <p>Instructor: @course.Instructor?.AppUser?.FirstName @course.Instructor?.AppUser?.LastName</p>
+                                <div class="row progress-group d-flex justify-content-between">
+                                    @if (studentCourse.CertificateStatus != "Completed")
+                                    {
+                                        <div class="col-md-9 row align-items-end">
+                                            <div class="col-md-8">
+                                                <div>
+                                                    <h8>@studentCourse.CertificateStatus: @(studentCourse.Progress)%</h8>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar-custom" style="width:@(studentCourse.Progress)%;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <i class="fas fa-flag"></i>
+                                                <h8>Ends on @String.Format("{0:dd/MM/yyyy}", course.EndDate)</h8>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="col-md-3">
+                                        <a asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@course.CourseID" class="btn custom-btn mt-auto mt-lg-4">Go to course</a>
+                                    </div>
+                                    @if (studentCourse.CertificateStatus == "Completed" && Model.Reviews.FirstOrDefault(r => r.CourseID == studentCourse.CourseID) == null)
+                                    {
+                                        <div class="col-md-9">
+                                            <a class="btn custom-btn mt-auto mt-lg-4 active me-auto" style="margin-left: -40px" data-bs-toggle="modal" data-bs-target="#leaveReview-@course.CourseID">Leave review</a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1 d-flex justify-content-end align-items-start">
+                            <div class="dropdown">
+                                <button class="btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@course.CourseID">Course Detail</a></li>
+                                    <li><a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#reportCourseModal-@course.CourseID">Report<i class="far fa-flag ms-2"></i></a></li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-1 d-flex justify-content-end align-items-start">
-                    <div class="dropdown">
-                        <button class="btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@course.CourseID">Course Detail</a></li>
-                            <li><a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#reportCourseModal-@course.CourseID">Report<i class="far fa-flag ms-2"></i></a></li>
-                        </ul>
+
+                <!-- Review Modal-->
+
+                <div class="modal fade" id="leaveReview-@course.CourseID" tabindex="-1" role="dialog" aria-labelledby="leaveReviewModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header ">
+                                <h5 class="modal-title w-100 text-center" id="leaveReviewModalLabel">Course Review</h5>
+                                <div>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+
+                                    <div class="col-md-6 border-end">
+                                        <div class="col-md-12">
+                                            <img src="@course.CoverImagePath" class="rounded" alt="" style="height: 250px; width: 100%;">
+                                        </div>
+                                        <div class="col-md-12 mt-3">
+                                            <h5>@course.Title</h5>
+                                            <h6>@course.Category.FullName</h6>
+                                            <p>Instructor: @course.Instructor?.AppUser?.FirstName @course.Instructor?.AppUser?.LastName</p>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        @await Html.PartialAsync("_ReviewForm", new ReviewModel { CourseID = course.CourseID })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Report Modal Form -->
-        <div class="modal fade" id="reportCourseModal-@course.CourseID" tabindex="-1" aria-labelledby="reportCourseModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteCourseModalLabel">Report Course</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="reportCourseForm" method="post" asp-controller="Report" asp-action="ReportCourse">
-                            <input type="hidden" name="CourseID" value="@course.CourseID">
-                            <p>Please select the reason for reporting this course:</p>
-
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="Reason" id="reason1-@course.CourseID" value="Inappropriate content" required>
-                                <label class="form-check-label" for="reason1-@course.CourseID">Inappropriate content</label>
+                <!-- Report Modal Form -->
+                <div class="modal fade" id="reportCourseModal-@course.CourseID" tabindex="-1" aria-labelledby="reportCourseModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteCourseModalLabel">Report Course</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="Reason" id="reason2-@course.CourseID" value="Misleading information" required>
-                                <label class="form-check-label" for="reason2-@course.CourseID"> Misleading information </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="Reason" id="reason3-@course.CourseID" value="Copyright infringement" required>
-                                <label class="form-check-label" for="reason3-@course.CourseID">Copyright infringement</label>
-                            </div>
+                            <div class="modal-body">
+                                <form id="reportCourseForm" method="post" asp-controller="Report" asp-action="ReportCourse">
+                                    <input type="hidden" name="CourseID" value="@course.CourseID">
+                                    <p>Please select the reason for reporting this course:</p>
 
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="Reason" id="otherReason-@course.CourseID" value="Other" required>
-                                <label class="form-check-label" for="otherReason-@course.CourseID">Other</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Reason" id="reason1-@course.CourseID" value="Inappropriate content" required>
+                                        <label class="form-check-label" for="reason1-@course.CourseID">Inappropriate content</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Reason" id="reason2-@course.CourseID" value="Misleading information" required>
+                                        <label class="form-check-label" for="reason2-@course.CourseID"> Misleading information </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Reason" id="reason3-@course.CourseID" value="Copyright infringement" required>
+                                        <label class="form-check-label" for="reason3-@course.CourseID">Copyright infringement</label>
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Reason" id="otherReason-@course.CourseID" value="Other" required>
+                                        <label class="form-check-label" for="otherReason-@course.CourseID">Other</label>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <label for="otherReasonText-@course.CourseID" class="form-label">Please specify:</label>
+                                        <textarea class="form-control" name="OtherReason" id="otherReasonText-@course.CourseID" rows="3" readonly required></textarea>
+                                    </div>
+
+                                    <script>
+                                        document.getElementById('otherReason-@course.CourseID').addEventListener('change', function () {
+                                            document.getElementById('otherReasonText-@course.CourseID').readOnly = false;
+                                        });
+
+                                        const reasonRadios = document.querySelectorAll('input[name="Reason"]');
+                                        reasonRadios.forEach(function (radioButton) {
+                                            radioButton.addEventListener('change', function () {
+                                                if (radioButton.value !== 'Other') {
+                                                    document.getElementById('otherReasonText-@course.CourseID').readOnly = true;
+                                                    document.getElementById('otherReasonText-@course.CourseID').value = '';
+                                                }
+                                            });
+                                        });
+                                    </script>
+
+                                    <div class="mt-3 text-end">
+                                        <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn custom-btn">Submit Report</button>
+                                    </div>
+                                </form>
                             </div>
-
-                            <div class="mt-3">
-                                <label for="otherReasonText-@course.CourseID" class="form-label">Please specify:</label>
-                                <textarea class="form-control" name="OtherReason" id="otherReasonText-@course.CourseID" rows="3" readonly required></textarea>
-                            </div>
-
-                            <script>
-                                document.getElementById('otherReason-@course.CourseID').addEventListener('change', function() {
-                                    document.getElementById('otherReasonText-@course.CourseID').readOnly = false;
-                                });
-
-                                const reasonRadios = document.querySelectorAll('input[name="Reason"]');
-                                reasonRadios.forEach(function(radioButton) {
-                                    radioButton.addEventListener('change', function() {
-                                        if (radioButton.value !== 'Other') {
-                                            document.getElementById('otherReasonText-@course.CourseID').readOnly = true;
-                                        }
-                                    });
-                                });
-                            </script>
-
-                            <div class="mt-3 text-end">
-                                <button type="button" class="btn custom-btn active me-1" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn custom-btn">Submit Report</button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
+            }
+        }
+        else
+        {
+            <div class="col-lg-12 col-12 text-center">
+                <h6 class="text-secondary" style="padding: 80px;">no course available</h6>
             </div>
-        </div>
+        }
+    }
+
+    <!-- Hiển thị book mark-->
+    @if (Model.Bookmarks != null)
+    {
+        if (Model.Bookmarks.Any())
+        {
+            foreach (var bookmark in Model.Bookmarks)
+            {
+                var course = Model.Courses.FirstOrDefault(c => c.CourseID == bookmark.CourseID);
+                <div class="custom-block custom-block-topics-listing bg-white shadow-lg mb-5">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <img src="@course.CoverImagePath" class="custom-block-image rounded img-fluid ms-1" alt="">
+                        </div>
+
+                        <div class="col-md-9 custom-block-topics-listing-info">
+                            <div class="ms-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h4 class="mb-2">
+                                            @course.Title
+                                            <span class="dot @((course.Status == true) ? "text-danger" : "text-muted")">&#9679;</span>
+                                        </h4>
+                                        <p class="mb-0"> Instructor: @course.Instructor?.AppUser?.FirstName @course.Instructor?.AppUser?.LastName</p>
+                                        <div class="stars justify-content-between align-content-center">
+                                            @if (course.NumberOfRate == 0 || course.Rating == 0)
+                                            {
+                                                <h6 class="text-muted mt-1">No reviews yet</h6>
+                                            }
+                                            else
+                                            {
+                                                <h5>
+                                                    @course.Rating.ToString("F2")
+
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        if (i <= @course.Rating)
+                                                        {
+                                                            <span class="star">&#9733;</span> <!-- Ngôi sao đầy -->
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="star">&#9734;</span> <!-- Ngôi sao rỗng -->
+                                                        }
+                                                    }
+                                                    (@course.NumberOfRate)
+                                                </h5>
+                                            }
+                                        </div>
+                                        <h4>@course.Price.ToString("N0") VNĐ</h4>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mt-4">
+                                    <a asp-action="PaymentConfirmation" asp-controller="Payment" asp-route-CourseID="@course.CourseID" class="btn custom-btn smoothscroll me-4">Buy Now</a>
+                                    <!-- book mark -->
+                                    <form asp-action="BookMark" asp-controller="Course" asp-area="Student" method="POST">
+                                        <input type="hidden" name="CourseID" value="@course.CourseID">
+                                        <button type="submit" class="bg-transparent border-0 p-0 smoothscroll">
+                                            <i class="custom-icon bi bi-bookmark-fill smoothscroll fs-1"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1 d-flex justify-content-end align-items-start">
+                            <div class="dropdown">
+                                <button class="btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" asp-action="CourseDetail" asp-controller="Course" asp-route-CourseID="@course.CourseID">Course Detail</a></li>
+                                    <li><a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#reportCourseModal-@course.CourseID">Report<i class="far fa-flag ms-2"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-lg-12 col-12 text-center">
+                <h6 class="text-secondary" style="padding: 80px;">no course available</h6>
+            </div>
+        }
+
+    }
+
+    <!--Phân trang-->
+    @if (Model.TotalPage > 1)
+    {
+        <nav aria-label="MyCourse pagination">
+            <ul class="pagination justify-content-center">
+                @if (Model.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("MyCourse", "Course", new { area = "Student",Status = status ,category = category, Level = level, page = Model.CurrentPage - 1 })">Prev</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                }
+
+                @{
+                    int startPage = Math.Max(1, Model.CurrentPage - 2);
+                    int endPage = Math.Min(Model.TotalPage, startPage + 4);
+
+                    if (endPage - startPage < 4)
+                    {
+                        startPage = Math.Max(1, endPage - 4);
+                    }
+                }
+
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("MyCourse", "Course", new { area = "Student",Status = status ,category = category, Level = level, page = i })">@i</a>
+                    </li>
+                }
+
+                @if (Model.CurrentPage < Model.TotalPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("MyCourse", "Course", new { area = "Student",Status = status ,category = category, Level = level, page = Model.CurrentPage + 1 })">Next</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                }
+            </ul>
+        </nav>
     }
 </section>
 
@@ -177,18 +396,18 @@
 
             <div class="col-lg-6 col-md-6 col-12 mt-3 mb-4 mb-lg-0">
                 <div class="custom-block bg-white shadow-lg">
-                    <a asp-action="CourseDetail" asp-controller="Course">
+                    <a asp-action="CourseList" asp-controller="Course" asp-route-category="1">
                         <div class="d-flex">
                             <div>
-                                <h5 class="mb-2">Investment</h5>
+                                <h5 class="mb-2">Programming</h5>
 
-                                <p class="mb-0">Lorem Ipsum dolor sit amet consectetur</p>
+                                <p class="mb-0">Courses related to programming and software development</p>
                             </div>
 
-                            <span class="badge bg-finance rounded-pill ms-auto">30</span>
+                            <span class="badge bg-music rounded-pill ms-auto">30</span>
                         </div>
 
-                        <img src="~/Images/topics/undraw_Finance_re_gnv2.png" class="custom-block-image img-fluid" alt="">
+                        <img src="~/Images/topics/undraw_Podcast_audience_re_4i5q.png" class="custom-block-image img-fluid" alt="">
                     </a>
                 </div>
             </div>
@@ -202,12 +421,12 @@
                             <div>
                                 <h5 class="text-white mb-2">Finance</h5>
 
-                                <p class="text-white">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint animi necessitatibus aperiam repudiandae nam omnis</p>
+                                <p class="text-white">Courses focused on data analysis and machine learning.</p>
 
-                                <a asp-action="CourseDetail" asp-controller="Course" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
+                                <a asp-action="CourseList" asp-controller="Course" asp-route-category="2" class="btn custom-btn mt-2 mt-lg-3">Learn More</a>
                             </div>
 
-                            <span class="badge bg-finance rounded-pill ms-auto">25</span>
+                            <span class="badge bg-graphic rounded-pill ms-auto">25</span>
                         </div>
 
                         <div class="social-share d-flex">

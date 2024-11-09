@@ -11,7 +11,8 @@ using OnlineLearning.Email;
 
 namespace OnlineLearning.Controllers
 {
-    [Authorize]
+
+    [ServiceFilter(typeof(AdminRedirectFilter))]
     public class ProfileController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -33,6 +34,7 @@ namespace OnlineLearning.Controllers
         }
    
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> UserProfile()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -61,6 +63,7 @@ namespace OnlineLearning.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Edit()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -84,16 +87,23 @@ namespace OnlineLearning.Controllers
                 gender = user.Gender,
             };
 
+            var instructor = await datacontext.Instructors.FindAsync(userId);
+            if (instructor != null)
+            {
+                ViewBag.IntructorIntro = instructor.Description;
+            }
+
             return View(model);
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(EditUserViewModel model)
+        public async Task<IActionResult> Edit(EditUserViewModel model, string Introduction = null)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var user = await _userManager.FindByIdAsync(userId);
                 
                 if (user == null)
@@ -164,7 +174,14 @@ namespace OnlineLearning.Controllers
                 {
                     user.ProfileImagePath = user.ProfileImagePath;
                 }
-
+                if (Introduction != null)
+                {
+                    var instructor = await datacontext.Instructors.FindAsync(userId);
+                    if(instructor != null) {
+                        instructor.Description = Introduction;
+                    }
+                    await datacontext.SaveChangesAsync();
+                }
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
                 {
@@ -177,6 +194,7 @@ namespace OnlineLearning.Controllers
                     ModelState.AddModelError("", error.Description);
                 }
             }
+ 
             TempData["error"] = "Edit failed! Something wrong";
             return View(model);
         }
@@ -184,6 +202,12 @@ namespace OnlineLearning.Controllers
         [HttpGet]
         public async Task<IActionResult> ViewUserProfile(string id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == id)
+            {
+                return RedirectToAction("UserProfile", "Profile");
+            }
+
             var user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
@@ -191,21 +215,93 @@ namespace OnlineLearning.Controllers
                 return NotFound();
             }
 
-            var model = new InstructorProfileViewModel
+            bool isInstructor = await _userManager.IsInRoleAsync(user, "Instructor");
+            bool isStudent = await _userManager.IsInRoleAsync(user, "Student");
+
+            if (isInstructor)
             {
-                UserId = user.Id,
-                UserName = user.UserName,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                ExistingProfileImagePath = user.ProfileImagePath,
-                Address = user.Address,
-                Dob = user.Dob,
-                gender = user.Gender,
+                var totalCourses = await datacontext.Courses
+                      .Where(c => c.InstructorID == id)
+                      .CountAsync();
+                var totalStudents = await datacontext.StudentCourses
+                                   .Where(sc => sc.Course.InstructorID == id)
+                                   .Select(sc => sc.StudentID)
+                                   .Distinct()
+                                   .CountAsync();
+                var instructor = await datacontext.Instructors.FindAsync(id);
+                var model = new InstructorProfileViewModel
+                {
+                    User = user,
+                    Instructor = instructor,
+                    TotalCourse = totalCourses,
+                    TotalStudent = totalStudents,
+                    Role = "INSTRUCTOR"
+                };
+                return View(model);
+            }
+            else if (isStudent)
+            {
+                var model = new InstructorProfileViewModel
+                {
+                    User = user,
+                    Role = "STUDENT"
+                };
+                return View(model);
+            }
+            else 
+            { 
+                return NotFound(); 
+            }
+        }
 
-            };
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Changepass()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(new ChangePasswordViewModel { Username = user.UserName });
 
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Changepass(ChangePasswordViewModel model)
+        {
+            var user = await _userManager.FindByNameAsync(model.Username);
+
+            IdentityResult result;
+
+            if (user.PasswordHash == null)
+            {
+                result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    TempData["success"] = "Change Password Successfully!";
+                    return RedirectToAction("UserProfile", "Profile");
+                }
+            }
+            else
+            {
+
+                if (!await _userManager.CheckPasswordAsync(user, model.OldPassword == null ? "" : model.OldPassword))
+                {
+                    TempData["error"] = "Invalid Old Password!";
+                    return View(model);
+                }
+
+                result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    TempData["success"] = "Change Password Successfully!";
+                    return RedirectToAction("UserProfile", "Profile");
+                }       
+            }
+            TempData["error"] = "Something went wrong!";
             return View(model);
         }
     }

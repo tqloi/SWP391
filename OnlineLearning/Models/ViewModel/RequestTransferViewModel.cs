@@ -16,6 +16,7 @@ namespace OnlineLearning.Models.ViewModel
 
         [Range(1, double.MaxValue, ErrorMessage = "Withdrawal amount must be greater than zero.")]
         public double MoneyNumber { get; set; }
+        public double CurrentMoney { get; set; }
         public string Status { get; set; }
         public DateTime CreateAtTime { get; set; }
     }

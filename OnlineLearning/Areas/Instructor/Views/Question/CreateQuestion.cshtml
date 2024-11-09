@@ -10,7 +10,9 @@
 
         <link rel="stylesheet" href="~/css/CreateQuestion.css" />
 
-    <h2>Create Question</h2>
+    <h2>Create Question
+        <a asp-action="TestList" asp-controller="Participation" asp-route-CourseID="@ViewBag.Course.CourseID" class="btn btn-outline-black"> Back </a>
+    </h2>
 
     <section>
         <form asp-action="ImportCSV" asp-controller="Question" method="post" enctype="multipart/form-data" onsubmit="return confirmSkipFirstLine(event)">
@@ -37,8 +39,8 @@
 
             <!-- Checkbox for skipping the first line -->
             <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" value="true" id="skipFirstLine" name="skipFirstLine" />
-                <label class="form-check-label" for="skipFirstLine">Skip the first line (header row)</label>
+                <input class="form-check-input" type="checkbox" value="true" id="skipFirstLine2" name="skipFirstLine" />
+                <label class="form-check-label" for="skipFirstLine2">Skip the first line (header row)</label>
             </div>
             <input type="hidden" name="TestID" class="form-control" value="@ViewBag.TestID" />
             <button type="submit" class="btn btn-primary">Upload Excel</button>
@@ -114,8 +116,8 @@ else
 {
     <h2>You do not have permision</h2>
 }
-<script>
-    let formToSubmit = null; // Store reference to the form that triggered the modal
+@* <script>
+    let formToSubmit = null; 
 
     function confirmSkipFirstLine(event) {
         // Prevent default form submission
@@ -137,3 +139,10 @@ else
         }
     });
 </script>
+
+<!-- chặn hiệu ứng load trang -->
+<script>
+    window.addEventListener('beforeunload', function () {
+        document.getElementById('loading').style.display = 'none';
+    });
+</script> *@

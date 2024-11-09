@@ -14,6 +14,7 @@ using YourNamespace.Models;
 
 namespace OnlineLearning.Controllers
 {
+    [ServiceFilter(typeof(AdminRedirectFilter))]
     public class CourseController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -42,8 +43,7 @@ namespace OnlineLearning.Controllers
             {
                 coursesQuery = coursesQuery.Where(course =>
                     course.Title.Contains(keyword) ||
-                    course.Instructor.AppUser.FirstName.Contains(keyword) ||
-                    course.Instructor.AppUser.LastName.Contains(keyword));
+                     (course.Instructor.AppUser.FirstName + " " + course.Instructor.AppUser.LastName).Contains(keyword) || (course.Instructor.AppUser.LastName + " " + course.Instructor.AppUser.FirstName).Contains(keyword));
             }
 
             // Lọc theo category nếu có
@@ -166,38 +166,5 @@ namespace OnlineLearning.Controllers
             }
             return View(model);
         }
-
-        [Authorize]
-        public async Task<IActionResult> BookMark(int CourseID)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var bookmark = datacontext.BookMark
-                                .Where(bm => bm.CourseID == CourseID && bm.StudentID == userId)
-                                .FirstOrDefault();
-            if(bookmark != null)
-            {
-                datacontext.BookMark.Remove(bookmark);
-                await datacontext.SaveChangesAsync();
-                TempData["info"] = "Undo saved!";
-            }
-            else
-            {
-                bookmark = new BookMarkModel
-                {
-                    StudentID = userId,
-                    CourseID = CourseID,
-                };
-                datacontext.BookMark.Add(bookmark);
-                await datacontext.SaveChangesAsync();
-                TempData["info"] = "Saved!";
-            }
-            return RedirectToAction("CourseDetail", "Course", new { CourseID = CourseID });
-        }
-
-        public IActionResult Create()
-        {
-            return View();
-        }
-
     }
 }

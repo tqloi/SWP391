@@ -1,5 +1,6 @@
 
 using System.Data;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
 using Microsoft.AspNetCore.Identity;
@@ -35,7 +36,8 @@ namespace OnlineLearning.Areas.Admin.Controllers
         }
         public async Task<IActionResult> UserList()
         {
-            var users = await _userManager.Users.ToListAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var users = await _dataContext.Users.Where(u => !u.Id.Equals(userId)).ToListAsync();
             var list = new List<UserRolesViewModel>();
             foreach (var user in users)
             {
@@ -55,9 +57,59 @@ namespace OnlineLearning.Areas.Admin.Controllers
 
             return View(list);
         }
+        public async Task<IActionResult> InstructorList()
+        {
+            var users = await _dataContext.Users.ToListAsync();
+            var list = new List<UserRolesViewModel>();
+            foreach (var user in users)
+            {
+                var userrole = await _userManager.GetRolesAsync(user);
+                if (userrole.Contains("Instructor"))
+                {
+                    list.Add(new UserRolesViewModel
+                    {
+                        UserId = user.Id,
+                        UserName = user.UserName,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        ProfileImagePath = user.ProfileImagePath,
+                        Email = user.Email,
+                        Address = user.Address,
+                        Roles = string.Join("", userrole)
+                    });
+                }
+            }
+
+            return View(list);
+        }
+        public async Task<IActionResult> StudentList()
+        {
+            var users = await _dataContext.Users.ToListAsync();
+            var list = new List<UserRolesViewModel>();
+            foreach (var user in users)
+            {
+                var userrole = await _userManager.GetRolesAsync(user);
+                if (userrole.Contains("Student"))
+                {
+                    list.Add(new UserRolesViewModel
+                    {
+                        UserId = user.Id,
+                        UserName = user.UserName,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        ProfileImagePath = user.ProfileImagePath,
+                        Email = user.Email,
+                        Address = user.Address,
+                        Roles = string.Join("", userrole)
+                    });
+                }
+            }
+
+            return View(list);
+        }
         public async Task<IActionResult> UserProfile(string Id)
         {
-            var user = await _userManager.FindByIdAsync(Id);
+            var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id.Equals(Id));
             if (user == null)
             {
                 return NotFound();
@@ -88,7 +140,7 @@ namespace OnlineLearning.Areas.Admin.Controllers
 
             return View(confirmation);
         }
-
+        [HttpPost]
         public async Task<IActionResult> ChangeRoleToInstructor(string Id)
         {
             var user = await _userManager.FindByIdAsync(Id);
@@ -125,8 +177,13 @@ namespace OnlineLearning.Areas.Admin.Controllers
             var list = new ListSearchViewModel();
 
             list.Courses = await _dataContext.Courses.Where(u => u.Title.Contains(search)).ToListAsync();
-            list.Users = await _dataContext.Users.Where(i => i.FirstName.Contains(search) || i.LastName.Contains(search)).ToListAsync();
+            list.Users = await _dataContext.Users.Where(i => i.FirstName.Contains(search) || i.LastName.Contains(search) || search.Equals(i.FirstName + " " + i.LastName)).ToListAsync();
             return View(list);
+        }
+        public async Task<IActionResult> ReportList()
+        {
+           var report = await _dataContext.Report.Where(r => r.Subject.StartsWith("LECTURE") || r.Subject.StartsWith("Course")).Include(r => r.User).OrderByDescending(r => r.FeedbackDate).ToListAsync();
+           return View(report);
         }
 
     }

@@ -11,22 +11,22 @@
         <a asp-action="Index" asp-controller="Home"><i class="fas fa-home"></i></a>
         <h1>Sign Up</h1>
 
-        <input asp-for="Username" class="form-control" placeholder="Username" id="username" />
+        <input asp-for="Username" class="form-control" placeholder="Username" id="username" required />
         <span asp-validation-for="Username" class="text-danger" style="color: #dc3545 !important;"></span>
 
-        <input asp-for="FirstName" class="form-control" placeholder="First Name" />
+        <input asp-for="FirstName" class="form-control" placeholder="First Name" required />
         <span asp-validation-for="FirstName" class="text-danger" style="color: #dc3545 !important;"></span>
 
-        <input asp-for="LastName" class="form-control" placeholder="Last Name" />
+        <input asp-for="LastName" class="form-control" placeholder="Last Name" required />
         <span asp-validation-for="LastName" class="text-danger" style="color: #dc3545 !important;"></span>
 
-        <input asp-for="Email" class="form-control" placeholder="Email" />
+        <input asp-for="Email" class="form-control" placeholder="Email" required />
         <span asp-validation-for="Email" class="text-danger" style="color: #dc3545 !important;"></span>
 
-        <input asp-for="Password" type="password" class="form-control" placeholder="Password" id="password" oninput="validatePassword()" />
+        <input asp-for="Password" type="password" class="form-control" placeholder="Password" id="password" oninput="validatePassword()" required />
         <span asp-validation-for="Password" id="passwordError" class="text-danger" style="color: #dc3545 !important;"></span>
 
-        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" id="confirmPassword" oninput="validateConfirmPassword()" />
+        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" id="confirmPassword" oninput="validateConfirmPassword()" required />
         <span asp-validation-for="ConfirmPassword" id="confirmPasswordError" class="text-danger" style="color: #dc3545 !important;"></span>
 
         <button type="submit" value="Sign Up">Sign Up</button>

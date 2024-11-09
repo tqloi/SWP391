@@ -13,7 +13,6 @@ using OnlineLearning.Hubs;
 using OnlineLearning.Models;
 using OnlineLearning.Models.ViewModel;
 using OnlineLearningApp.Respositories;
-using QRCoder;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Security.Claims;
@@ -156,7 +155,8 @@ namespace OnlineLearning.Areas.Student.Controllers
                 TestID = testID,
                 StudentID = studentID,
                 Test = test,
-                NumberOfAttempt = 1
+                NumberOfAttempt = 1,
+                DoTestAt =DateTime.Now
             };
 
             datacontext.Score.Add(result);
@@ -195,7 +195,8 @@ namespace OnlineLearning.Areas.Student.Controllers
                 TestID = result.TestID,
                 TotalQuestions = result.Test.NumberOfQuestion,
                 CourseID = course.CourseID,
-                NumberOfAttemptLeft = test.NumberOfMaxAttempt - result.NumberOfAttempt
+                NumberOfAttemptLeft = test.NumberOfMaxAttempt - result.NumberOfAttempt,
+                DoneAt = result.DoTestAt
             };
             TempData["success"] = "Test Completed";
             return View(model);

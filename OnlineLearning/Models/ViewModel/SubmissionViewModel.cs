@@ -8,7 +8,8 @@ namespace OnlineLearning.Models.ViewModel
         public int AssignmentID { get; set; }
         
         [Required(ErrorMessage ="Request File PDF")]
-        public IFormFile SubmissionLink { get; set; }
+        public string SubmissionLink { get; set; }
+        public IFormFile SubmissionFile { get; set; }
         public DateTime SubmissionDate { get; set; }
         
     }

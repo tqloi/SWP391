@@ -3,14 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Learning Platform</title>
+    <title>Learn0n</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="~/css/login-pages.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="~/Images/webLogo.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
 </head>
-<body>
+<body id="top">
+
+    <div class="loading-overlay" id="loading" style="display: none;">
+        <div class="loading">Loading...</div>
+    </div>
+
+
     <partial name="_NoficationPartial" />
+
     @RenderBody()
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const forms = document.querySelectorAll('form');
+
+            forms.forEach(form => {
+                form.addEventListener('submit', function () {
+                    document.getElementById('loading').style.display = 'block';
+                });
+            });
+        });
+    </script>
     @await Component.InvokeAsync("Notyf")
     @await RenderSectionAsync("Scripts", required: false)
 
