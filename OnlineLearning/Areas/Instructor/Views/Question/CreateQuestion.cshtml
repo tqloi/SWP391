@@ -1,7 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Create Test";
     Layout = "~/Views/Shared/_CourseLayout.cshtml";
-    await Html.PartialAsync("_NoficationPartial");
     <partial name="_NoficationPartial" />
 }
 @model OnlineLearning.Models.ViewModel.QuestionViewModel
@@ -40,8 +39,8 @@
 
             <!-- Checkbox for skipping the first line -->
             <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" value="true" id="skipFirstLine" name="skipFirstLine" />
-                <label class="form-check-label" for="skipFirstLine">Skip the first line (header row)</label>
+                <input class="form-check-input" type="checkbox" value="true" id="skipFirstLine2" name="skipFirstLine" />
+                <label class="form-check-label" for="skipFirstLine2">Skip the first line (header row)</label>
             </div>
             <input type="hidden" name="TestID" class="form-control" value="@ViewBag.TestID" />
             <button type="submit" class="btn btn-primary">Upload Excel</button>
@@ -117,8 +116,8 @@ else
 {
     <h2>You do not have permision</h2>
 }
-<script>
-    let formToSubmit = null; // Store reference to the form that triggered the modal
+@* <script>
+    let formToSubmit = null; 
 
     function confirmSkipFirstLine(event) {
         // Prevent default form submission
@@ -146,4 +145,4 @@ else
     window.addEventListener('beforeunload', function () {
         document.getElementById('loading').style.display = 'none';
     });
-</script>
+</script> *@

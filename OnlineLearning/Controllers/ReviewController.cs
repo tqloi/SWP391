@@ -70,7 +70,6 @@ namespace OnlineLearning.Controllers
                     Comment = model.Comment,
                     ReviewDate = DateTime.Now,
                 };
-                TempData["success"] = "Course Enrolled!";
                 datacontext.Review.Add(review);
                await datacontext.SaveChangesAsync();
 
@@ -94,7 +93,6 @@ namespace OnlineLearning.Controllers
 
                 await datacontext.SaveChangesAsync();
             }
-            TempData["error"] = "Course Enrolled!";
             return Redirect(Request.Headers["Referer"].ToString());
         }
         

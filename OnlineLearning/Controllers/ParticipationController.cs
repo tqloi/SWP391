@@ -117,7 +117,6 @@ namespace OnlineLearning.Controllers
             return View(model);
         }
 
-
         [HttpGet]
         public async Task<IActionResult> AssignmentList(int CourseID, int page = 1)
         {
@@ -214,6 +213,29 @@ namespace OnlineLearning.Controllers
             {
                 return RedirectToAction("MaterialList", "Material", new { area = "Student", CourseID = CourseID });
             }
+        }
+        [HttpGet]
+
+        public async Task<IActionResult> Livestream(int CourseID)
+        {
+            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var course = await datacontext.Courses.FirstOrDefaultAsync(c => c.CourseID == CourseID);
+
+            // Check if user is null before proceeding
+            if (user == null)
+            {
+                // Handle the case where the user is not found
+                return BadRequest("User not found.");
+            }
+
+            // Retrieve the livestream records for the user
+            var records = await datacontext.LivestreamRecord
+                .Where(u => u.UserID != null && u.UserID.Equals(user))
+                .ToListAsync();
+            ViewBag.Course = course;
+            TempData["CourseID"] = CourseID;
+            TempData.Keep();
+            return View();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<AppUserModel> SignInManager
 @inject UserManager<AppUserModel> UserManager
 
@@ -71,13 +71,13 @@
             else
             {
 
-            <!-- Nav Item - Course Info -->
-            <li title="Course Info" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "CourseInfo" ? "active" : "")">
-                <a class="nav-link" asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@courseID">
-                    <i class="bi bi-info-circle"></i>
-                    <nav-link>Course Info</nav-link>
-                </a>
-            </li>
+                <!-- Nav Item - Course Info -->
+                <li title="Course Info" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "CourseInfo" ? "active" : "")">
+                    <a class="nav-link" asp-action="CourseInfo" asp-controller="Participation" asp-route-CourseID="@courseID">
+                        <i class="bi bi-info-circle"></i>
+                        <nav-link>Course Info</nav-link>
+                    </a>
+                </li>
             }
 
             <!-- Nav Item - Material -->
@@ -136,12 +136,12 @@
                 </a>
             </li>
 
-@*             <li title="Live stream" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "AssignmentList" ? "active" : "")">
-                <a class="nav-link" asp-action="AssignmentList" asp-controller="Participation" asp-route-CourseID="@courseID">
+            <li title="Live stream" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "AssignmentList" ? "active" : "")">
+                <a class="nav-link" asp-action="Livestream" asp-controller="Participation" asp-route-CourseID="@courseID">
                     <i class="bi bi-broadcast"></i>
                     <nav-link>Live stream</nav-link>
                 </a>
-            </li> *@
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -349,7 +349,7 @@
             <!-- End of Footer -->
 
         </div>
-   
+
 
     </div>
     <!-- End of Page Wrapper -->

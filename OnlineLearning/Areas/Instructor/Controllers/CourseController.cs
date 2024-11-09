@@ -273,9 +273,9 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            var model = new CourseListViewModel
+            var model = new ListViewModel
             {
-                CourseList = courses,
+                Courses = courses,
                 TotalPage = (int)Math.Ceiling(totalCourses / (double)pageSize),
                 CurrentPage = page,
                 Category = category,
