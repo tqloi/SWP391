@@ -412,28 +412,103 @@ CREATE TABLE LivestreamRecord
 );
 go
 
-INSERT INTO Courses 
+INSERT INTO Instructors (InstructorID, [Description])
+VALUES 
+	('instructor-user-id', 'Experienced Java and C# instructor specializing in advanced programming techniques.');
+
+INSERT INTO Courses
     (Title, CourseCode, [Description], CoverImagePath, InstructorID, NumberOfStudents, Price, CategoryID, [Level], [Status], IsBaned, CreateDate, LastUpdate, EndDate, NumberOfRate, Rating) 
 VALUES
     -- Programming Category
-    ('Python for Beginners', 'CS101', 'Learn Python programming from scratch.', '/Images/cover/python.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 100.00, 1, 'Beginner', 1, 0, '2024-09-01', '2024-09-20', '2024-12-20', 0, 0),
-    ('Java Advanced Techniques', 'CS102', 'Explore advanced Java programming concepts.', '/Images/cover/java.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 120.00, 1, 'Advanced', 1, 0, '2024-09-05', '2024-09-21', '2024-12-20', 0, 0),
-    ('C# for Beginners', 'CS103', 'Introduction to C# programming.', '/Images/cover/csharp.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 90.00, 1, 'Beginner', 1, 0, '2024-09-10', '2024-09-22', '2024-12-20', 0, 0),
-    ('Full-Stack Development with Node.js', 'CS104', 'Learn full-stack development using Node.js.', '/Images/cover/nodejs.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 150.00, 1, 'Intermediate', 1, 0, '2024-09-15', '2024-09-23', '2024-12-20', 0, 0),
-    ('Introduction to Algorithms', 'CS105', 'Learn about algorithms and data structures.', '/Images/cover/algorithms.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 110.00, 1, 'Advanced', 1, 0, '2024-09-20', '2024-09-24', '2024-12-20', 0, 0),
-
+    ('Python for Beginners', 'CS101', 'Learn Python programming from scratch.', '/Images/cover/python.jpg', 'instructor-user-id', 0, 0.00, 1, 'Beginner', 1, 0, '2024-09-01', '2024-09-20', '2024-12-20', 1, 5),
+    ('Java Advanced Techniques', 'CS102', 'Explore advanced Java programming concepts.', '/Images/cover/java.jpg', 'instructor-user-id', 0, 120000.00, 1, 'Advanced', 1, 0, '2024-09-05', '2024-09-21', '2024-12-20', 1, 5),
+    ('C# for Beginners', 'CS103', 'Introduction to C# programming.', '/Images/cover/csharp.jpg', 'instructor-user-id', 0, 90000.00, 1, 'Beginner', 1, 0, '2024-09-10', '2024-09-22', '2024-12-20', 0, 0),
     -- Data Science Category
-    ('Data Analysis with R', 'DS101', 'Learn data analysis using R programming.', '/Images/cover/data_analysis.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 130.00, 2, 'Beginner', 1, 0, '2024-09-01', '2024-09-20', '2024-12-20', 0, 0),
-    ('Machine Learning A-Z', 'DS102', 'Master machine learning algorithms and techniques.', '/Images/cover/machine_learning.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 200.00, 2, 'Advanced', 1, 0, '2024-09-05', '2024-09-21', '2024-12-20', 0, 0),
-    ('Data Science for Everyone', 'DS103', 'Introduction to data science concepts.', '/Images/cover/data_science.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 100.00, 2, 'Beginner', 1, 0, '2024-09-10', '2024-09-22', '2024-12-20', 0, 0),
-    ('Deep Learning with TensorFlow', 'DS104', 'Explore deep learning with TensorFlow.', '/Images/cover/deep_learning.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 150.00, 2, 'Intermediate', 1, 0, '2024-09-15', '2024-09-23', '2024-12-20', 0, 0),
-    ('Statistics for Data Science', 'DS105', 'Learn statistics for data science applications.', '/Images/cover/statistics.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 120.00, 2, 'Intermediate', 1, 0, '2024-09-20', '2024-09-24', '2024-12-20', 0, 0),
-
+    ('Machine Learning A-Z', 'DS102', 'Master machine learning algorithms and techniques.', '/Images/cover/machine_learning.jpg', 'instructor-user-id', 0, 200000.00, 2, 'Advanced', 1, 0, '2024-09-05', '2024-09-21', '2024-12-20', 1, 5),
+    ('Data Science for Everyone', 'DS103', 'Introduction to data science concepts.', '/Images/cover/data_science.jpg', 'instructor-user-id', 0, 100000.00, 2, 'Beginner', 1, 0, '2024-09-10', '2024-09-22', '2024-12-20', 1, 5),
     -- Web Development Category
-    ('HTML & CSS for Beginners', 'WD101', 'Learn the basics of web development with HTML & CSS.', '/Images/cover/html_css.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 80.00, 3, 'Beginner', 1, 0, '2024-09-01', '2024-09-20', '2024-12-20', 0, 0),
-    ('JavaScript Essentials', 'WD102', 'Get started with JavaScript for web development.', '/Images/cover/javascript.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 100.00, 3, 'Beginner', 1, 0, '2024-09-05', '2024-09-21', '2024-12-20', 0, 0),
-    ('React for Beginners', 'WD103', 'Build user interfaces with React.', '/Images/cover/react.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 150.00, 3, 'Intermediate', 1, 0, '2024-09-10', '2024-09-22', '2024-12-20', 0, 0),
-    ('Node.js for Beginners', 'WD104', 'Learn how to build web applications using Node.js.', '/Images/cover/nodejs_web.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 120.00, 3, 'Intermediate', 1, 0, '2024-09-15', '2024-09-23', '2024-12-20', 0, 0),
-    ('Advanced CSS Techniques', 'WD105', 'Explore advanced techniques in CSS for modern web design.', '/Images/cover/advanced_css.jpg', 'd6483b30-cacb-43f8-9a96-45c9d8acaca5', 0, 130.00, 3, 'Advanced', 1, 0, '2024-09-20', '2024-09-24', '2024-12-20', 0, 0);
-	-- sua id instructor
+    ('React for Beginners', 'WD103', 'Build user interfaces with React.', '/Images/cover/react.jpg', 'instructor-user-id', 0, 150000.00, 3, 'Intermediate', 1, 0, '2024-09-10', '2024-09-22', '2024-12-20', 1, 5),
+    ('Node.js for Beginners', 'WD104', 'Learn how to build web applications using Node.js.', '/Images/cover/nodejs_web.jpg', 'instructor-user-id', 0, 120000.00, 3, 'Intermediate', 1, 0, '2024-09-15', '2024-09-23', '2024-12-20', 1, 5),
+    ('Advanced CSS Techniques', 'WD105', 'Explore advanced techniques in CSS for modern web design.', '/Images/cover/advanced_css.jpg', 'instructor-user-id', 0, 130000.00, 3, 'Advanced', 1, 0, '2024-09-20', '2024-09-24', '2024-12-20', 1, 5),
+	-- Design Category
+    ('UI/UX Design Fundamentals', 'D102', 'Get started with UI/UX design principles.', '/Images/cover/uiux_design.jpg', 'instructor-user-id', 0, 100000.00, 4, 'Intermediate', 1, 0, '2024-09-05', '2024-09-21', '2024-12-20', 1, 5),
+    ('Adobe Photoshop for Beginners', 'D103', 'Learn the basics of Adobe Photoshop.', '/Images/cover/photoshop.jpg', 'instructor-user-id', 0, 120000.00, 4, 'Beginner', 1, 0, '2024-09-10', '2024-09-22', '2024-12-20', 1, 5);
 
+-- sua course id
+-- lecture
+-- Chèn bài giảng cho khóa 'Python for Beginners'
+INSERT INTO Lecture (CourseID, Title, [Description], UpLoadDate)
+VALUES
+    (23, 'Introduction to Python', 'Learn the basics of Python programming.', '2024-09-01'),
+    (23, 'Variables and Data Types', 'Understand variables and data types in Python.', '2024-09-02'),
+    (23, 'Control Structures in Python', 'Learn about loops and conditionals in Python.', '2024-09-03'),
+    (23, 'Functions and Modules', 'Explore functions and modules in Python.', '2024-09-04'),
+    (23, 'Object-Oriented Programming in Python', 'Introduction to OOP in Python.', '2024-09-05'),
+
+-- Chèn bài giảng cho khóa 'Java Advanced Techniques'
+    (24, 'Advanced Java Concepts', 'Learn about advanced Java programming concepts.', '2024-09-06'),
+    (24, 'Java Streams API', 'Work with the Streams API in Java.', '2024-09-07'),
+    (24, 'Java Multithreading', 'Explore multithreading techniques in Java.', '2024-09-08'),
+    (24, 'Java Design Patterns', 'Understand design patterns in Java.', '2024-09-09'),
+    (24, 'Java Networking', 'Learn how to create network applications in Java.', '2024-09-10'),
+
+-- Chèn bài giảng cho khóa 'C# for Beginners'
+    (25, 'Introduction to C#', 'Learn the fundamentals of C# programming.', '2024-09-11'),
+    (25, 'C# Data Types and Variables', 'Understand data types and variables in C#.', '2024-09-12'),
+
+-- Chèn bài giảng cho khóa 'Machine Learning A-Z'
+    (26, 'Introduction to Machine Learning', 'Learn the basics of machine learning.', '2024-09-06'),
+    (26, 'Supervised Learning Algorithms', 'Explore supervised learning techniques.', '2024-09-07'),
+
+-- Chèn bài giảng cho khóa 'Data Science for Everyone'
+    (27, 'Introduction to Data Science', 'Learn the fundamentals of data science.', '2024-09-11'),
+    (27, 'Data Preprocessing', 'Understand the process of data cleaning and preparation.', '2024-09-12'),
+
+-- Chèn bài giảng cho khóa 'React for Beginners'
+    (28, 'Introduction to React', 'Learn the basics of React.', '2024-09-13'),
+    (28, 'State and Props in React', 'Explore state and props in React.', '2024-09-14'),
+
+-- Chèn bài giảng cho khóa 'Node.js for Beginners'
+    (29, 'Introduction to Node.js', 'Learn the basics of Node.js.', '2024-09-16'),
+
+-- Chèn bài giảng cho khóa 'Advanced CSS Techniques'
+    (30, 'Advanced CSS Selectors', 'Learn advanced CSS selector techniques.', '2024-09-21'),
+
+-- Chèn bài giảng cho khóa 'UI/UX Design Fundamentals'
+    (31, 'Introduction to UI/UX Design', 'Learn the principles of UI/UX design.', '2024-09-06'),
+
+-- Chèn bài giảng cho khóa 'Adobe Photoshop for Beginners'
+    (32, 'Introduction to Adobe Photoshop', 'Learn the basics of Adobe Photoshop.', '2024-09-12');
+go
+
+-- file
+-- sua lecture id
+INSERT INTO LectureFiles (LectureID, FileName, FileType, FilePath, FileExtension, UploadDate)
+VALUES
+-- Thêm file cho bài giảng 'Introduction to Python'
+    (1, 'Introduction_to_Python_Notes', 'Document', '/Files/Python/Intro_Python_Notes.pdf', '.pdf' , '2024-09-16'),
+    (1, 'Introduction_to_Python_Video', 'Video', '/Files/Python/Intro_Python_Video.mp4', '.mp4', '2024-09-16'),
+-- Thêm file cho bài giảng 'Variables and Data Types'
+    (2, 'Variables_and_Data_Types_Notes', 'Document', '/Files/Python/Variables_and_Data_Types.pdf', '.pdf', '2024-09-16'),
+    (2, 'Variables_and_Data_Types_Video', 'Video', '/Files/Python/Variables_and_Data_Types.mp4', '.mp4', '2024-09-16'),
+-- Thêm file cho bài giảng 'Control Structures in Python'
+    (3, 'Control_Structures_Notes', 'Document', '/Files/Python/Control_Structures_Notes.pdf', '.pdf', '2024-09-16'),
+	(3, 'Control_Structures_Notes_2', 'Document', '/Files/Python/Control_Structures_Notes.pdf', '.pdf', '2024-09-16'),
+-- Thêm file cho bài giảng 'Functions and Modules'
+    (4, 'Functions_and_Modules_Video', 'Video', '/Files/Python/Functions_and_Modules.mp4', '.mp4', '2024-09-16'),
+-- Thêm file cho bài giảng 'Object-Oriented Programming in Python'
+    (5, 'OOP_in_Python_Notes', 'Document', '/Files/Python/OOP_in_Python_Notes.pdf', '.pdf', '2024-09-16'),
+
+-- Thêm file cho bài giảng 'Advanced Java Concepts'
+    (6, 'Advanced_Java_Concepts_Notes', 'Document', '/Files/Java/Advanced_Java_Concepts.pdf', '.pdf', '2024-09-16'),
+    (6, 'Advanced_Java_Concepts_Video', 'Video', '/Files/Java/Advanced_Java_Concepts.mp4', '.mp4', '2024-09-16'),
+-- Thêm file cho bài giảng 'Java Streams API'
+    (7, 'Java_Streams_API_Notes', 'Document', '/Files/Java/Java_Streams_API_Notes.pdf', '.pdf', '2024-09-16'),
+    (7, 'Java_Streams_API_Video', 'Video', '/Files/Java/Java_Streams_API.mp4', '.mp4', '2024-09-16'),
+-- Thêm file cho bài giảng 'Java Multithreading'
+    (8, 'Java_Multithreading_Notes', 'Document', '/Files/Java/Java_Multithreading_Notes.pdf', '.pdf', '2024-09-16'),
+    (8, 'Java_Multithreading_Notes_2', 'Document', '/Files/Java/Java_Multithreading_Notes.pdf', '.pdf', '2024-09-16'),
+-- Thêm file cho bài giảng 'Java Design Patterns'
+    (9, 'Java_Design_Patterns_Video', 'Video', '/Files/Java/Java_Design_Patterns.mp4', '.mp4', '2024-09-16'),
+-- Thêm file cho bài giảng 'Java Networking'
+    (10, 'Java_Networking_Notes', 'Document', '/Files/Java/Java_Networking_Notes.pdf', '.pdf', '2024-09-16');
