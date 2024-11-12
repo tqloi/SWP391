@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OnlineLearning.Migrations
 {
     /// <inheritdoc />
-    public partial class First : Migration
+    public partial class initTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -180,30 +180,6 @@ namespace OnlineLearning.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChatBox",
-                columns: table => new
-                {
-                    ChatBoxID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SenderID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ReceiverID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChatBox", x => x.ChatBoxID);
-                    table.ForeignKey(
-                        name: "FK_ChatBox_AspNetUsers_ReceiverID",
-                        column: x => x.ReceiverID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ChatBox_AspNetUsers_SenderID",
-                        column: x => x.SenderID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-            migrationBuilder.CreateTable(
                 name: "InstructorConfirmation",
                 columns: table => new
                 {
@@ -262,12 +238,14 @@ namespace OnlineLearning.Migrations
                         name: "FK_Message_AspNetUsers_ReceiverId",
                         column: x => x.ReceiverId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Message_AspNetUsers_SenderId",
                         column: x => x.SenderId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -339,6 +317,33 @@ namespace OnlineLearning.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "VideoCallInfo",
+                columns: table => new
+                {
+                    VideoCallId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SendID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReceiveID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VideoCallInfo", x => x.VideoCallId);
+                    table.ForeignKey(
+                        name: "FK_VideoCallInfo_AspNetUsers_ReceiveID",
+                        column: x => x.ReceiveID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_VideoCallInfo_AspNetUsers_SendID",
+                        column: x => x.SendID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Courses",
                 columns: table => new
                 {
@@ -354,6 +359,7 @@ namespace OnlineLearning.Migrations
                     CategoryID = table.Column<int>(type: "int", nullable: false),
                     Level = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
+                    IsBaned = table.Column<bool>(type: "bit", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastUpdate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -374,7 +380,7 @@ namespace OnlineLearning.Migrations
                         column: x => x.InstructorID,
                         principalTable: "Instructors",
                         principalColumn: "InstructorID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -407,7 +413,7 @@ namespace OnlineLearning.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CourseID = table.Column<int>(type: "int", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AssignmentLink = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -438,12 +444,42 @@ namespace OnlineLearning.Migrations
                         name: "FK_BookMark_AspNetUsers_StudentID",
                         column: x => x.StudentID,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_BookMark_Courses_CourseID",
                         column: x => x.CourseID,
                         principalTable: "Courses",
-                        principalColumn: "CourseID");
+                        principalColumn: "CourseID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Certificate",
+                columns: table => new
+                {
+                    CertificateID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StudentID = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    CourseID = table.Column<int>(type: "int", nullable: false),
+                    CompletionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CertificateLink = table.Column<string>(type: "nvarchar(MAX)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Certificate", x => x.CertificateID);
+                    table.ForeignKey(
+                        name: "FK_Certificate_AspNetUsers_StudentID",
+                        column: x => x.StudentID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Certificate_Courses_CourseID",
+                        column: x => x.CourseID,
+                        principalTable: "Courses",
+                        principalColumn: "CourseID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -491,6 +527,38 @@ namespace OnlineLearning.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LivestreamRecord",
+                columns: table => new
+                {
+                    LivestreamRecordID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserID = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ScheduleStartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ScheduleLiveDuration = table.Column<TimeSpan>(type: "time", nullable: true),
+                    LivestreamId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CourseID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LivestreamRecord", x => x.LivestreamRecordID);
+                    table.ForeignKey(
+                        name: "FK_LivestreamRecord_AspNetUsers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_LivestreamRecord_Courses_CourseID",
+                        column: x => x.CourseID,
+                        principalTable: "Courses",
+                        principalColumn: "CourseID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Payment",
                 columns: table => new
                 {
@@ -509,12 +577,14 @@ namespace OnlineLearning.Migrations
                         name: "FK_Payment_AspNetUsers_StudentID",
                         column: x => x.StudentID,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Payment_Courses_CourseID",
                         column: x => x.CourseID,
                         principalTable: "Courses",
-                        principalColumn: "CourseID");
+                        principalColumn: "CourseID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -536,12 +606,14 @@ namespace OnlineLearning.Migrations
                         name: "FK_Review_AspNetUsers_UserID",
                         column: x => x.UserID,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Review_Courses_CourseID",
                         column: x => x.CourseID,
                         principalTable: "Courses",
-                        principalColumn: "CourseID");
+                        principalColumn: "CourseID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -564,12 +636,14 @@ namespace OnlineLearning.Migrations
                         name: "FK_StudentCourses_AspNetUsers_StudentID",
                         column: x => x.StudentID,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_StudentCourses_Courses_CourseID",
                         column: x => x.CourseID,
                         principalTable: "Courses",
-                        principalColumn: "CourseID");
+                        principalColumn: "CourseID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -582,6 +656,7 @@ namespace OnlineLearning.Migrations
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     CourseID = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TestTime = table.Column<TimeSpan>(type: "time", nullable: true),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     NumberOfQuestion = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -617,12 +692,14 @@ namespace OnlineLearning.Migrations
                         name: "FK_ScoreAssignment_AspNetUsers_StudentID",
                         column: x => x.StudentID,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ScoreAssignment_Assignment_AssignmentID",
                         column: x => x.AssignmentID,
                         principalTable: "Assignment",
-                        principalColumn: "AssignmentID");
+                        principalColumn: "AssignmentID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -644,12 +721,48 @@ namespace OnlineLearning.Migrations
                         name: "FK_Submission_AspNetUsers_StudentID",
                         column: x => x.StudentID,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Submission_Assignment_AssignmentID",
                         column: x => x.AssignmentID,
                         principalTable: "Assignment",
-                        principalColumn: "AssignmentID");
+                        principalColumn: "AssignmentID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Comment",
+                columns: table => new
+                {
+                    CommentID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    LectureID = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ParentCmtId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comment", x => x.CommentID);
+                    table.ForeignKey(
+                        name: "FK_Comment_AspNetUsers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Comment_Comment_ParentCmtId",
+                        column: x => x.ParentCmtId,
+                        principalTable: "Comment",
+                        principalColumn: "CommentID");
+                    table.ForeignKey(
+                        name: "FK_Comment_Lecture_LectureID",
+                        column: x => x.LectureID,
+                        principalTable: "Lecture",
+                        principalColumn: "LectureID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -669,12 +782,14 @@ namespace OnlineLearning.Migrations
                         name: "FK_LectureCompletion_AspNetUsers_UserID",
                         column: x => x.UserID,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_LectureCompletion_Lecture_LectureID",
                         column: x => x.LectureID,
                         principalTable: "Lecture",
-                        principalColumn: "LectureID");
+                        principalColumn: "LectureID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -735,6 +850,7 @@ namespace OnlineLearning.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StudentID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     TestID = table.Column<int>(type: "int", nullable: false),
+                    DoTestAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Score = table.Column<double>(type: "float", nullable: false),
                     NumberOfAttempt = table.Column<int>(type: "int", nullable: false)
                 },
@@ -745,12 +861,36 @@ namespace OnlineLearning.Migrations
                         name: "FK_Score_AspNetUsers_StudentID",
                         column: x => x.StudentID,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Score_Test_TestID",
                         column: x => x.TestID,
                         principalTable: "Test",
-                        principalColumn: "TestID");
+                        principalColumn: "TestID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CommentFile",
+                columns: table => new
+                {
+                    FileID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CommentID = table.Column<int>(type: "int", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UploadDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CommentFile", x => x.FileID);
+                    table.ForeignKey(
+                        name: "FK_CommentFile_Comment_CommentID",
+                        column: x => x.CommentID,
+                        principalTable: "Comment",
+                        principalColumn: "CommentID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -758,9 +898,20 @@ namespace OnlineLearning.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1", "9c8b1272-58c4-412e-b0be-52c7e46c2d0c", "Admin", "ADMIN" },
-                    { "2", "b1da7ad1-a463-417d-b530-5e81a4dfb784", "Student", "STUDENT" },
-                    { "3", "a511ddf7-fbdf-4205-b172-c3c2097aaa5a", "Instructor", "INSTRUCTOR" }
+                    { "1", "d3344138-1193-4eeb-8550-e3ccf499a97d", "Admin", "ADMIN" },
+                    { "2", "034d8d50-5884-441f-9970-71e126ad930a", "Student", "STUDENT" },
+                    { "3", "95b3a7d1-c13c-4536-bcd2-b7a8a594f1b4", "Instructor", "INSTRUCTOR" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Category",
+                columns: new[] { "CategoryID", "Description", "FullName" },
+                values: new object[,]
+                {
+                    { 1, "Courses related to programming and software development.", "Programming" },
+                    { 2, "Courses focused on data analysis and machine learning.", "Data Science" },
+                    { 3, "Courses for building websites and web applications.", "Web Development" },
+                    { 4, "Courses for graphic design and multimedia.", "Design" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -818,14 +969,34 @@ namespace OnlineLearning.Migrations
                 column: "StudentID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatBox_ReceiverID",
-                table: "ChatBox",
-                column: "ReceiverID");
+                name: "IX_Certificate_CourseID",
+                table: "Certificate",
+                column: "CourseID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatBox_SenderID",
-                table: "ChatBox",
-                column: "SenderID");
+                name: "IX_Certificate_StudentID",
+                table: "Certificate",
+                column: "StudentID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comment_LectureID",
+                table: "Comment",
+                column: "LectureID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comment_ParentCmtId",
+                table: "Comment",
+                column: "ParentCmtId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comment_UserID",
+                table: "Comment",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CommentFile_CommentID",
+                table: "CommentFile",
+                column: "CommentID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseMaterials_CourseID",
@@ -866,6 +1037,16 @@ namespace OnlineLearning.Migrations
                 name: "IX_LectureFiles_LectureID",
                 table: "LectureFiles",
                 column: "LectureID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LivestreamRecord_CourseID",
+                table: "LivestreamRecord",
+                column: "CourseID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LivestreamRecord_UserID",
+                table: "LivestreamRecord",
+                column: "UserID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Message_ReceiverId",
@@ -966,6 +1147,16 @@ namespace OnlineLearning.Migrations
                 name: "IX_Test_CourseID",
                 table: "Test",
                 column: "CourseID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VideoCallInfo_ReceiveID",
+                table: "VideoCallInfo",
+                column: "ReceiveID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VideoCallInfo_SendID",
+                table: "VideoCallInfo",
+                column: "SendID");
         }
 
         /// <inheritdoc />
@@ -990,7 +1181,10 @@ namespace OnlineLearning.Migrations
                 name: "BookMark");
 
             migrationBuilder.DropTable(
-                name: "ChatBox");
+                name: "Certificate");
+
+            migrationBuilder.DropTable(
+                name: "CommentFile");
 
             migrationBuilder.DropTable(
                 name: "CourseMaterials");
@@ -1003,6 +1197,9 @@ namespace OnlineLearning.Migrations
 
             migrationBuilder.DropTable(
                 name: "LectureFiles");
+
+            migrationBuilder.DropTable(
+                name: "LivestreamRecord");
 
             migrationBuilder.DropTable(
                 name: "MessageFile");
@@ -1038,10 +1235,13 @@ namespace OnlineLearning.Migrations
                 name: "Submission");
 
             migrationBuilder.DropTable(
+                name: "VideoCallInfo");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Lecture");
+                name: "Comment");
 
             migrationBuilder.DropTable(
                 name: "Message");
@@ -1051,6 +1251,9 @@ namespace OnlineLearning.Migrations
 
             migrationBuilder.DropTable(
                 name: "Assignment");
+
+            migrationBuilder.DropTable(
+                name: "Lecture");
 
             migrationBuilder.DropTable(
                 name: "Courses");

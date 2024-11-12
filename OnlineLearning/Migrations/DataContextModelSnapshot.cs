@@ -52,21 +52,21 @@ namespace OnlineLearning.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "638570a7-d8f9-4d67-a3c2-892229f0625d",
+                            ConcurrencyStamp = "639e74e0-1827-4a20-bba2-c68701135f98",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "4c4165c0-cebf-459d-88f8-0cf68d77480b",
+                            ConcurrencyStamp = "dc90d5ad-2c68-41b4-a654-3708af39be4e",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = "3",
-                            ConcurrencyStamp = "4176af12-3b00-434b-ab0f-f67477485de9",
+                            ConcurrencyStamp = "dfd6bb09-f448-448b-a7bd-621b13a80261",
                             Name = "Instructor",
                             NormalizedName = "INSTRUCTOR"
                         });
@@ -157,6 +157,23 @@ namespace OnlineLearning.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "admin-user-id",
+                            RoleId = "1"
+                        },
+                        new
+                        {
+                            UserId = "student-user-id",
+                            RoleId = "2"
+                        },
+                        new
+                        {
+                            UserId = "instructor-user-id",
+                            RoleId = "3"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -266,6 +283,80 @@ namespace OnlineLearning.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "admin-user-id",
+                            AccessFailedCount = 0,
+                            Address = "123 Admin Street",
+                            ConcurrencyStamp = "1937a323-51d3-49ad-bed0-9e3645f88fb2",
+                            Dob = new DateOnly(2000, 1, 1),
+                            Email = "admin@example.com",
+                            EmailConfirmed = true,
+                            FirstName = "Admin",
+                            Gender = true,
+                            LastName = "User",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@EXAMPLE.COM",
+                            NormalizedUserName = "ADMIN@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEB7gTmQQ72geaR5cPp1Njk2KfZuitkHy2Cfl8jwYXR04YeRT1zz5wuFIcn2FmulRFA==",
+                            PhoneNumber = "1234567890",
+                            PhoneNumberConfirmed = false,
+                            ProfileImagePath = "/images/default.jpg",
+                            SecurityStamp = "380e61f7-8df8-43a5-a931-c5c6345df93d",
+                            TwoFactorEnabled = false,
+                            UserName = "admin",
+                            WalletUser = 200000.0
+                        },
+                        new
+                        {
+                            Id = "student-user-id",
+                            AccessFailedCount = 0,
+                            Address = "456 Student Avenue",
+                            ConcurrencyStamp = "242914a4-b0fb-48c6-a549-2e0d471197ee",
+                            Dob = new DateOnly(2000, 1, 1),
+                            Email = "student",
+                            EmailConfirmed = true,
+                            FirstName = "Student",
+                            Gender = true,
+                            LastName = "User",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "STUDENT@EXAMPLE.COM",
+                            NormalizedUserName = "STUDENT@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAQVZwv6Fde8DJw9beWmYj2ANgOAGVBfFzrtR+R4k5s7PeA68BRdA4SBp/qIZNfpyw==",
+                            PhoneNumber = "9876543210",
+                            PhoneNumberConfirmed = false,
+                            ProfileImagePath = "/images/default.jpg",
+                            SecurityStamp = "eb9fa16b-27a5-408d-ab9f-3ed6547d5126",
+                            TwoFactorEnabled = false,
+                            UserName = "student@example.com",
+                            WalletUser = 200000.0
+                        },
+                        new
+                        {
+                            Id = "instructor-user-id",
+                            AccessFailedCount = 0,
+                            Address = "789 Instructor Road",
+                            ConcurrencyStamp = "d1f2819d-8655-4680-91b4-bf23e0f5b934",
+                            Dob = new DateOnly(2000, 1, 1),
+                            Email = "instructor@example.com",
+                            EmailConfirmed = true,
+                            FirstName = "Instructor",
+                            Gender = true,
+                            LastName = "User",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "INSTRUCTOR@EXAMPLE.COM",
+                            NormalizedUserName = "INSTRUCTOR@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKXNLE7xJ89cv7JDPq26SHE9d7u2ZvwjTXlICVEq2K7DA4XwPEIE1Wp1sJzCDNckoA==",
+                            PhoneNumber = "5551234567",
+                            PhoneNumberConfirmed = false,
+                            ProfileImagePath = "/images/default.jpg",
+                            SecurityStamp = "e854987b-f173-4231-af56-5c478b0e1c2f",
+                            TwoFactorEnabled = false,
+                            UserName = "instructor",
+                            WalletUser = 200000.0
+                        });
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.AssignmentModel", b =>
@@ -297,7 +388,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("CourseID");
 
-                    b.ToTable("Assignment");
+                    b.ToTable("Assignment", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.BookMarkModel", b =>
@@ -322,7 +413,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("BookMark");
+                    b.ToTable("BookMark", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CategoryModel", b =>
@@ -344,36 +435,33 @@ namespace OnlineLearning.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Category");
-                });
+                    b.ToTable("Category", (string)null);
 
-            modelBuilder.Entity("OnlineLearning.Models.ChatBoxModel", b =>
-                {
-                    b.Property<int>("ChatBoxID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChatBoxID"));
-
-                    b.Property<string>("ReceiverID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("SenderID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ChatBoxID");
-
-                    b.HasIndex("ReceiverID");
-
-                    b.HasIndex("SenderID");
-
-                    b.ToTable("ChatBox");
+                    b.HasData(
+                        new
+                        {
+                            CategoryID = 1,
+                            Description = "Courses related to programming and software development.",
+                            FullName = "Programming"
+                        },
+                        new
+                        {
+                            CategoryID = 2,
+                            Description = "Courses focused on data analysis and machine learning.",
+                            FullName = "Data Science"
+                        },
+                        new
+                        {
+                            CategoryID = 3,
+                            Description = "Courses for building websites and web applications.",
+                            FullName = "Web Development"
+                        },
+                        new
+                        {
+                            CategoryID = 4,
+                            Description = "Courses for graphic design and multimedia.",
+                            FullName = "Design"
+                        });
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CommentFileModel", b =>
@@ -403,7 +491,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("CommentID");
 
-                    b.ToTable("CommentFile");
+                    b.ToTable("CommentFile", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CommentModel", b =>
@@ -440,7 +528,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Comment");
+                    b.ToTable("Comment", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CourseMaterialModel", b =>
@@ -471,7 +559,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("CourseID");
 
-                    b.ToTable("CourseMaterials");
+                    b.ToTable("CourseMaterials", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CourseModel", b =>
@@ -547,7 +635,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("InstructorID");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.InstructorConfirmationModel", b =>
@@ -581,7 +669,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("InstructorConfirmation");
+                    b.ToTable("InstructorConfirmation", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.InstructorModel", b =>
@@ -595,7 +683,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasKey("InstructorID");
 
-                    b.ToTable("Instructors");
+                    b.ToTable("Instructors", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.LectureFileModel", b =>
@@ -635,7 +723,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("LectureID");
 
-                    b.ToTable("LectureFiles");
+                    b.ToTable("LectureFiles", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.LectureModel", b =>
@@ -666,7 +754,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("CourseID");
 
-                    b.ToTable("Lecture");
+                    b.ToTable("Lecture", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.LivestreamRecordModel", b =>
@@ -688,6 +776,12 @@ namespace OnlineLearning.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<TimeSpan?>("ScheduleLiveDuration")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("ScheduleStartTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -707,7 +801,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("LivestreamRecord");
+                    b.ToTable("LivestreamRecord", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.MessageFileModel", b =>
@@ -738,7 +832,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("MessageID");
 
-                    b.ToTable("MessageFile");
+                    b.ToTable("MessageFile", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.MessageModel", b =>
@@ -770,7 +864,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Message");
+                    b.ToTable("Message", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.NotificationModel", b =>
@@ -796,7 +890,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notification");
+                    b.ToTable("Notification", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.PaymentModel", b =>
@@ -832,7 +926,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("Payment");
+                    b.ToTable("Payment", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.QuestionModel", b =>
@@ -884,7 +978,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("TestID");
 
-                    b.ToTable("Question");
+                    b.ToTable("Question", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.RequestTranferModel", b =>
@@ -925,7 +1019,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("RequestTranfer");
+                    b.ToTable("RequestTranfer", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.ScoreAssignmentModel", b =>
@@ -952,7 +1046,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("ScoreAssignment");
+                    b.ToTable("ScoreAssignment", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.ScoreModel", b =>
@@ -985,7 +1079,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("TestID");
 
-                    b.ToTable("Score");
+                    b.ToTable("Score", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.StudentCourseModel", b =>
@@ -1023,7 +1117,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("StudentCourses");
+                    b.ToTable("StudentCourses", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.SubmissionModel", b =>
@@ -1058,7 +1152,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("Submission");
+                    b.ToTable("Submission", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.TestModel", b =>
@@ -1112,7 +1206,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("CourseID");
 
-                    b.ToTable("Test");
+                    b.ToTable("Test", (string)null);
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.VideoCallModel", b =>
@@ -1122,6 +1216,9 @@ namespace OnlineLearning.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VideoCallId"));
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ReceiveID")
                         .IsRequired()
@@ -1137,7 +1234,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("SendID");
 
-                    b.ToTable("VideoCallInfo");
+                    b.ToTable("VideoCallInfo", (string)null);
                 });
 
             modelBuilder.Entity("ReportModel", b =>
@@ -1168,7 +1265,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Report");
+                    b.ToTable("Report", (string)null);
                 });
 
             modelBuilder.Entity("ReviewModel", b =>
@@ -1203,7 +1300,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Review");
+                    b.ToTable("Review", (string)null);
                 });
 
             modelBuilder.Entity("YourNamespace.Models.CertificateModel", b =>
@@ -1235,7 +1332,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("Certificate");
+                    b.ToTable("Certificate", (string)null);
                 });
 
             modelBuilder.Entity("YourNamespace.Models.LectureCompletionModel", b =>
@@ -1263,7 +1360,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("LectureCompletion");
+                    b.ToTable("LectureCompletion", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1339,31 +1436,12 @@ namespace OnlineLearning.Migrations
                     b.HasOne("OnlineLearning.Models.AppUserModel", "Student")
                         .WithMany()
                         .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
 
                     b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("OnlineLearning.Models.ChatBoxModel", b =>
-                {
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "UserReceive")
-                        .WithMany()
-                        .HasForeignKey("ReceiverID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("OnlineLearning.Models.AppUserModel", "UserSend")
-                        .WithMany()
-                        .HasForeignKey("SenderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserReceive");
-
-                    b.Navigation("UserSend");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CommentFileModel", b =>
@@ -1424,7 +1502,7 @@ namespace OnlineLearning.Migrations
                     b.HasOne("OnlineLearning.Models.InstructorModel", "Instructor")
                         .WithMany()
                         .HasForeignKey("InstructorID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -1487,7 +1565,7 @@ namespace OnlineLearning.Migrations
                     b.HasOne("OnlineLearning.Models.AppUserModel", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -1511,13 +1589,13 @@ namespace OnlineLearning.Migrations
                     b.HasOne("OnlineLearning.Models.AppUserModel", "Receiver")
                         .WithMany()
                         .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("OnlineLearning.Models.AppUserModel", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Receiver");
@@ -1547,7 +1625,7 @@ namespace OnlineLearning.Migrations
                     b.HasOne("OnlineLearning.Models.AppUserModel", "Student")
                         .WithMany()
                         .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -1588,7 +1666,7 @@ namespace OnlineLearning.Migrations
                     b.HasOne("OnlineLearning.Models.AppUserModel", "Student")
                         .WithMany()
                         .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Assignment");
@@ -1601,7 +1679,7 @@ namespace OnlineLearning.Migrations
                     b.HasOne("OnlineLearning.Models.AppUserModel", "Student")
                         .WithMany()
                         .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("OnlineLearning.Models.TestModel", "Test")
@@ -1626,7 +1704,7 @@ namespace OnlineLearning.Migrations
                     b.HasOne("OnlineLearning.Models.AppUserModel", "AppUser")
                         .WithMany()
                         .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AppUser");
@@ -1669,13 +1747,13 @@ namespace OnlineLearning.Migrations
                     b.HasOne("OnlineLearning.Models.AppUserModel", "Receive")
                         .WithMany()
                         .HasForeignKey("ReceiveID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("OnlineLearning.Models.AppUserModel", "Send")
                         .WithMany()
                         .HasForeignKey("SendID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Receive");
@@ -1705,7 +1783,7 @@ namespace OnlineLearning.Migrations
                     b.HasOne("OnlineLearning.Models.AppUserModel", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -1724,7 +1802,7 @@ namespace OnlineLearning.Migrations
                     b.HasOne("OnlineLearning.Models.AppUserModel", "Student")
                         .WithMany()
                         .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -1743,7 +1821,7 @@ namespace OnlineLearning.Migrations
                     b.HasOne("OnlineLearning.Models.AppUserModel", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Lecture");
