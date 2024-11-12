@@ -151,8 +151,8 @@ namespace OnlineLearning.Areas.Admin.Controllers
         public async Task<IActionResult> Top5Course()
         {
             List<Top5CourseViewModel> top5 = new List<Top5CourseViewModel>();
-            var liststudent = _dataContext.StudentCourses.ToList();
-            int size = liststudent.Count;
+            var listcourse = _dataContext.StudentCourses.ToList();
+            int size = listcourse.Count;
             if (size > 0)
             {
                 for (int i = 0; i < size; i++)
@@ -161,14 +161,14 @@ namespace OnlineLearning.Areas.Admin.Controllers
                     int count = 1;
                     for (int j = i + 1; j < size; j++)
                     {
-                        if (liststudent[i].CourseID == liststudent[j].CourseID)
+                        if (listcourse[i].CourseID == listcourse[j].CourseID)
                         {
                             count++;
                         }
 
                     }
                     user1.Count = count;
-                    var course = await _dataContext.Courses.FirstOrDefaultAsync(c => c.CourseID == liststudent[i].CourseID);
+                    var course = await _dataContext.Courses.FirstOrDefaultAsync(c => c.CourseID == listcourse[i].CourseID);
                     var user = await _userManager.FindByIdAsync(course.InstructorID);
                     user1.NameInstructor = user.FirstName + user.LastName;
                     user1.Images = course.CoverImagePath;
