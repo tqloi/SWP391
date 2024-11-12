@@ -52,21 +52,21 @@ namespace OnlineLearning.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "639e74e0-1827-4a20-bba2-c68701135f98",
+                            ConcurrencyStamp = "a7edc889-b0fa-49d4-8165-a906a086e64c",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "dc90d5ad-2c68-41b4-a654-3708af39be4e",
+                            ConcurrencyStamp = "5ec7cf85-021d-4d07-9089-3a9eaa64b391",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = "3",
-                            ConcurrencyStamp = "dfd6bb09-f448-448b-a7bd-621b13a80261",
+                            ConcurrencyStamp = "682378f6-bbe7-4693-a83a-88245adfcd2b",
                             Name = "Instructor",
                             NormalizedName = "INSTRUCTOR"
                         });
@@ -290,7 +290,7 @@ namespace OnlineLearning.Migrations
                             Id = "admin-user-id",
                             AccessFailedCount = 0,
                             Address = "123 Admin Street",
-                            ConcurrencyStamp = "1937a323-51d3-49ad-bed0-9e3645f88fb2",
+                            ConcurrencyStamp = "78bf85cb-1e54-4c06-aca4-97f22a01d820",
                             Dob = new DateOnly(2000, 1, 1),
                             Email = "admin@example.com",
                             EmailConfirmed = true,
@@ -299,12 +299,12 @@ namespace OnlineLearning.Migrations
                             LastName = "User",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
-                            NormalizedUserName = "ADMIN@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEB7gTmQQ72geaR5cPp1Njk2KfZuitkHy2Cfl8jwYXR04YeRT1zz5wuFIcn2FmulRFA==",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAECFf0PJ50+dDvFbPdt69bcDhosEHF5yM+RBhr7X0fFnbd0P24MRNhEOdmfmjRW3ngw==",
                             PhoneNumber = "1234567890",
-                            PhoneNumberConfirmed = false,
+                            PhoneNumberConfirmed = true,
                             ProfileImagePath = "/images/default.jpg",
-                            SecurityStamp = "380e61f7-8df8-43a5-a931-c5c6345df93d",
+                            SecurityStamp = "082bbe4c-4934-4918-99a5-03a7b00b17d7",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             WalletUser = 200000.0
@@ -314,23 +314,23 @@ namespace OnlineLearning.Migrations
                             Id = "student-user-id",
                             AccessFailedCount = 0,
                             Address = "456 Student Avenue",
-                            ConcurrencyStamp = "242914a4-b0fb-48c6-a549-2e0d471197ee",
+                            ConcurrencyStamp = "056cf342-8202-46ac-b11a-0104b93780b8",
                             Dob = new DateOnly(2000, 1, 1),
-                            Email = "student",
+                            Email = "student@example.com",
                             EmailConfirmed = true,
                             FirstName = "Student",
                             Gender = true,
                             LastName = "User",
                             LockoutEnabled = false,
                             NormalizedEmail = "STUDENT@EXAMPLE.COM",
-                            NormalizedUserName = "STUDENT@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAQVZwv6Fde8DJw9beWmYj2ANgOAGVBfFzrtR+R4k5s7PeA68BRdA4SBp/qIZNfpyw==",
+                            NormalizedUserName = "STUDENT",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOjeM+b0k9TiswHhamkhgD56JzdkHwFeWN0S+xcaabc0y+rriCE6+0i11Z0VHv++Rg==",
                             PhoneNumber = "9876543210",
-                            PhoneNumberConfirmed = false,
+                            PhoneNumberConfirmed = true,
                             ProfileImagePath = "/images/default.jpg",
-                            SecurityStamp = "eb9fa16b-27a5-408d-ab9f-3ed6547d5126",
+                            SecurityStamp = "28f66637-ec77-46ab-8fa8-c95b45dca6e6",
                             TwoFactorEnabled = false,
-                            UserName = "student@example.com",
+                            UserName = "student",
                             WalletUser = 200000.0
                         },
                         new
@@ -338,7 +338,7 @@ namespace OnlineLearning.Migrations
                             Id = "instructor-user-id",
                             AccessFailedCount = 0,
                             Address = "789 Instructor Road",
-                            ConcurrencyStamp = "d1f2819d-8655-4680-91b4-bf23e0f5b934",
+                            ConcurrencyStamp = "36514a8f-7911-4f8e-a8d3-0c9fc24b8b11",
                             Dob = new DateOnly(2000, 1, 1),
                             Email = "instructor@example.com",
                             EmailConfirmed = true,
@@ -347,12 +347,12 @@ namespace OnlineLearning.Migrations
                             LastName = "User",
                             LockoutEnabled = false,
                             NormalizedEmail = "INSTRUCTOR@EXAMPLE.COM",
-                            NormalizedUserName = "INSTRUCTOR@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKXNLE7xJ89cv7JDPq26SHE9d7u2ZvwjTXlICVEq2K7DA4XwPEIE1Wp1sJzCDNckoA==",
+                            NormalizedUserName = "INSTRUCTOR",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPOOQ7SSIjs2W3Nu9rQgZfQ3jANMJopZ7caD2Q60ARWlQFdHYCBJuxr4aR2NKpCXpA==",
                             PhoneNumber = "5551234567",
-                            PhoneNumberConfirmed = false,
+                            PhoneNumberConfirmed = true,
                             ProfileImagePath = "/images/default.jpg",
-                            SecurityStamp = "e854987b-f173-4231-af56-5c478b0e1c2f",
+                            SecurityStamp = "d9d9b958-9079-4345-b9e9-176e817fb629",
                             TwoFactorEnabled = false,
                             UserName = "instructor",
                             WalletUser = 200000.0
@@ -388,7 +388,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("CourseID");
 
-                    b.ToTable("Assignment", (string)null);
+                    b.ToTable("Assignment");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.BookMarkModel", b =>
@@ -413,7 +413,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("BookMark", (string)null);
+                    b.ToTable("BookMark");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CategoryModel", b =>
@@ -435,7 +435,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Category", (string)null);
+                    b.ToTable("Category");
 
                     b.HasData(
                         new
@@ -491,7 +491,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("CommentID");
 
-                    b.ToTable("CommentFile", (string)null);
+                    b.ToTable("CommentFile");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CommentModel", b =>
@@ -528,7 +528,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Comment", (string)null);
+                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CourseMaterialModel", b =>
@@ -548,8 +548,7 @@ namespace OnlineLearning.Migrations
 
                     b.Property<string>("MaterialsLink")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("fileExtension")
                         .IsRequired()
@@ -559,7 +558,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("CourseID");
 
-                    b.ToTable("CourseMaterials", (string)null);
+                    b.ToTable("CourseMaterials");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.CourseModel", b =>
@@ -580,8 +579,7 @@ namespace OnlineLearning.Migrations
 
                     b.Property<string>("CoverImagePath")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
@@ -635,7 +633,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("InstructorID");
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.InstructorConfirmationModel", b =>
@@ -669,7 +667,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("InstructorConfirmation", (string)null);
+                    b.ToTable("InstructorConfirmation");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.InstructorModel", b =>
@@ -683,7 +681,14 @@ namespace OnlineLearning.Migrations
 
                     b.HasKey("InstructorID");
 
-                    b.ToTable("Instructors", (string)null);
+                    b.ToTable("Instructors");
+
+                    b.HasData(
+                        new
+                        {
+                            InstructorID = "instructor-user-id",
+                            Description = "Experienced Java and C# instructor specializing in advanced programming techniques."
+                        });
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.LectureFileModel", b =>
@@ -701,8 +706,7 @@ namespace OnlineLearning.Migrations
 
                     b.Property<string>("FilePath")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileType")
                         .IsRequired()
@@ -723,7 +727,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("LectureID");
 
-                    b.ToTable("LectureFiles", (string)null);
+                    b.ToTable("LectureFiles");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.LectureModel", b =>
@@ -754,7 +758,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("CourseID");
 
-                    b.ToTable("Lecture", (string)null);
+                    b.ToTable("Lecture");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.LivestreamRecordModel", b =>
@@ -773,8 +777,7 @@ namespace OnlineLearning.Migrations
 
                     b.Property<string>("LivestreamId")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<TimeSpan?>("ScheduleLiveDuration")
                         .HasColumnType("time");
@@ -801,7 +804,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("LivestreamRecord", (string)null);
+                    b.ToTable("LivestreamRecord");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.MessageFileModel", b =>
@@ -819,8 +822,7 @@ namespace OnlineLearning.Migrations
 
                     b.Property<string>("FilePath")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MessageID")
                         .HasColumnType("int");
@@ -832,7 +834,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("MessageID");
 
-                    b.ToTable("MessageFile", (string)null);
+                    b.ToTable("MessageFile");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.MessageModel", b =>
@@ -864,7 +866,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Message", (string)null);
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.NotificationModel", b =>
@@ -890,7 +892,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notification", (string)null);
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.PaymentModel", b =>
@@ -926,7 +928,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("Payment", (string)null);
+                    b.ToTable("Payment");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.QuestionModel", b =>
@@ -963,8 +965,7 @@ namespace OnlineLearning.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("ImagePath")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Question")
                         .IsRequired()
@@ -978,7 +979,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("TestID");
 
-                    b.ToTable("Question", (string)null);
+                    b.ToTable("Question");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.RequestTranferModel", b =>
@@ -1019,7 +1020,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("RequestTranfer", (string)null);
+                    b.ToTable("RequestTranfer");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.ScoreAssignmentModel", b =>
@@ -1046,7 +1047,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("ScoreAssignment", (string)null);
+                    b.ToTable("ScoreAssignment");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.ScoreModel", b =>
@@ -1079,7 +1080,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("TestID");
 
-                    b.ToTable("Score", (string)null);
+                    b.ToTable("Score");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.StudentCourseModel", b =>
@@ -1117,7 +1118,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("StudentCourses", (string)null);
+                    b.ToTable("StudentCourses");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.SubmissionModel", b =>
@@ -1152,7 +1153,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("Submission", (string)null);
+                    b.ToTable("Submission");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.TestModel", b =>
@@ -1206,7 +1207,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("CourseID");
 
-                    b.ToTable("Test", (string)null);
+                    b.ToTable("Test");
                 });
 
             modelBuilder.Entity("OnlineLearning.Models.VideoCallModel", b =>
@@ -1234,7 +1235,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("SendID");
 
-                    b.ToTable("VideoCallInfo", (string)null);
+                    b.ToTable("VideoCallInfo");
                 });
 
             modelBuilder.Entity("ReportModel", b =>
@@ -1265,7 +1266,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Report", (string)null);
+                    b.ToTable("Report");
                 });
 
             modelBuilder.Entity("ReviewModel", b =>
@@ -1300,7 +1301,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Review", (string)null);
+                    b.ToTable("Review");
                 });
 
             modelBuilder.Entity("YourNamespace.Models.CertificateModel", b =>
@@ -1332,7 +1333,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("Certificate", (string)null);
+                    b.ToTable("Certificate");
                 });
 
             modelBuilder.Entity("YourNamespace.Models.LectureCompletionModel", b =>
@@ -1360,7 +1361,7 @@ namespace OnlineLearning.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("LectureCompletion", (string)null);
+                    b.ToTable("LectureCompletion");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

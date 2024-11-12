@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OnlineLearning.Migrations
 {
     /// <inheritdoc />
-    public partial class initTable : Migration
+    public partial class initDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -352,7 +352,7 @@ namespace OnlineLearning.Migrations
                     Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     CourseCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CoverImagePath = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CoverImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InstructorID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     NumberOfStudents = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
@@ -391,7 +391,7 @@ namespace OnlineLearning.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MessageID = table.Column<int>(type: "int", nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    FilePath = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UploadDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -491,7 +491,7 @@ namespace OnlineLearning.Migrations
                     CourseID = table.Column<int>(type: "int", nullable: false),
                     FIleName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     fileExtension = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MaterialsLink = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    MaterialsLink = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -538,7 +538,7 @@ namespace OnlineLearning.Migrations
                     Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     ScheduleStartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ScheduleLiveDuration = table.Column<TimeSpan>(type: "time", nullable: true),
-                    LivestreamId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    LivestreamId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CourseID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -801,7 +801,7 @@ namespace OnlineLearning.Migrations
                     LectureID = table.Column<int>(type: "int", nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     FileType = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    FilePath = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     fileExtension = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UploadDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -829,7 +829,7 @@ namespace OnlineLearning.Migrations
                     AnswerC = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     AnswerD = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     CorrectAnswer = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    ImagePath = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -898,9 +898,9 @@ namespace OnlineLearning.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1", "d3344138-1193-4eeb-8550-e3ccf499a97d", "Admin", "ADMIN" },
-                    { "2", "034d8d50-5884-441f-9970-71e126ad930a", "Student", "STUDENT" },
-                    { "3", "95b3a7d1-c13c-4536-bcd2-b7a8a594f1b4", "Instructor", "INSTRUCTOR" }
+                    { "1", "e38ff06e-f779-47ee-b510-c26c5c541b5e", "Admin", "ADMIN" },
+                    { "2", "cac4ef3a-4aee-4a79-8c4b-98586ce31efa", "Student", "STUDENT" },
+                    { "3", "32e85dc5-dc1d-4ed0-8be8-811e22c7b6c2", "Instructor", "INSTRUCTOR" }
                 });
 
             migrationBuilder.InsertData(

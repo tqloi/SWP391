@@ -12,8 +12,8 @@ using OnlineLearningApp.Respositories;
 namespace OnlineLearning.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241112134212_initTable")]
-    partial class initTable
+    [Migration("20241112191503_initDb")]
+    partial class initDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,21 +55,21 @@ namespace OnlineLearning.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "d3344138-1193-4eeb-8550-e3ccf499a97d",
+                            ConcurrencyStamp = "e38ff06e-f779-47ee-b510-c26c5c541b5e",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "034d8d50-5884-441f-9970-71e126ad930a",
+                            ConcurrencyStamp = "cac4ef3a-4aee-4a79-8c4b-98586ce31efa",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
                             Id = "3",
-                            ConcurrencyStamp = "95b3a7d1-c13c-4536-bcd2-b7a8a594f1b4",
+                            ConcurrencyStamp = "32e85dc5-dc1d-4ed0-8be8-811e22c7b6c2",
                             Name = "Instructor",
                             NormalizedName = "INSTRUCTOR"
                         });
@@ -460,8 +460,7 @@ namespace OnlineLearning.Migrations
 
                     b.Property<string>("MaterialsLink")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("fileExtension")
                         .IsRequired()
@@ -492,8 +491,7 @@ namespace OnlineLearning.Migrations
 
                     b.Property<string>("CoverImagePath")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
@@ -613,8 +611,7 @@ namespace OnlineLearning.Migrations
 
                     b.Property<string>("FilePath")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FileType")
                         .IsRequired()
@@ -685,8 +682,7 @@ namespace OnlineLearning.Migrations
 
                     b.Property<string>("LivestreamId")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<TimeSpan?>("ScheduleLiveDuration")
                         .HasColumnType("time");
@@ -731,8 +727,7 @@ namespace OnlineLearning.Migrations
 
                     b.Property<string>("FilePath")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MessageID")
                         .HasColumnType("int");
@@ -875,8 +870,7 @@ namespace OnlineLearning.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("ImagePath")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Question")
                         .IsRequired()

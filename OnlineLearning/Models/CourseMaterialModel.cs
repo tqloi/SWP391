@@ -14,7 +14,6 @@ namespace OnlineLearning.Models
         public string fileExtension { get; set; }
 
         [Required]
-        [StringLength(255)]
         public string MaterialsLink { get; set; }
 
         public virtual CourseModel Course { get; set; }

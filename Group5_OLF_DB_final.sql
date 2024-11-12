@@ -439,46 +439,46 @@ VALUES
 -- Chèn bài giảng cho khóa 'Python for Beginners'
 INSERT INTO Lecture (CourseID, Title, [Description], UpLoadDate)
 VALUES
-    (23, 'Introduction to Python', 'Learn the basics of Python programming.', '2024-09-01'),
-    (23, 'Variables and Data Types', 'Understand variables and data types in Python.', '2024-09-02'),
-    (23, 'Control Structures in Python', 'Learn about loops and conditionals in Python.', '2024-09-03'),
-    (23, 'Functions and Modules', 'Explore functions and modules in Python.', '2024-09-04'),
-    (23, 'Object-Oriented Programming in Python', 'Introduction to OOP in Python.', '2024-09-05'),
+    (1, 'Introduction to Python', 'Learn the basics of Python programming.', '2024-09-01'),
+    (1, 'Variables and Data Types', 'Understand variables and data types in Python.', '2024-09-02'),
+    (1, 'Control Structures in Python', 'Learn about loops and conditionals in Python.', '2024-09-03'),
+    (1, 'Functions and Modules', 'Explore functions and modules in Python.', '2024-09-04'),
+    (1, 'Object-Oriented Programming in Python', 'Introduction to OOP in Python.', '2024-09-05'),
 
 -- Chèn bài giảng cho khóa 'Java Advanced Techniques'
-    (24, 'Advanced Java Concepts', 'Learn about advanced Java programming concepts.', '2024-09-06'),
-    (24, 'Java Streams API', 'Work with the Streams API in Java.', '2024-09-07'),
-    (24, 'Java Multithreading', 'Explore multithreading techniques in Java.', '2024-09-08'),
-    (24, 'Java Design Patterns', 'Understand design patterns in Java.', '2024-09-09'),
-    (24, 'Java Networking', 'Learn how to create network applications in Java.', '2024-09-10'),
+    (2, 'Advanced Java Concepts', 'Learn about advanced Java programming concepts.', '2024-09-06'),
+    (2, 'Java Streams API', 'Work with the Streams API in Java.', '2024-09-07'),
+    (2, 'Java Multithreading', 'Explore multithreading techniques in Java.', '2024-09-08'),
+    (2, 'Java Design Patterns', 'Understand design patterns in Java.', '2024-09-09'),
+    (2, 'Java Networking', 'Learn how to create network applications in Java.', '2024-09-10'),
 
 -- Chèn bài giảng cho khóa 'C# for Beginners'
-    (25, 'Introduction to C#', 'Learn the fundamentals of C# programming.', '2024-09-11'),
-    (25, 'C# Data Types and Variables', 'Understand data types and variables in C#.', '2024-09-12'),
+    (3, 'Introduction to C#', 'Learn the fundamentals of C# programming.', '2024-09-11'),
+    (3, 'C# Data Types and Variables', 'Understand data types and variables in C#.', '2024-09-12'),
 
 -- Chèn bài giảng cho khóa 'Machine Learning A-Z'
-    (26, 'Introduction to Machine Learning', 'Learn the basics of machine learning.', '2024-09-06'),
-    (26, 'Supervised Learning Algorithms', 'Explore supervised learning techniques.', '2024-09-07'),
+    (4, 'Introduction to Machine Learning', 'Learn the basics of machine learning.', '2024-09-06'),
+    (4, 'Supervised Learning Algorithms', 'Explore supervised learning techniques.', '2024-09-07'),
 
 -- Chèn bài giảng cho khóa 'Data Science for Everyone'
-    (27, 'Introduction to Data Science', 'Learn the fundamentals of data science.', '2024-09-11'),
-    (27, 'Data Preprocessing', 'Understand the process of data cleaning and preparation.', '2024-09-12'),
+    (5, 'Introduction to Data Science', 'Learn the fundamentals of data science.', '2024-09-11'),
+    (5, 'Data Preprocessing', 'Understand the process of data cleaning and preparation.', '2024-09-12'),
 
 -- Chèn bài giảng cho khóa 'React for Beginners'
-    (28, 'Introduction to React', 'Learn the basics of React.', '2024-09-13'),
-    (28, 'State and Props in React', 'Explore state and props in React.', '2024-09-14'),
+    (6, 'Introduction to React', 'Learn the basics of React.', '2024-09-13'),
+    (6, 'State and Props in React', 'Explore state and props in React.', '2024-09-14'),
 
 -- Chèn bài giảng cho khóa 'Node.js for Beginners'
-    (29, 'Introduction to Node.js', 'Learn the basics of Node.js.', '2024-09-16'),
+    (7, 'Introduction to Node.js', 'Learn the basics of Node.js.', '2024-09-16'),
 
 -- Chèn bài giảng cho khóa 'Advanced CSS Techniques'
-    (30, 'Advanced CSS Selectors', 'Learn advanced CSS selector techniques.', '2024-09-21'),
+    (8, 'Advanced CSS Selectors', 'Learn advanced CSS selector techniques.', '2024-09-21'),
 
 -- Chèn bài giảng cho khóa 'UI/UX Design Fundamentals'
-    (31, 'Introduction to UI/UX Design', 'Learn the principles of UI/UX design.', '2024-09-06'),
+    (8, 'Introduction to UI/UX Design', 'Learn the principles of UI/UX design.', '2024-09-06'),
 
 -- Chèn bài giảng cho khóa 'Adobe Photoshop for Beginners'
-    (32, 'Introduction to Adobe Photoshop', 'Learn the basics of Adobe Photoshop.', '2024-09-12');
+    (10, 'Introduction to Adobe Photoshop', 'Learn the basics of Adobe Photoshop.', '2024-09-12');
 go
 
 -- file

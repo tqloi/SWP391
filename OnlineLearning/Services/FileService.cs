@@ -38,7 +38,6 @@ namespace OnlineLearning.Services
         {
             return await UploadFile(file, "Assignments");
         }
-
         public async Task<string> UploadCertificate(IFormFile file)
         {
             return await UploadFile(file, "Certificate");

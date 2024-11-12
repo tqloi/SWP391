@@ -16,7 +16,6 @@ namespace OnlineLearning.Models
         public string FileName { get; set; }
 
         [Required]
-        [MaxLength(500)]
         public string FilePath { get; set; }
 
         [Required]
