@@ -186,5 +186,44 @@ namespace OnlineLearning.Areas.Admin.Controllers
            return View(report);
         }
 
+        public  async Task<IActionResult> Top5Student()
+        {
+            List<Top5UserViewModel> top5 = new List<Top5UserViewModel>();
+            var liststudent = _dataContext.StudentCourses.ToList();
+            int size = liststudent.Count;
+            if (size > 0)
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    Top5UserViewModel user1 = new Top5UserViewModel();
+                    int count = 1;
+                    for (int j = i + 1; j < size; j++)
+                    {
+                        if (liststudent[i].StudentID.Equals(liststudent[j].StudentID))
+                        {
+                            count++;
+                        }
+
+                    }
+                    user1.Count = count;
+                    user1.StudentID = liststudent[i].StudentID;
+                    
+                    AppUserModel user = await _userManager.FindByIdAsync(user1.StudentID);
+                    user1.FirstName = user.FirstName;
+                    user1.LastName = user.LastName;
+                    user1.ImagesPath = user.ProfileImagePath;
+                    user1.Email = user.Email;
+                    user1.Address = user.Address;
+                    top5.Add(user1);
+                    user1 = null;
+                    count = 1;
+
+                }
+                top5 = top5.GroupBy(u => u.StudentID).Select(g => g.First()).OrderByDescending(x => x.Count).ToList();
+            }
+            
+            return View(top5);
+        }
+
     }
 }

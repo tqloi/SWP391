@@ -14,6 +14,8 @@
     <Compile Remove="VideoCall\**" />
     <Compile Remove="wwwroot\assets\**" />
     <Compile Remove="wwwroot\Assignment\**" />
+    <Compile Remove="wwwroot\course\libs\**" />
+    <Compile Remove="wwwroot\course\vendor\fontawesome-free\**" />
     <Compile Remove="wwwroot\Images\NewFolder\**" />
     <Content Remove="Areas\Admin\Views\Shared\Components\**" />
     <Content Remove="Areas\Instructor\Data\**" />
@@ -22,6 +24,8 @@
     <Content Remove="VideoCall\**" />
     <Content Remove="wwwroot\assets\**" />
     <Content Remove="wwwroot\Assignment\**" />
+    <Content Remove="wwwroot\course\libs\**" />
+    <Content Remove="wwwroot\course\vendor\fontawesome-free\**" />
     <Content Remove="wwwroot\Images\NewFolder\**" />
     <EmbeddedResource Remove="Areas\Admin\Views\Shared\Components\**" />
     <EmbeddedResource Remove="Areas\Instructor\Data\**" />
@@ -30,6 +34,8 @@
     <EmbeddedResource Remove="VideoCall\**" />
     <EmbeddedResource Remove="wwwroot\assets\**" />
     <EmbeddedResource Remove="wwwroot\Assignment\**" />
+    <EmbeddedResource Remove="wwwroot\course\libs\**" />
+    <EmbeddedResource Remove="wwwroot\course\vendor\fontawesome-free\**" />
     <EmbeddedResource Remove="wwwroot\Images\NewFolder\**" />
     <None Remove="Areas\Admin\Views\Shared\Components\**" />
     <None Remove="Areas\Instructor\Data\**" />
@@ -38,16 +44,21 @@
     <None Remove="VideoCall\**" />
     <None Remove="wwwroot\assets\**" />
     <None Remove="wwwroot\Assignment\**" />
+    <None Remove="wwwroot\course\libs\**" />
+    <None Remove="wwwroot\course\vendor\fontawesome-free\**" />
     <None Remove="wwwroot\Images\NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ApiVideo" Version="1.6.5" />
     <PackageReference Include="AspNetCoreHero.ToastNotification" Version="1.1.0" />
     <PackageReference Include="EPPlus" Version="7.4.1" />
     <PackageReference Include="Firebase.Auth" Version="1.0.0" />
     <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
     <PackageReference Include="FirebaseStorage.net" Version="1.0.3" />
     <PackageReference Include="Google.Cloud.Storage.V1" Version="4.10.0" />
+    <PackageReference Include="Json.Net" Version="1.0.33" />
+    <PackageReference Include="JsonSubTypes" Version="2.0.1" />
     <PackageReference Include="MailKit" Version="4.7.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
@@ -59,12 +70,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
 
     <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="17.11.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Instructor\Views\Shared\Components\" />
 
 
 
@@ -72,30 +83,23 @@
 
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 
+    <PackageReference Include="QRCoder" Version="1.6.0" />
+
+    <PackageReference Include="RestSharp" Version="112.1.0" />
+
     <PackageReference Include="Select.Pdf.NetCore" Version="24.1.0" />
+
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Areas\Instructor\Views\Shared\login_layout.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Areas\Instructor\Views\Shared\_Layout.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Update="Areas\Instructor\Views\Shared\_NoficationPartial.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-    <Content Update="Areas\Instructor\Views\Shared\_SideCategory.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Areas\Instructor\Views\Shared\_ValidationScriptsPartial.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

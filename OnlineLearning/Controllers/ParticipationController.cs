@@ -73,30 +73,35 @@ namespace OnlineLearning.Controllers
             var scoreAssignments = await datacontext.ScoreAssignment
                                    .Where(x => assignmentIds.Contains(x.AssignmentID) && x.StudentID == userId)
                                    .ToListAsync();
-            double averageAssignmentScore = scoreAssignments.Any()
-                                          ? scoreAssignments.Average(x => x.Score)
-                                          : 0;
-
+            
             var tests = await datacontext.Test.Where(x => x.CourseID == CourseID).ToListAsync();
             var testIDs = tests.Select(a => a.TestID).ToList();
             var scoreTests = await datacontext.Score
                                    .Where(x => testIDs.Contains(x.TestID) && x.StudentID == userId)
                                    .ToListAsync();
-            double averageTestScore = scoreTests.Any()
-                                    ? scoreTests.Average(x => x.Score)
-                                    : 0; 
-
-            double overallAverageScore = (averageAssignmentScore + averageTestScore) / 2;
-
-            var certificate = await datacontext.Certificate
-                               .Where(x => x.CourseID == CourseID && x.StudentID == userId).FirstOrDefaultAsync();
-
             bool isPassed = false;
-            if(studentCourse.Progress == 100 && overallAverageScore >= 5 && certificate == null)
-            {
-                isPassed = true;
-            }
+            var certificate = await datacontext.Certificate
+                                  .Where(x => x.CourseID == CourseID && x.StudentID == userId).FirstOrDefaultAsync();
 
+            bool hasZeroAssignmentScore = scoreAssignments.Any(x => x.Score == 0);
+            bool hasZeroTestScore = scoreTests.Any(x => x.Score == 0);
+
+            if (!hasZeroAssignmentScore && !hasZeroTestScore)
+            {
+                double averageAssignmentScore = scoreAssignments.Any()
+                                   ? scoreAssignments.Average(x => x.Score)
+                                   : 0;
+                double averageTestScore = scoreTests.Any()
+                                        ? scoreTests.Average(x => x.Score)
+                                        : 0;
+                double overallAverageScore = (averageAssignmentScore + averageTestScore) / 2;
+
+                if (studentCourse.Progress == 100 && overallAverageScore >= 5 && certificate == null)
+                {
+                    isPassed = true;
+                }
+            }
+          
             var model = new CourseInfoViewModel
             {
                 Lectures = lectures,
@@ -111,7 +116,6 @@ namespace OnlineLearning.Controllers
             ViewBag.Course = course;
             return View(model);
         }
-
 
         [HttpGet]
         public async Task<IActionResult> AssignmentList(int CourseID, int page = 1)
@@ -209,6 +213,29 @@ namespace OnlineLearning.Controllers
             {
                 return RedirectToAction("MaterialList", "Material", new { area = "Student", CourseID = CourseID });
             }
+        }
+        [HttpGet]
+
+        public async Task<IActionResult> Livestream(int CourseID)
+        {
+            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var course = await datacontext.Courses.FirstOrDefaultAsync(c => c.CourseID == CourseID);
+
+            // Check if user is null before proceeding
+            if (user == null)
+            {
+                // Handle the case where the user is not found
+                return BadRequest("User not found.");
+            }
+
+            // Retrieve the livestream records for the user
+            var records = await datacontext.LivestreamRecord
+                .Where(u => u.UserID != null && u.UserID.Equals(user))
+                .ToListAsync();
+            ViewBag.Course = course;
+            TempData["CourseID"] = CourseID;
+            TempData.Keep();
+            return View();
         }
     }
 }

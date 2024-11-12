@@ -136,6 +136,30 @@ namespace OnlineLearning.Controllers
             return View(model);
             }
 
+        [HttpPost]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> GetFreeCourse(int CourseID)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var studentCourse = new StudentCourseModel
+            {
+                CourseID = CourseID,
+                StudentID = userId,
+                EnrollmentDate = DateTime.Now,
+                Progress = 0,
+                CertificateStatus = "In Progress"
+            };
+
+            datacontext.StudentCourses.Add(studentCourse);
+            var course = await datacontext.Courses.FirstOrDefaultAsync(c => c.CourseID == CourseID);
+            course.NumberOfStudents += 1;
+            await datacontext.SaveChangesAsync();
+
+            TempData["success"] = "Course Enrolled!";
+            return RedirectToAction("CourseDetail", "Course", new { CourseID = CourseID });
+        }
+
         [Authorize]
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> PaymentRollBack()

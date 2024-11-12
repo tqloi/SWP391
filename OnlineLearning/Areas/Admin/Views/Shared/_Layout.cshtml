@@ -188,64 +188,24 @@
                                 </ul>
                             </div>
                         </li>
-                        <li class="nav-item">
-                            <a data-bs-toggle="collapse" href="#tables">
-                                <i class="fas fa-table"></i>
-                                <p>Tables</p>
-                                <span class="caret"></span>
-                            </a>
-                            <div class="collapse" id="tables">
-                                <ul class="nav nav-collapse">
-                                    <li>
-                                        <a href="tables/tables.html">
-                                            <span class="sub-item">Basic Table</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="tables/datatables.html">
-                                            <span class="sub-item">Datatables</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <a data-bs-toggle="collapse" href="#maps">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <p>Maps</p>
-                                <span class="caret"></span>
-                            </a>
-                            <div class="collapse" id="maps">
-                                <ul class="nav nav-collapse">
-                                    <li>
-                                        <a href="maps/googlemaps.html">
-                                            <span class="sub-item">Google Maps</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="maps/jsvectormap.html">
-                                            <span class="sub-item">Jsvectormap</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                        
+                        
                         <li class="nav-item">
                             <a data-bs-toggle="collapse" href="#charts">
                                 <i class="far fa-chart-bar"></i>
-                                <p>Charts</p>
+                                <p>Ranking</p>
                                 <span class="caret"></span>
                             </a>
                             <div class="collapse" id="charts">
                                 <ul class="nav nav-collapse">
                                     <li>
-                                        <a href="charts/charts.html">
-                                            <span class="sub-item">Chart Js</span>
+                                        <a asp-area="Admin" asp-action="Top5Student" asp-controller="User">
+                                            <span class="sub-item">Top Student</span>
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="charts/sparkline.html">
-                                            <span class="sub-item">Sparkline</span>
+                                        <a asp-area="Admin" asp-action="Top5Course" asp-controller="Course">
+                                            <span class="sub-item">Top Course</span>
                                         </a>
                                     </li>
                                 </ul>

@@ -1,0 +1,36 @@
+﻿@{
+    Layout = "~/Views/Shared/_CourseLayout.cshtml";
+    <partial name="_NoficationPartial" />
+}
+
+@model ApiVideo.Model.LiveStream
+
+<link rel="stylesheet" href="~/css/WatchLive.css" />
+@if (User.IsInRole("Instructor"))
+{
+    <div class="container text-center">
+        <h1 class="display-4">Live Stream: @Model.name</h1>
+
+        @*<img class="thumbnail" src="@Model.assets.thumbnail" alt="Live Stream Thumbnail" />*@
+
+        <h2 class="mt-4">Watch Live</h2>
+        <div class="embed-responsive embed-responsive-16by9">
+            @Html.Raw(Model.assets.iframe)
+        </div>
+
+        <div class="link-section">
+            <h2>Stream Player</h2>
+            <p><a href="@Model.assets.player" target="_blank" class="btn btn-primary">Open in Player</a></p>
+        </div>
+    </div>
+
+    <form asp-action="CompleteLiveStream" asp-controller="LiveStream" asp-route-liveStreamId="@Model.livestreamid" method="post">
+        <button type="submit" onclick="return confirm('End your livestream ?')" class="btn btn-success">
+            Complete Livestream
+        </button>
+    </form>
+}
+else
+{
+    <h3>You do not have permision</h3>
+}

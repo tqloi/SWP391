@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OnlineLearning.Models;
 using OnlineLearningApp.Respositories;
+using System.Diagnostics;
 using System.Security.Claims;
 
 namespace OnlineLearning.Controllers
@@ -21,6 +22,34 @@ namespace OnlineLearning.Controllers
             _logger = logger;
             _signInManager = signInManager;
             _userManager = userManager;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Report(ReportModel model)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            try
+            {
+                var feedback = new ReportModel
+                {
+                    UserID = userId,
+                    Subject = model.Subject,
+                    Comment = model.Comment,
+                    FeedbackDate = DateTime.Now,
+                };
+                _dataContext.Report.Add(feedback);
+                await _dataContext.SaveChangesAsync();
+
+                TempData["success"] = "Feedback has been submitted successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = "Failed to submit feedback. Please try again later.";
+                return View(model);
+            }
+
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         [HttpPost]

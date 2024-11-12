@@ -8,7 +8,10 @@
 
     <link rel="stylesheet" href="~/css/EditQuestion.css" />
 
-<h2>Edit Question</h2>
+<h2>
+    Edit Question
+    <a asp-action="TestList" asp-controller="Participation" asp-route-CourseID="@ViewBag.Course.CourseID" class="btn btn-outline-black"> Back </a>
+</h2>
 
 <form id="QuestionForm" enctype="multipart/form-data" method="post" asp-controller="Question" asp-action="EditQuestion" onsubmit="return correctAnswerValidation()">
     <div class="mb-3">

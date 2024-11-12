@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearning.Areas.Instructor.Models;
 using OnlineLearning.BackgroundServices;
 using OnlineLearning.Email;
 using OnlineLearning.Filter;
@@ -16,6 +17,13 @@ using OnlineLearningApp.Respositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+
+// Configure Kestrel to set the max request header size
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestHeadersTotalSize = 1048576; // Set the limit (in bytes)
+    //1048576 bytes equals 1MB.
+});
 
 builder.Services.AddTransient<EmailSender>();
 builder.Services.AddHttpClient();
@@ -52,6 +60,7 @@ builder.Services.AddNotyf(config =>
     config.Position = NotyfPosition.BottomCenter;
 }
 );
+builder.Services.Configure<ApiVideoSettings>(builder.Configuration.GetSection("ApiVideo"));
 ///telling the application to use the specific ClientId, and the ClientSecret
 ///redirect user to the google login page for authentication
 

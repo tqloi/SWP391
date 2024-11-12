@@ -25,7 +25,6 @@
                                 <th>Submit Date</th>
                                 <th class="ps-4">Submissions</th>
                                 <th>Scores</th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,51 +50,22 @@
                                         @{
                                             var score = Model.ScoreAssignments.FirstOrDefault(p => p.AssignmentID == item.AssignmentID && p.StudentID == item.User.Id);
                                         }
-                                        <div class="d-flex align-items-center">
-                                            @if (score == null)
-                                            {
-                                                <span class="text-muted">Not yet graded</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="@(score.Score >= 5 ? "text-xbox" : "text-danger") fs-5 ms-3">
-                                                    @score.Score
-                                                </span>
-                                            }
-                                        </div>
-                                      </td>
-                                    <td>
-                                        <a data-bs-toggle="modal" data-bs-target="#createAssignmentModal_@item.User.Id" class="table-link me-1 ms-auto">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fas fa-pen fa-stack-1x fa-inverse"></i>
-                                            </span>
-                                        </a>
-                                    </td>
-                                </tr>
+                                        <form asp-action="Score" asp-controller="Assignment" method="post" class="d-flex align-items-center py-2">
+                                            <input type="hidden" name="StudentID" value="@item.User.Id" />
+                                            <input type="hidden" name="AssignmentID" value="@item.AssignmentID" />
 
-                                <div class="modal fade" id="createAssignmentModal_@item.User.Id" tabindex="-1" aria-labelledby="createAssignmentModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="createAssignmentModalLabel">Score Assignment</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form id="scoreAssignmentForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Assignment" asp-action="Score">
-                                                    <input type="hidden" name="StudentID" value="@item.User.Id" />
-                                                    <input type="hidden" name="AssignmentID" value="@item.AssignmentID" />
-                                                    <div class="mb-3">
-                                                        <label for="Score" class="form-label">Score</label>
-                                                        <input type="number" class="form-control" name="Score" id="Score_@item.User.Id" min="0" max="10" step="0.1" required />
-                                                    </div>
-                                                    <button type="submit" class="btn custom-btn w-100">Confirm</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-             
+                                            <input type="number"
+                                                   class="form-control d-inline border border-dark"
+                                                   name="Score"
+                                                   value="@(score?.Score ?? 0)"
+                                                   min="0" max="10" step="0.1"
+                                                   required
+                                                   style="width: 60px; color: @(score?.Score >= 5 ? "green" : "red");" />
+
+                                            <button type="submit" class="btn btn-warning text-black border border-dark ms-2">Save</button>
+                                        </form>
+                                    </td>
+                                </tr>        
                             }
                         </tbody>
                     </table>
