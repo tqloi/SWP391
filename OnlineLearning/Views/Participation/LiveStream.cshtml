@@ -54,7 +54,7 @@
     @if (User.IsInRole("Student"))
     {
         <div class="col-md-4">
-            <form asp-action="SeeAllLive" asp-area="Student" asp-controller="LiveStreamVideo" asp-route-CourseID="@TempData["CourseID"]" method="get" class="p-4 border rounded bg-white shadow text-center">
+            <form asp-action="SeeAllLive" asp-area="Student" asp-controller="LiveStream" asp-route-CourseID="@TempData["CourseID"]" method="get" class="p-4 border rounded bg-white shadow text-center">
                 <h4 class="fw-bold text-dark mb-2">See Course Live Streams</h4>
                 <p class="text-secondary mb-4">Watch all live sessions associated with this course.</p>
                 <button type="submit" class="btn btn-info w-100 py-2">
@@ -63,7 +63,7 @@
             </form>
         </div>
         <div class="col-md-4">
-            <form asp-action="SeePastLive" asp-area="Student" asp-controller="LiveStream" asp-route-CourseID="@TempData["CourseID"]" method="get" class="p-4 border rounded bg-white shadow text-center">
+            <form asp-action="SeePastLive" asp-area="Student" asp-controller="LiveStreamVideo" asp-route-CourseID="@TempData["CourseID"]" method="get" class="p-4 border rounded bg-white shadow text-center">
                 <h4 class="fw-bold text-dark mb-2">See Past Live Streams</h4>
                 <p class="text-secondary mb-4">Access all past live sessions for this course.</p>
                 <button type="submit" class="btn btn-warning w-100 py-2">
