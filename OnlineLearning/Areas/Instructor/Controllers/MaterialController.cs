@@ -67,7 +67,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                         string fileName = material.FileName;
                         try
                         {
-                            string downloadUrl = await _fileService.UploadLectureDocument(material);
+                            string downloadUrl = await _fileService.UploadCourseDocument(material);
                             Material.CourseID = courseID;
                             Material.MaterialsLink = downloadUrl;
                             Material.FIleName = fileName;
@@ -79,7 +79,8 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                         {
                             ModelState.AddModelError("", "Error uploading file: " + ex.Message);
                             TempData["error"] = "Edit failed due to file upload error!";
-                            return View(model);
+                            return RedirectToAction("MaterialList", "Material", new { area = "Instructor", CourseID = courseID });
+
                         }
                     }
 
@@ -91,7 +92,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
             }
             catch
             {
-                TempData["success"] = "Added Failed!";
+                TempData["error"] = "Added Failed!";
                 //return RedirectToAction("Index", "Instructor", new { area = "Instructor" });
                 return RedirectToAction("MaterialList", "Material", new { area = "Instructor", CourseID = courseID });
             }

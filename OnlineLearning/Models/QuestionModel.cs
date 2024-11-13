@@ -34,7 +34,6 @@ namespace OnlineLearning.Models
         [StringLength(255)]
         public required string CorrectAnswer { get; set; }
 
-        [StringLength(255)]
         public string? ImagePath { get; set; }
 
         public required TestModel Test { get; set; }

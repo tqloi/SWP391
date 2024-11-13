@@ -136,7 +136,7 @@
                 </a>
             </li>
 
-            <li title="Live stream" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "AssignmentList" ? "active" : "")">
+            <li title="Live stream" class="nav-item  @(ViewContext.RouteData.Values["controller"].ToString() == "Participation" && ViewContext.RouteData.Values["action"].ToString() == "Livestream" ? "active" : "")">
                 <a class="nav-link" asp-action="Livestream" asp-controller="Participation" asp-route-CourseID="@courseID">
                     <i class="bi bi-broadcast"></i>
                     <nav-link>Live stream</nav-link>
@@ -243,7 +243,6 @@
                 <div style="min-height: 100vh">
                     @RenderBody()
                 </div>
-
                 <!-- Add Lecture Modal -->
                 <div class="modal fade" id="createLectureModal" tabindex="-1" aria-labelledby="addLectureModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -253,7 +252,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form id="addLectureForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Lecture" asp-action="Create" onsubmit="return validateForm()">
+                                <form id="addLectureForm" enctype="multipart/form-data" method="post" asp-area="Instructor" asp-controller="Lecture" asp-action="Create">
                                     <input type="hidden" class="form-control" name="CourseID" value="@courseID" required>
                                     <div class="mb-3">
                                         <label for="Title" class="form-label">Title</label>
@@ -265,30 +264,43 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="LectureFile" class="form-label">Upload Lecture Documents</label>
-                                        <input type="file" class="form-control" id="LectureFile" name="LectureFile" accept=".pdf,.doc,.docx,.ppt,.pptx" multiple>
+                                        <input type="file" class="form-control" id="LectureFile" name="LectureFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.xlsx" multiple required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="VideoFile" class="form-label">Upload Lecture Video</label>
                                         <input type="file" class="form-control" id="VideoFile" name="VideoFile" accept=".mp4,.mov,.avi">
                                     </div>
-                                    <button type="submit" class="custom-btn">Add Lecture</button>
+                                    <button type="submit" id="submit-btn" class="custom-btn">Add Lecture</button>
                                 </form>
-                                <script>
-                                    function validateForm() {
-                                        const lectureFile = document.getElementById('LectureFile').files.length;
-                                        const videoFile = document.getElementById('VideoFile').files.length;
-
-                                        if (lectureFile === 0 && videoFile === 0) {
-                                            alert('Please upload at least one document or video file.');
-                                            return false;
-                                        }
-                                        return true;
-                                    }
-                                </script>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!-- Add Lecture Modal -->
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const lectureFileInput = document.getElementById('LectureFile');
+                        const videoFileInput = document.getElementById('VideoFile');
+
+                        // Kiểm tra nếu VideoFile có file, bỏ "required" của LectureFile
+                        function checkVideoFile() {
+                            if (videoFileInput.files.length > 0) {
+                                // Nếu có tệp trong VideoFile thì bỏ required của LectureFile
+                                lectureFileInput.removeAttribute('required');
+                            } else {
+                                // Nếu không có tệp trong VideoFile thì thêm required vào LectureFile
+                                lectureFileInput.setAttribute('required', 'true');
+                            }
+                        }
+
+                        // Thêm sự kiện lắng nghe khi thay đổi VideoFile
+                        videoFileInput.addEventListener('change', checkVideoFile);
+
+                        // Kiểm tra lần đầu khi load trang
+                        checkVideoFile();
+                    });
+                </script>
                 <!-- Add Lecture Modal -->
 
             </div>

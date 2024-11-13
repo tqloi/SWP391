@@ -18,30 +18,30 @@ namespace OnlineLearning.Migrations
                 keyColumn: "Id",
                 keyValue: "1",
                 column: "ConcurrencyStamp",
-                value: "639e74e0-1827-4a20-bba2-c68701135f98");
+                value: "a7edc889-b0fa-49d4-8165-a906a086e64c");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "2",
                 column: "ConcurrencyStamp",
-                value: "dc90d5ad-2c68-41b4-a654-3708af39be4e");
+                value: "5ec7cf85-021d-4d07-9089-3a9eaa64b391");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "3",
                 column: "ConcurrencyStamp",
-                value: "dfd6bb09-f448-448b-a7bd-621b13a80261");
+                value: "682378f6-bbe7-4693-a83a-88245adfcd2b");
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "Address", "ConcurrencyStamp", "Dob", "Email", "EmailConfirmed", "FirstName", "Gender", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfileImagePath", "SecurityStamp", "TwoFactorEnabled", "UserName", "WalletUser" },
                 values: new object[,]
                 {
-                    { "admin-user-id", 0, "123 Admin Street", "1937a323-51d3-49ad-bed0-9e3645f88fb2", new DateOnly(2000, 1, 1), "admin@example.com", true, "Admin", true, "User", false, null, "ADMIN@EXAMPLE.COM", "ADMIN@EXAMPLE.COM", "AQAAAAIAAYagAAAAEB7gTmQQ72geaR5cPp1Njk2KfZuitkHy2Cfl8jwYXR04YeRT1zz5wuFIcn2FmulRFA==", "1234567890", true, "/images/default.jpg", "380e61f7-8df8-43a5-a931-c5c6345df93d", false, "admin", 200000.0 },
-                    { "instructor-user-id", 0, "789 Instructor Road", "d1f2819d-8655-4680-91b4-bf23e0f5b934", new DateOnly(2000, 1, 1), "instructor@example.com", true, "Instructor", true, "User", false, null, "INSTRUCTOR@EXAMPLE.COM", "INSTRUCTOR@EXAMPLE.COM", "AQAAAAIAAYagAAAAEKXNLE7xJ89cv7JDPq26SHE9d7u2ZvwjTXlICVEq2K7DA4XwPEIE1Wp1sJzCDNckoA==", "5551234567", true, "/images/default.jpg", "e854987b-f173-4231-af56-5c478b0e1c2f", false, "instructor", 200000.0 },
-                    { "student-user-id", 0, "456 Student Avenue", "242914a4-b0fb-48c6-a549-2e0d471197ee", new DateOnly(2000, 1, 1), "student", true, "Student", true, "User", false, null, "STUDENT@EXAMPLE.COM", "STUDENT@EXAMPLE.COM", "AQAAAAIAAYagAAAAEAQVZwv6Fde8DJw9beWmYj2ANgOAGVBfFzrtR+R4k5s7PeA68BRdA4SBp/qIZNfpyw==", "9876543210", true, "/images/default.jpg", "eb9fa16b-27a5-408d-ab9f-3ed6547d5126", false, "student@example.com", 200000.0 }
+                    { "admin-user-id", 0, "123 Admin Street", "78bf85cb-1e54-4c06-aca4-97f22a01d820", new DateOnly(2000, 1, 1), "admin@example.com", true, "Admin", true, "User", false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAIAAYagAAAAECFf0PJ50+dDvFbPdt69bcDhosEHF5yM+RBhr7X0fFnbd0P24MRNhEOdmfmjRW3ngw==", "1234567890", true, "/images/default.jpg", "082bbe4c-4934-4918-99a5-03a7b00b17d7", false, "admin", 200000.0 },
+                    { "instructor-user-id", 0, "789 Instructor Road", "36514a8f-7911-4f8e-a8d3-0c9fc24b8b11", new DateOnly(2000, 1, 1), "instructor@example.com", true, "Instructor", true, "User", false, null, "INSTRUCTOR@EXAMPLE.COM", "INSTRUCTOR", "AQAAAAIAAYagAAAAEPOOQ7SSIjs2W3Nu9rQgZfQ3jANMJopZ7caD2Q60ARWlQFdHYCBJuxr4aR2NKpCXpA==", "5551234567", true, "/images/default.jpg", "d9d9b958-9079-4345-b9e9-176e817fb629", false, "instructor", 200000.0 },
+                    { "student-user-id", 0, "456 Student Avenue", "056cf342-8202-46ac-b11a-0104b93780b8", new DateOnly(2000, 1, 1), "student@example.com", true, "Student", true, "User", false, null, "STUDENT@EXAMPLE.COM", "STUDENT", "AQAAAAIAAYagAAAAEOjeM+b0k9TiswHhamkhgD56JzdkHwFeWN0S+xcaabc0y+rriCE6+0i11Z0VHv++Rg==", "9876543210", true, "/images/default.jpg", "28f66637-ec77-46ab-8fa8-c95b45dca6e6", false, "student", 200000.0 }
                 });
 
             migrationBuilder.InsertData(
@@ -53,6 +53,11 @@ namespace OnlineLearning.Migrations
                     { "3", "instructor-user-id" },
                     { "2", "student-user-id" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Instructors",
+                columns: new[] { "InstructorID", "Description" },
+                values: new object[] { "instructor-user-id", "Experienced Java and C# instructor specializing in advanced programming techniques." });
         }
 
         /// <inheritdoc />
@@ -74,6 +79,11 @@ namespace OnlineLearning.Migrations
                 keyValues: new object[] { "2", "student-user-id" });
 
             migrationBuilder.DeleteData(
+                table: "Instructors",
+                keyColumn: "InstructorID",
+                keyValue: "instructor-user-id");
+
+            migrationBuilder.DeleteData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
                 keyValue: "admin-user-id");
@@ -93,21 +103,21 @@ namespace OnlineLearning.Migrations
                 keyColumn: "Id",
                 keyValue: "1",
                 column: "ConcurrencyStamp",
-                value: "d3344138-1193-4eeb-8550-e3ccf499a97d");
+                value: "e38ff06e-f779-47ee-b510-c26c5c541b5e");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "2",
                 column: "ConcurrencyStamp",
-                value: "034d8d50-5884-441f-9970-71e126ad930a");
+                value: "cac4ef3a-4aee-4a79-8c4b-98586ce31efa");
 
             migrationBuilder.UpdateData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
                 keyValue: "3",
                 column: "ConcurrencyStamp",
-                value: "95b3a7d1-c13c-4536-bcd2-b7a8a594f1b4");
+                value: "32e85dc5-dc1d-4ed0-8be8-811e22c7b6c2");
         }
     }
 }

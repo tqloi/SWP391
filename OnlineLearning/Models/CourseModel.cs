@@ -16,7 +16,6 @@ namespace OnlineLearning.Models
         public string CourseCode { get; set; }
         [MaxLength(255)]
         public string Description { get; set; }
-        [MaxLength(255)]
         public string CoverImagePath { get; set; }
         public string InstructorID { get; set; }
         public int NumberOfStudents { get; set; } = 0;
@@ -24,7 +23,6 @@ namespace OnlineLearning.Models
         public decimal Price { get; set; }
         public int CategoryID { get; set; }
         [MaxLength(50)]
-
         public string Level { get; set; }
         public bool Status { get; set; } = true;
         public bool IsBaned { get; set; } = false;

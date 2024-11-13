@@ -202,7 +202,7 @@ namespace OnlineLearningApp.Respositories
             {
                 Id = "admin-user-id",
                 UserName = "admin",
-                NormalizedUserName = "ADMIN@EXAMPLE.COM",
+                NormalizedUserName = "ADMIN",
                 Email = "admin@example.com",
                 NormalizedEmail = "ADMIN@EXAMPLE.COM",
                 FirstName = "Admin",
@@ -222,13 +222,13 @@ namespace OnlineLearningApp.Respositories
             {
                 Id = "student-user-id",
                 UserName = "student",
-                NormalizedUserName = "STUDENT@EXAMPLE.COM",
-                Email = "student",
+                NormalizedUserName = "STUDENT",
+                Email = "student@example.com",
                 NormalizedEmail = "STUDENT@EXAMPLE.COM",
                 FirstName = "student@example.com",
                 LastName = "User",
                 EmailConfirmed = true,
-                PasswordHash = passwordHasher.HashPassword(null, "Abc123!"),
+                PasswordHash = passwordHasher.HashPassword(null, "Abc123"),
                 PhoneNumber = "9876543210",
                 PhoneNumberConfirmed = true,
                 Address = "456 Student Avenue",
@@ -242,13 +242,13 @@ namespace OnlineLearningApp.Respositories
             {
                 Id = "instructor-user-id",
                 UserName = "instructor",
-                NormalizedUserName = "INSTRUCTOR@EXAMPLE.COM",
+                NormalizedUserName = "INSTRUCTOR",
                 Email = "instructor@example.com",
                 NormalizedEmail = "INSTRUCTOR@EXAMPLE.COM",
                 FirstName = "Instructor",
                 LastName = "User",
                 EmailConfirmed = true,
-                PasswordHash = passwordHasher.HashPassword(null, "Abc123!"),
+                PasswordHash = passwordHasher.HashPassword(null, "Abc123"),
                 PhoneNumber = "5551234567",
                 PhoneNumberConfirmed = true,
                 Address = "789 Instructor Road",
@@ -264,6 +264,9 @@ namespace OnlineLearningApp.Respositories
                 new IdentityUserRole<string> { UserId = "admin-user-id", RoleId = "1" }, // Admin
                 new IdentityUserRole<string> { UserId = "student-user-id", RoleId = "2" }, // Student
                 new IdentityUserRole<string> { UserId = "instructor-user-id", RoleId = "3" } // Instructor
+            );
+            builder.Entity<InstructorModel>().HasData(
+                new InstructorModel { InstructorID = "instructor-user-id", Description = "Experienced Java and C# instructor specializing in advanced programming techniques." } // Instructor
             );
         }
     }

@@ -29,7 +29,6 @@ namespace OnlineLearning.Models
         [Column(TypeName = "time")]
         public TimeSpan? ScheduleLiveDuration { get; set; }
 
-        [StringLength(255)]
         public string LivestreamId { get; set; }
         public int CourseID { get; set; }
        
