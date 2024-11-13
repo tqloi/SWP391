@@ -221,11 +221,11 @@ namespace OnlineLearningApp.Respositories
             var student = new AppUserModel
             {
                 Id = "student-user-id",
-                UserName = "student@example.com",
+                UserName = "student",
                 NormalizedUserName = "STUDENT@EXAMPLE.COM",
                 Email = "student",
                 NormalizedEmail = "STUDENT@EXAMPLE.COM",
-                FirstName = "Student",
+                FirstName = "student@example.com",
                 LastName = "User",
                 EmailConfirmed = true,
                 PasswordHash = passwordHasher.HashPassword(null, "Abc123!"),
