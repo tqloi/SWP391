@@ -72,9 +72,7 @@
                     <h6 class="m-0 font-weight-bold text-info">Course Infomation</h6>
                 </div>
                 <div class="card-body">
-                    <p>
-                        @studentCourse.Course.Description
-                    </p>
+                  
                     <div class="row d-flex align-items-center">
                         <div class="col-md-4 d-flex justify-content-center">
                             <img src="@studentCourse.Course.CoverImagePath" alt="Avatar" class="avatar rounded-2">
@@ -95,6 +93,20 @@
                                 </li>
                             </ul>
                         </div>
+                    </div>
+                    <p>
+                        @studentCourse.Course.Description
+                    </p>
+                    <div class="course-outcomes">
+                        <h5>What You Will Learn</h5>
+                        <ul>
+                            <li>Basic understanding of @studentCourse.Course.Title</li>
+                            <li>Proficiency in practical skills required for @studentCourse.Course.Category.FullName</li>
+                            <li>Ability to apply knowledge in real-world projects</li>
+                            <li>Access to exclusive materials and lectures from the instructor, @studentCourse.Course.Instructor.AppUser.FirstName</li>
+                            <li>Engagement with a community of learners and feedback from the instructor</li>
+                            <li><strong>Certificate of Completion upon finishing the course</strong></li>
+                        </ul>
                     </div>
                     <div class="my-4"></div>
                     <ul class="list-unstyled">
