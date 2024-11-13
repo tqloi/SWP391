@@ -61,8 +61,6 @@ namespace OnlineLearning.Controllers
             var totalCourses = await coursesQuery.CountAsync();
             var pageSize = 5;
             var courses = await coursesQuery
-                .OrderByDescending(course => course.Rating)
-                .ThenByDescending(course => course.NumberOfRate)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
