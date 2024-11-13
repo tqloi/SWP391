@@ -100,7 +100,7 @@ namespace OnlineLearning.Areas.Instructor.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var existingAsm = await _dataContext.Assignment.FirstOrDefaultAsync(c => c.Title == model.Title);
+            var existingAsm = await _dataContext.Assignment.FirstOrDefaultAsync(c => c.Title == model.Title && c.AssignmentID != model.AssignmentID);
 
             if (existingAsm != null)
             {

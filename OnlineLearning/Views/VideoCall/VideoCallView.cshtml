@@ -50,7 +50,7 @@
                 <div class="jumbotron">
                     <div class="container">
                         <h2>@Model.ReceiveId</h2>
-                        <a asp-action="Index" asp-controller="Chat" asp-area="" class="btn btn-primary">Back</a>
+                        <a asp-route-id="@Model.ReceiveId" asp-action="Index" asp-controller="Chat" asp-area="" class="btn btn-primary">Back</a>
                         <div id="incoming-call-notice" style="display: none;">
                             <div class="spinner-grow text-primary" role="status">
                                 <span class="sr-only">Incoming call...</span>
@@ -62,8 +62,8 @@
                 </div>
 
                 <div id="video-container">
-                    <video id="localVideo" autoplay muted></video>
-                    <video id="remoteVideo" autoplay style="height: 360px;"></video>
+                    <video id="localVideo" autoplay muted style="width: 190.4px; height: 119.2px; transform: translate(-70.4px, 0px); left: 656px; top: 10px;"></video>
+                    <video id="remoteVideo" autoplay style="height: 373.6px; width: 983.2px; transform: translate(-175.2px, 0px);"></video>
                 </div>
 
             </div>

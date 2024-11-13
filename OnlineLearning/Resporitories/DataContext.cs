@@ -225,7 +225,7 @@ namespace OnlineLearningApp.Respositories
                 NormalizedUserName = "STUDENT",
                 Email = "student@example.com",
                 NormalizedEmail = "STUDENT@EXAMPLE.COM",
-                FirstName = "Student",
+                FirstName = "student@example.com",
                 LastName = "User",
                 EmailConfirmed = true,
                 PasswordHash = passwordHasher.HashPassword(null, "Abc123"),

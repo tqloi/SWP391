@@ -147,6 +147,45 @@ namespace OnlineLearning.Areas.Admin.Controllers
             TempData["success"] = "Remove successfully!";
             return RedirectToAction("ViewCategory", "Course", new { area = "Admin" });
         }
+
+        public async Task<IActionResult> Top5Course()
+        {
+            List<Top5CourseViewModel> top5 = new List<Top5CourseViewModel>();
+            var listcourse = _dataContext.StudentCourses.ToList();
+            int size = listcourse.Count;
+            if (size > 0)
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    Top5CourseViewModel user1 = new Top5CourseViewModel();
+                    int count = 1;
+                    for (int j = i + 1; j < size; j++)
+                    {
+                        if (listcourse[i].CourseID == listcourse[j].CourseID)
+                        {
+                            count++;
+                        }
+
+                    }
+                    user1.Count = count;
+                    var course = await _dataContext.Courses.FirstOrDefaultAsync(c => c.CourseID == listcourse[i].CourseID);
+                    var user = await _userManager.FindByIdAsync(course.InstructorID);
+                    user1.NameInstructor = user.FirstName + user.LastName;
+                    user1.Images = course.CoverImagePath;
+                    user1.Createdate = course.CreateDate;
+                    user1.Price = course.Price;
+                    user1.Title = course.Title;
+                    
+                    top5.Add(user1);
+                    user1 = null;
+                    count = 1;
+
+                }
+                top5 = top5.GroupBy(u => u.CourseID).Select(g => g.First()).OrderByDescending(x => x.Count).ToList();
+            }
+
+            return View(top5);
+        }
     }
 }
 
