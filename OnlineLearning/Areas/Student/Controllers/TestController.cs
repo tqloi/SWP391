@@ -68,7 +68,7 @@ namespace OnlineLearning.Areas.Student.Controllers
                 .Where(q => q.TestID == TestID);
 
             var timeLeft = Test.TestTime.GetValueOrDefault(TimeSpan.Zero);
-           // var timeLeftString = timeLeft.GetValueOrDefault(TimeSpan.Zero).TotalHours.ToString();
+            // var timeLeftString = timeLeft.GetValueOrDefault(TimeSpan.Zero).TotalHours.ToString();
             var formatedTime = $"{(int)timeLeft.TotalHours:D2}:{timeLeft.Minutes:D2}:{timeLeft.Seconds:D2}";
             var model = new DoTestViewModel
             {
@@ -100,7 +100,7 @@ namespace OnlineLearning.Areas.Student.Controllers
                 return RedirectToAction("TestList", "Participation", new { test.CourseID });
             }
 
-            Dictionary<int, string> correctAnswers = new Dictionary<int, string>();
+            Dictionary<int, string[]> correctAnswers = new Dictionary<int, string[]>();
 
             int totalQuestions = datacontext.Question.ToList()
                 .Where(q => q.TestID == testID).Count();
@@ -118,7 +118,14 @@ namespace OnlineLearning.Areas.Student.Controllers
                 if (question != null)
                 {
                     string correctAnswer = question.CorrectAnswer;
-                    correctAnswers.Add(questionId, correctAnswer);
+                    string theQuestion = question.Question;
+                    string correctAnswerString = ConvertCorrectAnswer(question.CorrectAnswer, question);
+                    string choiceString = ConvertCorrectAnswer(selectedAnswer, question);
+
+                    //store both correct answer and question to this
+                    string[] arr = new string[] { theQuestion, correctAnswer , correctAnswerString, choiceString};
+
+                    correctAnswers.Add(questionId, arr);
                     // Check if the selected answer is correct, ignorecase
                     if (selectedAnswer.Equals(correctAnswer, StringComparison.OrdinalIgnoreCase))
                     {
@@ -156,7 +163,7 @@ namespace OnlineLearning.Areas.Student.Controllers
                 StudentID = studentID,
                 Test = test,
                 NumberOfAttempt = 1,
-                DoTestAt =DateTime.Now
+                DoTestAt = DateTime.Now
             };
 
             datacontext.Score.Add(result);
@@ -178,29 +185,31 @@ namespace OnlineLearning.Areas.Student.Controllers
             var test = datacontext.Test.FirstOrDefault(t => t.TestID == result.TestID);
             var course = datacontext.Courses.Find(test.CourseID);
 
-            ViewBag.Course = course;
-            //var correctAnswers = TempData["correctAnswers"] as Dictionary<int, string>;
-            //var answers = TempData["answers"] as Dictionary<int, string>; 
+            var correctAnswers = TempData["correctAnswers"] != null
+                ? JsonConvert.DeserializeObject<Dictionary<int, string[]>>(TempData["correctAnswers"] as string)
+                : new Dictionary<int, string[]>();
 
-            //Deserialize when retrieving from TempData
-            var correctAnswers = JsonConvert.DeserializeObject<Dictionary<int, string>>(TempData["correctAnswers"] as string);
-            var answers = JsonConvert.DeserializeObject<Dictionary<int, string>>(TempData["answers"] as string);
+            var answers = TempData["answers"] != null
+                ? JsonConvert.DeserializeObject<Dictionary<int, string>>(TempData["answers"] as string)
+                : new Dictionary<int, string>();
 
-            TestResultViewModel model = new TestResultViewModel
+            var model = new TestResultViewModel
             {
-                Answers = answers,
-                CorrectAnswers = correctAnswers,
                 CourseName = course.Title,
-                Score = result.Score,
-                TestID = result.TestID,
-                TotalQuestions = result.Test.NumberOfQuestion,
                 CourseID = course.CourseID,
+                TestID = result.TestID,
+                Score = result.Score,
+                TotalQuestions = result.Test.NumberOfQuestion,
                 NumberOfAttemptLeft = test.NumberOfMaxAttempt - result.NumberOfAttempt,
-                DoneAt = result.DoTestAt
+                DoneAt = result.DoTestAt,
+                Answers = answers,
+                CorrectAnswers = correctAnswers
             };
-            TempData["success"] = "Test Completed";
+
+            TempData.Keep(); // Keep TempData for further usage
             return View(model);
         }
+
         public async Task<IActionResult> StartTest(int testId)
         {
             var test = datacontext.Test.FirstOrDefault(t => t.TestID == testId);
@@ -216,7 +225,28 @@ namespace OnlineLearning.Areas.Student.Controllers
                 _logger.LogError(ex, "Failed to send TestStarted event for testId: {testId}", testId);
             }
 
-            return RedirectToAction("TestList", "Participation", new {CourseID = test.CourseID});
+            return RedirectToAction("TestList", "Participation", new { CourseID = test.CourseID });
+        }
+        private String ConvertCorrectAnswer(String answer, QuestionModel question)
+        {
+            string result;
+            if (answer.Equals("A"))
+            {
+                result = question.AnswerA;
+            }
+            else if (answer.Equals("B"))
+            {
+                result = question.AnswerB;
+            }
+            else if (answer.Equals("C"))
+            {
+                result = question.AnswerC;
+            }
+            else
+            {
+                result = question.AnswerD;
+            }
+            return result;
         }
     }
 }

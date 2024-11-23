@@ -10,6 +10,6 @@
         public int TotalQuestions { get; set; }
         public int? NumberOfAttemptLeft { get; set; }
         public Dictionary<int, string> Answers { get; set; }
-        public Dictionary<int, string> CorrectAnswers { get; set; }
+        public Dictionary<int, string[]> CorrectAnswers { get; set; }
     }
 }

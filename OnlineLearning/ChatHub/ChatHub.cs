@@ -32,7 +32,8 @@ public class ChatHub : Hub
         var roles = await _userManager.GetRolesAsync(user);
         return roles;
     }
-
-    
-
+    public async Task SendMessage(string user, string message)
+    {
+        await Clients.All.SendAsync("ReceiveMessage", user, message);
+    }
 }
