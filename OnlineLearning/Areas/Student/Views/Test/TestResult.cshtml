@@ -46,11 +46,11 @@
                 {
                     <div class="list-group-item">
                         <h5><strong>Question @questionNumber:</strong></h5>
-
+                    <p>@Model.CorrectAnswers[questionId][0]</p>
                         <!-- Check if Answers contain this questionId -->
                         @if (Model.Answers.ContainsKey(questionId))
                         {
-                            <p><strong>Your Answer:</strong> @Model.Answers[questionId]</p>
+                            <p><strong>Your Answer:</strong> @Model.CorrectAnswers[questionId][3]</p>
                         }
                         else
                         {
@@ -60,7 +60,7 @@
                         <!-- Check if CorrectAnswers contain this questionId -->
                         @if (Model.CorrectAnswers.ContainsKey(questionId))
                         {
-                            <p><strong>Correct Answer:</strong> @Model.CorrectAnswers[questionId]</p>
+                        <p><strong>Correct Answer: @Model.CorrectAnswers[questionId][2]</strong></p>
                         }
                         else
                         {
@@ -70,7 +70,7 @@
                         <!-- Determine if the answer is correct -->
                         @if (Model.Answers.ContainsKey(questionId) && Model.CorrectAnswers.ContainsKey(questionId))
                         {
-                            if (Model.Answers[questionId].Equals(Model.CorrectAnswers[questionId], StringComparison.OrdinalIgnoreCase))
+                            if (Model.Answers[questionId].Equals(Model.CorrectAnswers[questionId][1], StringComparison.OrdinalIgnoreCase))
                             {
                                 <p class="text-success"><i class="fas fa-check-circle"></i> Correct</p>
                             }
