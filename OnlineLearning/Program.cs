@@ -3,6 +3,7 @@ using AspNetCoreHero.ToastNotification.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,11 @@ builder.Services.AddTransient<StringeeService>();
 
 //file 
 builder.Services.AddScoped<FileService>();
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 209715200; // 200MB (tính bằng bytes)
+});
 
 //chathub
 builder.Services.AddControllersWithViews();

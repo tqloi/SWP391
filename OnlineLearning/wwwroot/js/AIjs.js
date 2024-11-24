@@ -1,26 +1,31 @@
-﻿document.getElementById('myButton').addEventListener('click', async function () {
-    const { GoogleGenerativeAI } = await import('https://esm.run/@google/generative-ai');
-    const genAI = new GoogleGenerativeAI("AIzaSyAV5j80BEDSj6l1bAL2mqXorlXp91VLdP8");
+﻿document.querySelectorAll('.ai-button').forEach(button => {
+    button.addEventListener('click', async function () {
+        const questionNumber = this.getAttribute('data-question');
+        const inputField = document.getElementById(`userInput-${questionNumber}`);
+        const input = inputField.value;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const input = document.getElementById('userInput').value;
-    const prompt = `"${input}"`;
+        const { GoogleGenerativeAI } = await import('https://esm.run/@google/generative-ai');
+        const genAI = new GoogleGenerativeAI("AIzaSyAV5j80BEDSj6l1bAL2mqXorlXp91VLdP8");
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = await response.text();
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const prompt = `"${input}"`;
 
-    // Convert Markdown to HTML
-    const htmlContent = marked.parse(text);
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = await response.text();
 
-    // Display formatted response
-    const displayElement = document.getElementById('displayText');
-    displayElement.innerHTML = htmlContent;
+        // Convert Markdown to HTML
+        const htmlContent = marked.parse(text);
 
-    // Apply highlight.js to code blocks
-    document.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightElement(block);
+        // Display formatted response in the corresponding question
+        const displayElement = document.getElementById(`displayText-${questionNumber}`);
+        displayElement.innerHTML = htmlContent;
+
+        // Apply highlight.js to code blocks
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+
+        //console.log(text);
     });
-
-    console.log(text);
 });

@@ -47,11 +47,11 @@
                 {
                     <div class="list-group-item">
                         <h5><strong>Question @questionNumber:</strong></h5>
-
+                    <p>@Model.CorrectAnswers[questionId][0]</p>
                         <!-- Check if Answers contain this questionId -->
                         @if (Model.Answers.ContainsKey(questionId))
                         {
-                            <p><strong>Your Answer:</strong> @Model.Answers[questionId]</p>
+                            <p><strong>Your Answer:</strong> @Model.CorrectAnswers[questionId][3]</p>
                         }
                         else
                         {
@@ -61,7 +61,7 @@
                         <!-- Check if CorrectAnswers contain this questionId -->
                         @if (Model.CorrectAnswers.ContainsKey(questionId))
                         {
-                            <p><strong>Correct Answer:</strong> @Model.CorrectAnswers[questionId]</p>
+                        <p><strong>Correct Answer: @Model.CorrectAnswers[questionId][2]</strong></p>
                         }
                         else
                         {
@@ -71,7 +71,7 @@
                         <!-- Determine if the answer is correct -->
                         @if (Model.Answers.ContainsKey(questionId) && Model.CorrectAnswers.ContainsKey(questionId))
                         {
-                            if (Model.Answers[questionId].Equals(Model.CorrectAnswers[questionId], StringComparison.OrdinalIgnoreCase))
+                            if (Model.Answers[questionId].Equals(Model.CorrectAnswers[questionId][1], StringComparison.OrdinalIgnoreCase))
                             {
                                 <p class="text-success"><i class="fas fa-check-circle"></i> Correct</p>
                             }
@@ -80,30 +80,30 @@
                                 <p class="text-danger"><i class="fas fa-times-circle"></i> Incorrect</p>
                             }
                         }
+                    <!-- Response display area -->
+                    <div id="displayText-@questionNumber"></div>
 
+                    <!-- Include necessary libraries -->
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+                    <script>
+                        // Configure marked to use highlight.js
+                        marked.setOptions({
+                            highlight: function (code, language) {
+                                return hljs.highlight(code, { language: language }).value;
+                            }
+                        });
+                    </script>
+
+                    <input hidden readonly type="text" class="user-input" id="userInput-@questionNumber"
+                           value="Explain why this question '@Model.CorrectAnswers[questionId][0]' has this answer: '@Model.CorrectAnswers[questionId][2]'" />
+                    <button class="btn btn-primary ai-button" id="myButton-@questionNumber" data-question="@questionNumber">Explain by AI</button>
+
+                    <!-- Include the external JavaScript file -->
+                    <script src="~/js/AIjs.js"></script>
                     </div>
                     questionNumber++;
-                <!-- Response display area -->
-                <div id="displayText">Response will appear here...</div>
-
-                <!-- Include necessary libraries -->
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-                <script>
-                    // Configure marked to use highlight.js
-                    marked.setOptions({
-                        highlight: function (code, language) {
-                            return hljs.highlight(code, { language: language }).value;
-                        }
-                    });
-                </script>
-
-                <p id="displayText">Original Text</p>
-                <input readonly type="text" id="userInput" value="hello in vietnamese?" placeholder="Enter your question here" />
-                <button id="myButton">Click</button>
-
-                <!-- Include the external JavaScript file -->
-                <script src="~/js/AIjs.js"></script>
+                
                 }
             </div>
 
