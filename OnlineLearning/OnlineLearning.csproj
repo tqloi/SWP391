@@ -57,6 +57,7 @@
     <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
     <PackageReference Include="FirebaseStorage.net" Version="1.0.3" />
     <PackageReference Include="Google.Cloud.Storage.V1" Version="4.10.0" />
+    <PackageReference Include="Google_GenerativeAI" Version="1.0.2" />
     <PackageReference Include="Json.Net" Version="1.0.33" />
     <PackageReference Include="JsonSubTypes" Version="2.0.1" />
     <PackageReference Include="MailKit" Version="4.7.1.1" />
@@ -100,6 +101,14 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\E_Learning_Backup\SWP391\OnlineLearning\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\E_Learning_Backup\SWP391\OnlineLearning\.editorconfig" />
   </ItemGroup>
 
 </Project>

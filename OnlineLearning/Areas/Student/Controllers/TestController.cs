@@ -114,6 +114,7 @@ namespace OnlineLearning.Areas.Student.Controllers
                 string selectedAnswer = answer.Value; // The selected answer
 
                 var question = datacontext.Question.FirstOrDefault(c => c.QuestionID == questionId);
+                TempData["question"] = JsonConvert.SerializeObject(question.Question);
 
                 if (question != null)
                 {
@@ -146,6 +147,7 @@ namespace OnlineLearning.Areas.Student.Controllers
                 //serialize the dictionary into a JSON string before storing it in TempData
                 TempData["correctAnswers"] = JsonConvert.SerializeObject(correctAnswers);
                 TempData["answers"] = JsonConvert.SerializeObject(answers);
+                
                 return RedirectToAction("TestResult", new { previousResult.ScoreID, studentID });
             }
             ScoreModel result = new ScoreModel
@@ -177,7 +179,7 @@ namespace OnlineLearning.Areas.Student.Controllers
             var result = datacontext.Score.FirstOrDefault(s => s.ScoreID == ScoreID);
             var test = datacontext.Test.FirstOrDefault(t => t.TestID == result.TestID);
             var course = datacontext.Courses.Find(test.CourseID);
-
+            
             ViewBag.Course = course;
             //var correctAnswers = TempData["correctAnswers"] as Dictionary<int, string>;
             //var answers = TempData["answers"] as Dictionary<int, string>; 
@@ -185,6 +187,9 @@ namespace OnlineLearning.Areas.Student.Controllers
             //Deserialize when retrieving from TempData
             var correctAnswers = JsonConvert.DeserializeObject<Dictionary<int, string>>(TempData["correctAnswers"] as string);
             var answers = JsonConvert.DeserializeObject<Dictionary<int, string>>(TempData["answers"] as string);
+
+            var questionstring  = TempData["question"] as string;
+            
 
             TestResultViewModel model = new TestResultViewModel
             {
@@ -196,7 +201,10 @@ namespace OnlineLearning.Areas.Student.Controllers
                 TotalQuestions = result.Test.NumberOfQuestion,
                 CourseID = course.CourseID,
                 NumberOfAttemptLeft = test.NumberOfMaxAttempt - result.NumberOfAttempt,
-                DoneAt = result.DoTestAt
+                DoneAt = result.DoTestAt,
+                
+                
+
             };
             TempData["success"] = "Test Completed";
             return View(model);
@@ -217,6 +225,10 @@ namespace OnlineLearning.Areas.Student.Controllers
             }
 
             return RedirectToAction("TestList", "Participation", new {CourseID = test.CourseID});
+        }
+        public ActionResult testai()
+        {
+            return View();
         }
     }
 }

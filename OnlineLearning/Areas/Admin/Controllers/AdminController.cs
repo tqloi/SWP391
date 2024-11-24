@@ -47,10 +47,12 @@ namespace OnlineLearning.Areas.Admin.Controllers
         {
             var users = await _dataContext.Users.ToListAsync();
             var payments = await _dataContext.Payment.OrderByDescending(p => p.PaymentDate).ToListAsync();
+            var courses = await _dataContext.Courses.ToListAsync();
             var listindex = new ListIndexViewModel
             {
                 ListUser = users,
                 ListPayment = payments,
+                ListCourse = courses
             };
             return View(listindex);
         }

@@ -1,0 +1,50 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <style>
+        /* Custom styling if needed */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: Consolas, monospace;
+        }
+    </style>
+</head>
+<body>
+    <!-- Response display area -->
+    <div id="displayText">Response will appear here...</div>
+
+    <!-- Include necessary libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>
+        // Configure marked to use highlight.js
+        marked.setOptions({
+            highlight: function (code, language) {
+                return hljs.highlight(code, { language: language }).value;
+            }
+        });
+    </script>
+
+    <p id="displayText">Original Text</p>
+    <input type="text" id="userInput" placeholder="Enter your question here" />
+    <button id="myButton">Click</button>
+
+    <!-- Include the external JavaScript file -->
+    <script src="~/js/AIjs.js"></script>
+</body>
+</html>

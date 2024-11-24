@@ -6,5 +6,6 @@ namespace OnlineLearning.Areas.Admin.Models.ViewModel
     {
         public List<AppUserModel> ListUser { get; set; }
         public List<PaymentModel> ListPayment { get; set; }
+        public List<CourseModel> ListCourse { get; set; }
     }
 }
